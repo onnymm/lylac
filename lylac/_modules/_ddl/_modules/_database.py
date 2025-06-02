@@ -35,7 +35,7 @@ class _Database(_BaseDatabase):
         )
 
         # Ejecución de la transacción
-        self._ddl._main._execute_dml(stmt, commit= True)
+        self._ddl._main._connection.execute(stmt, commit= True)
 
     def _add_column_query(
         self,
@@ -82,4 +82,4 @@ class _Database(_BaseDatabase):
         stmt = text(f'ALTER TABLE {table_name} DROP COLUMN {column_name}')
 
         # Ejecución de la transacción en la base de datos
-        self._ddl._main._execute_dml(stmt, commit= True)
+        self._ddl._main._connection.execute(stmt, commit= True)

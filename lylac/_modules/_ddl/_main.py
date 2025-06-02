@@ -155,7 +155,7 @@ class DDLManager(_BaseDDLManager):
         # Creación de los parámetros para ser usados en las automatizaciones
         new_field = NewField(
             field_name= params.record_data['name'],
-            table_model= self._main._get_table_model(table_model_model),
+            table_model= self._main._models.get_table_model(table_model_model),
             label= params.record_data['label'],
             ttype= params.record_data['ttype'],
             nullable= params.record_data['nullable'],

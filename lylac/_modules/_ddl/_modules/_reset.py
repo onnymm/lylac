@@ -21,7 +21,7 @@ class _Reset():
         # Registro de los datos iniciales
         with Session(self._ddl._main._engine) as session:
             for ( table_name, data ) in initial_models.items():
-                model = self._ddl._main._get_table_model(table_name)
+                model = self._ddl._main._models.get_table_model(table_name)
                 for record in data:
                     session.add(model(**record))
 

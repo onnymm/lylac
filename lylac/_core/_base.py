@@ -1,7 +1,13 @@
+from typing import (
+    Any,
+    Literal,
+)
 from sqlalchemy.sql.selectable import Select, TypedReturnsRows
+from sqlalchemy.engine.base import Engine
 from sqlalchemy.engine.cursor import CursorResult
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm.decl_api import DeclarativeBase
+from .._module_types import DBCredentials
 from .._module_types import (
     _T,
     CriteriaStructure,
@@ -27,24 +33,63 @@ class _BaseStructure():
     ) -> None:
         ...
 
+class _BaseModels():
+
+    def get_table_model(
+        self,
+        table_name: str
+    ) -> type[DeclarativeBase]:
+        ...
+
+    def get_id_field(
+        self,
+        table_model: type[DeclarativeBase]
+    ) -> InstrumentedAttribute[int]:
+        ...
+
+    def get_table_field(
+        self,
+        table: str,
+        field: str
+    ) -> InstrumentedAttribute:
+        ...
+
+    def get_table_fields(
+        self,
+        table_instance: type[DeclarativeBase],
+        fields: list[str] = [],
+        include_id: bool = True
+    ) -> list[InstrumentedAttribute[Any]]:
+        ...
+
+class _BaseConnection():
+
+    def execute(
+        self,
+        statement: Select[_T] | TypedReturnsRows[_T],
+        commit: bool = False
+    ) -> CursorResult[_T]:
+        ...
+
+    def create_connection(
+        self,
+        credentials: DBCredentials | str | Literal['env']
+    ) -> Engine:
+        ...
 
 class _BaseLylac():
+    credentials: Literal['env'] | DBCredentials | str = 'env',
     _strc: _BaseStructure
     _base: type[DeclarativeBase]
     _engine: Engine
+    _models: _BaseModels
+    _connection: _BaseConnection
 
     def create(
     self,
     table_name: str,
     data: RecordData | list[RecordData]
 ) -> list[int]:
-        ...
-
-    def _get_table_field(
-        self,
-        table: str,
-        field: str
-    ) -> InstrumentedAttribute:
         ...
 
     def search(
@@ -82,7 +127,6 @@ class _BaseLylac():
     ) -> tuple:
         ...
 
-
     def search_read(
         self,
         table_name: str,
@@ -96,17 +140,11 @@ class _BaseLylac():
     ) -> DataOutput:
         ...
 
-    def _execute_dml(
+    def _get_table_field(
         self,
-        statement: Select[_T] | TypedReturnsRows[_T],
-        commit: bool = False
-    ) -> CursorResult[_T]:
-        ...
-
-    def _get_table_model(
-        self,
-        table_name
-    ) -> type[DeclarativeBase]:
+        table: str,
+        field: str
+    ) -> InstrumentedAttribute:
         ...
 
     def and_(

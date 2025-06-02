@@ -17,6 +17,8 @@ from ._submodules import (
     _Automations,
     _BaseAutomations,
 )
+from ..._data import preset_automations
+from ..._module_types import AutomationDataModel
 
 class Automations(_BaseAutomations):
 
@@ -140,6 +142,30 @@ class Automations(_BaseAutomations):
 
         # Retorno de función de función ejecutable
         return run_automations_after_deletion
+
+    def create_preset_automations(
+        self,
+    ) -> None:
+
+        # Registro de las automatizaciones precargadas
+        for automation in [ AutomationDataModel(**data) for data in preset_automations ]:
+
+            # Obtención del módulo que contiene la automatización
+            submodule = getattr(self._main, automation.submodule)
+            # Obtención de la instancia de automatizaciones del submódulo
+            autom_extension = getattr(submodule, '_automations')
+            # Obtención de la función a registrar como automatización
+            callback: Callable[[DataPerRecord | DataPerTransaction], None] = getattr(autom_extension, automation.callback)
+
+            # Registro de la automatización
+            self.register_automation(
+                automation.model,
+                automation.transaction,
+                callback,
+                automation.fields,
+                automation.criteria,
+                automation.execution
+            )
 
     def _build_runable_modification_automation(
         self,

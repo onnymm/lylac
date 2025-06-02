@@ -1,67 +1,41 @@
 from typing import (
-    Any,
     Callable,
     Literal,
-    TypeVar,
-    cast,
 )
-import numpy as np
 import pandas as pd
 from sqlalchemy import (
     Select,
-    create_engine,
     select,
-    inspect,
     delete,
     asc,
-    desc,
     update,
     insert,
     func,
 )
-from sqlalchemy.orm.attributes import InstrumentedAttribute
-from sqlalchemy.orm.decl_api import DeclarativeBase
-from sqlalchemy.orm.properties import ColumnProperty
-from sqlalchemy.engine.cursor import CursorResult
-from sqlalchemy.sql.selectable import Select, TypedReturnsRows
-from urllib.parse import quote
-from ._core import (
-    _BaseLylac,
-    Env,
-)
+from ._core import _BaseLylac
 from ._models import _Base
-from ._data import preset_automations
 from ._module_types import (
     _T,
-    AutomationDataModel,
     DBCredentials,
     CriteriaStructure,
     DataPerRecord,
-    DataPerTransaction,
     RecordData,
-    SerializableDict,
-    AutomationCallback,
     OutputOptions,
     Transaction,
     RecordValue,
 )
 from ._modules import (
     Automations,
+    Connection,
     DDLManager,
+    Models,
+    Output,
     Structure,
+    Query,
     Where,
 )
 
-_P = TypeVar('_P', bound= DataPerRecord[Any])
-DecoratedAutomation = Callable[[_P], None]
-
 class Lylac(_BaseLylac):
-
-    # Mapas de funciones:
-    _sorting_direction = {
-        True: asc,
-        False: desc,
-    }
 
     def __init__(
         self,
@@ -70,29 +44,25 @@ class Lylac(_BaseLylac):
         output_format: OutputOptions | None = None,
     ) -> None:
 
-        # Configuración de formato de salida por defecto
-        self._default_output = output_format
-
         # Asignación del modelo base
         self._base = _Base
 
-        # Creación de la conexión con la base de datos
-        self._create_connection(credentials)
+        # Inicialización del módulo de manejo de formato de salida
+        self._output = Output(self, output_format)
 
-        # Creación de la estructura
+        # Creación de la instancia de conexión con la base de datos
+        self._connection = Connection(self, credentials)
+
+        # Inicialización de submódulos
         self._strc = Structure(self)
-
-        # Creación del módulo DDL
         self._ddl = DDLManager(self)
-
-        # Creación del módulo Where
+        self._models = Models(self)
         self._where = Where(self)
-
-        # Creación del módulo de automatizaciones
+        self._query = Query(self)
         self._automations = Automations(self)
 
-        # Registro de las automatizaciones prestablecidas
-        self._create_preset_automations()
+        # Registro de las automatizaciones predeterminadas
+        self._automations.create_preset_automations()
 
     def register_automation(
         self,
@@ -224,7 +194,7 @@ class Lylac(_BaseLylac):
         """
 
         # Obtención de la instancia de la tabla
-        table_model = self._get_table_model(table_name)
+        table_model = self._models.get_table_model(table_name)
 
         # Conversión de datos entrantes si es necesaria
         if isinstance(data, dict):
@@ -233,12 +203,12 @@ class Lylac(_BaseLylac):
         # Creación de comandos SQL
         stmt = (
             insert(table_model)
-            .returning(self._get_id_field(table_model))
+            .returning(self._models.get_id_field(table_model))
             .values(data)
         )
 
         # Ejecución de la transacción
-        response = self._execute_dml(stmt, commit= True)
+        response = self._connection.execute(stmt, commit= True)
 
         # Obtención de las IDs creadas
         inserted_records: list[int] = [getattr(row, 'id') for row in response]
@@ -370,10 +340,10 @@ class Lylac(_BaseLylac):
         """
 
         # Obtención de la instancia de la tabla
-        table_model = self._get_table_model(table_name)
+        table_model = self._models.get_table_model(table_name)
 
         # Creación del query SELECT
-        stmt = select(self._get_id_field(table_model))
+        stmt = select(self._models.get_id_field(table_model))
 
         # Si hay criterios de búsqueda se genera el 'where'
         if len(search_criteria) > 0:
@@ -388,10 +358,10 @@ class Lylac(_BaseLylac):
         stmt = stmt.order_by(asc('id'))
 
         # Segmentación de inicio y fin en caso de haberlos
-        stmt = self._build_segmentation(stmt, offset, limit)
+        stmt = self._query.build_segmentation(stmt, offset, limit)
 
         # Ejecución de la transacción
-        response = self._execute_dml(stmt)
+        response = self._connection.execute(stmt)
 
         # Obtención de las IDs encontradas
         found_ids: list[int] = [getattr(row, 'id') for row in response]
@@ -446,10 +416,10 @@ class Lylac(_BaseLylac):
             record_ids = [record_ids,]
 
         # Obtención de la instancia de la tabla
-        table_model = self._get_table_model(table_name)
+        table_model = self._models.get_table_model(table_name)
 
         # Obtención de los campos de la tabla
-        table_fields = self._get_table_fields(table_model, fields)
+        table_fields = self._models.get_table_fields(table_model, fields)
 
         # Creación del query base
         stmt = select(*table_fields)
@@ -461,7 +431,7 @@ class Lylac(_BaseLylac):
         stmt = stmt.where(where_query)
 
         # Creación de parámetros de ordenamiento
-        stmt = self._build_sort(
+        stmt = self._query.build_sort(
             stmt,
             table_model,
             sortby,
@@ -469,13 +439,13 @@ class Lylac(_BaseLylac):
         )
 
         # Ejecución de la transacción
-        response = self._execute_dml(stmt)
+        response = self._connection.execute(stmt)
 
         # Inicialización del DataFrame de retorno
         data = pd.DataFrame(response.fetchall())
 
         # Retorno en formato de salida configurado
-        return self._build_output(data, table_fields, output_format, 'dataframe')
+        return self._output.build_output(data, table_fields, output_format, 'dataframe')
 
     def get_value(
         self,
@@ -506,10 +476,10 @@ class Lylac(_BaseLylac):
         """
 
         # Obtención de la instancia de la tabla
-        table_model = self._get_table_model(table_name)
+        table_model = self._models.get_table_model(table_name)
 
         # Obtención de los campos de la tabla
-        table_field = self._get_table_field(table_model, field)
+        table_field = self._models.get_table_field(table_model, field)
 
         # Creación del query base
         stmt = select(table_field)
@@ -521,7 +491,7 @@ class Lylac(_BaseLylac):
         stmt = stmt.where(where_query)
 
         # Ejecución de la transacción
-        response = self._execute_dml(stmt)
+        response = self._connection.execute(stmt)
 
         # Destructuración de la tupla dentro de la lista
         [ data ] = response.fetchall()
@@ -561,10 +531,10 @@ class Lylac(_BaseLylac):
         """
 
         # Obtención de la instancia de la tabla
-        table_model = self._get_table_model(table_name)
+        table_model = self._models.get_table_model(table_name)
 
         # Obtención de los campos de la tabla
-        table_fields = self._get_table_fields(table_model, fields, include_id= False)
+        table_fields = self._models.get_table_fields(table_model, fields, include_id= False)
 
         # Creación del query base
         stmt = select(*table_fields)
@@ -576,7 +546,7 @@ class Lylac(_BaseLylac):
         stmt = stmt.where(where_query)
 
         # Ejecución de la transacción
-        response = self._execute_dml(stmt)
+        response = self._connection.execute(stmt)
 
         # Destructuración de la tupala desde la lista obtenida
         [ data ] = response.fetchall()
@@ -732,19 +702,19 @@ class Lylac(_BaseLylac):
         """
 
         # Obtención de la instancia de la tabla
-        table_model = self._get_table_model(table_name)
+        table_model = self._models.get_table_model(table_name)
 
         # Obtención de los campos de la tabla
-        table_fields = self._get_table_fields(table_model, fields)
+        table_fields = self._models.get_table_fields(table_model, fields)
 
         # Creación del query base
         stmt = select(*table_fields)
 
         # Creación del segmento WHERE en caso de haberlo
-        stmt = self._build_where(stmt, table_model, search_criteria)
+        stmt = self._where.add_query(stmt, table_model, search_criteria)
 
         # Creación de parámetros de ordenamiento
-        stmt = self._build_sort(
+        stmt = self._query.build_sort(
             stmt,
             table_model,
             sortby,
@@ -752,16 +722,16 @@ class Lylac(_BaseLylac):
         )
 
         # Segmentación de inicio y fin en caso de haberlos
-        stmt = self._build_segmentation(stmt, offset, limit)
+        stmt = self._query.build_segmentation(stmt, offset, limit)
 
         # Ejecución de la transacción
-        response = self._execute_dml(stmt)
+        response = self._connection.execute(stmt)
 
         # Inicialización del DataFrame de retorno
         data = pd.DataFrame(response.fetchall())
 
         # Retorno en formato de salida configurado
-        return self._build_output(data, table_fields, output_format, 'dataframe')
+        return self._output.build_output(data, table_fields, output_format, 'dataframe')
 
     def search_count(
         self,
@@ -852,7 +822,7 @@ class Lylac(_BaseLylac):
         """
 
         # Obtenciónde la instancia de la tabla
-        table_model = self._get_table_model(table_name)
+        table_model = self._models.get_table_model(table_name)
 
         # Creación del query base
         stmt = (
@@ -861,10 +831,10 @@ class Lylac(_BaseLylac):
         )
 
         # Creación del segmento WHERE en caso de haberlo
-        stmt = self._build_where(stmt, table_model, search_criteria)
+        stmt = self._where.add_query(stmt, table_model, search_criteria)
 
         # Ejecución de la transacción
-        response = self._execute_dml(stmt)
+        response = self._connection.execute(stmt)
 
         # Retorno del conteo de registro
         return response.scalar()
@@ -947,22 +917,22 @@ class Lylac(_BaseLylac):
         """
 
         # Obtención de la instancia de la tabla
-        table_model = self._get_table_model(table_name)
+        table_model = self._models.get_table_model(table_name)
 
         # Creación del query base
         stmt = update(table_model)
 
         # Creación del segmento WHERE
-        stmt = self._build_where(stmt, table_model, search_criteria)
+        stmt = self._where.add_query(stmt, table_model, search_criteria)
 
         # Declaración de valores a cambiar
         stmt.values(data)
 
         # Declaración para obtener las IDs modificadas
-        stmt = stmt.returning(self._get_id_field(table_model))
+        stmt = stmt.returning(self._models.get_id_field(table_model))
 
         # Ejecución de la transacción
-        response = self._execute_dml(stmt, commit= True)
+        response = self._connection.execute(stmt, commit= True)
 
         # Obtención de las IDs creadas
         modified_records: list[int] = [getattr(row, 'id') for row in response]
@@ -1015,17 +985,17 @@ class Lylac(_BaseLylac):
         )
 
         # Obtención de la instancia de la tabla
-        table_model = self._get_table_model(table_name)
+        table_model = self._models.get_table_model(table_name)
 
         # Creación del query
         stmt = (
             delete(table_model)
             .where(getattr(table_model, 'id').in_(record_ids))
-            .returning(self._get_id_field(table_model))
+            .returning(self._models.get_id_field(table_model))
         )
 
         # Ejecución de la transacción
-        response = self._execute_dml(stmt, commit= True)
+        response = self._connection.execute(stmt, commit= True)
 
         # Obtención de las IDs encontradas
         deleted_ids: list[int] = [getattr(row, 'id') for row in response]
@@ -1102,284 +1072,3 @@ class Lylac(_BaseLylac):
         elif len(cs_1):
             # Se retorna sólo el primer criterio de búsqueda
             return cs_1
-
-    def _build_where(
-        self,
-        stmt: _T,
-        table_instance: DeclarativeBase,
-        search_criteria: CriteriaStructure
-    ) -> _T:
-
-        # Creación del segmento WHERE en caso de haberlo
-        if len(search_criteria) > 0:
-
-            # Creación del query where
-            where_query = self._where.build_where(table_instance, search_criteria)
-
-            # Conversión del query SQL
-            stmt = stmt.where(where_query)
-
-        # Retorno del query
-        return stmt
-
-    def _execute_dml(
-        self,
-        statement: Select[_T] | TypedReturnsRows[_T],
-        commit: bool = False
-    ) -> CursorResult[_T]:
-
-        # Conexión con la base de datos
-        with self._engine.connect() as conn:
-            # Ejecución en la base de datos
-            response = conn.execute(statement)
-            # Commit de los cambios
-            if commit:
-                conn.commit()
-
-        # Retorno de respuesta tipada
-        return response
-
-    def _get_id_field(self, table_model: type[DeclarativeBase]) -> InstrumentedAttribute[int]:
-        return getattr(table_model, 'id')
-
-    def _build_segmentation(
-        self,
-        stmt: Select[_T],
-        offset: int | None = None,
-        limit: int | None = None,
-    ) -> Select[_T]:
-
-        # Segmentación de inicio y fin en caso de haberlos
-        if offset != None:
-            stmt = stmt.offset(offset)
-        if limit != None:
-            stmt = stmt.limit(limit)
-
-        # Retorno del query
-        return stmt
-
-    def _create_preset_automations(
-        self,
-    ) -> None:
-
-        # Registro de las automatizaciones precargadas
-        for automation in [ AutomationDataModel(**data) for data in preset_automations ]:
-
-            # Obtención del módulo que contiene la automatización
-            submodule = getattr(self, automation.submodule)
-            # Obtención de la instancia de automatizaciones del submódulo
-            autom_extension = getattr(submodule, '_automations')
-            # Obtención de la función a registrar como automatización
-            callback: Callable[[DataPerRecord | DataPerTransaction], None] = getattr(autom_extension, automation.callback)
-
-            # Registro de la automatización
-            self._automations.register_automation(
-                automation.model,
-                automation.transaction,
-                callback,
-                automation.fields,
-                automation.criteria,
-                automation.execution
-            )
-
-    def _get_table_fields(
-        self,
-        table_instance: type[DeclarativeBase],
-        fields: list[str] = [],
-        include_id: bool = True,
-    ) -> list[InstrumentedAttribute[Any]]:
-
-        # Inicialización de la lista con el valor de 'id' como primer elemento
-        id_field = ['id',]
-
-        # Obtención de todos los campos
-        if len(fields) == 0:
-            # Obtención de columnas con relación para evitar productos cartesianos
-            instance_relationships = { _relationship.key for _relationship in inspect(table_instance).relationships }
-            mapper = inspect(table_instance)
-            all_columns = [column.key for column in mapper.attrs if isinstance(column, ColumnProperty)]
-            instance_fields = [col for col in all_columns if col not in instance_relationships]
-
-            # Asignación de valor a la variable entrante
-            fields = instance_fields
-
-        if include_id:
-            # Remoción del campo de 'ID en caso de ser solicitado, ara evitar campos duplicados en el retorno de la información
-            try:
-                fields.remove('id')
-            except ValueError:
-                pass
-
-            # Suma del campo 'ID' como primer elemento de los campos a retornar
-            table_fields = id_field + fields
-
-        # Inclusión del ID solo de forma explícita
-        else:
-            table_fields = fields
-
-        # Obtención de los atributos de la tabla a partir de los nombres de los campos y retorno en una lista para ser usados en el query correspondiente
-        return [ getattr(table_instance, field) for field in table_fields ]
-
-    def _build_sort(
-        self,
-        stmt: Select[_T],
-        table_instance: DeclarativeBase,
-        sortby: str | list[str],
-        ascending: str | list[bool],
-    ) -> Select[_T]:
-
-        # Ordenamiento de los datos
-        if sortby is None:
-            # Ordenamiento de los datos por IDs
-            stmt = stmt.order_by( asc( getattr(table_instance, 'id') ) )
-
-        elif isinstance(sortby, str):
-            # Creación del query
-            stmt = stmt.order_by(
-                # Obtención de función de ordenamiento
-                self._sorting_direction[ascending](
-                    # Obtención del campo atributo de la tabla
-                    getattr(table_instance, sortby)
-                )
-            )
-
-        # Ordenamiento por varias columnas
-        elif isinstance(sortby, list):
-            stmt = stmt.order_by(
-                # Destructuración en [*args] de una compreensión de lista
-                *[
-                    # Obtención de función de ordenamiento
-                    self._sorting_direction[ascending_i](
-                        # Obtención del campo atributo de la tabla
-                        getattr(table_instance, sortby_i)
-                    )
-                    # Destructuración de la columna y dirección de ordenamiento del zip de listas
-                    for ( sortby_i, ascending_i ) in zip(
-                        sortby, ascending
-                    )
-                ]
-            )
-
-        return stmt
-
-    def _get_table_field(
-        self,
-        table: str,
-        field: str,
-    ) -> InstrumentedAttribute:
-
-        # Obtención del campo, atributo de la instancia de la tabla
-        return getattr(table, field)
-
-    def _create_connection(
-        self,
-        credentials: Literal['env'] | DBCredentials | str,
-    ) -> None:
-
-        # Obtención de las variables de entorno en caso de requerirse
-        if credentials == 'env':
-            credentials = Env()._credentials
-
-        self._engine = self._create_engine(credentials)
-
-    def _create_engine(
-        self,
-        params: DBCredentials | str,
-    ):
-
-        # Si una URL fue provista
-        if isinstance(params, str):
-            url = params
-
-        # Obtención de los parámetros a utilizar
-        else:
-            host = params['host']
-            port = params['port']
-            name = params['db_name']
-            user = params['user']
-            password = quote(params['password'])
-
-            url = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{name}"
-
-        # Creación del motor de conexión con la base de datos
-        engine = create_engine(url)
-
-        # Retorno del motor de conexión
-        return engine
-
-    def _get_table_model(
-        self,
-        table_name: str,
-    ) -> type[DeclarativeBase]:
-
-        return self._strc.models[table_name]
-
-    def _build_output(
-        self,
-        response: pd.DataFrame | list[dict[str, Any]],
-        fields: list[str],
-        specified_output: OutputOptions,
-        default_output: OutputOptions | None = None,
-    ) -> pd.DataFrame | list[dict[str, Any]]:
-        
-        # Obtención de los nombres de columna excluyendo el nombre de la tabla
-        fields = [ str(i).split(".")[1] for i in fields ]
-
-        # Si se especificó una salida para la ejecución actual...
-        if specified_output:
-            if specified_output == 'dataframe':
-                return pd.DataFrame(response, columns= fields)
-            else:
-                return self._to_serializable_dict(response)
-
-        # Si existe un formato por defecto en la instancia...
-        if self._default_output:
-            if self._default_output == 'dataframe':
-                return pd.DataFrame(response, columns= fields)
-            else:
-                return self._to_serializable_dict(response)
-
-        # Si no se especificó un formato en ejecución o instancia...
-        if default_output == 'dataframe':
-            return pd.DataFrame(response, columns= fields)
-
-        # Retorno de información en lista de diccionarios
-        return self._to_serializable_dict(response)
-
-    def _to_serializable_dict(self, data: pd.DataFrame) -> SerializableDict:
-        """
-        ## Conversión a diccionario serializable
-        Este método interno convierte un DataFrame en una lista de diccionarios
-        que puede ser convertida a JSON.
-        """
-
-        return (
-            data
-            .pipe(
-                lambda df: (
-                    df
-                    # Reemplazo de todos los potenciales nulos no serializables
-                    .replace({np.nan: None})
-                    # Transformación de tipos no nativos en cadenas de texto
-                    .astype(
-                        {
-                            col: 'string' for col in (
-                                df
-                                # Obtención de los tipos de dato del DataFrame
-                                .dtypes
-                                # Transformación de tipos de dato de serie
-                                .astype('string')
-                                # Filtro por tipos de dato no serializables
-                                .pipe(
-                                    lambda s: s[s.isin(['object', 'datetime64[ns]'])]
-                                )
-                                # Obtención de los nombres de columnas desde el índice
-                                .index
-                            )
-                        }
-                    )
-                )
-            )
-            # Conversión a lista de diccionarios
-            .to_dict('records')
-        )

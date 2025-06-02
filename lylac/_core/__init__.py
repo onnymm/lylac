@@ -1,5 +1,7 @@
 from ._base import (
+    _BaseConnection,
     _BaseLylac,
+    _BaseModels,
     _BaseStructure,
 )
-from ._env import Env
+from .env import Env

@@ -1,13 +1,19 @@
-from typing import Any
+from typing import (
+    Any,
+    overload,
+)
 from sqlalchemy import (
     not_,
     or_,
     and_,
+    Select,
+    Update,
 )
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.sql.elements import BinaryExpression
 from ..._core import _BaseLylac
 from ..._module_types import (
+    _T,
     CriteriaStructure,
     TripletStructure,
     ComparisonOperator,
@@ -48,7 +54,44 @@ class Where():
     ) -> None:
 
         # Asignación de la instancia propietaria
-        self._instance = instance
+        self._main = instance
+
+    @overload
+    def add_query(
+        self,
+        stmt: Select[_T],
+        table_model: type[DeclarativeBase],
+        search_criteria: CriteriaStructure,
+    ) -> Select[_T]:
+        ...
+
+    @overload
+    def add_query(
+        self,
+        stmt: Update[_T],
+        table_model: type[DeclarativeBase],
+        search_criteria: CriteriaStructure,
+    ) -> Update[_T]:
+        ...
+
+    def add_query(
+        self,
+        stmt: Select[_T] | Update[_T],
+        table_model: type[DeclarativeBase],
+        search_criteria: CriteriaStructure,
+    ):
+
+        # Creación del segmento WHERE en caso de haberlo
+        if len(search_criteria) > 0:
+
+            # Creación del query where
+            query = self.build_where(table_model, search_criteria)
+
+            # Conversión del query SQL
+            stmt = stmt.where(query)
+
+        # Retorno de la sentencia SQL
+        return stmt
 
     def build_where(
             self,
@@ -133,7 +176,7 @@ class Where():
         ( field_instance, op, value ) = fragment
 
         # Obtención de la instancia del campo a usar
-        field_instance = self._instance._get_table_field(table, field_instance)
+        field_instance = self._main._models.get_table_field(table, field_instance)
 
         # Retorno de la evaluación
         return self._comparison_operation[op](field_instance, value)
