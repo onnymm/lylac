@@ -123,6 +123,9 @@ class DDLManager(_BaseDDLManager):
         self,
         params: DataPerRecord[ModelRecord.BaseModelField],
     ) -> (int | float | str | bool | None):
+        
+        if params.record_data['default_value'] is None:
+            return None
 
         # Obtención del tipo de dato´y valor
         ttype = params.record_data['ttype']
