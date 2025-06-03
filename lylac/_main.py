@@ -876,7 +876,7 @@ class Lylac(_BaseLylac):
         """
 
         # Ejecución del método UPDATE WHERE
-        return self.update_where(table_name, [('id', '=', record_ids)], data)
+        return self.update_where(table_name, [('id', 'in', record_ids)], data)
 
     def update_where(
         self,
@@ -926,7 +926,7 @@ class Lylac(_BaseLylac):
         stmt = self._where.add_query(stmt, table_model, search_criteria)
 
         # Declaración de valores a cambiar
-        stmt.values(data)
+        stmt = stmt.values(data)
 
         # Declaración para obtener las IDs modificadas
         stmt = stmt.returning(self._models.get_id_field(table_model))
