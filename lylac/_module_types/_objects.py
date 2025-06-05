@@ -27,10 +27,24 @@ from sqlalchemy.orm.decl_api import DeclarativeBase
 
 # Dato genérico
 _T = TypeVar("_T")
+"""
+### Tipo de dato genérico
+Tipo de dato genérico usado para declarar entradas y salidas dinámicas en
+funciones:
+>>> def do_something(param: _T) -> _T:
+>>>     ...
+>>> a = do_something(5) # `a` se tipa como entero
+>>> b = do_something('Onnymm') # `b` se tipa como cadena de texto
+>>> c = do_something(True) # `c` se tipa como booleano
 
-class TableBaseData(BaseModel):
-    NAME: str
-    MODEL: str
+Este tipo de dato también se puede usar para transformación de tipos de dato de
+entradas y salidas:
+>>> def get_first_item(iterable_object: list[_T]) -> _T:
+>>>     return iterable_object[0]
+>>> a = get_first_item([1, 2, 3]) # `a` se tipa como entero
+>>> b = get_first_item(['uno', 'dos', 'tres']) # `b` se tipa como cadena de texto
+>>> c = get_first_item([True, False]) # `c` se tipa como booleano
+"""
 
 class DataPerRecord(BaseModel, Generic[_T]):
     id: int
@@ -42,8 +56,11 @@ class DataPerRecord(BaseModel, Generic[_T]):
 
 class DataPerTransaction(BaseModel, Generic[_T]):
     ids: list[int]
+    """ID de los registros."""
     records_data: list[_T]
+    """Datos de los registros en la base de datos."""
     transaction: Transaction
+    """Tipo de transacción que accionó la automatización en curso."""
 
 class BaseRecord(TypedDict):
     id: int
@@ -73,12 +90,25 @@ class ModelRecord():
         field_id: int
         label: str
 
-class NewField(BaseModel):
+class FieldAttributes(BaseModel):
     """
     ### Nuevo campo
     Modelo base para crear objetos de campo nuevo para usarse en automatizaciones
     de creación de modelos de SQLAlchemy, tablas de base de datos y sus respectivos
     campos.
+
+    ----
+    #### Atributos disponibles
+    - `field_name`: Nombre del campo.
+    - `table_model`: Modelo de la tabla.
+    - `label`: Etiqueta de la tabla.
+    - `ttype`: Tipo de dato del campo.
+    - `nullable`: Puede ser nulo.
+    - `is_required`: Es requerido.
+    - `default`: Valor predeterminado.
+    - `unique`: Único.
+    - `help_info`: Información de ayuda del campo.
+    - `related_model_id`: ID de modelo relacionado.
     """
     field_name: str
     """Nombre del campo."""
@@ -92,7 +122,7 @@ class NewField(BaseModel):
     """Puede ser nulo."""
     is_required: bool = False
     """Es requerido."""
-    default_value: Optional[RecordValue] = None
+    default: Optional[RecordValue] = None
     """Valor predeterminado."""
     unique: bool = False
     """Único."""
@@ -112,8 +142,17 @@ DataBaseDataType = Union[
     type[Text],
     type[LargeBinary],
 ]
+"""
+Tipo de dato de atributos de modelos de SQLAlchemy.
+"""
 
 AutomationTemplate = Callable[[DataPerRecord | DataPerTransaction], None]
+"""
+### Función de automatización
+Estructura que debe tener una función para registrarse como automatización
+>>> def some_automation(params: DataPerRecord[Any]) -> None:
+>>>     ...
+"""
 
 # Lista de diccionario serializable a JSON
 SerializableDict = list[dict[str, RecordValue]]

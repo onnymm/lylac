@@ -16,7 +16,7 @@ from sqlalchemy.types import (
     String,
     Text,
 )
-from .._constants.names import TABLE_NAMES
+from ..security import default_password
 
 class _Base(DeclarativeBase):
     # ID del registro
@@ -30,8 +30,24 @@ class _Base(DeclarativeBase):
 
 
 
+class BaseUsers(_Base):
+    __tablename__ = 'base_users'
+
+    # Inicio de sesión
+    login: Mapped[str] = mapped_column(String(60), nullable= False)
+    # Contraseña
+    password: Mapped[str] = mapped_column(String(255), default= default_password)
+    # ID de Odoo
+    odoo_id: Mapped[int] = mapped_column(Integer, nullable= True)
+    # Es activo
+    active: Mapped[bool] = mapped_column(Boolean, default= True)
+    # Sincronizar
+    sync: Mapped[bool] = mapped_column(Boolean, default= True)
+
+
+
 class BaseModel_(_Base):
-    __tablename__ = TABLE_NAMES.BASE_MODEL.NAME
+    __tablename__ = 'base_model'
 
     # Nombre representativo para usarse en el servidor
     model: Mapped[str] = mapped_column(String(60), nullable= False)
@@ -43,7 +59,7 @@ class BaseModel_(_Base):
 
 
 class BaseModelField(_Base):
-    __tablename__ = TABLE_NAMES.BASE_MODEL_FIELD.NAME
+    __tablename__ = 'base_model_field'
 
     # ID del modelo al que pertenece
     model_id: Mapped[int] = mapped_column(ForeignKey("base_model.id"), nullable= False)
@@ -77,7 +93,7 @@ class BaseModelField(_Base):
 
 
 class BaseModelFieldSelection(_Base):
-    __tablename__ = TABLE_NAMES.BASE_MODEL_FIELD_SELECTION.NAME
+    __tablename__ = 'base_model_field_selection'
 
     # ID del campo al que pertenece
     field_id: Mapped[int] = mapped_column(ForeignKey('base_model_field.id'), nullable= False)

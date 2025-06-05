@@ -14,18 +14,33 @@ RecordValue = Union[
     list[str],
     list[bool],
 ]
+"""
+### Valor de registro
+Este tipo de dato representa los tipos de dato válidos para diversos
+argumentos de entrada en métodos del módulo así como en funcionamientos
+internos, retornos en JSON y validaciones.
+"""
 
 # Tipo de transacción de creación o modificación de datos
 ModificationTransaction = Literal['create', 'update']
+"""
+### Transacción de modificación
+>>> Literal['create', 'update']
+"""
 
 # Tipo de transacción de eliminación de datos
 _DeleteTransaction = Literal['delete']
+"""
+### Transacción de eliminación
+>>> Literal['delete']
+"""
 
 # Tipo de transacción de datos
 Transaction = Union[ModificationTransaction, _DeleteTransaction]
 """
 ### Transación de base de datos
 Se omite el método `'select'` ya que no se utiliza para este tipado.
+>>> Literal['create', 'update', 'delete']
 """
 
 # Nombre de tipo dato en columnas base de datos
@@ -43,18 +58,4 @@ Ejemplo
 >>>     'password': ...,
 >>>     'active': True,
 >>> }
->>> 
->>> # Varios registros
->>> [
->>>     {
->>>         'name': 'Onnymm',
->>>         'password': ...,
->>>         'active': True,
->>>     },
->>>     {
->>>         'name': 'Lumii',
->>>         'password': ...,
->>>         'active': True,
->>>     },
->>> ]
 """

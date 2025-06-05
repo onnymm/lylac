@@ -1,8 +1,9 @@
 from sqlalchemy import text
-from sqlalchemy.sql.elements import TextClause
-from ...._module_types import NewField
+from ...._module_types import (
+    FieldAttributes,
+    TType,
+)
 from ._base import _BaseDDLManager, _BaseDatabase
-from ...._module_types import TType
 
 class _Database(_BaseDatabase):
     """
@@ -33,11 +34,15 @@ class _Database(_BaseDatabase):
 
         # Asignación de la instancia propietaria
         self._ddl = instance
+        # Referencia del módulo principal
+        self._main = instance._main
+        # Referencia del módulo de conexión
+        self._connection = instance._main._connection
 
     def add_column(
         self,
-        params: NewField,
-    ) -> TextClause:
+        params: FieldAttributes,
+    ):
         """
         ### Añadir columna a tabla
         Este método añade una columna a la tabla especificada con los atributos
@@ -46,16 +51,31 @@ class _Database(_BaseDatabase):
 
         # Creación de la sentencia
         stmt = text(
-            self._add_column_query(params)
-            + self._default_value(params)
+            f"""
+            {self._query_add_column(params)}
+            {self._query_default_value(params)}
+            {self._query_foreign_key(params)}
+            """
         )
 
         # Ejecución de la transacción
-        self._ddl._main._connection.execute(stmt, commit= True)
+        self._connection.execute(stmt, commit= True)
 
-    def _add_column_query(
+    def drop_column(
         self,
-        params: NewField,
+        table_name: str,
+        column_name: str,
+    ) -> None:
+
+        # Creación del query a ejecutar
+        stmt = text(f'ALTER TABLE {table_name} DROP COLUMN {column_name};')
+
+        # Ejecución de la transacción en la base de datos
+        self._connection.execute(stmt, commit= True)
+
+    def _query_add_column(
+        self,
+        params: FieldAttributes,
     ) -> str:
 
         # Obtención de los atributos
@@ -66,36 +86,48 @@ class _Database(_BaseDatabase):
         # Retorno del framento "add column"
         return f'ALTER TABLE {table_name} ADD COLUMN {field_name} {field_type}'
 
-    def _default_value(
+    def _query_default_value(
         self,
-        params: NewField,
+        params: FieldAttributes,
     ) -> str:
 
         # Si no existe un valor por defecto
-        if params.default_value is None:
-            return ''
+        if params.default is None:
+            return ';'
 
         # Si el valor es de tipo cadena de texto...
-        if isinstance(params.default_value, str):
-            value = f"'{params.default_value}'"
+        if isinstance(params.default, str):
+            value = f"'{params.default}'"
         # Si el valor es de tipo booleano...
-        elif isinstance(params.default_value, bool):
-            value = str(params.default_value).upper()
+        elif isinstance(params.default, bool):
+            value = str(params.default).upper()
         # Si el valor es de otro tipo de dato...
         else:
-            value = str(params.default_value)
+            value = str(params.default)
 
         # Retorno del framgento "default value"
-        return f' DEFAULT {value}'
+        return f' DEFAULT {value};'
 
-    def drop_column(
+    def _query_foreign_key(
         self,
-        table_name: str,
-        column_name: str,
-    ) -> None:
+        params: FieldAttributes,
+    ) -> str:
 
-        # Creación del query a ejecutar
-        stmt = text(f'ALTER TABLE {table_name} DROP COLUMN {column_name}')
+        if params.ttype != 'many2one':
+            return ''
 
-        # Ejecución de la transacción en la base de datos
-        self._ddl._main._connection.execute(stmt, commit= True)
+        # Obtención de los atributos
+        table_name = params.table_model.__tablename__
+        column_name = params.field_name
+        constraint_name = f'{table_name}_{column_name}_fkey'
+        referenced_table_name = self._ddl._main.get_value('base.model', params.related_model_id, 'name')
+
+        return (
+            f"""
+            ALTER TABLE {table_name}
+            ADD CONSTRAINT {constraint_name}
+            FOREIGN KEY ({column_name})
+            REFERENCES {referenced_table_name}(id)
+            ON DELETE SET NULL;
+            """
+        )

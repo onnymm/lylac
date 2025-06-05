@@ -1,26 +1,10 @@
-from sqlalchemy.orm import class_mapper
-from sqlalchemy.types import (
-    Boolean,
-    Date,
-    DateTime,
-    Float,
-    Integer,
-    String,
-    Text,
-    Time,
-    LargeBinary,
-)
+from ..._constants import MODEL_NAME
 from ..._core import _BaseLylac
-# from ...data._base_fields import preset_fields
+from ..._data import default_field_template
 from ..._module_types import (
-    DataPerRecord,
+    CriteriaStructure,
     ModelRecord,
-    NewField,
-    DataBaseDataType,
-    TType,
-)
-from ._modules import (
-    _BaseDDLManager,
+    NewRecord,
 )
 from ._modules import (
     _Automations,
@@ -32,25 +16,6 @@ from ._modules import (
 
 class DDLManager(_BaseDDLManager):
 
-    _class_ttype: dict[TType, DataBaseDataType] = {
-        'integer': Integer,
-        'char': String(255),
-        'float': Float,
-        'boolean': Boolean,
-        'date': Date,
-        'datetime': DateTime,
-        'time': Time,
-        'file': LargeBinary,
-        'text': Text,
-        'selection': String(255),
-    }
-    """
-    ### Mapa de tipos de dato
-    Este mapa representa los tipos de dato en SQL por medio de SQLAlchemy y sus
-    representaciones en cadena de texto.
-    """
-
-
     def __init__(
         self,
         instance: _BaseLylac,
@@ -58,115 +23,122 @@ class DDLManager(_BaseDDLManager):
 
         # Asignación de la instancia propietaria
         self._main = instance
-
+        # Referencia del motor de conexión
+        self._engine = instance._engine
         # Creación del submódulo para operaciones en la base de datos
         self._db = _Database(self)
-
         # Creación del submódulo para operaciones en los modelos de SQLAlchemy
         self._model = _Models(self)
-
         # Creación del submódulo para operaciones de reseteo de base de datos
         self._reset = _Reset(self)
-
         # Creación del submódulo de automatizaciones
         self._automations = _Automations(self)
 
-    def _create_table(
+    def new_table(
         self,
         name: str,
-        sync_to_db: bool = True,
     ) -> None:
         """
-        ### Creación de tabla
+        ### Nueva tabla
         Este método realiza la declaración de un nuevo modelo de SQLAlchemy y realiza
         la creación de su respectiva tabla en la base de datos.
         """
 
         # Inicialización del modelo
-        class _GenericModel(self._main._base):
-            __tablename__ = name
+        table_model = self._model.create_model(name)
 
-        if sync_to_db:
-            # Se crea el modelo como tabla en la base de datos
-            _GenericModel.__table__.create(self._main._engine)
+        # Se crea el modelo como tabla en la base de datos
+        table_model.__table__.create(self._main._engine)
 
-        # Registro del modelo en la estructura de SQLAlchemy
-        self._main._strc.register_table(_GenericModel)
-
-    def _add_column_to_model(
+    def new_field(
         self,
-        params: NewField,
+        model_name: str,
+        params: ModelRecord.BaseModelField,
     ) -> None:
 
-        # Inicialización de la instancia de la columna
-        new_column = self._model.build_column[params.ttype](params)
-
-        # Se añade la instancia de columna como atributo de la tabla
-        setattr(
-            params.table_model,
-            params.field_name,
-            new_column,
-        )
-
-        # Se registra la columna a instancia de la tabla en el esquema de SQLAlchemy
-        class_mapper(params.table_model).add_property(params.field_name, new_column)
-
-    def _add_column_to_db(
-        self,
-        params: NewField,
-    ) -> None:
-
-        # Ejecución del SQL para creación de columna en la tabla
-        self._db.add_column(params)
-
-    def _parse_default_value(
-        self,
-        params: DataPerRecord[ModelRecord.BaseModelField],
-    ) -> (int | float | str | bool | None):
-        
-        if params.record_data['default_value'] is None:
-            return None
-
-        # Obtención del tipo de dato´y valor
-        ttype = params.record_data['ttype']
-        value = params.record_data['default_value']
-
-        # Si el valor es booleano
-        if ttype == 'boolean':
-            if value == 'true':
-                return True
-            else:
-                return False
-        # Si el valor es entero
-        elif ttype == 'integer':
-            return int(value)
-        # Si el valor es flotante
-        elif ttype == 'float':
-            return float(value)
-        # El valor se retorna en formato de cadena de texto
-        else:
-            return value
-
-    def _prepare_column_data(
-        self,
-        params: DataPerRecord[ModelRecord.BaseModelField],
-    ) -> NewField:
-
-        # Obtención del nombre del modelo vinculado
-        table_model_model: str = self._main.get_value('base.model', params.record_data['model_id'], 'model')
+        # Obtención del modelo de SQLAlchemy
+        model_model = self._main._strc.models[model_name]
 
         # Creación de los parámetros para ser usados en las automatizaciones
-        new_field = NewField(
-            field_name= params.record_data['name'],
-            table_model= self._main._models.get_table_model(table_model_model),
-            label= params.record_data['label'],
-            ttype= params.record_data['ttype'],
-            nullable= params.record_data['nullable'],
-            is_required= params.record_data['is_required'],
-            default_value= self._parse_default_value(params),
-            unique= params.record_data['unique'],
-            help_info= params.record_data['help_info'],
-            related_model_id= params.record_data['related_model_id'],
-        )
+        new_field = self._model.build_field_atts(params)
 
-        return new_field
+        # Se añade la columna al modelo SQLAlchemy de la tabla
+        self._model.add_field_to_model(model_model, new_field)
+
+        # Se añade la columna a la tabla de la base de datos
+        self._db.add_column(new_field)
+
+    def delete_table(
+        self,
+        model_name: str,
+    ) -> None:
+
+        # Obtención del modelo de SQLAlchemy
+        model_model = self._main._strc.models[model_name]
+
+        # Se elimina la tabla de la base de datos
+        model_model.__table__.drop(self._engine)
+
+        # Se elimina el modelo
+        self._model.delete_model(model_name)
+
+    def delete_field(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> None:
+
+        # Obtención de la ID del modelo
+        [ model_id ] = self._main.search(MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
+
+        # Creación de criterio de búsqueda para encontrar todos los campos pertenientes al modelo
+        criteria: CriteriaStructure = [
+            '&',
+                '&',
+                    ('model_id', '=', model_id),
+                    ('name', '!=', field_name),
+                ('name', 'not in', ['id', 'name', 'create_date', 'write_date']),
+        ]
+
+        # Se obtienen los datos de los registros a excepción del campo eliminado
+        fields_data: list[ModelRecord.BaseModelField] = self._main.search_read(MODEL_NAME.BASE_MODEL_FIELD, criteria, output_format= 'dict')
+
+        # Se crean las instancias de campos para ser añadidas
+        fields_atts = [ self._model.build_field_atts(field) for field in fields_data ]
+
+        # Se elimina el modelo de SQLAlchemy
+        self._model.delete_model(model_name)
+
+        # Se vuelve a crear el modelo
+        table_model = self._model.create_model(model_name)
+
+        # Se añaden los campos que tenía registrados
+        for field in fields_atts:
+            self._model.add_field_to_model(table_model, field)
+
+    def add_default_to_model(
+        self,
+        model_id: int,
+        field_names: list[str] = [],
+    ) -> None:
+
+        default_fields = ['create_uid', 'write_uid']
+        complete_field_names = field_names + default_fields
+
+        # Inicialización de la lista de datos a retornar
+        fields_data: list[NewRecord.ModelField] = []
+
+        # Creación de los datos por cada nombre de campo
+        for field_name in complete_field_names:
+
+            # Se obtiene una copia de la plantilla de información
+            field_data = default_field_template[field_name].copy()
+
+            # Se asigna la ID del modelo
+            field_data['model_id'] = model_id
+
+            # Se añaden los datos del campo a la lista de datos a retornar
+            fields_data.append(field_data)
+
+        # Se crea la información de los campos
+        self._main.create(MODEL_NAME.BASE_MODEL_FIELD, fields_data)

@@ -10,16 +10,13 @@ from ._data import (
     AutomationDataModel,
     DBCredentials,
     CriteriaStructure,
-    NewModel,
-    NewModelField,
-    NewModelFieldSelection,
+    NewRecord,
     TripletStructure,
     ComparisonOperator,
     LogicOperator,
 )
 from ._interface import (
     AutomationCallback,
-    ModificationTransaction,
     OutputOptions,
     DataOutput,
 )
@@ -29,9 +26,8 @@ from ._objects import (
     DataPerRecord,
     DataPerTransaction,
     ModelRecord,
-    NewField,
+    FieldAttributes,
     SerializableDict,
-    TableBaseData,
     DataBaseDataType,
     AutomationTemplate,
 )

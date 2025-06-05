@@ -1,8 +1,9 @@
+from sqlalchemy.orm.decl_api import DeclarativeBase
 from ...._core import _BaseLylac
 from ...._module_types import (
     DataPerRecord,
     ModelRecord,
-    NewField,
+    FieldAttributes,
     DataBaseDataType,
     TType,
 )
@@ -11,6 +12,13 @@ from .._module_types import ColumnGenerator
 class _BaseModels():
 
     build_column: dict[TType, ColumnGenerator]
+    atts: list[str]
+
+    def create_model(
+        self,
+        model_name: str,
+    ) -> type[DeclarativeBase]:
+        ...
 
     def delete_model(
         self,
@@ -18,7 +26,26 @@ class _BaseModels():
     ) -> None:
         ...
 
+    def add_field_to_model(
+        self,
+        table_model: type[DeclarativeBase],
+        field: FieldAttributes,
+    ) -> None:
+        ...
+
+    def build_field_atts(
+        self,
+        params: ModelRecord.BaseModelField,
+    ) -> FieldAttributes:
+        ...
+
 class _BaseDatabase():
+
+    def add_column(
+        self,
+        params: FieldAttributes
+    ) -> None:
+        ...
 
     def drop_column(
     self,
@@ -28,38 +55,40 @@ class _BaseDatabase():
         ...
 
 class _BaseDDLManager():
-    _class_ttype: dict[TType, DataBaseDataType]
     _main: _BaseLylac
     _model: _BaseModels
     _db: _BaseDatabase
 
-    def _create_table(
+    def new_table(
         self,
         name: str,
         sync_to_db: bool = False
     ) -> None:
         ...
 
-    def _add_column_to_model(
+    def new_field(
         self,
-        params: NewField
+        model_name: str,
+        params: ModelRecord.BaseModelField
     ) -> None:
         ...
 
-    def _add_column_to_db(
+    def delete_table(
         self,
-        params: NewField
+        model_name: str,
     ) -> None:
         ...
 
-    def _parse_default_value(
+    def delete_field(
         self,
-        params: DataPerRecord[ModelRecord.BaseModelField]
-    ) -> (int | float | str | bool | None):
+        model_name: str,
+        field_name: str
+    ) -> None:
         ...
 
-    def _prepare_column_data(
+    def add_default_to_model(
         self,
-        params: DataPerRecord
-    ) -> NewField:
+        model_id: int,
+        field_names: list[str] = []
+    ) -> None:
         ...

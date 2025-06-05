@@ -140,6 +140,14 @@ class _BaseLylac():
     ) -> DataOutput:
         ...
 
+    def update_where(
+        self,
+        table_name: str,
+        search_criteria: CriteriaStructure,
+        data: RecordData
+    ) -> bool:
+        ...
+
     def _get_table_field(
         self,
         table: str,

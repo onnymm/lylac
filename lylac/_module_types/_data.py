@@ -25,6 +25,12 @@ ComparisonOperator = Literal['=', '!=', '>', '>=', '<', '<=', '><', 'in', 'not i
 LogicOperator = Literal['&', '|']
 # Estructura de tripletas para queries SQL
 TripletStructure = tuple[str, ComparisonOperator, RecordValue]
+"""
+### Estructura de tripletas para queries SQL
+Este tipo de dato representa una condición sencilla para usarse en una
+transacción en base de datos. Ejemplo:
+>>> [('name', '=', 'Onnymm')]
+"""
 # Estructura de criterios de búsqueda para queries SQL
 CriteriaStructure = list[
     Union[
@@ -76,25 +82,36 @@ Los operadores lógicos disponibles son:
 - `'|'`: OR
 """
 
-class _NewRecord(TypedDict):
-    name: str
-    label: str
-
-class NewModel(_NewRecord):
-    model: str
-    description: str
-
-class NewModelField(_NewRecord):
-    ttype: TType
-    model_id: int
-    nullable: bool
-    unique: bool
-    default_value: Optional[str]
-
-class NewModelFieldSelection(_NewRecord):
-    field_id: int
-
 Submodule = Literal['_ddl', '_automations']
+
+class NewRecord():
+
+    class _Base(TypedDict):
+        name: str
+
+    class _Structure(_Base):
+        label: str
+
+    class Model(_Structure):
+        model: str
+        description: str
+
+    class ModelField(_Structure):
+        ttype: TType
+        model_id: int
+        nullable: bool
+        unique: bool
+        default_value: Optional[str]
+
+    class ModelFieldSelection(_Structure):
+        field_id: int
+
+    class User(_Base):
+        login: str
+        password: str
+        odoo_id: int
+        active: bool
+        sync: bool
 
 class AutomationDataDict(TypedDict):
     submodule: Submodule

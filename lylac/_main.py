@@ -874,6 +874,10 @@ class Lylac(_BaseLylac):
         >>> # 4   7  user003  Persona Sin Nombre 3
         """
 
+        # Conversión de datos entrantes si es necesaria
+        if isinstance(record_ids, int):
+            record_ids = [record_ids,]
+
         # Ejecución del método UPDATE WHERE
         return self.update_where(table_name, [('id', 'in', record_ids)], data)
 

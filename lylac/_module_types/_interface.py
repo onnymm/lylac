@@ -4,33 +4,22 @@ from typing import (
     Union,
 )
 import pandas as pd
-from ._base import (
-    RecordValue,
-    Transaction,
-    TType,
-)
-from ._base import (
-    ModificationTransaction,
-    Transaction,
-)
-
-# Tipo de dato de valor para queries SQL
-_RecordValue = Union[
-    int,
-    float,
-    str,
-    bool,
-    list[int],
-    list[float],
-    list[str],
-    list[bool],
-]
+from ._base import RecordValue
 
 # Opciones de salida de datos
 OutputOptions = Literal['dataframe', 'dict']
+"""
+### Opciones de salida de datos
+>>> Literal['dataframe', 'dict']
+"""
 
 # Tipo de dato retornado por métodos de lectura en el módulo principal
-DataOutput = Union[pd.DataFrame | dict[str, _RecordValue]]
+DataOutput = Union[pd.DataFrame | dict[str, RecordValue]]
+"""
+### Tipo de dato retornado
+Tipo de dato retornado por métodos de lectura en el módulo principal
+>>> Union[pd.DataFrame | dict[str, RecordValue]]
+"""
 
 # Función de automatización
 AutomationCallback = Callable[[list[int]], None]

@@ -1,6 +1,8 @@
-from ..._core import _BaseLylac
 from typing import Callable, Literal
+from ..._core import _BaseLylac
+from ..._data import preset_automations
 from ..._module_types import (
+    AutomationDataModel,
     CriteriaStructure,
     DataPerRecord,
     DataPerTransaction,
@@ -17,8 +19,6 @@ from ._submodules import (
     _Automations,
     _BaseAutomations,
 )
-from ..._data import preset_automations
-from ..._module_types import AutomationDataModel
 
 class Automations(_BaseAutomations):
 
@@ -194,7 +194,7 @@ class Automations(_BaseAutomations):
                 for record_id in found_ids:
                     record_data = mapped_data[record_id]
                     prog_autom['callback'](DataPerRecord(id= record_id, record_data= record_data, transaction= transaction))
-                    print(f'La automatización [{prog_autom['callback'].__name__}] se ha ejecutado con los registros {found_ids}')
+                    print(f'La automatización [{prog_autom['callback'].__name__}] se ha ejecutado con el registro {record_id}')
             # Ejecución por toda la lista de registros provistos
             else:
                 prog_autom['callback'](DataPerTransaction(found_ids, records_data, transaction))
