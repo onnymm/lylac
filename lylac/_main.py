@@ -62,6 +62,8 @@ class Lylac(_BaseLylac):
 
         # Registro de las automatizaciones predeterminadas
         self._automations.create_preset_automations()
+        # Inicialización de estructura de modelos de la instancia
+        self._ddl._reset.initialize_from_data()
 
     def register_automation(
         self,
