@@ -94,4 +94,4 @@ class _Automations():
         model_id = params.id
 
         # Se añaden los campos predeterminados
-        self._ddl._model.add_default_fields_to_model(model_id)
+        self._ddl.add_default_to_model(model_id)
