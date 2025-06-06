@@ -35,17 +35,15 @@ class Output(_BaseLylac):
         default_output: OutputOptions | None = None,
     ) -> pd.DataFrame | list[dict[str, Any]]:
 
+        # Inicialización de los nombres de columnas
+        columns = [str(field).split('.')[1] for field in fields]
+
         # Preparación de los datos
         data: pd.DataFrame = (
-            response
             # Reasignación de nombres de columna
-            .rename(
-                columns= {field: str(field).split('.')[1] for field in fields}
-            )
+            pd.DataFrame(response, columns= columns)
             # Recuperación de tipos de dato
-            .pipe(
-                lambda df: self._recover_ttypes(df, table_name)
-            )
+            .pipe( lambda df: self._recover_ttypes(df, table_name) )
         )
 
         # Si se especificó una salida para la ejecución actual...
