@@ -1,10 +1,10 @@
 from typing import Any
 import pandas as pd
-import numpy as np
 from ..._core import _BaseLylac
-from ..._module_types import (
-    SerializableDict,
-    OutputOptions,
+from ..._module_types import OutputOptions
+from ._modules import (
+    _DataTypes,
+    _RawORM,
 )
 
 class Output(_BaseLylac):
@@ -21,75 +21,61 @@ class Output(_BaseLylac):
         # Configuración de formato de salida por defecto
         self._default_output = output_format
 
+        # Creación del submódulo de Tipos de dato
+        self._data = _DataTypes(self)
+        # Creación del submódulo de Raw ORM
+        self._orm = _RawORM(self)
+
     def build_output(
         self,
         response: pd.DataFrame | list[dict[str, Any]],
         fields: list[str],
         specified_output: OutputOptions,
+        table_name: str,
         default_output: OutputOptions | None = None,
     ) -> pd.DataFrame | list[dict[str, Any]]:
-        
-        # Obtención de los nombres de columna excluyendo el nombre de la tabla
-        fields = [ str(i).split(".")[1] for i in fields ]
+
+        # Preparación de los datos
+        data: pd.DataFrame = (
+            response
+            # Reasignación de nombres de columna
+            .rename(
+                columns= {field: str(field).split('.')[1] for field in fields}
+            )
+            # Recuperación de tipos de dato
+            .pipe(
+                lambda df: self._recover_ttypes(df, table_name)
+            )
+        )
 
         # Si se especificó una salida para la ejecución actual...
         if specified_output:
             if specified_output == 'dataframe':
-                return pd.DataFrame(response, columns= fields)
+                return data
             else:
-                return self._to_serializable_dict(response)
+                return data.to_dict('records')
 
         # Si existe un formato por defecto en la instancia...
         if self._default_output:
             if self._default_output == 'dataframe':
-                return pd.DataFrame(response, columns= fields)
+                return data
             else:
-                return self._to_serializable_dict(response)
+                return data.to_dict('records')
 
         # Si no se especificó un formato en ejecución o instancia...
         if default_output == 'dataframe':
-            return pd.DataFrame(response, columns= fields)
+            return data
 
         # Retorno de información en lista de diccionarios
-        return self._to_serializable_dict(response)
+        return data.to_dict('records')
 
-    def _to_serializable_dict(
-        self,
-        data: pd.DataFrame
-    ) -> SerializableDict:
-        """
-        ## Conversión a diccionario serializable
-        Este método interno convierte un DataFrame en una lista de diccionarios
-        que puede ser convertida a JSON.
-        """
+    def _recover_ttypes(self, data: pd.DataFrame, table_name: str) -> pd.DataFrame:
 
-        return (
-            data
-            .pipe(
-                lambda df: (
-                    df
-                    # Reemplazo de todos los potenciales nulos no serializables
-                    .replace({np.nan: None})
-                    # Transformación de tipos no nativos en cadenas de texto
-                    .astype(
-                        {
-                            col: 'string' for col in (
-                                df
-                                # Obtención de los tipos de dato del DataFrame
-                                .dtypes
-                                # Transformación de tipos de dato de serie
-                                .astype('string')
-                                # Filtro por tipos de dato no serializables
-                                .pipe(
-                                    lambda s: s[s.isin(['object', 'datetime64[ns]'])]
-                                )
-                                # Obtención de los nombres de columnas desde el índice
-                                .index
-                            )
-                        }
-                    )
-                )
-            )
-            # Conversión a lista de diccionarios
-            .to_dict('records')
-        )
+        # Obtención del mapa de tipos de dato por campo
+        ttypes = self._orm.get_fields_ttypes(table_name, data.columns.to_list())
+
+        # Transformación de datos
+        for ( field, ttype ) in ttypes.items():
+            data = self._data.recover_ttype[ttype](data, field)
+
+        return data

@@ -444,7 +444,7 @@ class Lylac(_BaseLylac):
         data = pd.DataFrame(response.fetchall())
 
         # Retorno en formato de salida configurado
-        return self._output.build_output(data, table_fields, output_format, 'dataframe')
+        return self._output.build_output(data, table_fields, output_format, table_name, 'dataframe')
 
     def get_value(
         self,
@@ -730,7 +730,7 @@ class Lylac(_BaseLylac):
         data = pd.DataFrame(response.fetchall())
 
         # Retorno en formato de salida configurado
-        return self._output.build_output(data, table_fields, output_format, 'dataframe')
+        return self._output.build_output(data, table_fields, output_format, table_name, 'dataframe')
 
     def search_count(
         self,
