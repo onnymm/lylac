@@ -414,6 +414,7 @@ initial_data = {
             'model_id': 1,
             'nullable': False,
             'unique': True,
+            'is_required': True,
         },
         {
             'name': 'label',
@@ -421,6 +422,7 @@ initial_data = {
             'ttype': 'char',
             'model_id': 1,
             'nullable': False,
+            'is_required': True,
         },
         {
             'name': 'description',
@@ -463,6 +465,7 @@ initial_data = {
             'ttype': 'integer',
             'model_id': 2,
             'nullable': False,
+            'is_required': True,
         },
         {
             'name': 'label',
@@ -471,6 +474,7 @@ initial_data = {
             'model_id': 2,
             'nullable': False,
             'unique': True,
+            'is_required': True,
         },
         {
             'name': 'ttype',
@@ -478,6 +482,7 @@ initial_data = {
             'ttype': 'selection',
             'model_id': 2,
             'nullable': False,
+            'is_required': True,
         },
         {
             'name': 'nullable',
@@ -552,6 +557,7 @@ initial_data = {
             'label': 'Etiqueta',
             'ttype': 'char',
             'model_id': 3,
+            'is_required': True,
         },
         {
             'name': 'field_id',
@@ -559,6 +565,7 @@ initial_data = {
             'ttype': 'many2one',
             'model_id': 3,
             'related_model_id': 2,
+            'is_required': True,
         },
         {
             'name': 'id',
@@ -596,6 +603,7 @@ initial_data = {
             'model_id': 4,
             'nullable': False,
             'unique': True,
+            'is_required': True,
         },
         {
             'name': 'password',

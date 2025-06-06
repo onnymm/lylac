@@ -25,7 +25,7 @@ class _Reset():
         # Asignación del motor de conexión
         self._engine = instance._main._engine
         # Asignación de modelos iniciales
-        self._base_models = initial_data.keys()
+        self._base_models = list(initial_data.keys())
 
     def initialize(self) -> None:
         """
@@ -54,7 +54,7 @@ class _Reset():
         self._add_uid_columns()
 
         # Se escribe usuario de creación y modificación en todos los registros existentes
-        for model_name in self._base_models:
+        for model_name in self._base_models + [MODEL_NAME.BASE_USERS]:
             self._main.update_where(model_name, [], {'create_uid': 1, 'write_uid': 1})
 
         # Se cambia el estado de inicialización a verdadero
