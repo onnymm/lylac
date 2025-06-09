@@ -1,17 +1,18 @@
 from typing import Any
 import pandas as pd
-from ..._core import _BaseLylac
+from ..._core import _Lylac
 from ..._module_types import OutputOptions
 from ._modules import (
+    _BaseOutput,
     _DataTypes,
     _RawORM,
 )
 
-class Output(_BaseLylac):
+class Output(_BaseOutput):
 
     def __init__(
         self,
-        instance: _BaseLylac,
+        instance: _Lylac,
         output_format: OutputOptions | None
     ) -> None:
 

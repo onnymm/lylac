@@ -4,7 +4,7 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.properties import ColumnProperty
 from ..._core import (
-    _BaseLylac,
+    _Lylac,
     _BaseModels,
 )
 
@@ -12,7 +12,7 @@ class Models(_BaseModels):
 
     def __init__(
         self,
-        instance: _BaseLylac,
+        instance: _Lylac,
     ) -> None:
 
         # Asignación de la instancia propietaria
@@ -24,7 +24,7 @@ class Models(_BaseModels):
     ) -> type[DeclarativeBase]:
 
         # Obtención de la referencia mapeada
-        return self._main._strc.models[table_name]
+        return self._main._strc.models[table_name]['model']
 
     def get_id_field(
         self,

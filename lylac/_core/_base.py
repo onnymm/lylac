@@ -5,33 +5,19 @@ from typing import (
 from sqlalchemy.sql.selectable import Select, TypedReturnsRows
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.engine.cursor import CursorResult
-from sqlalchemy.engine.base import Engine
+from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.decl_api import DeclarativeBase
-from .._module_types import DBCredentials
 from .._module_types import (
     _T,
+    DBCredentials,
     CriteriaStructure,
+    ModelMap,
     RecordData,
     DataOutput,
     OutputOptions,
     RecordValue,
+    TType,
 )
-from sqlalchemy.orm.attributes import InstrumentedAttribute
-
-class _BaseStructure():
-    models: dict[str, type[DeclarativeBase]]
-
-    def register_table(
-        self,
-        table_instance: type[DeclarativeBase],
-    ) -> None:
-        ...
-
-    def unregister_table(
-        self,
-        table_name: str
-    ) -> None:
-        ...
 
 class _BaseModels():
 
@@ -39,7 +25,7 @@ class _BaseModels():
         self,
         table_name: str
     ) -> type[DeclarativeBase]:
-        ...
+        print("Qué es esto")
 
     def get_id_field(
         self,
@@ -77,20 +63,19 @@ class _BaseConnection():
     ) -> Engine:
         ...
 
-class _BaseLylac():
+class _BaseBaseLylac():
     credentials: Literal['env'] | DBCredentials | str = 'env',
-    _strc: _BaseStructure
     _base: type[DeclarativeBase]
     _engine: Engine
     _models: _BaseModels
     _connection: _BaseConnection
 
     def create(
-    self,
-    table_name: str,
-    data: RecordData | list[RecordData]
-) -> list[int]:
-        ...
+        self,
+        table_name: str,
+        data: RecordData | list[RecordData]
+    ) -> list[int]:
+            ...
 
     def search(
         self,
@@ -168,3 +153,49 @@ class _BaseLylac():
         cs_2: CriteriaStructure
     ) -> CriteriaStructure:
         ...
+
+class _BaseStructure():
+    models: dict[str, ModelMap]
+    _main: _BaseBaseLylac
+
+    def get_table_model(
+        self,
+        table_name: str
+    ) -> type[DeclarativeBase]:
+        ...
+
+    def register_table(
+        self,
+        table_instance: type[DeclarativeBase],
+    ) -> None:
+        ...
+
+    def unregister_table(
+        self,
+        table_name: str
+    ) -> None:
+        ...
+
+    def register_field(
+        self,
+        model_name: str,
+        field_name: str,
+        ttype: TType,
+        relation: str | None
+    ) -> None:
+        ...
+
+    def unregister_field(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> None:
+        ...
+
+    def initialize_fields_atts(
+        self,
+    ) -> None:
+        ...
+
+class _Lylac(_BaseBaseLylac):
+    _strc: _BaseStructure

@@ -76,6 +76,25 @@ preset_automations: list[AutomationDataDict] = [
         ],
         'execution': 'record',
     },
+    # Registro de las propiedades de campo cuando un campo se crea
+    {
+        'submodule': '_strc',
+        'callback': 'register_field_atts',
+        'model': 'base.model.field',
+        'transaction': 'create',
+        'criteria': [
+            '&',
+                ('id', '>', 47),
+                ('name', 'not in', ['id', 'name', 'create_date', 'write_date'])
+        ],
+        'fields': [
+            'name',
+            'ttype',
+            'model_id',
+            'related_model_id',
+        ],
+        'execution': 'record',
+    },
     # Eliminación de una columna de base de datos cuando un modelo se elimina
     {
         'submodule': '_ddl',

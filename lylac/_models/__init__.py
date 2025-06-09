@@ -3,4 +3,5 @@ from ._models import (
     BaseModel_,
     BaseModelField,
     BaseModelFieldSelection,
+    BaseUsers,
 )

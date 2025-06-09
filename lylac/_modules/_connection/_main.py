@@ -5,7 +5,7 @@ from sqlalchemy.engine.cursor import CursorResult
 from sqlalchemy.sql.selectable import Select, TypedReturnsRows
 from sqlalchemy.engine.base import Engine
 from ..._module_types import DBCredentials
-from ..._core import _BaseLylac
+from ..._core import _Lylac
 from ..._core.env import Env
 from ..._module_types import _T
 
@@ -13,7 +13,7 @@ class Connection():
 
     def __init__(
         self,
-        instance: _BaseLylac,
+        instance: _Lylac,
         credentials: DBCredentials | str | Literal['env'],
     ) -> None:
 

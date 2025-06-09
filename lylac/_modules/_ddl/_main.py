@@ -1,5 +1,5 @@
 from ..._constants import MODEL_NAME
-from ..._core import _BaseLylac
+from ..._core import _Lylac
 from ..._data import default_field_template
 from ..._module_types import (
     CriteriaStructure,
@@ -18,7 +18,7 @@ class DDLManager(_BaseDDLManager):
 
     def __init__(
         self,
-        instance: _BaseLylac,
+        instance: _Lylac,
     ) -> None:
 
         # Asignación de la instancia propietaria
@@ -57,7 +57,7 @@ class DDLManager(_BaseDDLManager):
     ) -> None:
 
         # Obtención del modelo de SQLAlchemy
-        model_model = self._main._strc.models[model_name]
+        model_model = self._main._strc.models[model_name]['model']
 
         # Creación de los parámetros para ser usados en las automatizaciones
         new_field = self._model.build_field_atts(params)
@@ -74,7 +74,7 @@ class DDLManager(_BaseDDLManager):
     ) -> None:
 
         # Obtención del modelo de SQLAlchemy
-        model_model = self._main._strc.models[model_name]
+        model_model = self._main._strc.models[model_name]['model']
 
         # Se elimina la tabla de la base de datos
         model_model.__table__.drop(self._engine)
@@ -106,11 +106,17 @@ class DDLManager(_BaseDDLManager):
         # Se crean las instancias de campos para ser añadidas
         fields_atts = [ self._model.build_field_atts(field) for field in fields_data ]
 
+        # Obtención del nombre de la tabla
+        table_name = self._main.get_value(MODEL_NAME.BASE_MODEL, model_id, 'name')
+
+        # Se elimina la columna de la tabla de base de datos
+        self._db.drop_column(table_name, field_name)
+
         # Se elimina el modelo de SQLAlchemy
-        self._model.delete_model(model_name)
+        self._model.delete_model(model_name, table_name)
 
         # Se vuelve a crear el modelo
-        table_model = self._model.create_model(model_name)
+        table_model = self._model.create_model(table_name)
 
         # Se añaden los campos que tenía registrados
         for field in fields_atts:

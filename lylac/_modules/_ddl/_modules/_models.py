@@ -90,6 +90,7 @@ class _Models(_BaseModels):
     def delete_model(
         self,
         model_name: str,
+        table_name: str,
     ) -> None:
         """
         ### Eliminar modelo
@@ -97,7 +98,7 @@ class _Models(_BaseModels):
         """
 
         # Se obtiene el esquema del registro de Base
-        table_scheme = self._base.metadata.tables[model_name]
+        table_scheme = self._base.metadata.tables[table_name]
 
         # Se elimina el esquema de los modelos heredados de Base
         self._base.metadata.remove(table_scheme)

@@ -1,5 +1,5 @@
 from typing import Callable, Literal
-from ..._core import _BaseLylac
+from ..._core import _Lylac
 from ..._data import preset_automations
 from ..._module_types import (
     AutomationDataModel,
@@ -27,7 +27,7 @@ class Automations(_BaseAutomations):
 
     def __init__(
         self,
-        instance: _BaseLylac,
+        instance: _Lylac,
     ) -> None:
 
         # Asignación de la instancia propietaria

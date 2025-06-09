@@ -1,6 +1,6 @@
 from ._base import (
     _BaseConnection,
-    _BaseLylac,
+    _Lylac,
     _BaseModels,
     _BaseStructure,
 )

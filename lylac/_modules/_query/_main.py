@@ -4,7 +4,7 @@ from sqlalchemy import (
     desc,
 )
 from sqlalchemy.orm.decl_api import DeclarativeBase
-from ..._core import _BaseLylac
+from ..._core import _Lylac
 from ..._module_types import _T
 
 class Query():
@@ -17,7 +17,7 @@ class Query():
 
     def __init__(
         self,
-        instance: _BaseLylac,
+        instance: _Lylac,
     ) -> None:
 
         # Asignación de la instancia propietaria

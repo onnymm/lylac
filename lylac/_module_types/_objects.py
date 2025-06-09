@@ -46,6 +46,49 @@ entradas y salidas:
 >>> c = get_first_item([True, False]) # `c` se tipa como booleano
 """
 
+class FieldProperties(TypedDict):
+    """
+    ### Propiedades de campo
+    Diccionario que almacena el tipo de dato y la relación de un campo.
+    >>> {
+    >>>     'many2one',
+    >>>     'base.users',
+    >>> }
+    """
+    ttype: TType
+    relation: str
+
+class ModelMap(TypedDict):
+    """
+    ### Mapa de atributos de modelo
+    Este tipo de dato almacena la información básica que define la estructura de un
+    modelo almacenado en una instancia Lylac.
+    >>> {
+    >>>     'model': <ModelInstance>,
+    >>>     'fields': {
+    >>>         'id': {
+    >>>             'ttype': 'integer',
+    >>>             'relation': None,
+    >>>         },
+    >>>         ...
+    >>>         'write_uid': {
+    >>>             'ttype': 'many2one',
+    >>>             'relation': 'base.users',
+    >>>         },
+    >>>     },
+    >>> }
+    """
+    model: type[DeclarativeBase]
+    """Modelo SQLAlchemy de la tabla"""
+    fields: dict[str, FieldProperties]
+    """
+    Diccionario que almacena el tipo de dato y la relación de un campo.
+    >>> {
+    >>>     'many2one',
+    >>>     'base.users',
+    >>> }
+    """
+
 class DataPerRecord(BaseModel, Generic[_T]):
     id: int
     """ID del registro."""

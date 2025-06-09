@@ -1,5 +1,5 @@
 from sqlalchemy.orm.decl_api import DeclarativeBase
-from ...._core import _BaseLylac
+from ...._core import _Lylac
 from ...._module_types import (
     DataPerRecord,
     ModelRecord,
@@ -22,7 +22,8 @@ class _BaseModels():
 
     def delete_model(
         self,
-        model_name: str
+        model_name: str,
+        table_name: str,
     ) -> None:
         ...
 
@@ -55,7 +56,7 @@ class _BaseDatabase():
         ...
 
 class _BaseDDLManager():
-    _main: _BaseLylac
+    _main: _Lylac
     _model: _BaseModels
     _db: _BaseDatabase
 

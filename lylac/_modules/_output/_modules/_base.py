@@ -1,5 +1,5 @@
-from ...._core import _BaseLylac
+from ...._core import _Lylac
 
 class _BaseOutput():
 
-    _main: _BaseLylac
+    _main: _Lylac

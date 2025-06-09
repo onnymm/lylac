@@ -82,7 +82,11 @@ Los operadores lógicos disponibles son:
 - `'|'`: OR
 """
 
-Submodule = Literal['_ddl', '_automations']
+Submodule = Literal[
+    '_automations',
+    '_ddl',
+    '_strc',
+]
 
 class NewRecord():
 

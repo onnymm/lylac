@@ -11,7 +11,7 @@ from sqlalchemy import (
     insert,
     func,
 )
-from ._core import _BaseLylac
+from ._core import _Lylac
 from ._models import _Base
 from ._module_types import (
     _T,
@@ -34,7 +34,7 @@ from ._modules import (
     Where,
 )
 
-class Lylac(_BaseLylac):
+class Lylac(_Lylac):
 
     def __init__(
         self,

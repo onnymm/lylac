@@ -41,6 +41,9 @@ class _Reset():
         except ProgrammingError as _:
             self._initialize()
 
+        # Inicialización de atributos de los campos de los modelos
+        self._main._strc.initialize_fields_atts()
+
     def _build_instance_structure(
         self,
     ) -> None:
@@ -82,7 +85,7 @@ class _Reset():
             # Obtención del nombre del modelo al que el campo pertenece
             model_name = self._main.get_value(MODEL_NAME.BASE_MODEL, record['model_id'], 'model')
             # Obtención del modelo SQLAlchemy de la instancia
-            model_model = self._main._strc.models[model_name]
+            model_model = self._main._models.get_table_model(model_name)
             # Creación del objeto de atributos de campo
             field_atts = self._ddl._model.build_field_atts(record)
             # Adición del campo al modelo SQLAlchemy

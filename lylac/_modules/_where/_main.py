@@ -11,7 +11,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.sql.elements import BinaryExpression
-from ..._core import _BaseLylac
+from ..._core import _Lylac
 from ..._module_types import (
     _T,
     CriteriaStructure,
@@ -50,7 +50,7 @@ class Where():
 
     def __init__(
         self,
-        instance: _BaseLylac,
+        instance: _Lylac,
     ) -> None:
 
         # Asignación de la instancia propietaria
