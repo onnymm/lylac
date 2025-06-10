@@ -35,7 +35,7 @@ class _BaseModels():
 
     def get_table_field(
         self,
-        table: str,
+        table: type[DeclarativeBase],
         field: str
     ) -> InstrumentedAttribute:
         ...

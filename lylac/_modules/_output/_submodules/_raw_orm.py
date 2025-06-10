@@ -28,13 +28,18 @@ class _RawORM():
         # Obtención del modelo BaseModelField
         BaseModelField = self._main._models.get_table_model('base.model.field')
 
+        # Obtención de instancias de campo
+        name_instance = self._main._models.get_table_field(BaseModelField, 'name')
+        ttype_instance = self._main._models.get_table_field(BaseModelField, 'ttype')
+        model_id_instance = self._main._models.get_table_field(BaseModelField, 'model_id')
+
         # Creación del query
         stmt = (
-            select(BaseModelField.name, BaseModelField.ttype)
+            select(name_instance, ttype_instance)
             .where(
                 and_(
-                    BaseModelField.model_id == model_id,
-                    BaseModelField.name.in_(fields)
+                    model_id_instance == model_id,
+                    name_instance.in_(fields)
                 )
             )
         )
@@ -55,8 +60,12 @@ class _RawORM():
         # Obtención de la tabla BaseModel
         BaseModel = self._main._models.get_table_model('base.model')
 
+        # Obtención de instancias de campo
+        id_instance = self._main._models.get_table_field(BaseModel, 'id')
+        model_instance = self._main._models.get_table_field(BaseModel, 'model')
+
         # Creación del query
-        stmt = select(BaseModel.id).where(BaseModel.model == model_name)
+        stmt = select(id_instance).where(model_instance == model_name)
 
         # Ejecución del query
         response = self._main._connection.execute(stmt)
