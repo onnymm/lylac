@@ -4,7 +4,7 @@ from ..._core import (
     _BaseStructure,
 )
 from ..._module_types import TType
-from ._modules import _RawORM, _Automations
+from ._submodules import _RawORM, _Automations
 
 class Structure(_BaseStructure):
 

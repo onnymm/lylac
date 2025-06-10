@@ -2,7 +2,7 @@ from typing import Any
 import pandas as pd
 from ..._core import _Lylac
 from ..._module_types import OutputOptions
-from ._modules import (
+from ._submodules import (
     _BaseOutput,
     _DataTypes,
     _RawORM,

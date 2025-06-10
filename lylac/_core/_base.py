@@ -2,11 +2,11 @@ from typing import (
     Any,
     Literal,
 )
-from sqlalchemy.sql.selectable import Select, TypedReturnsRows
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.engine.cursor import CursorResult
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.decl_api import DeclarativeBase
+from sqlalchemy.sql.selectable import Select, TypedReturnsRows
 from .._module_types import (
     _T,
     DBCredentials,
@@ -25,7 +25,7 @@ class _BaseModels():
         self,
         table_name: str
     ) -> type[DeclarativeBase]:
-        print("Qué es esto")
+        ...
 
     def get_id_field(
         self,

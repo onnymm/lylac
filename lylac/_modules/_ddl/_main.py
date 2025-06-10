@@ -6,7 +6,7 @@ from ..._module_types import (
     ModelRecord,
     NewRecord,
 )
-from ._modules import (
+from ._submodules import (
     _Automations,
     _BaseDDLManager,
     _Database,
