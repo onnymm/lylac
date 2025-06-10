@@ -80,7 +80,7 @@ class DDLManager(_BaseDDLManager):
         model_model.__table__.drop(self._engine)
 
         # Se elimina el modelo
-        self._model.delete_model(model_name)
+        self._model.delete_model(model_name, model_model.__tablename__)
 
     def delete_field(
         self,

@@ -18,7 +18,7 @@ from sqlalchemy.types import (
 )
 from ..security import default_password
 
-class _Base(DeclarativeBase):
+class ___Base(DeclarativeBase):
     # ID del registro
     id: Mapped[int] = mapped_column(Integer, primary_key= True, autoincrement= True)
     # Nombre o título representativo del registro
@@ -30,7 +30,7 @@ class _Base(DeclarativeBase):
 
 
 
-class BaseUsers(_Base):
+class ___BaseUsers(___Base):
     __tablename__ = 'base_users'
 
     # Inicio de sesión
@@ -46,7 +46,7 @@ class BaseUsers(_Base):
 
 
 
-class BaseModel_(_Base):
+class __BaseModel_(___Base):
     __tablename__ = 'base_model'
 
     # Nombre representativo para usarse en el servidor
@@ -58,7 +58,7 @@ class BaseModel_(_Base):
 
 
 
-class BaseModelField(_Base):
+class __BaseModelField(___Base):
     __tablename__ = 'base_model_field'
 
     # ID del modelo al que pertenece
@@ -81,18 +81,18 @@ class BaseModelField(_Base):
     related_model_id: Mapped[Optional[int]] = mapped_column(ForeignKey('base_model.id'), nullable= True)
 
     # Relación con valores de selección (Solo si el tipo de dato del campo es `selection`)
-    selection_ids: Mapped[Optional[List["BaseModelFieldSelection"]]] = relationship(back_populates= 'field', cascade= 'all, delete-orphan')
+    selection_ids: Mapped[Optional[List["__BaseModelFieldSelection"]]] = relationship(back_populates= 'field', cascade= 'all, delete-orphan')
     # Relación hacia el modelo al que pertenece
-    model: Mapped["BaseModel_"] = relationship(BaseModel_, foreign_keys= [model_id])
+    model: Mapped["__BaseModel_"] = relationship(__BaseModel_, foreign_keys= [model_id])
     # Relación hacia el modelo relacionado (opcional, si es many2one)
-    related_model: Mapped[Optional["BaseModel_"]] = relationship(
-        BaseModel_,
+    related_model: Mapped[Optional["__BaseModel_"]] = relationship(
+        __BaseModel_,
         foreign_keys=[related_model_id],
     )
 
 
 
-class BaseModelFieldSelection(_Base):
+class __BaseModelFieldSelection(___Base):
     __tablename__ = 'base_model_field_selection'
 
     # ID del campo al que pertenece
@@ -101,4 +101,4 @@ class BaseModelFieldSelection(_Base):
     label: Mapped[str] = mapped_column(String(60), nullable= False)
 
     # Relación al campo al que pertenece
-    field: Mapped["BaseModelField"] = relationship(back_populates= 'selection_ids')
+    field: Mapped["__BaseModelField"] = relationship(back_populates= 'selection_ids')

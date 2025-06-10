@@ -2,7 +2,6 @@ from typing import Callable
 import pandas as pd
 from sqlalchemy import select, and_
 from ...._module_types import TType
-from ...._models import BaseModel_, BaseModelField
 from ._base import _BaseOutput
 
 class _RawORM():
@@ -25,6 +24,9 @@ class _RawORM():
 
         # Obtención de la ID del modelo
         model_id = self._get_model_id(model_name)
+
+        # Obtención del modelo BaseModelField
+        BaseModelField = self._main._models.get_table_model('base.model.field')
 
         # Creación del query
         stmt = (
@@ -49,9 +51,12 @@ class _RawORM():
         self,
         model_name: str
     ) -> None:
+        
+        # Obtención de la tabla BaseModel
+        BaseModel = self._main._models.get_table_model('base.model')
 
         # Creación del query
-        stmt = select(BaseModel_.id).where(BaseModel_.model == model_name)
+        stmt = select(BaseModel.id).where(BaseModel.model == model_name)
 
         # Ejecución del query
         response = self._main._connection.execute(stmt)

@@ -9,10 +9,6 @@ from ...._core import (
     _BaseModels,
     _BaseStructure,
 )
-from ...._models import (
-    BaseModel_,
-    BaseModelField,
-)
 from ...._module_types import TType
 
 class _RawORM():
@@ -31,9 +27,13 @@ class _RawORM():
         model_name,
     ) -> list[Tuple[str, TType, None | str]]:
 
+        # Obtención de modelos base
+        BaseModel = self._main._models.get_table_model('base.model')
+        BaseModelField = self._main._models.get_table_model('base.model.field')
+
         # Creación de alias de modelos
-        FieldModel = aliased(BaseModel_)
-        RelatedModel = aliased(BaseModel_)
+        FieldModel = aliased(BaseModel)
+        RelatedModel = aliased(BaseModel)
 
         # Creación del query
         stmt = (

@@ -12,7 +12,6 @@ from sqlalchemy import (
     func,
 )
 from ._core import _Lylac
-from ._models import _Base
 from ._module_types import (
     _T,
     CriteriaStructure,
@@ -27,6 +26,7 @@ from ._modules import (
     Automations,
     Connection,
     DDLManager,
+    Metadata,
     Models,
     Output,
     Structure,
@@ -44,7 +44,7 @@ class Lylac(_Lylac):
     ) -> None:
 
         # Asignación del modelo base
-        self._base = _Base
+        self._metadata = Metadata(self)
 
         # Inicialización del módulo de manejo de formato de salida
         self._output = Output(self, output_format)
