@@ -7,3 +7,5 @@ from ._output import Output
 from ._query import Query
 from ._structure import Structure
 from ._where import Where
+
+from ._index import Index

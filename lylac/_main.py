@@ -32,6 +32,7 @@ from ._modules import (
     Structure,
     Query,
     Where,
+    Index,
 )
 
 class Lylac(_Lylac):
@@ -58,6 +59,7 @@ class Lylac(_Lylac):
         self._models = Models(self)
         self._where = Where(self)
         self._query = Query(self)
+        self._index = Index(self)
         self._automations = Automations(self)
 
         # Registro de las automatizaciones predeterminadas

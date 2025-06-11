@@ -63,6 +63,16 @@ class _BaseConnection():
     ) -> Engine:
         ...
 
+class _BaseFieldsGetter():
+
+    _available_model: type[DeclarativeBase]
+
+    def __getitem__(
+        self,
+        field_name: str,
+    ) -> InstrumentedAttribute:
+        ...
+
 class _BaseBaseLylac():
     credentials: Literal['env'] | DBCredentials | str = 'env'
     _base: type[DeclarativeBase] = None
@@ -195,6 +205,17 @@ class _BaseStructure():
     def initialize_fields_atts(
         self,
     ) -> None:
+        ...
+
+class _BaseIndex():
+
+    _main: _BaseBaseLylac
+    _models: _BaseModels
+
+    def __getitem__(
+        self,
+        model: str | type[DeclarativeBase],
+    ) -> _BaseFieldsGetter:
         ...
 
 class _Lylac(_BaseBaseLylac):
