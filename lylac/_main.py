@@ -55,11 +55,11 @@ class Lylac(_Lylac):
 
         # Inicialización de submódulos
         self._strc = Structure(self)
-        self._ddl = DDLManager(self)
         self._models = Models(self)
+        self._index = Index(self)
+        self._ddl = DDLManager(self)
         self._where = Where(self)
         self._query = Query(self)
-        self._index = Index(self)
         self._automations = Automations(self)
 
         # Registro de las automatizaciones predeterminadas

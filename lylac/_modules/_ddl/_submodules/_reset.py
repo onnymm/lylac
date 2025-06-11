@@ -116,8 +116,8 @@ class _Reset():
         self._main.create(MODEL_NAME.BASE_USERS, base_user)
 
         # Registro de los datos iniciales
-        for ( table_name, data ) in initial_data.items():
-            self._main.create(table_name, data)
+        for ( model_name, data ) in initial_data.items():
+            self._main.create(model_name, data)
 
         # Se añaden los campos 'create_uid' y'write_uid'
         self._add_uid_columns()

@@ -10,45 +10,22 @@ from sqlalchemy.types import (
     DateTime,
     Float,
     Integer,
+    LargeBinary,
     String,
     Text,
     Time,
-    LargeBinary,
 )
 from ...._constants import MODEL_NAME
 from ...._module_types import (
     FieldAttributes,
     ModelRecord,
-    TType,
 )
-from .._module_types import ColumnGenerator
 from ._base import (
     _BaseDDLManager,
     _BaseModels,
 )
 
 class _Models(_BaseModels):
-
-    build_column: dict[TType, ColumnGenerator]
-    """
-    ### Construcción de columna
-    Este mapa de métodos construye una columna tipada para un modelo de SQLALchemy.
-    Uso:
-    >>> # Creación de un campo tipo 'integer'
-    >>> field = NewField(...)
-    >>> column = self.build_column['integer'](field)
-    """
-
-    atts: list[str] = [
-        'nullable',
-        'default',
-        'unique',
-    ]
-    """
-    ### Atributos de columna
-    Esta lista declara los atributos que se pueden especificar dinámicamente en la
-    creación de columnas dinámica.
-    """
 
     def __init__(
         self,
@@ -63,7 +40,7 @@ class _Models(_BaseModels):
         self._base = instance._main._base
 
         # Inicialización de mapa de funciones
-        self._initialize_column_builder()
+        self._initialize()
 
     def create_model(
         self,
@@ -88,15 +65,17 @@ class _Models(_BaseModels):
     def delete_model(
         self,
         model_name: str,
-        table_name: str,
     ) -> None:
         """
         ### Eliminar modelo
         Este método elimina un modelo de SQLAlchemy del registro de Base y del mapa de tablas
         """
 
+        # Obtención del modelo SQLAlchemy
+        model_model = self._main._strc.get_model(model_name)
+
         # Se obtiene el esquema del registro de Base
-        table_scheme = self._base.metadata.tables[table_name]
+        table_scheme = self._base.metadata.tables[model_model.__tablename__]
 
         # Se elimina el esquema de los modelos heredados de Base
         self._base.metadata.remove(table_scheme)
@@ -106,7 +85,7 @@ class _Models(_BaseModels):
 
     def add_field_to_model(
         self,
-        table_model: type[DeclarativeBase],
+        model_model: type[DeclarativeBase],
         field: FieldAttributes,
     ) -> None:
         """
@@ -119,13 +98,13 @@ class _Models(_BaseModels):
 
         # Se añade la instancia de campo como atributo del modelo
         setattr(
-            table_model,
+            model_model,
             field.field_name,
             field_instance,
         )
 
         # Se registra la instancia la modelo en el esquema de SQLAlchemy
-        class_mapper(table_model).add_property(field.field_name, field_instance)
+        class_mapper(model_model).add_property(field.field_name, field_instance)
 
     def build_field_atts(
         self,
@@ -137,12 +116,12 @@ class _Models(_BaseModels):
         """
 
         # Obtención del nombre del modelo vinculado
-        table_model: str = self._main.get_value(MODEL_NAME.BASE_MODEL, params['model_id'], 'model')
+        model_name: str = self._main.get_value(MODEL_NAME.BASE_MODEL, params['model_id'], 'model')
 
         # Creación de los parámetros para ser usados en las automatizaciones
         field_atts = FieldAttributes(
             field_name= params['name'],
-            table_model= self._main._models.get_table_model(table_model),
+            table_model= self._main._models.get_table_model(model_name),
             label= params['label'],
             ttype= params['ttype'],
             nullable= params['nullable'],
@@ -184,7 +163,7 @@ class _Models(_BaseModels):
         else:
             return value
 
-    def _initialize_column_builder(
+    def _initialize(
         self
     ) -> None:
 
@@ -207,6 +186,13 @@ class _Models(_BaseModels):
             ),
         }
 
+        # Inicialización de atributos de campo
+        self._atts = [
+            'nullable',
+            'default',
+            'unique',
+        ]
+
     def _build_field_kwargs(
         self,
         field: FieldAttributes
@@ -216,7 +202,7 @@ class _Models(_BaseModels):
         field_kwargs = {}
 
         # Iteración por cada mapeo de atributos
-        for att in self.atts:
+        for att in self._atts:
             # Obtención del valor declarado en el objeto entrante
             field_att_value = getattr(field, att)
             # Si existe un valor declarado...

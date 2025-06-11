@@ -23,32 +23,32 @@ class Models(_BaseModels):
 
     def get_table_model(
         self,
-        table_name: str,
+        model_name: str,
     ) -> type[DeclarativeBase]:
 
         # Obtención de la referencia mapeada
-        return self._strc.get_model(table_name)
+        return self._strc.get_model(model_name)
 
     def get_id_field(
         self,
-        table_model: type[DeclarativeBase]
+        model_model: type[DeclarativeBase]
     ) -> InstrumentedAttribute[int]:
 
         # Retorno de la instancia del campo de ID
-        return getattr(table_model, 'id')
+        return getattr(model_model, 'id')
 
     def get_table_field(
         self,
-        table: type[DeclarativeBase],
+        model_model: type[DeclarativeBase],
         field: str,
     ) -> InstrumentedAttribute:
 
         # Obtención del campo, atributo de la instancia de la tabla
-        return getattr(table, field)
+        return getattr(model_model, field)
 
     def get_table_fields(
         self,
-        table_instance: type[DeclarativeBase],
+        model_model: type[DeclarativeBase],
         fields: list[str] = [],
         include_id: bool = True,
     ) -> list[InstrumentedAttribute[Any]]:
@@ -59,8 +59,8 @@ class Models(_BaseModels):
         # Obtención de todos los campos
         if len(fields) == 0:
             # Obtención de columnas con relación para evitar productos cartesianos
-            instance_relationships = { _relationship.key for _relationship in inspect(table_instance).relationships }
-            mapper = inspect(table_instance)
+            instance_relationships = { _relationship.key for _relationship in inspect(model_model).relationships }
+            mapper = inspect(model_model)
             all_columns = [column.key for column in mapper.attrs if isinstance(column, ColumnProperty)]
             instance_fields = [col for col in all_columns if col not in instance_relationships]
 
@@ -82,4 +82,4 @@ class Models(_BaseModels):
             table_fields = fields
 
         # Obtención de los atributos de la tabla a partir de los nombres de los campos y retorno en una lista para ser usados en el query correspondiente
-        return [ getattr(table_instance, field) for field in table_fields ]
+        return [ getattr(model_model, field) for field in table_fields ]

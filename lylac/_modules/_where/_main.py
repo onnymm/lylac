@@ -97,10 +97,10 @@ class Where():
         return stmt
 
     def build_where(
-            self,
-            table: type[DeclarativeBase],
-            search_criteria: CriteriaStructure
-        ) -> BinaryExpression:
+        self,
+        table: type[DeclarativeBase],
+        search_criteria: CriteriaStructure
+    ) -> BinaryExpression:
 
         # Si el criterio de búsqueda sólo contiene una tripleta 
         if len(search_criteria) == 1:

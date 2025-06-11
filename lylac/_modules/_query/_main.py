@@ -23,7 +23,7 @@ class Query():
     def build_sort(
         self,
         stmt: Select[_T],
-        table_instance: DeclarativeBase,
+        model_model: type[DeclarativeBase],
         sortby: str | list[str],
         ascending: str | list[bool],
     ) -> Select[_T]:
@@ -31,7 +31,7 @@ class Query():
         # Ordenamiento de los datos
         if sortby is None:
             # Ordenamiento de los datos por IDs
-            stmt = stmt.order_by( asc( getattr(table_instance, 'id') ) )
+            stmt = stmt.order_by( asc( getattr(model_model, 'id') ) )
 
         elif isinstance(sortby, str):
             # Creación del query
@@ -39,7 +39,7 @@ class Query():
                 # Obtención de función de ordenamiento
                 self._sorting_direction[ascending](
                     # Obtención del campo atributo de la tabla
-                    getattr(table_instance, sortby)
+                    getattr(model_model, sortby)
                 )
             )
 
@@ -51,7 +51,7 @@ class Query():
                     # Obtención de función de ordenamiento
                     self._sorting_direction[ascending_i](
                         # Obtención del campo atributo de la tabla
-                        getattr(table_instance, sortby_i)
+                        getattr(model_model, sortby_i)
                     )
                     # Destructuración de la columna y dirección de ordenamiento del zip de listas
                     for ( sortby_i, ascending_i ) in zip(

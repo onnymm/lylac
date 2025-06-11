@@ -23,26 +23,26 @@ class _BaseModels():
 
     def get_table_model(
         self,
-        table_name: str
+        model_name: str
     ) -> type[DeclarativeBase]:
         ...
 
     def get_id_field(
         self,
-        table_model: type[DeclarativeBase]
+        model_model: type[DeclarativeBase]
     ) -> InstrumentedAttribute[int]:
         ...
 
     def get_table_field(
         self,
-        table: type[DeclarativeBase],
+        model_model: type[DeclarativeBase],
         field: str
     ) -> InstrumentedAttribute:
         ...
 
     def get_table_fields(
         self,
-        table_instance: type[DeclarativeBase],
+        model_model: type[DeclarativeBase],
         fields: list[str] = [],
         include_id: bool = True
     ) -> list[InstrumentedAttribute[Any]]:
@@ -220,3 +220,4 @@ class _BaseIndex():
 
 class _Lylac(_BaseBaseLylac):
     _strc: _BaseStructure
+    _index: _BaseIndex

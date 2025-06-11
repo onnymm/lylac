@@ -84,7 +84,7 @@ class DDLManager(_BaseDDLManager):
         model_model.__table__.drop(self._engine)
 
         # Se elimina el modelo
-        self._m_model.delete_model(model_name, model_model.__tablename__)
+        self._m_model.delete_model(model_name)
 
     def delete_field(
         self,
@@ -117,7 +117,7 @@ class DDLManager(_BaseDDLManager):
         self._m_db.drop_column(table_name, field_name)
 
         # Se elimina el modelo de SQLAlchemy
-        self._m_model.delete_model(model_name, table_name)
+        self._m_model.delete_model(model_name)
 
         # Se vuelve a crear el modelo
         table_model = self._m_model.create_model(table_name)

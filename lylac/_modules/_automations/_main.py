@@ -30,7 +30,7 @@ class Automations(_BaseAutomations):
         instance: _Lylac,
     ) -> None:
 
-        # Asignación de la instancia propietaria
+        # Asignación de la instancia principal
         self._main = instance
 
         # Referencia del módulo de estructura interna
@@ -40,12 +40,12 @@ class Automations(_BaseAutomations):
         self._m_automations = _Automations(self)
 
         # Creación de desencadenantes de automatización vacíos por cada tabla existente en la base de datos
-        for table_name in self._strc.models.keys():
-            self._register_model(table_name)
+        for model_name in self._strc.models.keys():
+            self._register_model(model_name)
 
     def register_automation(
         self,
-        table_name: str,
+        model_name: str,
         transaction: Transaction,
         callback: AutomationTemplate,
         fields: list[str] = ['id',],
@@ -62,11 +62,11 @@ class Automations(_BaseAutomations):
         }
 
         # Se añade la automatización programada en la transacción correspondiente de su tabla
-        self._hub[table_name][transaction].append(prog_autom)
+        self._hub[model_name][transaction].append(prog_autom)
 
     def run_after_transaction(
         self,
-        table_name: str,
+        model_name: str,
         transaction: ModificationTransaction,
         record_ids: list[int],
     ) -> None:
@@ -75,7 +75,7 @@ class Automations(_BaseAutomations):
         callbacks_to_run: list[Callable[[], None]] = []
 
         # Iteración por cada automatización programada
-        for prog_autom in self._hub[table_name][transaction]:
+        for prog_autom in self._hub[model_name][transaction]:
 
             # Obtención del criterio de evaluación de la automatización programada
             automation_criteria = prog_autom['criteria']
@@ -84,14 +84,14 @@ class Automations(_BaseAutomations):
             criteria = self._create_validation(record_ids, automation_criteria)
 
             # Se filtran las IDs por el criterio de búsqueda
-            found_ids = self._main.search(table_name, criteria)
+            found_ids = self._main.search(model_name, criteria)
 
             # Si existen IDs para ejecutar la automatización
             if len(found_ids):
 
                 # Inicialización de la función que ejecuta la automatización únicamente con las IDs encontradas
                 automation_to_execute = self._build_runable_modification_automation(
-                    table_name,
+                    model_name,
                     found_ids,
                     prog_autom,
                     transaction,
@@ -106,7 +106,7 @@ class Automations(_BaseAutomations):
 
     def generate_before_transaction(
         self,
-        table_name: str,
+        model_name: str,
         record_ids: list[int],
     ):
 
@@ -114,7 +114,7 @@ class Automations(_BaseAutomations):
         callbacks_to_run: list[Callable[[list[int]], None]] = []
 
         # Iteración por cada automatización programada
-        for prog_autom in self._hub[table_name]['delete']:
+        for prog_autom in self._hub[model_name]['delete']:
 
             # Obtención del criterio de evaluación de la automatización programada
             automation_criteria = prog_autom['criteria']
@@ -123,14 +123,14 @@ class Automations(_BaseAutomations):
             criteria = self._create_validation(record_ids, automation_criteria)
 
             # Se filtran las IDs por el criterio de búsqueda
-            found_ids = self._main.search(table_name, criteria)
+            found_ids = self._main.search(model_name, criteria)
 
             # Si existen IDs para ejecutar la automatización
             if len(found_ids):
 
                 # Inicialización de la función que ejecuta la automatización únicamente con las IDs encontradas
                 automation_to_execute = self._build_runable_deletion_automation(
-                    table_name,
+                    model_name,
                     found_ids,
                     prog_autom,
                 )
@@ -172,7 +172,7 @@ class Automations(_BaseAutomations):
 
     def _build_runable_modification_automation(
         self,
-        table_name: str,
+        model_name: str,
         found_ids: list[int],
         prog_autom: ProgrammedAutomation,
         transaction: ModificationTransaction,
@@ -182,7 +182,7 @@ class Automations(_BaseAutomations):
         mapped_data: dict[int, RecordData] = {}
 
         # Se obtienen los datos de los registros
-        records_data = self._main.read(table_name, found_ids, prog_autom['fields'], output_format= 'dict')
+        records_data = self._main.read(model_name, found_ids, prog_autom['fields'], output_format= 'dict')
 
         # Mapeo de datos de registros
         for record_data in records_data:
@@ -215,7 +215,7 @@ class Automations(_BaseAutomations):
 
     def _build_runable_deletion_automation(
         self,
-        table_name: str,
+        model_name: str,
         found_ids: list[int],
         prog_autom: ProgrammedAutomation,
     ):
@@ -224,7 +224,7 @@ class Automations(_BaseAutomations):
         mapped_data: dict[int, RecordData] = {}
 
         # Se obtienen los datos de los registros
-        records_data = self._main.read(table_name, found_ids, prog_autom['fields'], output_format= 'dict')
+        records_data = self._main.read(model_name, found_ids, prog_autom['fields'], output_format= 'dict')
 
         # Mapeo de datos de registros
         for record_data in records_data:

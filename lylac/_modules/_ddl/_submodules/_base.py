@@ -9,8 +9,15 @@ from .._module_types import ColumnGenerator
 
 class _BaseModels():
 
-    atts: list[str]
     build_column: dict[TType, ColumnGenerator]
+    """
+    ### Construcción de columna
+    Este mapa de métodos construye una columna tipada para un modelo de SQLALchemy.
+    Uso:
+    >>> # Creación de un campo tipo 'integer'
+    >>> field = NewField(...)
+    >>> column = self.build_column['integer'](field)
+    """
 
     def create_model(
         self,
@@ -21,13 +28,12 @@ class _BaseModels():
     def delete_model(
         self,
         model_name: str,
-        table_name: str,
     ) -> None:
         ...
 
     def add_field_to_model(
         self,
-        table_model: type[DeclarativeBase],
+        model_model: type[DeclarativeBase],
         field: FieldAttributes,
     ) -> None:
         ...
