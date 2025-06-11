@@ -1,9 +1,9 @@
 from ._base import (
     _BaseConnection,
+    _BaseFieldsGetter,
+    _BaseIndex,
     _BaseModels,
     _BaseStructure,
     _Lylac,
-    _BaseFieldsGetter,
-    _BaseIndex,
 )
-from .env import Env
+from ._env import Env
