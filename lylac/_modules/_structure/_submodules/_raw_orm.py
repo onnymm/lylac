@@ -2,7 +2,10 @@ from typing import Tuple
 import pandas as pd
 from sqlalchemy import select
 from sqlalchemy.orm import aliased
-from ...._core import _BaseStructure
+from ...._core import (
+    _BaseStructure,
+    _Lylac,
+)
 from ...._module_types import TType
 
 class _RawORM():
@@ -15,7 +18,7 @@ class _RawORM():
         # Asignación de instancia propietaria
         self._strc = instance
         # Asignación de instancia
-        self._main = instance._main
+        self._main: _Lylac = instance._main
 
     def get_model_fields(
         self,
@@ -33,20 +36,20 @@ class _RawORM():
         # Creación del query
         stmt = (
             select(
-                BaseModelField.name,
-                BaseModelField.ttype,
-                RelatedModel.model,
+                self._main._index[BaseModelField]['name'],
+                self._main._index[BaseModelField]['ttype'],
+                self._main._index[RelatedModel]['model'],
             )
             .outerjoin(
                 FieldModel,
-                BaseModelField.model_id == FieldModel.id,
+                self._main._index[BaseModelField]['model_id'] == self._main._index[FieldModel]['id'],
             )
             .outerjoin(
                 RelatedModel,
-                BaseModelField.related_model_id == RelatedModel.id,
+                self._main._index[BaseModelField]['related_model_id'] == self._main._index[RelatedModel]['id'],
             )
             .where(
-                FieldModel.model == model_name
+                self._main._index[FieldModel]['model'] == model_name
             )
         )
 
