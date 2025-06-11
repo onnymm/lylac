@@ -9,12 +9,6 @@ from ..._module_types import _T
 
 class Query():
 
-    # Mapas de funciones:
-    _sorting_direction = {
-        True: asc,
-        False: desc,
-    }
-
     def __init__(
         self,
         instance: _Lylac,
@@ -22,6 +16,9 @@ class Query():
 
         # Asignación de la instancia propietaria
         self._main = instance
+
+        # Inicialización de mapa de direcciones de ordenamiento
+        self._build_sorting_directions_map()
 
     def build_sort(
         self,
@@ -80,3 +77,12 @@ class Query():
 
         # Retorno del query
         return stmt
+
+    def _build_sorting_directions_map(
+        self,
+    ) -> None:
+
+        self._sorting_direction = {
+            True: asc,
+            False: desc,
+        }

@@ -16,6 +16,9 @@ class _RawORM():
         # Referencia de la instancia principal
         self._main = instance._main
 
+        # Las referencias a módulos principales no se llevan a cabo ya que este
+        # módulo se inicializa primero.
+
     def get_fields_ttypes(
         self,
         model_name: str,
@@ -56,7 +59,7 @@ class _RawORM():
         self,
         model_name: str
     ) -> None:
-        
+
         # Obtención de la tabla BaseModel
         BaseModel = self._main._models.get_table_model('base.model')
 

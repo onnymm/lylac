@@ -23,9 +23,9 @@ class Output(_BaseOutput):
         self._default_output = output_format
 
         # Creación del submódulo de Tipos de dato
-        self._data = _DataTypes(self)
+        self._m_data = _DataTypes(self)
         # Creación del submódulo de Raw ORM
-        self._orm = _RawORM(self)
+        self._m_orm = _RawORM(self)
 
     def build_output(
         self,
@@ -71,10 +71,10 @@ class Output(_BaseOutput):
     def _recover_ttypes(self, data: pd.DataFrame, table_name: str) -> pd.DataFrame:
 
         # Obtención del mapa de tipos de dato por campo
-        ttypes = self._orm.get_fields_ttypes(table_name, data.columns.to_list())
+        ttypes = self._m_orm.get_fields_ttypes(table_name, data.columns.to_list())
 
         # Transformación de datos
         for ( field, ttype ) in ttypes.items():
-            data = self._data.recover_ttype[ttype](data, field)
+            data = self._m_data.recover_ttype[ttype](data, field)
 
         return data

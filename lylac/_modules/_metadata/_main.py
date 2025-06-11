@@ -1,7 +1,8 @@
-from ..._core import _Lylac
-
 from datetime import datetime
-from typing import List, Optional
+from typing import (
+    List,
+    Optional,
+)
 from sqlalchemy import (
     ForeignKey,
 )
@@ -18,6 +19,7 @@ from sqlalchemy.types import (
     String,
     Text,
 )
+from ..._core import _Lylac
 from ...security import default_password
 
 class Metadata():

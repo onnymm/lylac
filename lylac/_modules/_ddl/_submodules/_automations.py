@@ -20,7 +20,7 @@ class _Automations():
         # Referencia del motor de conexión
         self._engine = instance._main._engine
         # Referencia del módulo de modelos
-        self._model = instance._model
+        self._model = instance._m_model
         # Referencia de la estructura interna de tablas
         self._strc = instance._main._strc
 

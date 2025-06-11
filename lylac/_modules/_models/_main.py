@@ -4,8 +4,8 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.properties import ColumnProperty
 from ..._core import (
-    _Lylac,
     _BaseModels,
+    _Lylac,
 )
 
 class Models(_BaseModels):
@@ -18,13 +18,16 @@ class Models(_BaseModels):
         # Asignación de la instancia propietaria
         self._main = instance
 
+        # Referencia al módulo de estructura interna
+        self._strc = instance._strc
+
     def get_table_model(
         self,
         table_name: str,
     ) -> type[DeclarativeBase]:
 
         # Obtención de la referencia mapeada
-        return self._main._strc.models[table_name]['model']
+        return self._strc.get_model(table_name)
 
     def get_id_field(
         self,
@@ -77,7 +80,6 @@ class Models(_BaseModels):
         # Inclusión del ID solo de forma explícita
         else:
             table_fields = fields
-
 
         # Obtención de los atributos de la tabla a partir de los nombres de los campos y retorno en una lista para ser usados en el query correspondiente
         return [ getattr(table_instance, field) for field in table_fields ]

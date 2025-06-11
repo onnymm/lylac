@@ -64,11 +64,11 @@ class _BaseConnection():
         ...
 
 class _BaseBaseLylac():
-    credentials: Literal['env'] | DBCredentials | str = 'env',
-    _base: type[DeclarativeBase]
-    _engine: Engine
-    _models: _BaseModels
-    _connection: _BaseConnection
+    credentials: Literal['env'] | DBCredentials | str = 'env'
+    _base: type[DeclarativeBase] = None
+    _engine: Engine = None
+    _models: _BaseModels = None
+    _connection: _BaseConnection = None
 
     def create(
         self,
@@ -158,9 +158,9 @@ class _BaseStructure():
     models: dict[str, ModelMap]
     _main: _BaseBaseLylac
 
-    def get_table_model(
+    def get_model(
         self,
-        table_name: str
+        model_name: str,
     ) -> type[DeclarativeBase]:
         ...
 

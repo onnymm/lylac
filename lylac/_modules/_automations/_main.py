@@ -33,11 +33,14 @@ class Automations(_BaseAutomations):
         # Asignación de la instancia propietaria
         self._main = instance
 
+        # Referencia del módulo de estructura interna
+        self._strc = instance._strc
+
         # Inicialización del submódulo de automatizaciones
-        self._automations = _Automations(self)
+        self._m_automations = _Automations(self)
 
         # Creación de desencadenantes de automatización vacíos por cada tabla existente en la base de datos
-        for table_name in self._main._strc.models.keys():
+        for table_name in self._strc.models.keys():
             self._register_model(table_name)
 
     def register_automation(
@@ -153,7 +156,7 @@ class Automations(_BaseAutomations):
             # Obtención del módulo que contiene la automatización
             submodule = getattr(self._main, automation.submodule)
             # Obtención de la instancia de automatizaciones del submódulo
-            autom_extension = getattr(submodule, '_automations')
+            autom_extension = getattr(submodule, '_m_automations')
             # Obtención de la función a registrar como automatización
             callback: Callable[[DataPerRecord | DataPerTransaction], None] = getattr(autom_extension, automation.callback)
 

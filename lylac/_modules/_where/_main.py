@@ -3,11 +3,11 @@ from typing import (
     overload,
 )
 from sqlalchemy import (
-    not_,
-    or_,
-    and_,
     Select,
     Update,
+    and_,
+    not_,
+    or_,
 )
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.sql.elements import BinaryExpression
@@ -55,6 +55,9 @@ class Where():
 
         # Asignación de la instancia propietaria
         self._main = instance
+
+        # Referencia al módulo de modelos
+        self._models = instance._models
 
     @overload
     def add_query(
@@ -176,7 +179,7 @@ class Where():
         ( field_instance, op, value ) = fragment
 
         # Obtención de la instancia del campo a usar
-        field_instance = self._main._models.get_table_field(table, field_instance)
+        field_instance = self._models.get_table_field(table, field_instance)
 
         # Retorno de la evaluación
         return self._comparison_operation[op](field_instance, value)

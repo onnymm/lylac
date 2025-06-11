@@ -5,8 +5,10 @@ from sqlalchemy.engine.cursor import CursorResult
 from sqlalchemy.sql.selectable import Select, TypedReturnsRows
 from sqlalchemy.engine.base import Engine
 from ..._module_types import DBCredentials
-from ..._core import _Lylac
-from ..._core.env import Env
+from ..._core import (
+    _Lylac,
+    Env,
+)
 from ..._module_types import _T
 
 class Connection():
@@ -49,6 +51,7 @@ class Connection():
         if credentials == 'env':
             credentials = Env()._credentials
 
+        # Inicialización del motor de conexión
         self._main._engine = self._create_engine(credentials)
 
     def _create_engine(

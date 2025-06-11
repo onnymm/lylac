@@ -1,7 +1,7 @@
 from typing import Callable
-from ..._module_types import RecordValue
-from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.sql.elements import BinaryExpression
+from ..._module_types import RecordValue
 
 # Función de comparación
 ComparisonCallback = Callable[[InstrumentedAttribute, RecordValue], BinaryExpression]

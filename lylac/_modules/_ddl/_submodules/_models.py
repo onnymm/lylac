@@ -16,11 +16,9 @@ from sqlalchemy.types import (
     LargeBinary,
 )
 from ...._constants import MODEL_NAME
-from ...._data import default_field_template
 from ...._module_types import (
-    ModelRecord,
     FieldAttributes,
-    NewRecord,
+    ModelRecord,
     TType,
 )
 from .._module_types import ColumnGenerator

@@ -4,7 +4,10 @@ from ..._core import (
     _BaseStructure,
 )
 from ..._module_types import TType
-from ._submodules import _RawORM, _Automations
+from ._submodules import (
+    _Automations,
+    _RawORM,
+)
 
 class Structure(_BaseStructure):
 
@@ -15,13 +18,21 @@ class Structure(_BaseStructure):
 
         # Asignación de instancia principal
         self._main = instance
+
         # Inicialización del módulo de ORM crudo
-        self._raworm = _RawORM(self)
+        self._m_raworm = _RawORM(self)
         # Inicialización del módulo de automatizaciones
-        self._automations = _Automations(self)
+        self._m_automations = _Automations(self)
 
         # Inicialización de la estructura de tablas y atributos de campos
         self._initialize_models_atts()
+
+    def get_model(
+        self,
+        model_name: str,
+    ) -> type[DeclarativeBase]:
+
+        return self.models[model_name]['model']
 
     def _initialize_models_atts(
         self,
@@ -73,7 +84,7 @@ class Structure(_BaseStructure):
     ) -> None:
 
         # Obtención de los atributos de los campos de la tabla
-        fields_atts = self._raworm.get_model_fields(model_name)
+        fields_atts = self._m_raworm.get_model_fields(model_name)
 
         # Registro de los campos
         for atts in fields_atts:

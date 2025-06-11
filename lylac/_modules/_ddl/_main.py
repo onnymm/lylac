@@ -23,16 +23,20 @@ class DDLManager(_BaseDDLManager):
 
         # Asignación de la instancia propietaria
         self._main = instance
+
+        # Referencia del módulo de estructura interna
+        self._strc = instance._strc
         # Referencia del motor de conexión
         self._engine = instance._engine
+
         # Creación del submódulo para operaciones en la base de datos
-        self._db = _Database(self)
+        self._m_db = _Database(self)
         # Creación del submódulo para operaciones en los modelos de SQLAlchemy
-        self._model = _Models(self)
+        self._m_model = _Models(self)
         # Creación del submódulo para operaciones de reseteo de base de datos
-        self._reset = _Reset(self)
+        self._m_reset = _Reset(self)
         # Creación del submódulo de automatizaciones
-        self._automations = _Automations(self)
+        self._m_automations = _Automations(self)
 
     def new_table(
         self,
@@ -45,10 +49,10 @@ class DDLManager(_BaseDDLManager):
         """
 
         # Inicialización del modelo
-        table_model = self._model.create_model(name)
+        table_model = self._m_model.create_model(name)
 
         # Se crea el modelo como tabla en la base de datos
-        table_model.__table__.create(self._main._engine)
+        table_model.__table__.create(self._engine)
 
     def new_field(
         self,
@@ -57,16 +61,16 @@ class DDLManager(_BaseDDLManager):
     ) -> None:
 
         # Obtención del modelo de SQLAlchemy
-        model_model = self._main._strc.models[model_name]['model']
+        model_model = self._strc.get_model(model_name)
 
         # Creación de los parámetros para ser usados en las automatizaciones
-        new_field = self._model.build_field_atts(params)
+        new_field = self._m_model.build_field_atts(params)
 
         # Se añade la columna al modelo SQLAlchemy de la tabla
-        self._model.add_field_to_model(model_model, new_field)
+        self._m_model.add_field_to_model(model_model, new_field)
 
         # Se añade la columna a la tabla de la base de datos
-        self._db.add_column(new_field)
+        self._m_db.add_column(new_field)
 
     def delete_table(
         self,
@@ -74,13 +78,13 @@ class DDLManager(_BaseDDLManager):
     ) -> None:
 
         # Obtención del modelo de SQLAlchemy
-        model_model = self._main._strc.models[model_name]['model']
+        model_model = self._strc.get_model(model_name)
 
         # Se elimina la tabla de la base de datos
         model_model.__table__.drop(self._engine)
 
         # Se elimina el modelo
-        self._model.delete_model(model_name, model_model.__tablename__)
+        self._m_model.delete_model(model_name, model_model.__tablename__)
 
     def delete_field(
         self,
@@ -104,23 +108,23 @@ class DDLManager(_BaseDDLManager):
         fields_data: list[ModelRecord.BaseModelField] = self._main.search_read(MODEL_NAME.BASE_MODEL_FIELD, criteria, output_format= 'dict')
 
         # Se crean las instancias de campos para ser añadidas
-        fields_atts = [ self._model.build_field_atts(field) for field in fields_data ]
+        fields_atts = [ self._m_model.build_field_atts(field) for field in fields_data ]
 
         # Obtención del nombre de la tabla
         table_name = self._main.get_value(MODEL_NAME.BASE_MODEL, model_id, 'name')
 
         # Se elimina la columna de la tabla de base de datos
-        self._db.drop_column(table_name, field_name)
+        self._m_db.drop_column(table_name, field_name)
 
         # Se elimina el modelo de SQLAlchemy
-        self._model.delete_model(model_name, table_name)
+        self._m_model.delete_model(model_name, table_name)
 
         # Se vuelve a crear el modelo
-        table_model = self._model.create_model(table_name)
+        table_model = self._m_model.create_model(table_name)
 
         # Se añaden los campos que tenía registrados
         for field in fields_atts:
-            self._model.add_field_to_model(table_model, field)
+            self._m_model.add_field_to_model(table_model, field)
 
     def add_default_to_model(
         self,

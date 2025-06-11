@@ -67,7 +67,7 @@ class _Reset():
 
         # Creación de los modelos de SQLAlchemy en la instancia
         for record in model_records:
-            self._ddl._model.create_model(record['name'])
+            self._ddl._m_model.create_model(record['name'])
 
     def _build_fields_structure(
         self,
@@ -87,9 +87,9 @@ class _Reset():
             # Obtención del modelo SQLAlchemy de la instancia
             model_model = self._main._models.get_table_model(model_name)
             # Creación del objeto de atributos de campo
-            field_atts = self._ddl._model.build_field_atts(record)
+            field_atts = self._ddl._m_model.build_field_atts(record)
             # Adición del campo al modelo SQLAlchemy
-            self._ddl._model.add_field_to_model(model_model, field_atts)
+            self._ddl._m_model.add_field_to_model(model_model, field_atts)
 
         # Se establece el estado de inicialización a verdadero
         self._state = True

@@ -1,18 +1,16 @@
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from ...._core import _Lylac
 from ...._module_types import (
-    DataPerRecord,
-    ModelRecord,
     FieldAttributes,
-    DataBaseDataType,
+    ModelRecord,
     TType,
 )
 from .._module_types import ColumnGenerator
 
 class _BaseModels():
 
-    build_column: dict[TType, ColumnGenerator]
     atts: list[str]
+    build_column: dict[TType, ColumnGenerator]
 
     def create_model(
         self,
@@ -57,8 +55,8 @@ class _BaseDatabase():
 
 class _BaseDDLManager():
     _main: _Lylac
-    _model: _BaseModels
-    _db: _BaseDatabase
+    _m_model: _BaseModels
+    _m_db: _BaseDatabase
 
     def new_table(
         self,

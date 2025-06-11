@@ -1,14 +1,8 @@
-from typing import Any, Tuple
+from typing import Tuple
 import pandas as pd
-from sqlalchemy import inspect, select
-from sqlalchemy.orm import DeclarativeBase, aliased
-from sqlalchemy.orm.attributes import InstrumentedAttribute
-from sqlalchemy.orm.properties import ColumnProperty
-from ...._core import (
-    _Lylac,
-    _BaseModels,
-    _BaseStructure,
-)
+from sqlalchemy import select
+from sqlalchemy.orm import aliased
+from ...._core import _BaseStructure
 from ...._module_types import TType
 
 class _RawORM():
@@ -18,8 +12,9 @@ class _RawORM():
         instance: _BaseStructure,
     ) -> None:
 
+        # Asignación de instancia propietaria
         self._strc = instance
-
+        # Asignación de instancia
         self._main = instance._main
 
     def get_model_fields(
@@ -71,39 +66,3 @@ class _RawORM():
                 )
             ]
         )
-
-
-
-    # def get_all_model_fields(
-    #     self,
-    #     model_name: str,
-    #     fields: list[str] = [],
-    # ) -> list[str]:
-
-    #     filters = [BaseModel_.model == model_name]
-
-    #     if len(fields) > 0:
-    #         fields.append()
-
-    #     # Creación de sentencia SQL
-    #     stmt = (
-    #         # Nombre del campo
-    #         select(BaseModelField.name)
-    #         # JOIN con el modelo de modelos
-    #         .outerjoin(
-    #             BaseModel_,
-    #             BaseModelField.model_id == BaseModel_.id
-    #         )
-    #         # Filtro por los campos cuyo nombre de modelo vinculado sea el provisto
-    #         .where(BaseModel_.model == model_name)
-    #     )
-
-    #     # Obtención de los datos
-    #     response = self._main._connection.execute(stmt)
-
-    #     # Transformación y retorno
-    #     return (
-    #         pd.DataFrame(response.fetchall())
-    #         ['name']
-    #         .to_list()
-    #     )
