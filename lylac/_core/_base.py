@@ -1,6 +1,7 @@
 from typing import (
     Any,
     Literal,
+    Tuple,
 )
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.engine.cursor import CursorResult
@@ -23,20 +24,20 @@ class _BaseModels():
 
     def get_table_model(
         self,
-        model_name: str
+        model_name: str,
     ) -> type[DeclarativeBase]:
         ...
 
     def get_id_field(
         self,
-        model_model: type[DeclarativeBase]
+        model_model: type[DeclarativeBase],
     ) -> InstrumentedAttribute[int]:
         ...
 
     def get_table_field(
         self,
         model_model: type[DeclarativeBase],
-        field: str
+        field: str,
     ) -> InstrumentedAttribute:
         ...
 
@@ -44,7 +45,7 @@ class _BaseModels():
         self,
         model_model: type[DeclarativeBase],
         fields: list[str] = [],
-        include_id: bool = True
+        include_id: bool = True,
     ) -> list[InstrumentedAttribute[Any]]:
         ...
 
@@ -53,13 +54,13 @@ class _BaseConnection():
     def execute(
         self,
         statement: Select[_T] | TypedReturnsRows[_T],
-        commit: bool = False
+        commit: bool = False,
     ) -> CursorResult[_T]:
         ...
 
     def create_connection(
         self,
-        credentials: DBCredentials | str | Literal['env']
+        credentials: DBCredentials | str | Literal['env'],
     ) -> Engine:
         ...
 
@@ -83,7 +84,7 @@ class _BaseBaseLylac():
     def create(
         self,
         table_name: str,
-        data: RecordData | list[RecordData]
+        data: RecordData | list[RecordData],
     ) -> list[int]:
             ...
 
@@ -97,12 +98,14 @@ class _BaseBaseLylac():
         ...
 
     def read(
+        self,
         table_name: str,
         record_ids: int | list[int],
         fields: list[str] = [],
         sortby: str | list[str] = None,
         ascending: bool | list[bool] = True,
-        output_format: OutputOptions | None = None
+        output_format: OutputOptions | None = None,
+        only_ids_in_relations: bool = False,
     ) -> DataOutput:
         ...
 
@@ -110,7 +113,7 @@ class _BaseBaseLylac():
         self,
         table_name: str,
         record_id: int,
-        field: str
+        field: str,
     ) -> RecordValue:
         ...
 
@@ -132,6 +135,7 @@ class _BaseBaseLylac():
         sortby: str | list[str] | None = None,
         ascending: bool | list[bool] = True,
         output_format: OutputOptions | None = None,
+        only_ids_in_relations: bool = False,
     ) -> DataOutput:
         ...
 
@@ -139,28 +143,28 @@ class _BaseBaseLylac():
         self,
         table_name: str,
         search_criteria: CriteriaStructure,
-        data: RecordData
+        data: RecordData,
     ) -> bool:
         ...
 
     def _get_table_field(
         self,
         table: str,
-        field: str
+        field: str,
     ) -> InstrumentedAttribute:
         ...
 
     def and_(
         self,
         cs_1: CriteriaStructure,
-        cs_2: CriteriaStructure
+        cs_2: CriteriaStructure,
     ) -> CriteriaStructure:
         ...
 
     def or_(
         self,
         cs_1: CriteriaStructure,
-        cs_2: CriteriaStructure
+        cs_2: CriteriaStructure,
     ) -> CriteriaStructure:
         ...
 
@@ -182,7 +186,7 @@ class _BaseStructure():
 
     def unregister_table(
         self,
-        table_name: str
+        table_name: str,
     ) -> None:
         ...
 
@@ -191,7 +195,7 @@ class _BaseStructure():
         model_name: str,
         field_name: str,
         ttype: TType,
-        relation: str | None
+        relation: str | None,
     ) -> None:
         ...
 
@@ -205,6 +209,13 @@ class _BaseStructure():
     def initialize_fields_atts(
         self,
     ) -> None:
+        ...
+
+    def get_fields_atts(
+        self,
+        model_name: str,
+        fields: list[str] = [],
+    ) -> list[Tuple[str, TType, str | None]]:
         ...
 
 class _BaseIndex():

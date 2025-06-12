@@ -38,8 +38,39 @@ class _DataTypes():
             'file': lambda df, field: self._bypass_value(df, field),
             'text': lambda df, field: self._bypass_value(df, field),
             'selection': lambda df, field: self._bypass_value(df, field),
-            'many2one': lambda df, field: self._recover_numeric(df, field, 'int'),
+            'many2one': lambda df, field: self.transform_many2one(df, field),
         }
+
+    def transform_many2one(
+        self,
+        data: pd.DataFrame,
+        field: str
+    ) -> pd.DataFrame:
+        return (
+            data
+            .pipe(
+                lambda df: self._recover_numeric(df, field, 'int')
+            )
+            .assign(
+                **{
+                    field: lambda df: df[[field, f'{field}/name']].apply(self._create_many2one_value, axis=1)
+                }
+            )
+        )
+
+    def _create_many2one_value(
+        self,
+        s: pd.Series,
+    ) -> list:
+
+        [ id_column, name_column ] = s.index.to_list()
+        if s[id_column] is not None:
+            return [
+                s[id_column],
+                s[name_column],
+            ]
+        else:
+            return None
 
     def _bypass_value(self, data: pd.DataFrame, _: str) -> pd.DataFrame:
         return data

@@ -105,7 +105,7 @@ class DDLManager(_BaseDDLManager):
         ]
 
         # Se obtienen los datos de los registros a excepción del campo eliminado
-        fields_data: list[ModelRecord.BaseModelField] = self._main.search_read(MODEL_NAME.BASE_MODEL_FIELD, criteria, output_format= 'dict')
+        fields_data: list[ModelRecord.BaseModelField] = self._main.search_read(MODEL_NAME.BASE_MODEL_FIELD, criteria, output_format= 'dict', only_ids_in_relations= True)
 
         # Se crean las instancias de campos para ser añadidas
         fields_atts = [ self._m_model.build_field_atts(field) for field in fields_data ]

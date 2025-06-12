@@ -17,7 +17,7 @@ initial_data = {
             'model': 'base.model.field',
             'name': 'base_model_field',
             'label': 'Campos',
-            'description': 'Este modelo define los campos de la base de datos.'
+            'description': 'Este modelo define los campos de la base de datos.',
         },
         {
             'model': 'base.model.field.selection',
@@ -29,7 +29,7 @@ initial_data = {
             'model': 'base.users',
             'name': 'base_users',
             'label': 'Usuarios',
-            'description': 'Este modelo define la estructura de usuarios en la base de datos'
+            'description': 'Este modelo define la estructura de usuarios en la base de datos',
         },
     ],
     'base.model.field': [
@@ -116,11 +116,12 @@ initial_data = {
         },
         {
             'name': 'model_id',
-            'label': 'Modelo',
-            'ttype': 'integer',
+            'label': 'Modeloooo',
+            'ttype': 'many2one',
             'model_id': 2,
             'nullable': False,
             'is_required': True,
+            'related_model_id': 1,
         },
         {
             'name': 'label',
@@ -167,10 +168,17 @@ initial_data = {
             'default_value': False,
         },
         {
+            'name': 'help_info',
+            'label': 'Información de ayuda',
+            'ttype': 'text',
+            'model_id': 2,
+        },
+        {
             'name': 'related_model_id',
             'label': 'Modelo de relación',
-            'ttype': 'integer',
+            'ttype': 'many2one',
             'model_id': 2,
+            'related_model_id': 1,
         },
         {
             'name': 'selection_ids',

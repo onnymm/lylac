@@ -28,7 +28,7 @@ preset_automations: list[AutomationDataDict] = [
         'model': 'base.model',
         'transaction': 'create',
         'criteria': [('model', 'not in', ['base.model', 'base.model.field', 'base.model.field', 'base.users'])],
-        'fields': [],
+        'fields': ['id'],
         'execution': 'record',
     },
     # Creación de los registros de campos predeterminados cuando un modelo se crea
@@ -38,7 +38,7 @@ preset_automations: list[AutomationDataDict] = [
         'model': 'base.model',
         'transaction': 'create',
         'criteria': [('model', 'not in', ['base.model', 'base.model.field', 'base.model.field.selection', 'base.users'])],
-        'fields': [],
+        'fields': ['id'],
         'execution': 'record',
     },
     # Eliminación de una tabla de base de datos cuando un modelo se elimina
@@ -59,7 +59,7 @@ preset_automations: list[AutomationDataDict] = [
         'transaction': 'create',
         'criteria': [
             '&',
-                ('id', '>', 39),
+                ('id', '>', 40),
                 ('name', 'not in', ['id', 'name', 'create_date', 'write_date'])
         ],
         'fields': [
@@ -82,11 +82,7 @@ preset_automations: list[AutomationDataDict] = [
         'callback': 'register_field_atts',
         'model': 'base.model.field',
         'transaction': 'create',
-        'criteria': [
-            '&',
-                ('id', '>', 47),
-                ('name', 'not in', ['id', 'name', 'create_date', 'write_date'])
-        ],
+        'criteria': [('id', '>', 47)],
         'fields': [
             'name',
             'ttype',

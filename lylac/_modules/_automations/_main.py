@@ -182,7 +182,7 @@ class Automations(_BaseAutomations):
         mapped_data: dict[int, RecordData] = {}
 
         # Se obtienen los datos de los registros
-        records_data = self._main.read(model_name, found_ids, prog_autom['fields'], output_format= 'dict')
+        records_data = self._main.read(model_name, found_ids, prog_autom['fields'], output_format= 'dict', only_ids_in_relations= True)
 
         # Mapeo de datos de registros
         for record_data in records_data:
@@ -224,7 +224,7 @@ class Automations(_BaseAutomations):
         mapped_data: dict[int, RecordData] = {}
 
         # Se obtienen los datos de los registros
-        records_data = self._main.read(model_name, found_ids, prog_autom['fields'], output_format= 'dict')
+        records_data = self._main.read(model_name, found_ids, prog_autom['fields'], output_format= 'dict', only_ids_in_relations= True)
 
         # Mapeo de datos de registros
         for record_data in records_data:

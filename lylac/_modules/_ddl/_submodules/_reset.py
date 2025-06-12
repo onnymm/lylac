@@ -62,6 +62,7 @@ class _Reset():
         model_records = self._main.search_read(
             MODEL_NAME.BASE_MODEL,
             [('model', 'not in', self._base_models)],
+            ['name'],
             output_format= 'dict'
         )
 
@@ -76,8 +77,21 @@ class _Reset():
         # Lectura de todos los registros de campos existentes
         field_records = self._main.search_read(
             MODEL_NAME.BASE_MODEL_FIELD,
-            ['&', ('id', '>', 39), ('name', 'not in', ['id', 'name', 'create_date', 'write_date'])],
-            output_format= 'dict'
+            ['&', ('id', '>', 40), ('name', 'not in', ['id', 'name', 'create_date', 'write_date'])],
+            [
+                'name',
+                'model_id',
+                'label',
+                'ttype',
+                'nullable',
+                'is_required',
+                'unique',
+                'help_info',
+                'related_model_id',
+                'default_value',
+            ],
+            output_format= 'dict',
+            only_ids_in_relations= True,
         )
 
         # Creación de las instancias de columna en los modelos de SQLAlchemy de la instancia

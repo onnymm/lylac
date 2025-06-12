@@ -4,3 +4,4 @@ from ._data import (
     initial_data,
 ) 
 from ._fields import base_fields
+from ._fields_atts import fields_atts

@@ -26,6 +26,7 @@ from ._objects import (
     DataPerRecord,
     DataPerTransaction,
     FieldAttributes,
+    FieldProperties,
     ModelMap,
     ModelRecord,
     SerializableDict,

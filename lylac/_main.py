@@ -8,9 +8,9 @@ from sqlalchemy import (
     delete,
     asc,
     update,
-    insert,
     func,
 )
+from sqlalchemy.orm import Session
 from ._core import _Lylac
 from ._module_types import (
     _T,
@@ -29,6 +29,7 @@ from ._modules import (
     Metadata,
     Models,
     Output,
+    Select,
     Structure,
     Query,
     Where,
@@ -60,6 +61,7 @@ class Lylac(_Lylac):
         self._ddl = DDLManager(self)
         self._where = Where(self)
         self._query = Query(self)
+        self._select = Select(self)
         self._automations = Automations(self)
 
         # Registro de las automatizaciones predeterminadas
@@ -203,18 +205,21 @@ class Lylac(_Lylac):
         if isinstance(data, dict):
             data = [data,]
 
-        # Creación de comandos SQL
-        stmt = (
-            insert(table_model)
-            .returning(self._models.get_id_field(table_model))
-            .values(data)
-        )
+        # Instanciación de objetos para crear en la base de datos
+        records = [ table_model(**record) for record in data ]
 
-        # Ejecución de la transacción
-        response = self._connection.execute(stmt, commit= True)
+        # Se usa Session ya que CREATE no inserta valores en campos referenciados de manera correcta
+        # Ejecución de creación de registros
+        with Session(self._engine) as session:
+            session.add_all(records)
+            session.commit()
+
+            # Actualización de los objetos registrados
+            for record in records:
+                session.refresh(record)
 
         # Obtención de las IDs creadas
-        inserted_records: list[int] = [getattr(row, 'id') for row in response]
+        inserted_records = [ self._index[record]['id'] for record in records ]
 
         # Ejecución de las automatizaciones correspondientes
         self._automations.run_after_transaction(
@@ -346,7 +351,7 @@ class Lylac(_Lylac):
         table_model = self._models.get_table_model(table_name)
 
         # Creación del query SELECT
-        stmt = select(self._models.get_id_field(table_model))
+        stmt = self._select.build(table_name, ['id'])
 
         # Si hay criterios de búsqueda se genera el 'where'
         if len(search_criteria) > 0:
@@ -380,6 +385,7 @@ class Lylac(_Lylac):
         sortby: str | list[str] = None,
         ascending: bool | list[bool] = True,
         output_format: OutputOptions | None = None,
+        only_ids_in_relations: bool = False,
     ) -> pd.DataFrame | list[dict[str, RecordValue]]:
         """
         ## Lectura de registros
@@ -421,11 +427,8 @@ class Lylac(_Lylac):
         # Obtención de la instancia de la tabla
         table_model = self._models.get_table_model(table_name)
 
-        # Obtención de los campos de la tabla
-        table_fields = self._models.get_table_fields(table_model, fields)
-
         # Creación del query base
-        stmt = select(*table_fields)
+        stmt = self._select.build(table_name, fields)
 
         # Creación del query where
         where_query = self._where.build_where(table_model, [('id', 'in', record_ids)])
@@ -448,7 +451,7 @@ class Lylac(_Lylac):
         data = pd.DataFrame(response.fetchall())
 
         # Retorno en formato de salida configurado
-        return self._output.build_output(data, table_fields, output_format, table_name, 'dataframe')
+        return self._output.build_output(data, fields, output_format, table_name, 'dataframe', only_ids_in_relations)
 
     def get_value(
         self,
@@ -567,6 +570,7 @@ class Lylac(_Lylac):
         sortby: str | list[str] | None = None,
         ascending: bool | list[bool] = True,
         output_format: OutputOptions | None = None,
+        only_ids_in_relations: bool = False,
     ) -> pd.DataFrame | dict[str, RecordValue]:
         """
         ## Búsqueda y lectura de registros
@@ -707,11 +711,8 @@ class Lylac(_Lylac):
         # Obtención de la instancia de la tabla
         table_model = self._models.get_table_model(table_name)
 
-        # Obtención de los campos de la tabla
-        table_fields = self._models.get_table_fields(table_model, fields)
-
         # Creación del query base
-        stmt = select(*table_fields)
+        stmt = self._select.build(table_name, fields)
 
         # Creación del segmento WHERE en caso de haberlo
         stmt = self._where.add_query(stmt, table_model, search_criteria)
@@ -734,7 +735,7 @@ class Lylac(_Lylac):
         data = pd.DataFrame(response.fetchall())
 
         # Retorno en formato de salida configurado
-        return self._output.build_output(data, table_fields, output_format, table_name, 'dataframe')
+        return self._output.build_output(data, fields, output_format, table_name, 'dataframe', only_ids_in_relations)
 
     def search_count(
         self,

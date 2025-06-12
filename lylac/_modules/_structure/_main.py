@@ -1,8 +1,10 @@
+from typing import Tuple
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from ..._core import (
     _Lylac,
     _BaseStructure,
 )
+from ..._data import fields_atts
 from ..._module_types import TType
 from ._submodules import (
     _Automations,
@@ -41,7 +43,7 @@ class Structure(_BaseStructure):
         # Obtención del set de mapeadores de la tabla
         mappers = list(self._main._base.registry.mappers)
         # Creación del diccionario de tablas
-        self.models = { getattr(mapper.class_, '__tablename__').replace('_', '.'): self._initialize_model_properties(mapper.class_) for mapper in mappers }
+        self.models = { getattr(mapper.class_, '__tablename__').replace('_', '.'): self._initialize_model_properties(mapper.class_, True) for mapper in mappers }
 
     def register_field(
         self,
@@ -116,9 +118,36 @@ class Structure(_BaseStructure):
     def _initialize_model_properties(
         self,
         table_model: type[DeclarativeBase],
+        from_data: bool = False,
     ):
+        
+        if from_data:
+            fields_data = fields_atts[table_model.__tablename__.replace('_', '.')]
+        else:
+            fields_data = {}
 
         return {
             'model': table_model,
-            'fields': {}
+            'fields': fields_data
         }
+
+    def get_fields_atts(
+        self,
+        model_name: str,
+        fields: list[str] = [],
+    ) -> list[Tuple[str, TType, str | None]]:
+
+        # Obtención de todos los atributos de campos
+        fields_atts = self.models[model_name]['fields']
+
+        # Si no fue provista una lista de campos se toma la lista completa para iterar
+        if len(fields) == 0:
+            fields = self.models[model_name]['fields'].keys()
+        else:
+            if 'id' in fields:
+                fields.remove('id')
+            fields.insert(0, 'id')
+
+        # Retorno de lista de tuplas por cada campo
+        # TODO falta manejar tipos de dato one2many
+        return [(field, fields_atts[field]['ttype'], fields_atts[field]['relation']) for field in fields if fields_atts[field]['ttype'] != 'one2many']
