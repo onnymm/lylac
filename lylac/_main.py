@@ -148,8 +148,8 @@ class Lylac(_Lylac):
                 table_name,
                 transation,
                 wraper,
-                execute_if,
                 fields,
+                execute_if,
                 execution,
             )
 
