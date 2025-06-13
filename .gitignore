@@ -166,3 +166,6 @@ app/data/
 
 # Pruebas en Jupyter Notebooks
 **.ipynb
+
+# Archivo de validaciones (Temporal)
+validations.py
