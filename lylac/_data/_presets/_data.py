@@ -47,6 +47,7 @@ initial_data = {
             'ttype': 'char',
             'model_id': 1,
             'nullable': False,
+            'is_required': True,
         },
         {
             'name': 'create_date',
@@ -99,6 +100,7 @@ initial_data = {
             'ttype': 'char',
             'model_id': 2,
             'nullable': False,
+            'is_required': True,
         },
         {
             'name': 'create_date',
@@ -200,6 +202,7 @@ initial_data = {
             'ttype': 'char',
             'model_id': 3,
             'nullable': False,
+            'is_required': True,
         },
         {
             'name': 'create_date',
@@ -244,6 +247,7 @@ initial_data = {
             'ttype': 'char',
             'model_id': 4,
             'nullable': False,
+            'is_required': True,
         },
         {
             'name': 'create_date',
