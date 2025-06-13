@@ -8,4 +8,5 @@ from ._output import Output
 from ._query import Query
 from ._select import Select
 from ._structure import Structure
+from ._validations import Validations
 from ._where import Where

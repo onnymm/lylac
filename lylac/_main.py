@@ -26,14 +26,15 @@ from ._modules import (
     Automations,
     Connection,
     DDLManager,
+    Index,
     Metadata,
     Models,
     Output,
     Select,
     Structure,
     Query,
+    Validations,
     Where,
-    Index,
 )
 
 class Lylac(_Lylac):
@@ -63,11 +64,14 @@ class Lylac(_Lylac):
         self._query = Query(self)
         self._select = Select(self)
         self._automations = Automations(self)
+        self._validations = Validations(self)
 
         # Registro de las automatizaciones predeterminadas
         self._automations.create_preset_automations()
         # Inicialización de estructura de modelos de la instancia
         self._ddl._m_reset.initialize_from_data()
+        # Inicialización de los datos de validaciones
+        self._validations.initialize()
 
     def register_automation(
         self,
@@ -204,6 +208,9 @@ class Lylac(_Lylac):
         # Conversión de datos entrantes si es necesaria
         if isinstance(data, dict):
             data = [data,]
+
+        # Ejecución de validaciones
+        self._validations.run_validations_on_create(table_name, data)
 
         # Instanciación de objetos para crear en la base de datos
         records = [ table_model(**record) for record in data ]

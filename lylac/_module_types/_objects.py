@@ -133,6 +133,12 @@ class ModelRecord():
         field_id: int
         label: str
 
+    class BaseUser(BaseRecord):
+        login: str
+        odoo_id: int
+        active: bool
+        sync: bool
+
 class FieldAttributes(BaseModel):
     """
     ### Nuevo campo

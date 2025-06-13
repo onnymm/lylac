@@ -86,6 +86,7 @@ Submodule = Literal[
     '_automations',
     '_ddl',
     '_strc',
+    '_validations',
 ]
 
 class NewRecord():

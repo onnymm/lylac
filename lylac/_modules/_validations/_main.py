@@ -1,0 +1,160 @@
+from ..._constants import MODEL_NAME
+from ..._core import _Lylac
+from ..._module_types import (
+    Transaction,
+    RecordData,
+)
+from ._module_types import (
+    ErrorToShow,
+    Validation,
+    ValidationsHub,
+)
+from ._submodules import (
+    _Automations,
+    _BaseValidations,
+    _Initialize,
+    _Validations,
+)
+
+class Validations(_BaseValidations):
+
+    _hub: ValidationsHub = {}
+
+    def __init__(
+        self,
+        instance: _Lylac,
+    ) -> None:
+
+        # Asignación de instancia principal
+        self._main = instance
+
+        # Inicialización de submódulos
+        self._m_automations = _Automations(self)
+        self._m_initialize = _Initialize(self)
+        self._m_validations = _Validations(self)
+
+    def initialize(
+        self,
+    ) -> None:
+
+        # Inicialización de los datos
+        self._m_initialize.initialize_data()
+        # Se activa el estado de las validaciones para comenzar a funcionar
+        self._active = True
+
+    def initialize_model_validations(
+        self,
+        model_name: str,
+    ) -> None:
+
+        self._hub[model_name] = {
+            'create': [],
+        }
+
+    def drop_model_validations(
+        self,
+        model_name: str,
+    ) -> None:
+
+        del self._hub[model_name]
+
+    def run_validations_on_create(
+        self,
+        model_name: str,
+        data: list[RecordData],
+    ) -> None:
+
+        # Si el estado de las automatizaciones aún no es activo
+        if not self._active:
+            return
+
+        # Obtención de la ID del modelo
+        [ model_id ] = self._main.search(MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
+
+        # Obtención de las validaciones del modelo en el método de creación
+        transaction_validations: list[Validation.Create.Mixed.Params] = self._get_method_validations(model_name, 'create')
+
+        # Inicialización de errores
+        errors: list[ErrorToShow] = []
+
+        # Iteración por cada una de las validaciones
+        for validation in transaction_validations:
+
+            # Si la validación se debe ejecutar por registro...
+            if validation['method'] == 'record':
+
+                # Obtención de la función de validación a ejecutar
+                validation_to_execute: Validation.Create.Individual.Callback = validation['callback']
+                # Iteración por cada uno de los registros
+                for record in data:
+                    # Ejecución de validación y obtención de posible valor a mostrar en error
+                    error_value = validation_to_execute(
+                        Validation.Create.Individual.Args(
+                            model_name= model_name,
+                            model_id= model_id,
+                            data= record,
+                        ),
+                    )
+
+                    # Si existe valor retornado
+                    if error_value is not None:
+                        # Se añaden datos de error
+                        errors.append(
+                            {
+                                'value': error_value,
+                                'message': validation['message'],
+                                'data': record
+                            }
+                        )
+
+            # Si la validación se debe ejecutar por grupo de registros...
+            else:
+
+                # Obtención de la función de validación a ejecutar
+                validation_to_execute: Validation.Create.Group.Callback = validation['callback']
+                # Se ejecuta la función con todos los registros
+                error_value = validation_to_execute(
+                    Validation.Create.Group.Args(
+                        model_name= model_name,
+                        model_id= model_id,
+                        data = data,
+                    )
+                )
+
+                # Si existe valor retornado
+                if error_value is not None:
+                    # Se añaden datos de error
+                    errors.append(
+                        {
+                            'value': error_value,
+                            'message': validation['message'],
+                            'data': data,
+                        }
+                    )
+
+        # Si existen errores encontrados
+        if errors:
+            # Inicialización de mensaje completo
+            complete_message = '\n'
+            for err in errors:
+                message = err['message'].format(value= err['value'], data= err['data'])
+                complete_message += f'{message}\n'
+
+            # Se arrojan el error
+            raise AssertionError(complete_message)
+
+    def _get_method_validations(
+        self,
+        model_name: str,
+        transaction: Transaction,
+    ):
+
+        # Obtención de validaciones genéricas
+        generic_validations = self._hub['generic'][transaction]
+        # Obtención de validaciones del modelo
+        model_validations = self._hub[model_name][transaction]
+
+        # Creación de lista de validaciones
+        validations = [ *generic_validations, *model_validations ]
+
+        return validations

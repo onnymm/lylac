@@ -41,6 +41,16 @@ preset_automations: list[AutomationDataDict] = [
         'fields': ['id'],
         'execution': 'record',
     },
+    # Inicialización de registro de validaciones de modelo cuando un modelo se crea
+    {
+        'submodule': '_validations',
+        'callback': 'initialize_validations',
+        'model': 'base.model',
+        'transaction': 'create',
+        'criteria': [],
+        'fields': ['model'],
+        'execution': 'record',
+    },
     # Eliminación de una tabla de base de datos cuando un modelo se elimina
     {
         'submodule': '_ddl',
@@ -99,6 +109,16 @@ preset_automations: list[AutomationDataDict] = [
         'transaction': 'delete',
         'criteria': [],
         'fields': ['name', 'model_id'],
+        'execution': 'record',
+    },
+    # Eliminación de registro de validaciones de modelo cuando un modelo se elimina
+    {
+        'submodule': '_validations',
+        'callback': 'delete_validations',
+        'model': 'base.model',
+        'transaction': 'delete',
+        'criteria': [],
+        'fields': ['model'],
         'execution': 'record',
     },
 ]
