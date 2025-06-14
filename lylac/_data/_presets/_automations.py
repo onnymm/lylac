@@ -17,7 +17,7 @@ preset_automations: list[AutomationDataDict] = [
         'callback': 'register_new_model',
         'model': 'base.model',
         'transaction': 'create',
-        'criteria': [('model', 'not in', ['base.model', 'base.model.field', 'base.model.field', 'base.users'])],
+        'criteria': [('model', 'not in', ['base.model', 'base.model.field', 'base.model.field.selection', 'base.users'])],
         'fields': ['model'],
         'execution': 'record',
     },
@@ -27,7 +27,7 @@ preset_automations: list[AutomationDataDict] = [
         'callback': 'create_base_fields',
         'model': 'base.model',
         'transaction': 'create',
-        'criteria': [('model', 'not in', ['base.model', 'base.model.field', 'base.model.field', 'base.users'])],
+        'criteria': [('model', 'not in', ['base.model', 'base.model.field', 'base.model.field.selection', 'base.users'])],
         'fields': ['id'],
         'execution': 'record',
     },
@@ -69,7 +69,7 @@ preset_automations: list[AutomationDataDict] = [
         'transaction': 'create',
         'criteria': [
             '&',
-                ('id', '>', 40),
+                ('id', '>', 36),
                 ('name', 'not in', ['id', 'name', 'create_date', 'write_date'])
         ],
         'fields': [
@@ -92,7 +92,7 @@ preset_automations: list[AutomationDataDict] = [
         'callback': 'register_field_atts',
         'model': 'base.model.field',
         'transaction': 'create',
-        'criteria': [('id', '>', 48)],
+        'criteria': [('id', '>', 44)],
         'fields': [
             'name',
             'ttype',
