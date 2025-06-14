@@ -12,8 +12,10 @@ from ._data import (
     CriteriaStructure,
     NewRecord,
     TripletStructure,
+    ValidationData,
     ComparisonOperator,
     LogicOperator,
+    ValidationMethod,
 )
 from ._interface import (
     AutomationCallback,

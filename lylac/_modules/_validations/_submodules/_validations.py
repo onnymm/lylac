@@ -80,3 +80,18 @@ class _Validations():
         # Si no existe coincidencia se retorna el nombre
         if coincidence is None:
             return model_name
+
+    def unmutable_field_properties(
+        self,
+        params: Validation.Update.Individual.Args,
+    ) -> Any:
+
+        # Campos válidos
+        valid_fields = ['name']
+
+        # Revisión
+        for field in params.data.keys():
+            # Si se encuentra un campo que no es válido...
+            if field not in valid_fields:
+                # Se retorna True para disparar el error
+                return True

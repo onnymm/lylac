@@ -1,47 +1,8 @@
-from typing import (
-    Literal,
-    TypedDict,
-    Optional,
+from ...._data import (
+    initial_data,
+    validations_data,
 )
-from ...._data import initial_data
-from ...._module_types import Transaction
-from .._module_types import ValidationMethod
 from ._base import _BaseValidations
-
-class ValidationData(TypedDict):
-    module: Literal['_validations']
-    callback: str
-    transaction: Transaction
-    method: ValidationMethod
-    model: Optional[str]
-    message: str
-
-validations_data: list[ValidationData] = [
-    {
-        'module': '_validations',
-        'callback': 'validate_required',
-        'transaction': 'create',
-        'method': 'record',
-        'model': 'generic',
-        'message': 'Los campos {value} son requeridos en el registro {data}.',
-    },
-    {
-        'module': '_validations',
-        'callback': 'valid_model_name',
-        'transaction': 'create',
-        'method': 'record',
-        'model': 'base.model',
-        'message': 'El valor "{value}" en el nombre de modelo solo puede contener letras y guiones bajos.'
-    },
-    {
-        'module': '_validations',
-        'callback': 'model_names',
-        'transaction': 'create',
-        'method': 'record',
-        'model': 'base.model',
-        'message': 'El nombre y nombre de modelo de "{value}" deben ser coincidir con el patrón "model_name" - "model.name" respectivamente.',
-    },
-]
 
 class _Initialize():
 

@@ -21,6 +21,9 @@ argumentos de entrada en métodos del módulo así como en funcionamientos
 internos, retornos en JSON y validaciones.
 """
 
+# Método de validación
+ValidationMethod = Literal['record', 'list']
+
 # Tipo de transacción de creación o modificación de datos
 ModificationTransaction = Literal['create', 'update']
 """

@@ -9,10 +9,8 @@ from pydantic import BaseModel
 from ..._module_types import (
     _T,
     RecordData,
+    ValidationMethod,
 )
-
-# Método de validación
-ValidationMethod = Literal['record', 'list']
 
 # Tipos de validación
 _IndividualData = RecordData
@@ -43,6 +41,34 @@ class _ValidationOnCreateParams(TypedDict, Generic[_T]):
 # Tipado de funciones
 _IndividualValidationOnCreateCallback = Callable[[ _ValidationOnCreateArgs[_IndividualData] ], Any]
 _GroupValidationOnCreateCallback = Callable[[ _ValidationOnCreateArgs[_GroupData] ], Any]
+
+# Argumentos de entrada de función de validación
+class _ValidationOnUpdateArgs(BaseModel, Generic[_T]):
+
+    model_name: str
+    """Nombre del modelo."""
+    model_id: int
+    """ID del modelo."""
+    record_ids: _T
+    """IDs de los registros."""
+    data: RecordData
+    """Datos de los registros."""
+
+class _ValidationOnUpdateParams(TypedDict, Generic[_T]):
+
+    callback: _T
+    """Función de validación en la creación de registros."""
+    method: ValidationMethod
+    """
+    Método de ejecución de validación.
+    >>> Literal['record', 'list']
+    """
+    message: str
+    """Mensaje de error arrojado si los datos evaluados no son válidos."""
+
+# Tipado de funciones
+_IndividualValidationOnUpdateCallback = Callable[[ _ValidationOnUpdateArgs[int] ], Any]
+_GroupValidationOnUpdateCallback = Callable[[ _ValidationOnUpdateArgs[list[int]] ], Any]
 
 class Validation():
 
@@ -145,6 +171,113 @@ class Validation():
             >>> class _ValidationOnCreateParams(TypedDict):
             >>>     # Función de validación en la creación de registros.
             >>>     callback: Validation.Create.Group.Callback
+            >>>     # Método de ejecución de validación.
+            >>>     method: 'list'
+            >>>     # Mensaje de error arrojado si los datos evaluados no son válidos.
+            >>>     message: str
+            """
+
+    class Update():
+
+        class Mixed():
+
+            Callback = _IndividualValidationOnUpdateCallback | _GroupValidationOnUpdateCallback
+            """
+            ### Función de validación
+            Función de validación en modificación de registros.
+            >>> def some_validation(
+            >>>     params: Validation.Update.Mixed.Args,
+            >>> ) -> Any:
+            >>>     ...
+            """
+            Args = _ValidationOnUpdateArgs[int | list[int]]
+            """
+            ### Argumentos de entrada de validación
+            Argumentos de entrada de función de validación en modificación de registros.
+            >>> class _ValidationOnUpdateArgs(BaseModel):
+            >>>     model_name: str
+            >>>     model_id: int
+            >>>     record_ids: int | list[int]
+            >>>     data: _IndividualData | _GroupData
+            """
+            Params = _ValidationOnUpdateParams[Callback]
+            """
+            ### Parámetros de validación de modificación grupal o individual
+            Parámetros que definen una función de validación, su método de ejecución y el
+            mensaje de error arrojado si los datos evaluados no son válidos.
+            >>> class _ValidationOnUpdateParams(TypedDict):
+            >>>     # Función de validación en la modificación de registros.
+            >>>     callback: Validation.Update.Mixed.Callback
+            >>>     # Método de ejecución de validación.
+            >>>     method: 'list'
+            >>>     # Mensaje de error arrojado si los datos evaluados no son válidos.
+            >>>     message: str
+            """
+
+        class Individual():
+
+            Callback = _IndividualValidationOnUpdateCallback
+            """
+            ### Función de validación
+            Función de validación en modificación de un registro.
+            >>> def some_validation(
+            >>>     params: Validation.Update.Individual.Args,
+            >>> ) -> Any:
+            >>>     ...
+            """
+            Args = _ValidationOnUpdateArgs[int]
+            """
+            ### Argumentos de entrada de validación
+            Argumentos de entrada de función de validación en modificación de un registro.
+            >>> class _ValidationOnUpdateArgs(BaseModel):
+            >>>     model_name: str
+            >>>     model_id: int
+            >>>     record_ids: int
+            >>>     data: _IndividualData
+            """
+            Params = _ValidationOnUpdateParams[Callback]
+            """
+            ### Parámetros de validación de modificación grupal
+            Parámetros que definen una función de validación, su método de ejecución y el
+            mensaje de error arrojado si los datos evaluados no son válidos.
+            >>> class _ValidationOnUpdateParams(TypedDict):
+            >>>     # Función de validación en la modificación de un registro.
+            >>>     callback: Validation.Update.Group.Callback
+            >>>     # Método de ejecución de validación.
+            >>>     method: 'list'
+            >>>     # Mensaje de error arrojado si los datos evaluados no son válidos.
+            >>>     message: str
+            """
+
+        class Group():
+
+            Callback = _GroupValidationOnUpdateCallback
+            """
+            ### Función de validación
+            Función de validación en modificación de registros.
+            >>> def some_validation(
+            >>>     params: Validation.Update.Group.Args,
+            >>> ) -> Any:
+            >>>     ...
+            """
+            Args = _ValidationOnUpdateArgs[list[int]]
+            """
+            ### Argumentos de entrada de validación
+            Argumentos de entrada de función de validación en modificación de registros.
+            >>> class _ValidationOnCreateArgs(BaseModel):
+            >>>     model_name: str
+            >>>     model_id: int
+            >>>     record_ids: list[int]
+            >>>     data: _GroupData
+            """
+            Params = _ValidationOnUpdateParams[Callback]
+            """
+            ### Parámetros de validación de modificación individual
+            Parámetros que definen una función de validación, su método de ejecución y el
+            mensaje de error arrojado si los datos evaluados no son válidos.
+            >>> class _ValidationOnUpdateParams(TypedDict):
+            >>>     # Función de validación en la modificación de registros.
+            >>>     callback: Validation.Update.Group.Callback
             >>>     # Método de ejecución de validación.
             >>>     method: 'list'
             >>>     # Mensaje de error arrojado si los datos evaluados no son válidos.

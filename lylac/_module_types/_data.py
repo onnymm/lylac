@@ -9,6 +9,7 @@ from ._base import (
     RecordValue,
     Transaction,
     TType,
+    ValidationMethod,
 )
 
 # Formato de credenciales para uso de base de datos
@@ -135,3 +136,11 @@ class AutomationDataModel(BaseModel):
     criteria: CriteriaStructure
     fields: list[str]
     execution: Literal['record', 'all']
+
+class ValidationData(TypedDict):
+    module: Literal['_validations']
+    callback: str
+    transaction: Transaction
+    method: ValidationMethod
+    model: Optional[str]
+    message: str

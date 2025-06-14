@@ -92,7 +92,7 @@ preset_automations: list[AutomationDataDict] = [
         'callback': 'register_field_atts',
         'model': 'base.model.field',
         'transaction': 'create',
-        'criteria': [('id', '>', 47)],
+        'criteria': [('id', '>', 48)],
         'fields': [
             'name',
             'ttype',

@@ -931,6 +931,9 @@ class Lylac(_Lylac):
         >>> # 4   7  user003      Zopilote
         """
 
+        # Ejecución de validaciones
+        self._validations.run_validations_on_update(table_name, search_criteria, data)
+
         # Obtención de la instancia de la tabla
         table_model = self._models.get_table_model(table_name)
 
