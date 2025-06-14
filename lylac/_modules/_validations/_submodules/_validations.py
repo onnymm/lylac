@@ -1,3 +1,5 @@
+import re
+from typing import Any
 from ...._constants import MODEL_NAME
 from .._module_types import Validation
 from ._base import _BaseValidations
@@ -17,7 +19,7 @@ class _Validations():
     def validate_required(
             self,
             params: Validation.Create.Individual.Args,
-        ) -> bool:
+        ) -> Any:
 
             # Obtención de los campos requeridos
             required_fields: list[str] = (
@@ -49,3 +51,32 @@ class _Validations():
             if missing_fields:
                 # Se retorna la información
                 return missing_fields
+
+    def model_names(
+        self,
+        params: Validation.Create.Individual.Args,
+    ) -> Any:
+
+        # Obtención del nombre del modelo a crear
+        record_name: str = params.data['name']
+        # Obtención del nombre de modelo del modelo a crear
+        record_model: str = params.data['model']
+
+        # Comparación
+        if record_name.replace('_', '.') != record_model:
+            return record_model
+
+    def valid_model_name(
+        self,
+        params: Validation.Create.Individual.Args,
+    ) -> Any:
+
+        # Obtención del nombre del modelo
+        model_name = params.data['name']
+
+        # Se valida que el nombre con los caracteres válidos
+        coincidence = re.match(r'^\w*$', model_name)
+
+        # Si no existe coincidencia se retorna el nombre
+        if coincidence is None:
+            return model_name
