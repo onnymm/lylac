@@ -125,3 +125,104 @@ class _Validations():
             if field not in valid_fields:
                 # Se retorna True para disparar el error
                 return True
+
+    def forbid_duplicated_fields_in_same_model(
+        self,
+        params: Validation.Create.Individual.Args[ModelRecord.BaseModelField],
+    ) -> Any:
+        """
+        ### Prohibir campos duplicados en modelo
+        Esta validación se asegura que cada diccionario de datos entrante para la
+        creación de un nuevo registro en el campo de modelos no incluya un nombre de
+        campo combinado con una ID de modelo vinculada que ya exista en la base de
+        datos. Arroja un error si encuentra coincidencias.
+        """
+
+        # Obtención de los valores a usar en filtro
+        field_name = params.data['name']
+        model_id = params.data['model_id']
+
+        # Búsqueda de coincidencias
+        records = self._main.search_read(
+            'base.model.field',
+            [
+                '&',
+                    ('name', '=', field_name),
+                    ('model_id', '=', model_id)
+            ],
+            ['name', 'model_id'],
+            output_format= 'dataframe',
+            only_ids_in_relations= True,
+        )
+
+        # Si existen coincidencias se retorna el nombre del campo
+        if len(records):
+            return field_name
+
+    def forbid_duplicated_fields_in_same_model_in_incoming_data(
+        self,
+        params: Validation.Create.Group.Args[ModelRecord.BaseModelField],
+    ) -> Any:
+        """
+        Prohibir campos duplicados en modelo desde datos entrantes
+        Esta validación se asegura que cada diccionario de datos entrante para la
+        creación de un nuevo registro en el campo de modelos no incluya un nombre de
+        campo combinado con una ID de modelo vinculada dos veces en los datos entrantes.
+        """
+
+        # Obtención de cantidad de registros a crear
+        incoming_records_qty = len(params.data)
+
+        # Si solo existe un registro la función se termina ya que no hay suficientes datos a comparar
+        if incoming_records_qty == 1:
+            return None
+
+        # Obtención de lista de duplicados
+        duplicated_pairs = self._main._algorythms.find_duplicates(
+            params.data,
+            lambda value: ( value['name'], value['model_id'] ),
+        )
+
+        # Si existen pares duplicados se retornan éstos
+        if len(duplicated_pairs):
+            return duplicated_pairs
+
+    def unique_field_name_in_model(
+        self,
+        params: Validation.Create.Individual.Args[ModelRecord.BaseModelField],
+    ) -> Any:
+
+        # Obtención de los valores a usar en el filtro
+        field_label = params.data['label']
+        model_id = params.data['model_id']
+
+        # Búsqueda de coincidencias
+        results = self._main.search_read(
+            'base.model.field',
+            [
+                '&',
+                    ('label', '=', field_label),
+                    ('model_id', '=', model_id)
+            ]
+        )
+
+        # Si existen coincidencias se retona el nombre del campo y la ID de modelo
+        if len(results):
+            return field_label
+
+    def unique_field_name_in_model_in_incomig_data(
+        self,
+        params: Validation.Create.Group.Args[ModelRecord.BaseModelField],
+    ) -> Any:
+
+        # Búsqueda de duplicados
+        duplicated = self._main._algorythms.find_duplicates(
+            params.data,
+            lambda record: ( record['label'], record['model_id'] ),
+        )
+
+        print(duplicated)
+
+        # Si existen nombres duplicados se retornan éstos
+        if len(duplicated):
+            return duplicated

@@ -77,11 +77,11 @@ class Validations(_BaseValidations):
         # Obtención de las validaciones del modelo en el método de creación
         transaction_validations: list[Validation.Create.Mixed.Params] = self._get_method_validations(model_name, 'create')
 
-        # Inicialización de errores
-        errors: list[ErrorToShow] = []
-
         # Iteración por cada una de las validaciones
         for validation in transaction_validations:
+
+            # Inicialización de errores
+            errors: list[ErrorToShow] = []
 
             # Si la validación se debe ejecutar por registro...
             if validation['method'] == 'record':
@@ -135,16 +135,16 @@ class Validations(_BaseValidations):
                         }
                     )
 
-        # Si existen errores encontrados
-        if errors:
-            # Inicialización de mensaje completo
-            complete_message = '\n'
-            for err in errors:
-                message = err['message'].format(value= err['value'], data= err['data'])
-                complete_message += f'{message}\n'
+            # Si existen errores encontrados
+            if errors:
+                # Inicialización de mensaje completo
+                complete_message = '\n'
+                for err in errors:
+                    message = err['message'].format(value= err['value'], data= err['data'])
+                    complete_message += f'{message}\n'
 
-            # Se arrojan el error
-            raise AssertionError(complete_message)
+                # Se arrojan el error
+                raise AssertionError(complete_message)
 
     def run_validations_on_update(
         self,
