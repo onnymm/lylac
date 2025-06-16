@@ -4,7 +4,7 @@ validations_data: list[ValidationData] = [
     # Validación de campos requeridos en creación de un registro en cualquier tabla
     {
         'module': '_validations',
-        'callback': 'validate_required',
+        'callback': 'validate_required_fields',
         'transaction': 'create',
         'method': 'record',
         'model': 'generic',
@@ -13,7 +13,7 @@ validations_data: list[ValidationData] = [
     # Caracteres válidos en etiqueta de modelo en creación de un registro en la tabla de modelos
     {
         'module': '_validations',
-        'callback': 'valid_model_name',
+        'callback': 'valid_model_label',
         'transaction': 'create',
         'method': 'record',
         'model': 'base.model',
@@ -22,7 +22,7 @@ validations_data: list[ValidationData] = [
     # Consistencia en etiqueta y modelo de nueva tabla en creación de un registro en la tabla de modelos
     {
         'module': '_validations',
-        'callback': 'model_names',
+        'callback': 'coherent_label_and_name_in_new_model',
         'transaction': 'create',
         'method': 'record',
         'model': 'base.model',
