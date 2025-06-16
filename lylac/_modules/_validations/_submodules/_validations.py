@@ -1,6 +1,7 @@
 import re
 from typing import Any
 from ...._constants import MODEL_NAME
+from ...._module_types import ModelRecord
 from .._module_types import Validation
 from ._base import _BaseValidations
 
@@ -18,7 +19,7 @@ class _Validations():
 
     def validate_required_fields(
         self,
-        params: Validation.Create.Individual.Args,
+        params: Validation.Create.Individual.Args[ModelRecord.BaseModelField],
     ) -> Any:
         """
         ### Validación de campos requeridos
@@ -61,7 +62,7 @@ class _Validations():
 
     def coherent_label_and_name_in_new_model(
         self,
-        params: Validation.Create.Individual.Args,
+        params: Validation.Create.Individual.Args[ModelRecord.BaseModel],
     ) -> Any:
         """
         ### Coherencia en nombre y etiqueta de modelo
@@ -76,9 +77,9 @@ class _Validations():
         """
 
         # Obtención del nombre del modelo a crear
-        record_name: str = params.data['name']
+        record_name = params.data['name']
         # Obtención del nombre de modelo del modelo a crear
-        record_model: str = params.data['model']
+        record_model = params.data['model']
 
         # Comparación
         if record_name.replace('_', '.') != record_model:
@@ -86,7 +87,7 @@ class _Validations():
 
     def valid_model_label(
         self,
-        params: Validation.Create.Individual.Args,
+        params: Validation.Create.Individual.Args[ModelRecord.BaseModel],
     ) -> Any:
         """
         ### Etiqueta de modulo válida
@@ -106,7 +107,7 @@ class _Validations():
 
     def unmutable_field_properties(
         self,
-        params: Validation.Update.Individual.Args,
+        params: Validation.Update.Individual.Args[ModelRecord.BaseModelField],
     ) -> Any:
         """
         ### Propiedades de campo inmutables
