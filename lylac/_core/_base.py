@@ -1,7 +1,10 @@
 from typing import (
     Any,
+    Callable,
     Literal,
     Tuple,
+    TypeVar,
+    overload,
 )
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.engine.cursor import CursorResult
@@ -19,6 +22,13 @@ from .._module_types import (
     RecordValue,
     TType,
 )
+
+# Tipo de dato entrante
+_T = TypeVar('_T')
+# Tipo de dato extraído del tipo entrante
+_E = TypeVar('_E')
+# Tipo de dato para clasificación
+_C = TypeVar('_C')
 
 class _BaseModels():
 
@@ -74,9 +84,30 @@ class _BaseFieldsGetter():
     ) -> InstrumentedAttribute:
         ...
 
+class _BaseAlgorythms():
+
+    @overload
+    def find_duplicates(
+        self,
+        data: list[_T],
+        extractor: Callable[[_T], _E] = lambda value: value,
+        groupby: None = None,
+    ) -> list[_E]:
+        ...
+
+    @overload
+    def find_duplicates(
+        self,
+        data: list[_T],
+        extractor: Callable[[_T], _E],
+        groupby: Callable[[_T], _C],
+    ) -> dict[_C, list[_E]]:
+        ...
+
 class _BaseBaseLylac():
     credentials: Literal['env'] | DBCredentials | str = 'env'
     _base: type[DeclarativeBase] = None
+    _algorythms: _BaseAlgorythms = None
     _engine: Engine = None
     _models: _BaseModels = None
     _connection: _BaseConnection = None

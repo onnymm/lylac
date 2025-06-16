@@ -1,4 +1,5 @@
 from ._base import (
+    _BaseAlgorythms,
     _BaseConnection,
     _BaseFieldsGetter,
     _BaseIndex,

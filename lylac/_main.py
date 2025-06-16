@@ -23,6 +23,7 @@ from ._module_types import (
     RecordValue,
 )
 from ._modules import (
+    Algorythms,
     Automations,
     Connection,
     DDLManager,
@@ -56,6 +57,7 @@ class Lylac(_Lylac):
         self._connection = Connection(self, credentials)
 
         # Inicialización de submódulos
+        self._algorythms = Algorythms(self)
         self._strc = Structure(self)
         self._models = Models(self)
         self._index = Index(self)

@@ -1,3 +1,4 @@
+from ._algorythms import Algorythms
 from ._automations import Automations
 from ._connection import Connection
 from ._ddl import DDLManager
