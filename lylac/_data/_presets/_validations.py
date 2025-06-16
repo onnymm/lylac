@@ -1,6 +1,33 @@
 from ..._module_types import ValidationData
 
 validations_data: list[ValidationData] = [
+    # Restricción de creación de registros con valor de ID en creación de un registro en cualquier tabla
+    {
+        'module': '_validations',
+        'callback': 'reject_id_values',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'generic',
+        'message': 'No se puede crear el valor de ID para el registro {data}.'
+    },
+    # Restricción de creación de registros con valor de Fecha de creación en creación de un registro en cualquier tabla
+    {
+        'module': '_validations',
+        'callback': 'reject_create_date_values',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'generic',
+        'message': 'No se puede crear el valor de Fecha de creación para el registro {data}.'
+    },
+    # Restricción de creación de registros con valor de Fecha de modificación en creación de un registro en cualquier tabla
+    {
+        'module': '_validations',
+        'callback': 'reject_write_date_values',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'generic',
+        'message': 'No se puede crear el valor de Fecha de modificación para el registro {data}.'
+    },
     # Validación de campos requeridos en creación de un registro en cualquier tabla
     {
         'module': '_validations',
@@ -58,7 +85,7 @@ validations_data: list[ValidationData] = [
     # Restricción de etiqueta de campo duplicada en el mismo modelo en creación de un registro de campo
     {
         'module': '_validations',
-        'callback': 'unique_field_name_in_model',
+        'callback': 'unique_field_label_in_model',
         'transaction': 'create',
         'method': 'record',
         'model': 'base.model.field',
@@ -67,10 +94,28 @@ validations_data: list[ValidationData] = [
     # Restricción de etiquetas de campo repetidas en el mismo modelo en datos entrantes en creación de registros de campo.
     {
         'module': '_validations',
-        'callback': 'unique_field_name_in_model_in_incomig_data',
+        'callback': 'unique_field_label_in_model_in_incomig_data',
         'transaction': 'create',
         'method': 'list',
         'model': 'base.model.field',
         'message': 'No se pueden registrar campos con la misma etiqueta en el mismo modelo. Valores de error: {value}.'
+    },
+    # Restricción de creación de contraseña inicial en creación de un registro en la tabla de usuarios
+    {
+        'module': '_validations',
+        'callback': 'avoid_password_creation',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'base.users',
+        'message': 'No se puede crear una contraseña inicial. Cambia la contraseña prestablecida una vez que el usuario [{value}] se haya creado.',
+    },
+    # Restricción de modificación de contraseña en la modificación de un registro en la tabla de usuarios
+    {
+        'module': '_validations',
+        'callback': 'avoid_password_modification',
+        'transaction': 'update',
+        'method': 'record',
+        'model': 'base.users',
+        'message': 'No se puede cambiar la contraseña de un usuario por medio de la API de CRUD de Lylac.',
     },
 ]

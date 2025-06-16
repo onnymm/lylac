@@ -17,6 +17,33 @@ class _Validations():
         # Asignación de instancia principal
         self._main = instance._main
 
+    def reject_id_values(
+        self,
+        params: Validation.Create.Individual.Args,
+    ) -> Any:
+
+        # Comprobación de existencia de ID en creación
+        if 'id' in params.data.keys():
+            return True
+
+    def reject_create_date_values(
+        self,
+        params: Validation.Create.Individual.Args,
+    ) -> Any:
+
+        # Comprobación de existencia de Fecha de creación en creación
+        if 'create_date' in params.data.keys():
+            return True
+
+    def reject_write_date_values(
+        self,
+        params: Validation.Create.Individual.Args,
+    ) -> Any:
+
+        # Comprobación de existencia de Fecha de modificación en creación
+        if 'write_date' in params.data.keys():
+            return True
+
     def validate_required_fields(
         self,
         params: Validation.Create.Individual.Args[ModelRecord.BaseModelField],
@@ -117,7 +144,7 @@ class _Validations():
         """
 
         # Campos válidos
-        valid_fields = ['name']
+        valid_fields = ['label']
 
         # Revisión
         for field in params.data.keys():
@@ -187,10 +214,17 @@ class _Validations():
         if len(duplicated_pairs):
             return duplicated_pairs
 
-    def unique_field_name_in_model(
+    def unique_field_label_in_model(
         self,
         params: Validation.Create.Individual.Args[ModelRecord.BaseModelField],
     ) -> Any:
+        """
+        ### Etiqueta de campo única por modelo
+        Esta validación se asegura que los datos entrantes no contengan una etiqueta de
+        campo ya existente en el modelo en donde se intenta crear el registro. Arroja
+        un error en caso de hallar un registro de campo con la misma etiqueta de los
+        datos entrantes.
+        """
 
         # Obtención de los valores a usar en el filtro
         field_label = params.data['label']
@@ -210,10 +244,16 @@ class _Validations():
         if len(results):
             return field_label
 
-    def unique_field_name_in_model_in_incomig_data(
+    def unique_field_label_in_model_in_incomig_data(
         self,
         params: Validation.Create.Group.Args[ModelRecord.BaseModelField],
     ) -> Any:
+        """
+        ### Etiqueta de campo única por modelo en datos entrantes
+        Esta validación se asegura que los datos entrantes no contengan una etiqueta de
+        campo repetida en los datos entrantes. Arroja un error en caso de hallar
+        valores en etiqueta de campo repetidos en los datos entrantes.
+        """
 
         # Búsqueda de duplicados
         duplicated = self._main._algorythms.find_duplicates(
@@ -221,8 +261,28 @@ class _Validations():
             lambda record: ( record['label'], record['model_id'] ),
         )
 
-        print(duplicated)
-
         # Si existen nombres duplicados se retornan éstos
         if len(duplicated):
             return duplicated
+
+    def avoid_password_creation(
+        self,
+        params: Validation.Create.Individual.Args[ModelRecord.BaseUser],
+    ) -> Any:
+        """
+        ### Restricción de contraseña inicial
+        Esta validación se asegura que no se ingrese una contraseña sin ser hasheada.
+        """
+
+        # Comprobación de existencia de Contraseña en datos entrantes
+        if 'password' in params.data.keys():
+            return params.data['name']
+
+    def avoid_password_modification(
+        self,
+        params: Validation.Update.Individual.Args[ModelRecord.BaseUser],
+    ) -> Any:
+
+        # Comprobación de existencia de Contraseña en datos entrantes
+        if 'password' in params.data.keys():
+            return params.data['name']
