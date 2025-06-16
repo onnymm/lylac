@@ -46,7 +46,6 @@ initial_data = {
             'label': 'Nombre',
             'ttype': 'char',
             'model_id': 1,
-            'nullable': False,
             'is_required': True,
         },
         {
@@ -99,7 +98,6 @@ initial_data = {
             'label': 'Nombre',
             'ttype': 'char',
             'model_id': 2,
-            'nullable': False,
             'is_required': True,
         },
         {
@@ -201,7 +199,6 @@ initial_data = {
             'label': 'Nombre',
             'ttype': 'char',
             'model_id': 3,
-            'nullable': False,
             'is_required': True,
         },
         {
@@ -246,7 +243,6 @@ initial_data = {
             'label': 'Nombre',
             'ttype': 'char',
             'model_id': 4,
-            'nullable': False,
             'is_required': True,
         },
         {
