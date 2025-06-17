@@ -61,7 +61,7 @@ class _Reset():
         # Lectura de todos los registros de modelos existentes
         model_records = self._main.search_read(
             MODEL_NAME.BASE_MODEL,
-            [('model', 'not in', self._base_models)],
+            [('state', '!=', 'base')],
             ['name'],
             output_format= 'dict'
         )
@@ -77,7 +77,11 @@ class _Reset():
         # Lectura de todos los registros de campos existentes
         field_records = self._main.search_read(
             MODEL_NAME.BASE_MODEL_FIELD,
-            ['&', ('id', '>', 36), ('name', 'not in', ['id', 'name', 'create_date', 'write_date'])],
+            [
+                '&',
+                    ('state', '!=', 'base'),
+                    ('name', 'not in', ['id', 'name', 'create_date', 'write_date']),
+                ],
             [
                 'name',
                 'model_id',

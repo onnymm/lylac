@@ -12,24 +12,28 @@ initial_data = {
             'name': 'base_model',
             'label': 'Modelos',
             'description': 'Este modelo define los modelos de la base de datos.',
+            'state': 'base',
         },
         {
             'model': 'base.model.field',
             'name': 'base_model_field',
             'label': 'Campos',
             'description': 'Este modelo define los campos de la base de datos.',
+            'state': 'base',
         },
         {
             'model': 'base.model.field.selection',
             'name': 'base_model_field_selection',
             'label': 'Tipo de selección',
             'description': 'Este modelo define los valores de selección para usarse como tipo de dato en campos de modelos.',
+            'state': 'base',
         },
         {
             'model': 'base.users',
             'name': 'base_users',
             'label': 'Usuarios',
             'description': 'Este modelo define la estructura de usuarios en la base de datos',
+            'state': 'base',
         },
     ],
     'base.model.field': [
@@ -40,6 +44,7 @@ initial_data = {
             'model_id': 1,
             'nullable': False,
             'unique': True,
+            'state': 'base',
         },
         {
             'name': 'name',
@@ -47,6 +52,7 @@ initial_data = {
             'ttype': 'char',
             'model_id': 1,
             'is_required': True,
+            'state': 'base',
         },
         {
             'name': 'create_date',
@@ -54,6 +60,7 @@ initial_data = {
             'ttype': 'datetime',
             'model_id': 1,
             'nullable': False,
+            'state': 'base',
         },
         {
             'name': 'write_date',
@@ -61,6 +68,7 @@ initial_data = {
             'ttype': 'datetime',
             'model_id': 1,
             'nullable': False,
+            'state': 'base',
         },
         {
             'name': 'model',
@@ -70,6 +78,7 @@ initial_data = {
             'nullable': False,
             'unique': True,
             'is_required': True,
+            'state': 'base',
         },
         {
             'name': 'label',
@@ -78,12 +87,22 @@ initial_data = {
             'model_id': 1,
             'nullable': False,
             'is_required': True,
+            'state': 'base',
         },
         {
             'name': 'description',
             'label': 'Descripción',
             'ttype': 'text',
             'model_id': 1,
+            'state': 'base',
+        },
+        {
+            'name': 'state',
+            'label': 'Tipo de modelo',
+            'ttype': 'char',
+            'model_id': 1,
+            'default_value': 'generic',
+            'state': 'base',
         },
         {
             'name': 'id',
@@ -92,6 +111,7 @@ initial_data = {
             'model_id': 2,
             'nullable': False,
             'unique': True,
+            'state': 'base',
         },
         {
             'name': 'name',
@@ -99,6 +119,7 @@ initial_data = {
             'ttype': 'char',
             'model_id': 2,
             'is_required': True,
+            'state': 'base',
         },
         {
             'name': 'create_date',
@@ -106,6 +127,7 @@ initial_data = {
             'ttype': 'datetime',
             'model_id': 2,
             'nullable': False,
+            'state': 'base',
         },
         {
             'name': 'write_date',
@@ -113,6 +135,7 @@ initial_data = {
             'ttype': 'datetime',
             'model_id': 2,
             'nullable': False,
+            'state': 'base',
         },
         {
             'name': 'model_id',
@@ -122,6 +145,7 @@ initial_data = {
             'nullable': False,
             'is_required': True,
             'related_model_id': 1,
+            'state': 'base',
         },
         {
             'name': 'label',
@@ -131,6 +155,7 @@ initial_data = {
             'nullable': False,
             'unique': True,
             'is_required': True,
+            'state': 'base',
         },
         {
             'name': 'ttype',
@@ -139,13 +164,15 @@ initial_data = {
             'model_id': 2,
             'nullable': False,
             'is_required': True,
+            'state': 'base',
         },
         {
             'name': 'nullable',
             'label': 'Nulo',
             'ttype': 'boolean',
             'model_id': 2,
-            'default_value': False,
+            'default_value': True,
+            'state': 'base',
         },
         {
             'name': 'is_required',
@@ -153,12 +180,15 @@ initial_data = {
             'ttype': 'boolean',
             'model_id': 2,
             'default_value': False,
+            'state': 'base',
         },
         {
             'name': 'default_value',
             'label': 'Valor prestablecido',
             'ttype': 'char',
             'model_id': 2,
+            'nullable': True,
+            'state': 'base',
         },
         {
             'name': 'unique',
@@ -166,12 +196,14 @@ initial_data = {
             'ttype': 'boolean',
             'model_id': 2,
             'default_value': False,
+            'state': 'base',
         },
         {
             'name': 'help_info',
             'label': 'Información de ayuda',
             'ttype': 'text',
             'model_id': 2,
+            'state': 'base',
         },
         {
             'name': 'related_model_id',
@@ -179,12 +211,21 @@ initial_data = {
             'ttype': 'many2one',
             'model_id': 2,
             'related_model_id': 1,
+            'state': 'base',
         },
         {
             'name': 'selection_ids',
             'label': 'Valores de selección',
             'ttype': 'one2many',
             'model_id': 2,
+            'state': 'base',
+        },
+        {
+            'name': 'state',
+            'label': 'Tipo de campo',
+            'ttype': 'char',
+            'model_id': 2,
+            'state': 'base',
         },
         {
             'name': 'id',
@@ -193,6 +234,7 @@ initial_data = {
             'model_id': 3,
             'nullable': False,
             'unique': True,
+            'state': 'base',
         },
         {
             'name': 'name',
@@ -200,6 +242,7 @@ initial_data = {
             'ttype': 'char',
             'model_id': 3,
             'is_required': True,
+            'state': 'base',
         },
         {
             'name': 'create_date',
@@ -207,6 +250,7 @@ initial_data = {
             'ttype': 'datetime',
             'model_id': 3,
             'nullable': False,
+            'state': 'base',
         },
         {
             'name': 'write_date',
@@ -214,6 +258,7 @@ initial_data = {
             'ttype': 'datetime',
             'model_id': 3,
             'nullable': False,
+            'state': 'base',
         },
         {
             'name': 'label',
@@ -221,6 +266,7 @@ initial_data = {
             'ttype': 'char',
             'model_id': 3,
             'is_required': True,
+            'state': 'base',
         },
         {
             'name': 'field_id',
@@ -229,6 +275,7 @@ initial_data = {
             'model_id': 3,
             'related_model_id': 2,
             'is_required': True,
+            'state': 'base',
         },
         {
             'name': 'id',
@@ -237,6 +284,7 @@ initial_data = {
             'model_id': 4,
             'nullable': False,
             'unique': True,
+            'state': 'base',
         },
         {
             'name': 'name',
@@ -244,6 +292,7 @@ initial_data = {
             'ttype': 'char',
             'model_id': 4,
             'is_required': True,
+            'state': 'base',
         },
         {
             'name': 'create_date',
@@ -251,6 +300,7 @@ initial_data = {
             'ttype': 'datetime',
             'model_id': 4,
             'nullable': False,
+            'state': 'base',
         },
         {
             'name': 'write_date',
@@ -258,6 +308,7 @@ initial_data = {
             'ttype': 'datetime',
             'model_id': 4,
             'nullable': False,
+            'state': 'base',
         },
         {
             'name': 'login',
@@ -267,6 +318,7 @@ initial_data = {
             'nullable': False,
             'unique': True,
             'is_required': True,
+            'state': 'base',
         },
         {
             'name': 'password',
@@ -275,12 +327,14 @@ initial_data = {
             'model_id': 4,
             'nullable': False,
             'default_value': '[default_function]',
+            'state': 'base',
         },
         {
             'name': 'odoo_id',
             'label': 'ID de Odoo',
             'ttype': 'integer',
             'model_id': 4,
+            'state': 'base',
         },
         {
             'name': 'active',
@@ -289,6 +343,7 @@ initial_data = {
             'model_id': 4,
             'nullable': False,
             'default_value': True,
+            'state': 'base',
         },
         {
             'name': 'sync',
@@ -297,6 +352,7 @@ initial_data = {
             'model_id': 4,
             'nullable': False,
             'default_value': True,
+            'state': 'base',
         },
     ],
     'base.model.field.selection': [
