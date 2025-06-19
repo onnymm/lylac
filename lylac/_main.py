@@ -360,7 +360,7 @@ class Lylac(_Lylac):
         table_model = self._models.get_table_model(table_name)
 
         # Creación del query SELECT
-        stmt = self._select.build(table_name, ['id'])
+        ( stmt, _ ) = self._select.build(table_name, ['id'])
 
         # Si hay criterios de búsqueda se genera el 'where'
         if len(search_criteria) > 0:
@@ -437,7 +437,7 @@ class Lylac(_Lylac):
         table_model = self._models.get_table_model(table_name)
 
         # Creación del query base
-        stmt = self._select.build(table_name, fields)
+        ( stmt, ttypes ) = self._select.build(table_name, fields)
 
         # Creación del query where
         where_query = self._where.build_where(table_model, [('id', 'in', record_ids)])
@@ -460,7 +460,7 @@ class Lylac(_Lylac):
         data = pd.DataFrame(response.fetchall())
 
         # Retorno en formato de salida configurado
-        return self._output.build_output(data, fields, output_format, table_name, 'dataframe', only_ids_in_relations)
+        return self._output.build_output(data, ttypes, output_format, 'dataframe', only_ids_in_relations)
 
     def get_value(
         self,
@@ -721,7 +721,7 @@ class Lylac(_Lylac):
         table_model = self._models.get_table_model(table_name)
 
         # Creación del query base
-        stmt = self._select.build(table_name, fields)
+        ( stmt, ttypes ) = self._select.build(table_name, fields)
 
         # Creación del segmento WHERE en caso de haberlo
         stmt = self._where.add_query(stmt, table_model, search_criteria)
@@ -744,7 +744,7 @@ class Lylac(_Lylac):
         data = pd.DataFrame(response.fetchall())
 
         # Retorno en formato de salida configurado
-        return self._output.build_output(data, fields, output_format, table_name, 'dataframe', only_ids_in_relations)
+        return self._output.build_output(data, ttypes, output_format, 'dataframe', only_ids_in_relations)
 
     def search_count(
         self,

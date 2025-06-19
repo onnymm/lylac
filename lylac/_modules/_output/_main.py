@@ -1,7 +1,7 @@
 from typing import Any
 import pandas as pd
 from ..._core import _Lylac
-from ..._module_types import OutputOptions
+from ..._module_types import OutputOptions, TType
 from ._submodules import (
     _BaseOutput,
     _DataTypes,
@@ -30,20 +30,14 @@ class Output(_BaseOutput):
     def build_output(
         self,
         response: pd.DataFrame,
-        fields: list[str],
+        ttypes: list[tuple[str, TType]],
         specified_output: OutputOptions,
-        table_name: str,
         default_output: OutputOptions | None = None,
         only_ids_in_relations: bool = False,
     ) -> pd.DataFrame | list[dict[str, Any]]:
 
-        # Obtención de los atributos de los campos de los datos
-        fields_atts = self._main._strc.get_fields_atts(table_name, fields)
-
-        # Si no fue provista una lista de campos...
-        if len(fields) == 0:
-            # Se utilizan los campos provenientes de los atributos de campos
-            fields = [ field for ( field, _, _ ) in fields_atts ]
+        # Obtención de lista de campos
+        fields = [ field_name for ( field_name, ttype ) in ttypes if ttype != 'one2many' ]
 
         # Si el DataFrame de respuesta está vacío...
         if len(response) == 0:
@@ -53,13 +47,16 @@ class Output(_BaseOutput):
             # Se reasigna el contenido de variable
             data = response
             # Destructuración e iteración de los atributos de campo
-            for ( field, ttype, _ ) in fields_atts:
+            for ( field_name, ttype ) in ttypes:
                 # Si fue solicitado el manejo de solo IDs en campos relacionados...
                 if only_ids_in_relations and ttype == 'many2one':
-                    # Se manejan los tipos Many2One como enteros
+                    # Se manejan los tipos many2one como enteros
                     ttype = 'integer'
+                # TODO Falta manejar tipo de dato one2many
+                elif ttype == 'one2many':
+                    continue
                 # Recuperación de tipos de dato por columna
-                data = self._m_data.recover_ttype[ttype](data, field)
+                data = self._m_data.recover_ttype[ttype](data, field_name)
 
             # Selección de columnas
             data = data[fields]
