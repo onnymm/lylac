@@ -51,8 +51,8 @@ class FieldProperties(TypedDict):
     ### Propiedades de campo
     Diccionario que almacena el tipo de dato y la relación de un campo.
     >>> {
-    >>>     'many2one',
-    >>>     'base.users',
+    >>>     'ttype': 'many2one',
+    >>>     'relation': 'base.users',
     >>> }
     """
     ttype: TType

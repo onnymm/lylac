@@ -30,15 +30,10 @@ TripletStructure = tuple[str, ComparisonOperator, RecordValue]
 ### Estructura de tripletas para queries SQL
 Este tipo de dato representa una condición sencilla para usarse en una
 transacción en base de datos. Ejemplo:
->>> [('name', '=', 'Onnymm')]
+>>> ('name', '=', 'Onnymm')
 """
 # Estructura de criterios de búsqueda para queries SQL
-CriteriaStructure = list[
-    Union[
-    LogicOperator,
-        TripletStructure
-    ]
-]
+CriteriaStructure = list[ Union[LogicOperator, TripletStructure] ]
 """
 ### Estructura de criterio de búsqueda
 La estructura del criterio de búsqueda consiste en una lista de tuplas de 3 valores, mejor
