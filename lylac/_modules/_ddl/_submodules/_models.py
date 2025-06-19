@@ -16,6 +16,7 @@ from sqlalchemy.types import (
     Time,
 )
 from ...._constants import MODEL_NAME
+from ...._data import MODELS_CODE
 from ...._module_types import (
     FieldAttributes,
     ModelRecord,
@@ -52,15 +53,28 @@ class _Models(_BaseModels):
         registra en la estructura de tablas de la instancia principal.
         """
 
-        # Inicialización del modelo
-        class model(self._base):
-            __tablename__ = model_name
+        model = self._create_model_class(model_name)
 
         # Registro del modelo en la estructura de SQLAlchemy
         self._main._strc.register_table(model)
 
         # Se retorna el modelo para ser usado por otros métodos
         return model
+
+    def _create_model_class(
+        self,
+        model_name: str,
+    ) -> type[DeclarativeBase]:
+
+        # Inicialización de un objeto
+        data = {'model': None}
+        # Creación del código
+        f = MODELS_CODE.format(**{'model_name': model_name})
+        # Ejecución del código
+        exec(f)
+
+        # Retorno del modelo
+        return data['model']
 
     def delete_model(
         self,
