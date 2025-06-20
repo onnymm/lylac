@@ -62,18 +62,22 @@ class _Reset():
         model_records = self._main.search_read(
             MODEL_NAME.BASE_MODEL,
             [('state', '!=', 'base')],
-            ['name'],
+            ['model', 'name'],
             output_format= 'dict'
         )
 
-        # Creación de los modelos de SQLAlchemy en la instancia
         for record in model_records:
+            # Creación de los modelos de SQLAlchemy en la instancia
             self._ddl._m_model.create_model(record['name'])
+            # Inicialización de diccionarios de automatizaciones
+            self._main._automations.register_model(record['name'])
+            # Inicialización de diccionarios de validaciones
+            self._main._validations.initialize_model_validations(record['model'])
 
     def _build_fields_structure(
         self,
     ) -> None:
-        
+
         # Lectura de todos los registros de campos existentes
         field_records = self._main.search_read(
             MODEL_NAME.BASE_MODEL_FIELD,

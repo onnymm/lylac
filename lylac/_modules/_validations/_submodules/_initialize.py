@@ -2,7 +2,7 @@ from ...._data import (
     initial_data,
     validations_data,
 )
-from ._base import _BaseValidations
+from ...._core import _BaseValidations
 
 class _Initialize():
 

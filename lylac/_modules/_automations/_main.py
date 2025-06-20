@@ -1,5 +1,8 @@
 from typing import Callable, Literal
-from ..._core import _Lylac
+from ..._core import (
+    _BaseAutomations,
+    _Lylac,
+)
 from ..._data import preset_automations
 from ..._module_types import (
     AutomationDataModel,
@@ -17,7 +20,6 @@ from ._module_types import (
 )
 from ._submodules import (
     _Automations,
-    _BaseAutomations,
 )
 
 class Automations(_BaseAutomations):
@@ -41,7 +43,7 @@ class Automations(_BaseAutomations):
 
         # Creación de desencadenantes de automatización vacíos por cada tabla existente en la base de datos
         for model_name in self._strc.models.keys():
-            self._register_model(model_name)
+            self.register_model(model_name)
 
     def register_automation(
         self,
@@ -245,14 +247,22 @@ class Automations(_BaseAutomations):
 
         return automation_to_execute
 
-    def _register_model(self, table: str) -> None:
+    def register_model(
+        self,
+        table: str,
+    ) -> None:
+
         self._hub[table] = {
             'create': [],
             'update': [],
             'delete': [],
         }
 
-    def _create_validation(self, record_ids: list[int], aut_criteria: CriteriaStructure) -> CriteriaStructure:
+    def _create_validation(
+        self,
+        record_ids: list[int],
+        aut_criteria: CriteriaStructure
+    ) -> CriteriaStructure:
 
         if len(aut_criteria):
             return self._main.and_(

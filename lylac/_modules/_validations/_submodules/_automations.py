@@ -3,7 +3,7 @@ from ...._module_types import (
     DataPerRecord,
     ModelRecord,
 )
-from ._base import _BaseValidations
+from ...._core import _BaseValidations
 
 class _Automations():
 

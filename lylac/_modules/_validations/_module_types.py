@@ -2,7 +2,6 @@ from typing import (
     Any,
     Callable,
     Generic,
-    Literal,
     TypedDict,
 )
 from pydantic import BaseModel

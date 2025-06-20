@@ -104,13 +104,22 @@ class _BaseAlgorythms():
     ) -> dict[_C, list[_E]]:
         ...
 
-class _BaseBaseLylac():
+class _BaseAutomations():
+
+    def register_model(
+        self,
+        table: str
+    ) -> None:
+        ...
+
+class _BaseBaseLylac(_BaseAutomations):
     credentials: Literal['env'] | DBCredentials | str = 'env'
     _base: type[DeclarativeBase] = None
     _algorythms: _BaseAlgorythms = None
     _engine: Engine = None
     _models: _BaseModels = None
     _connection: _BaseConnection = None
+    _automations: _BaseAutomations = None
 
     def create(
         self,
@@ -260,6 +269,25 @@ class _BaseIndex():
     ) -> _BaseFieldsGetter:
         ...
 
+
+class _BaseValidations():
+
+    _main: _BaseBaseLylac
+
+
+    def initialize_model_validations(
+        self,
+        model_name: str,
+    ) -> None:
+        ...
+
+    def drop_model_validations(
+        self,
+        model_name: str,
+    ) -> None:
+        ...
+
 class _Lylac(_BaseBaseLylac):
     _strc: _BaseStructure
     _index: _BaseIndex
+    _validations: _BaseValidations

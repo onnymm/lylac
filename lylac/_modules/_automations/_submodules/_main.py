@@ -2,7 +2,7 @@ from ...._module_types import (
     DataPerRecord,
     ModelRecord,
 )
-from ._base import _BaseAutomations
+from ...._core import _BaseAutomations
 
 class _Automations():
 
@@ -19,4 +19,4 @@ class _Automations():
         params: DataPerRecord[ModelRecord.BaseModel],
     ) -> None:
 
-        self._automations._register_model(params.record_data['model'])
+        self._automations.register_model(params.record_data['model'])

@@ -1,9 +1,9 @@
 import re
 from typing import Any
 from ...._constants import MODEL_NAME
+from ...._core import _BaseValidations
 from ...._module_types import ModelRecord
 from .._module_types import Validation
-from ._base import _BaseValidations
 
 class _Validations():
 

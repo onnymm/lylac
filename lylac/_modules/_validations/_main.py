@@ -1,5 +1,8 @@
 from ..._constants import MODEL_NAME
-from ..._core import _Lylac
+from ..._core import (
+    _BaseValidations,
+    _Lylac,
+)
 from ..._module_types import (
     CriteriaStructure,
     RecordData,
@@ -12,7 +15,6 @@ from ._module_types import (
 )
 from ._submodules import (
     _Automations,
-    _BaseValidations,
     _Initialize,
     _Validations,
 )
@@ -20,6 +22,7 @@ from ._submodules import (
 class Validations(_BaseValidations):
 
     _hub: ValidationsHub = {}
+    _active: bool = False
 
     def __init__(
         self,
