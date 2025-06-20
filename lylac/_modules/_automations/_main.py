@@ -1,6 +1,6 @@
 from typing import Callable, Literal
 from ..._core import (
-    _BaseAutomations,
+    BaseAutomations,
     _Lylac,
 )
 from ..._data import preset_automations
@@ -22,7 +22,7 @@ from ._submodules import (
     _Automations,
 )
 
-class Automations(_BaseAutomations):
+class Automations(BaseAutomations):
 
     # Inicialización de estructura central de automatizaciones
     _hub: AutomationsHub = {}

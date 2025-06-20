@@ -1,16 +1,16 @@
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from ...._core import (
-    _BaseFieldsGetter,
-    _BaseIndex,
+    BaseFieldsGetter,
+    BaseIndex,
     _Lylac,
 )
 
-class _FieldsGetter(_BaseFieldsGetter):
+class _FieldsGetter(BaseFieldsGetter):
 
     def __init__(
         self,
-        instance: _BaseIndex,
+        instance: BaseIndex,
     ) -> None:
 
         # Asignación de instancia propietaria

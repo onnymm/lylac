@@ -3,7 +3,7 @@ import pandas as pd
 from sqlalchemy import select
 from sqlalchemy.orm import aliased
 from ...._core import (
-    _BaseStructure,
+    BaseStructure,
     _Lylac,
 )
 from ...._module_types import TType
@@ -12,7 +12,7 @@ class _RawORM():
 
     def __init__(
         self,
-        instance: _BaseStructure,
+        instance: BaseStructure,
     ) -> None:
 
         # Asignación de instancia propietaria

@@ -1,11 +1,11 @@
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from ..._core import (
     _Lylac,
-    _BaseIndex,
+    BaseIndex,
 )
 from ._submodules import _FieldsGetter
 
-class Index(_BaseIndex):
+class Index(BaseIndex):
 
     def __init__(
         self,

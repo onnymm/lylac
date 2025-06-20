@@ -2,13 +2,13 @@ from ...._data import (
     initial_data,
     validations_data,
 )
-from ...._core import _BaseValidations
+from ...._core import BaseValidations
 
 class _Initialize():
 
     def __init__(
         self,
-        instance: _BaseValidations,
+        instance: BaseValidations,
     ) -> None:
 
         # Asignación de instancia propietaria

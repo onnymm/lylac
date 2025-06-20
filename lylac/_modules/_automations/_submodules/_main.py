@@ -2,13 +2,13 @@ from ...._module_types import (
     DataPerRecord,
     ModelRecord,
 )
-from ...._core import _BaseAutomations
+from ...._core import BaseAutomations
 
 class _Automations():
 
     def __init__(
         self,
-        instance: _BaseAutomations,
+        instance: BaseAutomations,
     ):
 
         # Asignación de la clase propietaria
