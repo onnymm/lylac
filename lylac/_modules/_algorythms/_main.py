@@ -5,7 +5,7 @@ from typing import (
     overload,
 )
 from ..._core import (
-    _BaseAlgorythms,
+    BaseAlgorythms,
     _Lylac,
 )
 
@@ -16,7 +16,7 @@ _E = TypeVar('_E')
 # Tipo de dato para clasificación
 _C = TypeVar('_C')
 
-class Algorythms(_BaseAlgorythms):
+class Algorythms(BaseAlgorythms):
 
     def __init__(
         self,

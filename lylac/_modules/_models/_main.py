@@ -4,11 +4,11 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.properties import ColumnProperty
 from ..._core import (
-    _BaseModels,
+    BaseModels,
     _Lylac,
 )
 
-class Models(_BaseModels):
+class Models(BaseModels):
 
     def __init__(
         self,

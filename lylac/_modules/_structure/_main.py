@@ -2,7 +2,7 @@ from typing import Tuple
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from ..._core import (
     _Lylac,
-    _BaseStructure,
+    BaseStructure,
 )
 from ..._data import fields_atts
 from ..._module_types import TType
@@ -11,7 +11,7 @@ from ._submodules import (
     _RawORM,
 )
 
-class Structure(_BaseStructure):
+class Structure(BaseStructure):
 
     def __init__(
         self,

@@ -1,6 +1,6 @@
 from ..._constants import MODEL_NAME
 from ..._core import (
-    _BaseValidations,
+    BaseValidations,
     _Lylac,
 )
 from ..._module_types import (
@@ -19,7 +19,7 @@ from ._submodules import (
     _Validations,
 )
 
-class Validations(_BaseValidations):
+class Validations(BaseValidations):
 
     _hub: ValidationsHub = {}
     _active: bool = False

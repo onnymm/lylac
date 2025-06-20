@@ -1,7 +1,7 @@
 import re
 from typing import Any
 from ...._constants import MODEL_NAME
-from ...._core import _BaseValidations
+from ...._core import BaseValidations
 from ...._module_types import ModelRecord
 from .._module_types import Validation
 
@@ -9,7 +9,7 @@ class _Validations():
 
     def __init__(
         self,
-        instance: _BaseValidations,
+        instance: BaseValidations,
     ) -> None:
 
         # Asignación de instancia propietaria

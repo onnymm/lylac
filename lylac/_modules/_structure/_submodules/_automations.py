@@ -3,13 +3,13 @@ from ...._module_types import (
     ModelRecord,
 )
 from ...._constants import MODEL_NAME
-from ...._core import _BaseStructure
+from ...._core import BaseStructure
 
 class _Automations():
 
     def __init__(
         self,
-        instance: _BaseStructure,
+        instance: BaseStructure,
     ) -> None:
 
         # Asignación de la instancia propietaria
