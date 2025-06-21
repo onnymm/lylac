@@ -15,9 +15,9 @@ from ._core import _Lylac
 from ._module_types import (
     _T,
     CriteriaStructure,
-    DBCredentials,
     DataPerRecord,
     RecordData,
+    CredentialsAlike,
     OutputOptions,
     Transaction,
     RecordValue,
@@ -42,8 +42,7 @@ class Lylac(_Lylac):
 
     def __init__(
         self,
-        # base: DeclarativeBase,
-        credentials: Literal['env'] | DBCredentials | str = 'env',
+        credentials: CredentialsAlike = None,
         output_format: OutputOptions | None = None,
     ) -> None:
 

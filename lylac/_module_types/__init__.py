@@ -25,6 +25,8 @@ from ._interface import (
 from ._objects import (
     _T,
     BaseRecord,
+    CredentialsFromEnv,
+    CredentialsArgs,
     DataPerRecord,
     DataPerTransaction,
     FieldAttributes,
@@ -34,4 +36,5 @@ from ._objects import (
     SerializableDict,
     DataBaseDataType,
     AutomationTemplate,
+    CredentialsAlike,
 )

@@ -6,6 +6,7 @@ from ._submodules import (
 from ._submodules import BaseBaseLylac
 
 class _Lylac(BaseBaseLylac):
+
     _strc: BaseStructure
     _index: BaseIndex
     _validations: BaseValidations

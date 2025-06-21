@@ -1,1 +1,5 @@
-from ._error_types import InitializationError
+from ._error_types import (
+    CredentialsError,
+    InitializationError,
+    URLFormatError,
+)

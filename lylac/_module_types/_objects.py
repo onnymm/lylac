@@ -6,7 +6,7 @@ from typing import (
     TypeVar,
     Union,
 )
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from sqlalchemy.types import (
     Boolean,
     Date,
@@ -18,12 +18,107 @@ from sqlalchemy.types import (
     Time,
     LargeBinary,
 )
+from urllib.parse import quote
 from ._base import (
     RecordValue,
     Transaction,
     TType,
 )
 from sqlalchemy.orm.decl_api import DeclarativeBase
+
+class CredentialsFromEnv(BaseModel):
+    """
+    ## Credenciales de la base de datos
+    Objeto contenedor de los valores de credenciales para conexión con la base de
+    datos.
+    >>> class Credentials(BaseModel):
+    >>>     # Dirección URL en donde se aloja la base de datos.
+    >>>     host: str
+    >>>     # Puerto del host en donde se aloja la base de datos.
+    >>>     port: str
+    >>>     # Nombre de la base de datos.
+    >>>     db_name: str
+    >>>     # Nombre de usuario de acceso a la base de datos.
+    >>>     user: str
+    >>>     # Contraseña de acceso a la base de datos.
+    >>>     password: str
+    """
+    host: str
+    """
+    Dirección URL en donde se aloja la base de datos.
+    """
+    port: int
+    """
+    Puerto del host en donde se aloja la base de datos.
+    """
+    db_name: str
+    """
+    Nombre de la base de datos.
+    """
+    user: str
+    """
+    Nombre de usuario de acceso a la base de datos.
+    """
+    password: str
+    """
+    Contraseña de acceso a la base de datos.
+    """
+
+    @field_validator('password')
+    def _encode(cls, value: str) -> str:
+        return quote(value)
+
+class CredentialsArgs(TypedDict):
+    """
+    ## Credenciales de la base de datos
+    Diccionario contenedor de los valores de credenciales para conexión con la base
+    de datos.
+    >>> {
+    >>>     'host': 'https://www.db_host.com',
+    >>>     'port': 5432,
+    >>>     'db_name': 'my_database',
+    >>>     'user': 'postgresql',
+    >>>     'password': 'somepassword123'
+    >>> }
+    """
+    host: str
+    """
+    Dirección URL en donde se aloja la base de datos.
+    """
+    port: int
+    """
+    Puerto del host en donde se aloja la base de datos.
+    """
+    db_name: str
+    """
+    Nombre de la base de datos.
+    """
+    user: str
+    """
+    Nombre de usuario de acceso a la base de datos.
+    """
+    password: str
+    """
+    Contraseña de acceso a la base de datos.
+    """
+
+# Formato de credenciales para conexión a base de datos
+CredentialsAlike = Union[CredentialsArgs, str, None]
+"""
+## Credenciales de acceso a la base de datos
+Diccionario contenedor de los valores de credenciales para conectar o URL de
+conexión con la base de datos.
+>>> # Formato de diccionario
+>>> {
+>>>     'host': 'https://www.db_host.com',
+>>>     'port': 5432,
+>>>     'db_name': 'my_database',
+>>>     'user': 'postgresql',
+>>>     'password': 'somepassword123'
+>>> }
+>>> # Formato de URL
+>>> f"postgresql+psycopg2://postgres:{password}@{host}:{port}/{database_name}"
+"""
 
 # Dato genérico
 _T = TypeVar("_T")
