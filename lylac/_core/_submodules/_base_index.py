@@ -1,9 +1,3 @@
-from typing import (
-    Literal,
-    Tuple,
-)
-from sqlalchemy.engine.base import Engine
-from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from ._base import (
     BaseFieldsGetter,

@@ -7,7 +7,7 @@ from sqlalchemy.sql.selectable import (
 )
 from ...._module_types import (
     _T,
-    DBCredentials,
+    CredentialsAlike,
 )
 
 class BaseConnection():
@@ -21,6 +21,6 @@ class BaseConnection():
 
     def create_connection(
         self,
-        credentials: DBCredentials | str | Literal['env'],
+        credentials: CredentialsAlike,
     ) -> Engine:
         ...

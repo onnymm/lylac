@@ -5,11 +5,12 @@ from ..._core import (
 )
 from ..._data import preset_automations
 from ..._module_types import (
-    AutomationDataModel,
+    AutomationModel,
     CriteriaStructure,
     DataPerRecord,
     DataPerTransaction,
     RecordData,
+    AutomationMethod,
     AutomationTemplate,
     ModificationTransaction,
     Transaction,
@@ -52,7 +53,7 @@ class Automations(BaseAutomations):
         callback: AutomationTemplate,
         fields: list[str] = ['id',],
         criteria: CriteriaStructure = [],
-        execution: Literal['record', 'all'] = 'record'
+        method: AutomationMethod = 'record'
     ) -> None:
 
         # Creación de la automatización programada
@@ -60,7 +61,7 @@ class Automations(BaseAutomations):
             'criteria': criteria,
             'callback': callback,
             'fields': fields,
-            'execution': execution,
+            'execution': method,
         }
 
         # Se añade la automatización programada en la transacción correspondiente de su tabla
@@ -153,7 +154,7 @@ class Automations(BaseAutomations):
     ) -> None:
 
         # Registro de las automatizaciones precargadas
-        for automation in [ AutomationDataModel(**data) for data in preset_automations ]:
+        for automation in [ AutomationModel(**data) for data in preset_automations ]:
 
             # Obtención del módulo que contiene la automatización
             submodule = getattr(self._main, automation.submodule)
@@ -169,7 +170,7 @@ class Automations(BaseAutomations):
                 callback,
                 automation.fields,
                 automation.criteria,
-                automation.execution
+                automation.method
             )
 
     def _build_runable_modification_automation(

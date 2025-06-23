@@ -5,6 +5,7 @@ from typing import (
 )
 import pandas as pd
 from ._base import RecordValue
+from ._dicts import CredentialsArgs
 
 # Opciones de salida de datos
 OutputOptions = Literal['dataframe', 'dict']
@@ -28,4 +29,22 @@ AutomationCallback = Callable[[list[int]], None]
 Función utilizada para ejecutar una automación.
 >>> def automation_do_something(record_ids: list[int]) -> None:
 >>>     # do something
+"""
+
+# Formato de credenciales para conexión a base de datos
+CredentialsAlike = Union[CredentialsArgs, str, None]
+"""
+## Credenciales de acceso a la base de datos
+Diccionario contenedor de los valores de credenciales para conectar o URL de
+conexión con la base de datos.
+>>> # Formato de diccionario
+>>> {
+>>>     'host': 'https://www.db_host.com',
+>>>     'port': 5432,
+>>>     'db_name': 'my_database',
+>>>     'user': 'postgresql',
+>>>     'password': 'somepassword123'
+>>> }
+>>> # Formato de URL
+>>> f"postgresql+psycopg2://postgres:{password}@{host}:{port}/{database_name}"
 """

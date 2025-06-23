@@ -18,7 +18,7 @@ from sqlalchemy.types import (
 from ...._constants import MODEL_NAME
 from ...._data import MODELS_CODE
 from ...._module_types import (
-    FieldAttributes,
+    FieldDefinition,
     ModelRecord,
 )
 from ._base import (
@@ -100,7 +100,7 @@ class _Models(_BaseModels):
     def add_field_to_model(
         self,
         model_model: type[DeclarativeBase],
-        field: FieldAttributes,
+        field: FieldDefinition,
     ) -> None:
         """
         ### Añadir campo al modelo
@@ -123,7 +123,7 @@ class _Models(_BaseModels):
     def build_field_atts(
         self,
         params: ModelRecord.BaseModelField,
-    ) -> FieldAttributes:
+    ) -> FieldDefinition:
         """
         ### Construcción de atributos de campo
         Construcción de atributos para usarse en nuevos campos de modelo de SQLAlchemy.
@@ -133,7 +133,7 @@ class _Models(_BaseModels):
         model_name: str = self._main.get_value(MODEL_NAME.BASE_MODEL, params['model_id'], 'model')
 
         # Creación de los parámetros para ser usados en las automatizaciones
-        field_atts = FieldAttributes(
+        field_atts = FieldDefinition(
             field_name= params['name'],
             table_model= self._main._models.get_table_model(model_name),
             label= params['label'],
@@ -209,7 +209,7 @@ class _Models(_BaseModels):
 
     def _build_field_kwargs(
         self,
-        field: FieldAttributes
+        field: FieldDefinition
     ) -> dict:
 
         # Inicialización de los kwargs del campo

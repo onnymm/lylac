@@ -3,6 +3,6 @@ from typing import (
     Callable,
 )
 from sqlalchemy.orm.properties import MappedColumn
-from ..._module_types import FieldAttributes
+from ..._module_types import FieldDefinition
 
-ColumnGenerator = Callable[[FieldAttributes], MappedColumn[Any]]
+ColumnGenerator = Callable[[FieldDefinition], MappedColumn[Any]]

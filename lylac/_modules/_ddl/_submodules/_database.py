@@ -1,6 +1,6 @@
 from sqlalchemy import text
 from ...._module_types import (
-    FieldAttributes,
+    FieldDefinition,
     TType,
 )
 from ._base import _BaseDDLManager, _BaseDatabase
@@ -41,7 +41,7 @@ class _Database(_BaseDatabase):
 
     def add_column(
         self,
-        params: FieldAttributes,
+        params: FieldDefinition,
     ):
         """
         ### Añadir columna a tabla
@@ -75,7 +75,7 @@ class _Database(_BaseDatabase):
 
     def _query_add_column(
         self,
-        params: FieldAttributes,
+        params: FieldDefinition,
     ) -> str:
 
         # Obtención de los atributos
@@ -88,7 +88,7 @@ class _Database(_BaseDatabase):
 
     def _query_default_value(
         self,
-        params: FieldAttributes,
+        params: FieldDefinition,
     ) -> str:
 
         # Si no existe un valor por defecto
@@ -110,7 +110,7 @@ class _Database(_BaseDatabase):
 
     def _query_foreign_key(
         self,
-        params: FieldAttributes,
+        params: FieldDefinition,
     ) -> str:
 
         if params.ttype != 'many2one':

@@ -1,30 +1,22 @@
-from typing import (
-    Literal,
-    Tuple,
-)
 from sqlalchemy.engine.base import Engine
-from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from ..._module_types import (
-    DBCredentials,
+    CredentialsAlike,
     CriteriaStructure,
-    ModelMap,
     RecordData,
     DataOutput,
     OutputOptions,
     RecordValue,
-    TType,
 )
 from ._base import (
     BaseAlgorythms,
     BaseAutomations,
     BaseConnection,
-    BaseFieldsGetter,
     BaseModels,
 )
 
 class BaseBaseLylac():
-    _credentials: Literal['env'] | DBCredentials | str = 'env'
+    _credentials: CredentialsAlike
     _base: type[DeclarativeBase]
     _algorythms: BaseAlgorythms
     _engine: Engine

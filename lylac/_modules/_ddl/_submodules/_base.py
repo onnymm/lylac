@@ -1,7 +1,7 @@
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from ...._core import _Lylac
 from ...._module_types import (
-    FieldAttributes,
+    FieldDefinition,
     ModelRecord,
     TType,
 )
@@ -34,21 +34,21 @@ class _BaseModels():
     def add_field_to_model(
         self,
         model_model: type[DeclarativeBase],
-        field: FieldAttributes,
+        field: FieldDefinition,
     ) -> None:
         ...
 
     def build_field_atts(
         self,
         params: ModelRecord.BaseModelField,
-    ) -> FieldAttributes:
+    ) -> FieldDefinition:
         ...
 
 class _BaseDatabase():
 
     def add_column(
         self,
-        params: FieldAttributes
+        params: FieldDefinition
     ) -> None:
         ...
 

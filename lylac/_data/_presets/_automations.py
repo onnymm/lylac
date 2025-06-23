@@ -1,6 +1,6 @@
-from ..._module_types import AutomationDataDict
+from ..._module_types import AutomationData
 
-preset_automations: list[AutomationDataDict] = [
+preset_automations: list[AutomationData] = [
     # Creación de tabla en base de datos cuando un modelo se crea
     {
         'submodule': '_ddl',
@@ -9,7 +9,7 @@ preset_automations: list[AutomationDataDict] = [
         'transaction': 'create',
         'criteria': [('state', '!=', 'base')],
         'fields': ['name', 'model'],
-        'execution': 'record',
+        'method': 'record',
     },
     # Registro de modelo de SQLAlchemy cuando un modelo de crea
     {
@@ -19,7 +19,7 @@ preset_automations: list[AutomationDataDict] = [
         'transaction': 'create',
         'criteria': [('state', '!=', 'base')],
         'fields': ['model'],
-        'execution': 'record',
+        'method': 'record',
     },
     # Creación de los registros de campos base cuando un modelo se crea
     {
@@ -29,7 +29,7 @@ preset_automations: list[AutomationDataDict] = [
         'transaction': 'create',
         'criteria': [('state', '!=', 'base')],
         'fields': ['id'],
-        'execution': 'record',
+        'method': 'record',
     },
     # Creación de los registros de campos predeterminados cuando un modelo se crea
     {
@@ -39,7 +39,7 @@ preset_automations: list[AutomationDataDict] = [
         'transaction': 'create',
         'criteria': [('state', '!=', 'base')],
         'fields': ['id'],
-        'execution': 'record',
+        'method': 'record',
     },
     # Inicialización de registro de validaciones de modelo cuando un modelo se crea
     {
@@ -49,7 +49,7 @@ preset_automations: list[AutomationDataDict] = [
         'transaction': 'create',
         'criteria': [],
         'fields': ['model'],
-        'execution': 'record',
+        'method': 'record',
     },
     # Eliminación de una tabla de base de datos cuando un modelo se elimina
     {
@@ -59,7 +59,7 @@ preset_automations: list[AutomationDataDict] = [
         'transaction': 'delete',
         'criteria': [('state', '!=', 'base')],
         'fields': ['name', 'model'],
-        'execution': 'record',
+        'method': 'record',
     },
     # Creación de una columna de base de datos cuando un campo se crea
     {
@@ -84,7 +84,7 @@ preset_automations: list[AutomationDataDict] = [
             'help_info',
             'related_model_id'
         ],
-        'execution': 'record',
+        'method': 'record',
     },
     # Registro de las propiedades de campo cuando un campo se crea
     {
@@ -103,7 +103,7 @@ preset_automations: list[AutomationDataDict] = [
             'model_id',
             'related_model_id',
         ],
-        'execution': 'record',
+        'method': 'record',
     },
     # Eliminación de una columna de base de datos cuando un modelo se elimina
     {
@@ -113,7 +113,7 @@ preset_automations: list[AutomationDataDict] = [
         'transaction': 'delete',
         'criteria': [],
         'fields': ['name', 'model_id'],
-        'execution': 'record',
+        'method': 'record',
     },
     # Eliminación de registro de validaciones de modelo cuando un modelo se elimina
     {
@@ -123,6 +123,6 @@ preset_automations: list[AutomationDataDict] = [
         'transaction': 'delete',
         'criteria': [],
         'fields': ['model'],
-        'execution': 'record',
+        'method': 'record',
     },
 ]

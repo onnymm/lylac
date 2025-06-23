@@ -21,6 +21,7 @@ from ._module_types import (
     OutputOptions,
     Transaction,
     RecordValue,
+    AutomationMethod,
 )
 from ._modules import (
     Algorythms,
@@ -80,7 +81,7 @@ class Lylac(_Lylac):
         transation: Transaction,
         fields: list[str] = ['id'],
         execute_if: CriteriaStructure = [],
-        execution: Literal['record', 'all'] = 'record',
+        method: AutomationMethod = 'record',
     ):
         """
         ## Registro de automatización
@@ -155,7 +156,7 @@ class Lylac(_Lylac):
                 wraper,
                 fields,
                 execute_if,
-                execution,
+                method,
             )
 
             return wraper
