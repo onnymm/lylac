@@ -107,7 +107,7 @@ class DataPerTransaction(BaseModel, Generic[_T]):
 
     Uso:
     >>> def my_automation(
-    >>>     params: DataPerTransaction[ModelRecord.BaseModel],
+    >>>     params: DataPerTransaction[ModelRecord.BaseModel_],
     >>> ) -> None:
     >>>     # Se procesan los registros
     >>>     ...
