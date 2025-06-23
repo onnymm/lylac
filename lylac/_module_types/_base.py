@@ -1,7 +1,4 @@
-from typing import (
-    Literal,
-    Union,
-)
+from typing import Union
 
 # Tipo de dato de valor para queries SQL
 RecordValue = Union[
@@ -36,7 +33,7 @@ RecordData = dict[str, RecordValue]
 """
 #### Datos de registro
 Datos que contienen los valores de campo de un registro en la base de datos.
-Ejemplo
+Ejemplo:
 >>> {
 >>>     'name': 'Onnymm',
 >>>     'password': ...,
