@@ -46,14 +46,14 @@ class ModelRecord():
     - `User`: Usuario
     """
 
-    class BaseModel(
+    class BaseModel_(
         _BaseRecord,
         _HasLabel_Model
     ):
         """
         #### Datos de modelo
         Tipado de datos de registros de modelo.
-        >>> class BaseModel(BaseModel):
+        >>> class BaseModel_(BaseModel):
         >>>     # ID
         >>>     id: int
         >>>     # Nombre

@@ -9,6 +9,7 @@ from ._literals import (
     AutomationMethod,
     ModelName,
     ModificationTransaction,
+    OutputOptions,
     Submodule,
     Transaction,
     TType,

@@ -89,7 +89,7 @@ class _Validations():
 
     def coherent_label_and_name_in_new_model(
         self,
-        params: Validation.Create.Individual.Args[ModelRecord.BaseModel],
+        params: Validation.Create.Individual.Args[ModelRecord.BaseModel_],
     ) -> Any:
         """
         ### Coherencia en nombre y etiqueta de modelo
@@ -114,7 +114,7 @@ class _Validations():
 
     def valid_model_label(
         self,
-        params: Validation.Create.Individual.Args[ModelRecord.BaseModel],
+        params: Validation.Create.Individual.Args[ModelRecord.BaseModel_],
     ) -> Any:
         """
         ### Etiqueta de modulo válida

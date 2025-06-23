@@ -94,7 +94,7 @@ class DataPerRecord(BaseModel, Generic[_T]):
 
 class DataPerTransaction(BaseModel, Generic[_T]):
     """
-    #### Datos por registro
+    #### Datos por transacción
     Tipado usado para argumento de entrada de funciones que se usan como
     automatizaciones. Este tipo de dato está incompleto y requiere tener
     especificado un tipo de registro. De esta manera se puede mejorar la
@@ -135,7 +135,7 @@ class DataPerTransaction(BaseModel, Generic[_T]):
     """
     ids: list[int]
     """
-    IDs
+    #### IDs
     Lista de IDs de los registros.
     """
     records_data: list[_T]

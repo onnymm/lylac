@@ -112,3 +112,11 @@ Nombres disponibles:
 - `'base.model.field.selection'`: Valores de selección
 - `'base.users'`: Usuarios
 """
+
+# Opciones de salida de datos
+OutputOptions = Literal['dataframe', 'dict']
+"""
+### Salida de datos
+Opciones de salida de datos.
+>>> Literal['dataframe', 'dict']
+"""

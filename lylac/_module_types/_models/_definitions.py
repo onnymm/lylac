@@ -6,7 +6,7 @@ from .._base_categories import TType
 
 class FieldDefinition(BaseModel):
     """
-    ### Nuevo campo
+    ### Definición de campo
     Modelo base para crear objetos de campo nuevo para usarse en automatizaciones
     de creación de modelos de SQLAlchemy, tablas de base de datos y sus respectivos
     campos.
@@ -33,22 +33,42 @@ class FieldDefinition(BaseModel):
     >>>     related_model_id: Optional[int] = None
     """
     field_name: str
-    """Nombre del campo."""
+    """
+    Nombre del campo.
+    """
     table_model: type[DeclarativeBase]
-    """Modelo de la tabla."""
+    """
+    Modelo de la tabla.
+    """
     label: str
-    """Etiqueta de la tabla."""
+    """
+    Etiqueta de la tabla.
+    """
     ttype: TType
-    """Tipo de dato del campo."""
+    """
+    Tipo de dato del campo.
+    """
     nullable: bool =  False
-    """Puede ser nulo."""
+    """
+    Puede ser nulo.
+    """
     is_required: bool = False
-    """Es requerido."""
+    """
+    Es requerido.
+    """
     default: Optional[RecordValue] = None
-    """Valor predeterminado."""
+    """
+    Valor predeterminado.
+    """
     unique: bool = False
-    """Único."""
+    """
+    Único.
+    """
     help_info: Optional[str] = None
-    """Información de ayuda del campo."""
+    """
+    Información de ayuda del campo.
+    """
     related_model_id: Optional[int] = None
-    """ID de modelo relacionado."""
+    """
+    ID de modelo relacionado.
+    """

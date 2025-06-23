@@ -4,7 +4,7 @@ from typing import (
 )
 from ..._module_types import (
     CriteriaStructure,
-    AutomationCallback,
+    AutomationTemplate,
     Transaction,
 )
 
@@ -32,7 +32,7 @@ class ProgrammedAutomation(TypedDict):
     """
     criteria: CriteriaStructure
     """Condición que dicta en qué casos se ejecuta la automatización."""
-    callback: AutomationCallback
+    callback: AutomationTemplate
     """
     ### Función de automatización
     Función utilizada para ejecutar una automación.

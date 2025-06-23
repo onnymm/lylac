@@ -26,7 +26,7 @@ class _Automations():
 
     def create_table(
         self,
-        params: DataPerRecord[ModelRecord.BaseModel],
+        params: DataPerRecord[ModelRecord.BaseModel_],
     ) -> None:
 
         # Creación de la tabla en la base de datos
@@ -45,7 +45,7 @@ class _Automations():
 
     def delete_table(
         self,
-        params: DataPerRecord[ModelRecord.BaseModel],
+        params: DataPerRecord[ModelRecord.BaseModel_],
     ) -> None:
 
         # Ejecución del método del módulo principal
@@ -64,7 +64,7 @@ class _Automations():
 
     def create_base_fields(
         self,
-        params: DataPerRecord[ModelRecord.BaseModel]
+        params: DataPerRecord[ModelRecord.BaseModel_]
     ) -> None:
         
         # Inicialización de los datos
@@ -87,7 +87,7 @@ class _Automations():
 
     def add_preset_fields(
         self,
-        params: DataPerRecord[ModelRecord.BaseModel],
+        params: DataPerRecord[ModelRecord.BaseModel_],
     ) -> None:
 
         # Obtención de la ID del modelo

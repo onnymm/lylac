@@ -19,7 +19,7 @@ class _Automations():
 
     def initialize_validations(
         self,
-        params: DataPerRecord[ModelRecord.BaseModel],
+        params: DataPerRecord[ModelRecord.BaseModel_],
     ) -> None:
 
         # Ejecución de inicialización de validaciones de modelo
@@ -27,7 +27,7 @@ class _Automations():
 
     def delete_validations(
         self,
-        params: DataPerRecord[ModelRecord.BaseModel],
+        params: DataPerRecord[ModelRecord.BaseModel_],
     ) -> None:
 
         # Ejecución de eliminación de validaciones de modelo

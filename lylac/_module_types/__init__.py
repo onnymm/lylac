@@ -11,6 +11,7 @@ from ._base_categories import (
     DataBaseDataType,
     LogicOperator,
     ModificationTransaction,
+    OutputOptions,
     Transaction,
     TType,
     ValidationMethod,
@@ -27,10 +28,8 @@ from ._dicts import (
     ValidationData,
 )
 from ._interface import (
-    AutomationCallback,
     CredentialsAlike,
     DataOutput,
-    OutputOptions,
 )
 from ._models import (
     AutomationModel,
