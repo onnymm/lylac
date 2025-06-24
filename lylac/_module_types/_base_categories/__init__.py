@@ -4,7 +4,11 @@ from ._filter import (
     ComparisonOperator,
     LogicOperator,
 )
-from ._generics import _T
+from ._generics import (
+    _C,
+    _E,
+    _T,
+)
 from ._literals import (
     AutomationMethod,
     ModelName,

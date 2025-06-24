@@ -1,20 +1,17 @@
 from typing import (
     Callable,
     Optional,
-    TypeVar,
     overload,
 )
 from ..._core import (
     BaseAlgorythms,
     _Lylac,
 )
-
-# Tipo de dato entrante
-_T = TypeVar('_T')
-# Tipo de dato extraído del tipo entrante
-_E = TypeVar('_E')
-# Tipo de dato para clasificación
-_C = TypeVar('_C')
+from ..._module_types import (
+    _C,
+    _E,
+    _T,
+)
 
 class Algorythms(BaseAlgorythms):
 

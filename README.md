@@ -1,9 +1,9 @@
 # lylac
 Gestor de conexión a bases de datos altamente personalizable.
 
-# Tipados
+## *Índice*
 
-## Índice
+## [TIPADOS](#tipados-1)
 
 ### **[[Tipados base](#tipados-base-1)]**
 
@@ -92,6 +92,8 @@ Gestor de conexión a bases de datos altamente personalizable.
 
 ----
 
+# Tipados
+
 ## Tipados base
 
 ### Base
@@ -167,6 +169,20 @@ a = get_first_item([1, 2, 3]) # `a` se tipa como entero
 b = get_first_item(['uno', 'dos', 'tres']) # `b` se tipa como cadena de texto
 c = get_first_item([True, False]) # `c` se tipa como booleano
 ```
+
+#### `_E` Tipo de dato genérico
+```py
+_E = TypeVar('_E')
+```
+
+Tipo de dato usado para declarar un valor extraído de una colección de datos.
+
+#### `_C` Tipo de dato genérico
+```py
+_C_ = TypeVar('_C_')
+```
+
+Tipo de dato usado para declarar un valor base para ser usado como criterio de clasificación de grupos de datos.
 
 ### Filtros
 

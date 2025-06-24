@@ -1,9 +1,9 @@
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from ..._module_types import (
-    CredentialsAlike,
     CriteriaStructure,
     RecordData,
+    CredentialsAlike,
     DataOutput,
     OutputOptions,
     RecordValue,

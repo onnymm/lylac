@@ -19,3 +19,16 @@ entradas y salidas:
 >>> b = get_first_item(['uno', 'dos', 'tres']) # `b` se tipa como cadena de texto
 >>> c = get_first_item([True, False]) # `c` se tipa como booleano
 """
+
+_E = TypeVar('_E')
+"""
+#### Tipo de dato genérico
+Tipo de dato usado para declarar un valor extraído de una colección de datos.
+"""
+
+_C = TypeVar('_C')
+"""
+#### Tipo de dato genérico
+Tipo de dato usado para declarar un valor base para ser usado como criterio de
+clasificación de grupos de datos.
+"""

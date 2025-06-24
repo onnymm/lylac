@@ -3,6 +3,8 @@ from ._base import (
     RecordValue,
 )
 from ._base_categories import (
+    _E,
+    _C,
     _T,
     CriteriaStructure,
     TripletStructure,
