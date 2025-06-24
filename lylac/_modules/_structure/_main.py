@@ -5,7 +5,7 @@ from ..._core import (
     BaseStructure,
 )
 from ..._data import fields_atts
-from ..._module_types import TType
+from ..._module_types import TType, ModelMap
 from ._submodules import (
     _Automations,
     _RawORM,
@@ -27,7 +27,7 @@ class Structure(BaseStructure):
         self._m_automations = _Automations(self)
 
         # Inicialización de la estructura de tablas y atributos de campos
-        self._initialize_models_atts()
+        self._initialize()
 
     def get_model(
         self,
@@ -36,14 +36,58 @@ class Structure(BaseStructure):
 
         return self.models[model_name]['model']
 
-    def _initialize_models_atts(
+    def get_table_name(
         self,
-    ) -> None:
+        model_model: type[DeclarativeBase],
+    ) -> str:
 
-        # Obtención del set de mapeadores de la tabla
-        mappers = list(self._main._base.registry.mappers)
-        # Creación del diccionario de tablas
-        self.models = { getattr(mapper.class_, '__tablename__').replace('_', '.'): self._initialize_model_properties(mapper.class_, True) for mapper in mappers }
+        # Obtención del modelo
+        # model_model = self.get_model(model_model)
+        # Obtención del nombre de la tabla
+        table_name = model_model.__tablename__
+
+        return table_name
+
+    def get_registered_model_names(
+        self,
+    ) -> list[str]:
+
+        # Obtención de los nombres de modelos registrados en la estructura
+        registered_model_names = list( self.models.keys() )
+
+        return registered_model_names
+
+    def get_model_field_names(
+        self,
+        model_name: str,
+    ) -> list[str]:
+
+        # Obtención de los nombres de campos existentes del modelo especificado
+        field_names = list( self.models[model_name]['fields'].keys() )
+
+        return field_names
+
+    def get_field_ttype(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> TType:
+
+        # Obtención del tipo de dato del campo
+        ttype = self.models[model_name]['fields'][field_name]['ttype']
+
+        return ttype
+
+    def get_related_model_name(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> str:
+
+        # Obtención del modelo relacionado
+        related_model_name = self.models[model_name]['fields'][field_name]['related_model']
+
+        return related_model_name
 
     def register_field(
         self,
@@ -57,6 +101,8 @@ class Structure(BaseStructure):
         self.models[model_name]['fields'][field_name] = {
             'ttype': ttype,
             'related_model': relation,
+            # TODO reemplazar en implementación de tipo de dato one2many
+            'related_field': None,
         }
 
     def unregister_field(
@@ -70,20 +116,24 @@ class Structure(BaseStructure):
 
     def register_table(
         self,
-        table_model: type[DeclarativeBase]
+        model_model: type[DeclarativeBase]
     ) -> None:
 
         # Obtención del nombre de la tabla
-        table_name = table_model.__tablename__.replace('_', '.')
+        table_name = self.get_table_name(model_model)
+        # Obtención del nombre del modelo
+        model_name = table_name.replace('_', '.')
         # Se registra el modelo de la tabla en el diccionario de modelos
-        self.models[table_name] = self._initialize_model_properties(table_model)
+        self.models[model_name] = self._initialize_model_properties(model_model)
         # Registro de las propiedades de los campos de la tabla
-        self.register_table_fields_atts(table_name)
+        self.register_table_fields_atts(model_name)
 
     def register_table_fields_atts(
         self,
         model_name,
     ) -> None:
+        
+        print(model_name)
 
         # Obtención de los atributos de los campos de la tabla
         fields_atts = self._m_raworm.get_model_fields(model_name)
@@ -97,15 +147,15 @@ class Structure(BaseStructure):
 
     def unregister_table(
         self,
-        table_name: str
+        model_name: str
     ) -> None:
 
         # Obtención del modelo de la tabla
-        table_model = self.models[table_name]['model']
+        table_model = self.get_model(model_name)
         # Se borra el modelo
         del table_model
         # Se borra la llave y valor del diccionario de modelos
-        del self.models[table_name]
+        del self.models[model_name]
 
     def initialize_fields_atts(
         self,
@@ -115,39 +165,45 @@ class Structure(BaseStructure):
         for model_name in self.models.keys():
             self.register_table_fields_atts(model_name)
 
+    def _initialize(
+        self,
+    ) -> None:
+
+        # Obtención del set de mapeadores de la tabla
+        mappers = list(self._main._base.registry.mappers)
+        # Inicialización de mapeo de modelos
+        self.models = {}
+
+        # Iteración por mapeador de SQLAlchemy
+        for mapper in mappers:
+            # Obtención de los datos desde los datos prestablecidos
+            model_map = self._initialize_model_properties(mapper.class_, True)
+            # Obtención del nombre de la tabla
+            table_name: str = getattr(mapper.class_, '__tablename__')
+            # Creación del nombre del modelo
+            model_name = table_name.replace('_', '.')
+            # Se añaden las propiedades al mapeo de módulos
+            self.models[model_name] = model_map
+
     def _initialize_model_properties(
         self,
         table_model: type[DeclarativeBase],
         from_data: bool = False,
     ):
-        
+
+        # Obtención del nombre del modelo
+        model_name = table_model.__tablename__.replace('_', '.')
+
+        # Si el parámetro de obtener desde los datos predeterminados es verdedero...
         if from_data:
-            fields_data = fields_atts[table_model.__tablename__.replace('_', '.')]
+            # Se obtienen los datos correspondientes
+            fields_data = fields_atts[model_name]
+        # Si el parámetro de obtener desde los datos predeterminados es falso...
         else:
+            # Se inicializa un diccionario vacío para el mapa de campos
             fields_data = {}
 
         return {
             'model': table_model,
             'fields': fields_data
         }
-
-    def get_fields_atts(
-        self,
-        model_name: str,
-        fields: list[str] = [],
-    ) -> list[Tuple[str, TType, str | None]]:
-
-        # Obtención de todos los atributos de campos
-        fields_atts = self.models[model_name]['fields']
-
-        # Si no fue provista una lista de campos se toma la lista completa para iterar
-        if len(fields) == 0:
-            fields = self.models[model_name]['fields'].keys()
-        else:
-            if 'id' in fields:
-                fields.remove('id')
-            fields.insert(0, 'id')
-
-        # Retorno de lista de tuplas por cada campo
-        # TODO falta manejar tipos de dato one2many
-        return [(field, fields_atts[field]['ttype'], fields_atts[field]['related_model']) for field in fields if fields_atts[field]['ttype'] != 'one2many']

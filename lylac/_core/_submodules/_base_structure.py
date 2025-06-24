@@ -16,6 +16,37 @@ class BaseStructure():
     ) -> type[DeclarativeBase]:
         ...
 
+    def get_table_name(
+        self,
+        model_name: str,
+    ) -> str:
+        ...
+
+    def get_registered_model_names(
+        self,
+    ) -> list[str]:
+        ...
+
+    def get_model_field_names(
+        self,
+        model_name: str,
+    ) -> list[str]:
+        ...
+
+    def get_field_ttype(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> TType:
+        ...
+
+    def get_related_model_name(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> str:
+        ...
+
     def register_table(
         self,
         table_instance: type[DeclarativeBase],

@@ -35,7 +35,7 @@ class Select_():
 
         # Si no fue provista una lista de campos se toma la lista completa para iterar
         if len(fields) == 0:
-            fields = self._strc.models[model_name]['fields'].keys()
+            fields = self._strc.get_model_field_names(model_name)
         else:
             if 'id' in fields:
                 fields.remove('id')
@@ -45,7 +45,7 @@ class Select_():
         operation_data = OperationData()
 
         # Obtención del modelo de la tabla
-        model_model = self._strc.models[model_name]['model']
+        model_model = self._strc.get_model(model_name)
 
         for field in fields:
             self._add_field(
@@ -84,7 +84,7 @@ class Select_():
             # Obtención del nombre del campo inicial
             inicial_field_name = fields_chain[0]
             # Obtención de nombre del modelo relacionado
-            related_model_name = self._strc.models[model_name]['fields'][inicial_field_name]['related_model']
+            related_model_name = self._strc.get_related_model_name(model_name, inicial_field_name)
 
             # Se envía el campo a obtención de relacionados
             self._add_related_field(
@@ -117,7 +117,7 @@ class Select_():
         # Obtención del nombre del campo actual
         current_field_name = refs[0]
         # Obtención del modelo relacionado
-        related_model_model = aliased( self._strc.models[related_model_name]['model'] )
+        related_model_model = aliased( self._strc.get_model(related_model_name) )
 
         # Obtención de la instancia del campo actual
         id_current_field_instance = self._index[model_model][current_field_name]
@@ -132,7 +132,7 @@ class Select_():
         # Obtención del nombre del campo siguiente
         next_field_name = refs[1]
         # Obtención del nombre del modelo relacionado del campo siguiente
-        next_field_related_model_name = self._strc.models[related_model_name]['fields'][next_field_name]['related_model']
+        next_field_related_model_name = self._strc.get_related_model_name(related_model_name, next_field_name)
 
         # Si hay más campos por acceder...
         if len(refs) > 2:
@@ -166,7 +166,7 @@ class Select_():
     ) -> None:
 
         # Obtención del tipo de dato del campo
-        field_ttype = self._strc.models[model_name]['fields'][field_name]['ttype']
+        field_ttype = self._strc.get_field_ttype(model_name, field_name)
 
         if field_ttype == 'one2many':
             return
@@ -175,7 +175,7 @@ class Select_():
         if model_model is not None:
             computed_model_model = model_model
         else:
-            computed_model_model = aliased(self._strc.models[model_name]['model'])
+            computed_model_model = aliased( self._strc.get_model(model_name) )
 
         # Si el campo es many2one...
         if field_ttype == 'many2one':
@@ -206,9 +206,9 @@ class Select_():
     ) -> None:
 
         # Obtención del nombre del modelo relacionado
-        related_model_name = self._strc.models[model_name]['fields'][field_name]['related_model']
+        related_model_name = self._strc.get_related_model_name(model_name, field_name)
         # Obtención del modelo relacionado
-        related_model_model = aliased( self._strc.models[related_model_name]['model'] )
+        related_model_model = aliased( self._strc.get_model(related_model_name) )
 
         # Si una etiqueta de campo fue especificada
         if label is not None:
@@ -256,7 +256,7 @@ class Select_():
     ) -> InstrumentedAttribute[Any]:
 
         # Obtención del tipo de dato del campo
-        field_ttype = self._strc.models[model_name]['fields'][field_name]['ttype']
+        field_ttype = self._strc.get_field_ttype(model_name, field_name)
 
         # Obtención de la instancia del campo
         field_instance = self._index[model_model][field_name]

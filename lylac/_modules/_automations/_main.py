@@ -172,9 +172,11 @@ class Automations(BaseAutomations):
 
         # Inicialización de estructura central de automatizaciones
         self._hub: AutomationsHub = {}
-
-        # Creación de desencadenantes de automatización vacíos por cada tabla existente en la base de datos
-        for model_name in self._strc.models.keys():
+        # Obtención de los nombres de modelos registrados
+        registered_model_names = self._strc.get_registered_model_names()
+        # Iteración por cada nombre de tabla existente en la base de datos
+        for model_name in registered_model_names:
+            # Creación de desencadenantes de automatización vacíos
             self.register_model(model_name)
 
     def _find_applyable_records_for_automation(
