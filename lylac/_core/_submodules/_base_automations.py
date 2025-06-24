@@ -1,11 +1,13 @@
-from ...._module_types import (
+from ..._module_types import (
     CriteriaStructure,
     AutomationMethod,
     AutomationTemplate,
     Transaction,
 )
+from ._base_base_lylac import BaseBaseLylac
 
 class BaseAutomations():
+    _main: BaseBaseLylac
 
     def register_automation(
         self,
@@ -20,6 +22,6 @@ class BaseAutomations():
 
     def register_model(
         self,
-        table: str
+        table: str,
     ) -> None:
         ...

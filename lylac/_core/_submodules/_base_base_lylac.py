@@ -10,7 +10,6 @@ from ..._module_types import (
 )
 from ._base import (
     BaseAlgorythms,
-    BaseAutomations,
     BaseConnection,
     BaseModels,
 )
@@ -22,7 +21,6 @@ class BaseBaseLylac():
     _engine: Engine
     _models: BaseModels
     _connection: BaseConnection
-    _automations: BaseAutomations
 
     def create(
         self,
