@@ -92,8 +92,8 @@ class Metadata():
             # Tipo de modelo
             state: Mapped[str] = mapped_column(String(60), nullable= False, default= 'generic')
 
-            # Relación con valores de selección (Solo si el tipo de dato del campo es `selection`)
-            selection_ids: Mapped[Optional[List["BaseModelFieldSelection"]]] = relationship(back_populates= 'field', cascade= 'all, delete-orphan')
+            # # Relación con valores de selección (Solo si el tipo de dato del campo es `selection`)
+            # selection_ids: Mapped[Optional[List["BaseModelFieldSelection"]]] = relationship(back_populates= 'field', cascade= 'all, delete-orphan')
             # Relación hacia el modelo al que pertenece
             model: Mapped["BaseModel_"] = relationship(BaseModel_, foreign_keys= [model_id])
             # Relación hacia el modelo relacionado (opcional, si es many2one)
@@ -110,8 +110,8 @@ class Metadata():
             # Etiqueta del valor de selección
             label: Mapped[str] = mapped_column(String(60), nullable= False)
 
-            # Relación al campo al que pertenece
-            field: Mapped["BaseModelField"] = relationship(back_populates= 'selection_ids')
+            # # Relación al campo al que pertenece
+            # field: Mapped["BaseModelField"] = relationship(back_populates= 'selection_ids')
 
         # Se almacena _Base
         self._main._base = _Base

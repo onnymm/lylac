@@ -56,7 +56,7 @@ class Structure(BaseStructure):
         # Asignación de valores
         self.models[model_name]['fields'][field_name] = {
             'ttype': ttype,
-            'relation': relation,
+            'related_model': relation,
         }
 
     def unregister_field(
@@ -150,4 +150,4 @@ class Structure(BaseStructure):
 
         # Retorno de lista de tuplas por cada campo
         # TODO falta manejar tipos de dato one2many
-        return [(field, fields_atts[field]['ttype'], fields_atts[field]['relation']) for field in fields if fields_atts[field]['ttype'] != 'one2many']
+        return [(field, fields_atts[field]['ttype'], fields_atts[field]['related_model']) for field in fields if fields_atts[field]['ttype'] != 'one2many']

@@ -84,7 +84,7 @@ class Select_():
             # Obtención del nombre del campo inicial
             inicial_field_name = fields_chain[0]
             # Obtención de nombre del modelo relacionado
-            related_model_name = self._strc.models[model_name]['fields'][inicial_field_name]['relation']
+            related_model_name = self._strc.models[model_name]['fields'][inicial_field_name]['related_model']
 
             # Se envía el campo a obtención de relacionados
             self._add_related_field(
@@ -132,7 +132,7 @@ class Select_():
         # Obtención del nombre del campo siguiente
         next_field_name = refs[1]
         # Obtención del nombre del modelo relacionado del campo siguiente
-        next_field_related_model_name = self._strc.models[related_model_name]['fields'][next_field_name]['relation']
+        next_field_related_model_name = self._strc.models[related_model_name]['fields'][next_field_name]['related_model']
 
         # Si hay más campos por acceder...
         if len(refs) > 2:
@@ -206,7 +206,7 @@ class Select_():
     ) -> None:
 
         # Obtención del nombre del modelo relacionado
-        related_model_name = self._strc.models[model_name]['fields'][field_name]['relation']
+        related_model_name = self._strc.models[model_name]['fields'][field_name]['related_model']
         # Obtención del modelo relacionado
         related_model_model = aliased( self._strc.models[related_model_name]['model'] )
 
