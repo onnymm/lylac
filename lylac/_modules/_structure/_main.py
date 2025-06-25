@@ -38,11 +38,12 @@ class Structure(BaseStructure):
 
     def get_table_name(
         self,
-        model_model: type[DeclarativeBase],
+        model_model: type[DeclarativeBase] | str,
     ) -> str:
 
-        # Obtención del modelo
-        # model_model = self.get_model(model_model)
+        # Obtención del modelo en caso de haberse proporcionado una valor en texto
+        if isinstance(model_model, str):
+            model_model = self.get_model(model_model)
         # Obtención del nombre de la tabla
         table_name = model_model.__tablename__
 
@@ -132,8 +133,6 @@ class Structure(BaseStructure):
         self,
         model_name,
     ) -> None:
-        
-        print(model_name)
 
         # Obtención de los atributos de los campos de la tabla
         fields_atts = self._m_raworm.get_model_fields(model_name)

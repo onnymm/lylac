@@ -57,7 +57,6 @@ class _Database(_BaseDatabase):
             {self._query_foreign_key(params)}
             """
         )
-
         # Ejecución de la transacción
         self._connection.execute(stmt, commit= True)
 
@@ -69,7 +68,6 @@ class _Database(_BaseDatabase):
 
         # Creación del query a ejecutar
         stmt = text(f'ALTER TABLE {table_name} DROP COLUMN {column_name};')
-
         # Ejecución de la transacción en la base de datos
         self._connection.execute(stmt, commit= True)
 
@@ -80,11 +78,13 @@ class _Database(_BaseDatabase):
 
         # Obtención de los atributos
         table_name = params.table_model.__tablename__
-        field_name = params.field_name
-        field_type = self._name_to_type[params.ttype].upper()
+        column_name = params.field_name
+        column_type = self._name_to_type[params.ttype]
 
-        # Retorno del framento "add column"
-        return f'ALTER TABLE {table_name} ADD COLUMN {field_name} {field_type}'
+        # Construcción del framento "add column"
+        query = f'ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}'
+
+        return query
 
     def _query_default_value(
         self,
@@ -122,7 +122,8 @@ class _Database(_BaseDatabase):
         constraint_name = f'{table_name}_{column_name}_fkey'
         referenced_table_name = self._ddl._main.get_value('base.model', params.related_model_id, 'name')
 
-        return (
+        # Construcción del query
+        query = (
             f"""
             ALTER TABLE {table_name}
             ADD CONSTRAINT {constraint_name}
@@ -131,3 +132,5 @@ class _Database(_BaseDatabase):
             ON DELETE SET NULL;
             """
         )
+
+        return query

@@ -52,29 +52,12 @@ class _Models(_BaseModels):
         Este método crea un nuevo modelo de SQLAlchemy con sus campos base y lo
         registra en la estructura de tablas de la instancia principal.
         """
-
+        # Creación del modelo a partir de código compilado para evitar advertencias de SQLAlchemy
         model = self._create_model_class(model_name)
-
         # Registro del modelo en la estructura de SQLAlchemy
         self._main._strc.register_table(model)
-
         # Se retorna el modelo para ser usado por otros métodos
         return model
-
-    def _create_model_class(
-        self,
-        model_name: str,
-    ) -> type[DeclarativeBase]:
-
-        # Inicialización de un objeto
-        data = {'model': None}
-        # Creación del código
-        f = MODELS_CODE.format(**{'model_name': model_name})
-        # Ejecución del código
-        exec(f)
-
-        # Retorno del modelo
-        return data['model']
 
     def delete_model(
         self,
@@ -87,13 +70,10 @@ class _Models(_BaseModels):
 
         # Obtención del modelo SQLAlchemy
         model_model = self._main._strc.get_model(model_name)
-
         # Se obtiene el esquema del registro de Base
         table_scheme = self._base.metadata.tables[model_model.__tablename__]
-
         # Se elimina el esquema de los modelos heredados de Base
         self._base.metadata.remove(table_scheme)
-
         # Se elimina el modelo de los registros del mapa de modelos
         self._main._strc.unregister_table(model_name)
 
@@ -109,14 +89,12 @@ class _Models(_BaseModels):
 
         # Creación de la instancia a ser añadida
         field_instance = self.build_column[field.ttype](field)
-
         # Se añade la instancia de campo como atributo del modelo
         setattr(
             model_model,
             field.field_name,
             field_instance,
         )
-
         # Se registra la instancia la modelo en el esquema de SQLAlchemy
         class_mapper(model_model).add_property(field.field_name, field_instance)
 
@@ -148,6 +126,22 @@ class _Models(_BaseModels):
 
         return field_atts
 
+    def _create_model_class(
+        self,
+        model_name: str,
+    ) -> type[DeclarativeBase]:
+
+        # Inicialización de un objeto
+        data = {'model': None}
+        # Creación del código
+        f = MODELS_CODE.format(**{'model_name': model_name})
+        # Ejecución del código
+        exec(f)
+        # Obtención del modelo
+        model_model: type[DeclarativeBase] = data['model']
+
+        return model_model
+
     def _parse_default_value(
         self,
         params: ModelRecord.BaseModelField,
@@ -176,36 +170,6 @@ class _Models(_BaseModels):
         # El valor se retorna en formato de cadena de texto
         else:
             return value
-
-    def _initialize(
-        self
-    ) -> None:
-
-        # Inicialización de mapa de funciones
-        self.build_column = {
-            'integer': lambda field: Column(Integer, **self._build_field_kwargs(field)),
-            'char': lambda field: Column(String(255), **self._build_field_kwargs(field)),
-            'float': lambda field: Column(Float, **self._build_field_kwargs(field)),
-            'boolean': lambda field: Column(Boolean, **self._build_field_kwargs(field)),
-            'date': lambda field: Column(Date, **self._build_field_kwargs(field)),
-            'datetime': lambda field: Column(DateTime, **self._build_field_kwargs(field)),
-            'time': lambda field: Column(Time, **self._build_field_kwargs(field)),
-            'file': lambda field: Column(LargeBinary, **self._build_field_kwargs(field)),
-            'text': lambda field: Column(Text, **self._build_field_kwargs(field)),
-            'selection': lambda field: Column(String, **self._build_field_kwargs(field)),
-            'many2one': lambda field: Column(
-                Integer,
-                ForeignKey(f'{self._get_table_name(field.related_model_id)}.id'),
-                **self._build_field_kwargs(field)
-            ),
-        }
-
-        # Inicialización de atributos de campo
-        self._atts = [
-            'nullable',
-            'default',
-            'unique',
-        ]
 
     def _build_field_kwargs(
         self,
@@ -236,3 +200,33 @@ class _Models(_BaseModels):
         table_name: str = self._main.get_value(MODEL_NAME.BASE_MODEL, model_id, 'name')
 
         return table_name
+
+    def _initialize(
+        self
+    ) -> None:
+
+        # Inicialización de mapa de funciones
+        self.build_column = {
+            'integer': lambda field: Column(Integer, **self._build_field_kwargs(field)),
+            'char': lambda field: Column(String(255), **self._build_field_kwargs(field)),
+            'float': lambda field: Column(Float, **self._build_field_kwargs(field)),
+            'boolean': lambda field: Column(Boolean, **self._build_field_kwargs(field)),
+            'date': lambda field: Column(Date, **self._build_field_kwargs(field)),
+            'datetime': lambda field: Column(DateTime, **self._build_field_kwargs(field)),
+            'time': lambda field: Column(Time, **self._build_field_kwargs(field)),
+            'file': lambda field: Column(LargeBinary, **self._build_field_kwargs(field)),
+            'text': lambda field: Column(Text, **self._build_field_kwargs(field)),
+            'selection': lambda field: Column(String, **self._build_field_kwargs(field)),
+            'many2one': lambda field: Column(
+                Integer,
+                ForeignKey(f'{self._get_table_name(field.related_model_id)}.id'),
+                **self._build_field_kwargs(field)
+            ),
+        }
+
+        # Inicialización de atributos de campo
+        self._atts = [
+            'nullable',
+            'default',
+            'unique',
+        ]

@@ -1,6 +1,9 @@
 from ..._constants import MODEL_NAME
 from ..._core import _Lylac
-from ..._data import default_field_template
+from ..._data import (
+    default_field_template,
+    uid_fields,
+)
 from ..._module_types import (
     CriteriaStructure,
     ModelRecord,
@@ -23,7 +26,6 @@ class DDLManager(_BaseDDLManager):
 
         # Asignación de la instancia propietaria
         self._main = instance
-
         # Referencia del módulo de estructura interna
         self._strc = instance._strc
         # Referencia del motor de conexión
@@ -40,7 +42,7 @@ class DDLManager(_BaseDDLManager):
 
     def new_table(
         self,
-        name: str,
+        table_name: str,
     ) -> None:
         """
         ### Nueva tabla
@@ -49,8 +51,7 @@ class DDLManager(_BaseDDLManager):
         """
 
         # Inicialización del modelo
-        table_model = self._m_model.create_model(name)
-
+        table_model = self._m_model.create_model(table_name)
         # Se crea el modelo como tabla en la base de datos
         table_model.__table__.create(self._engine)
 
@@ -62,13 +63,10 @@ class DDLManager(_BaseDDLManager):
 
         # Obtención del modelo de SQLAlchemy
         model_model = self._strc.get_model(model_name)
-
         # Creación de los parámetros para ser usados en las automatizaciones
         new_field = self._m_model.build_field_atts(params)
-
         # Se añade la columna al modelo SQLAlchemy de la tabla
         self._m_model.add_field_to_model(model_model, new_field)
-
         # Se añade la columna a la tabla de la base de datos
         self._m_db.add_column(new_field)
 
@@ -79,10 +77,8 @@ class DDLManager(_BaseDDLManager):
 
         # Obtención del modelo de SQLAlchemy
         model_model = self._strc.get_model(model_name)
-
         # Se elimina la tabla de la base de datos
         model_model.__table__.drop(self._engine)
-
         # Se elimina el modelo
         self._m_model.delete_model(model_name)
 
@@ -94,7 +90,6 @@ class DDLManager(_BaseDDLManager):
 
         # Obtención de la ID del modelo
         [ model_id ] = self._main.search(MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
-
         # Creación de criterio de búsqueda para encontrar todos los campos pertenientes al modelo
         criteria: CriteriaStructure = [
             '&',
@@ -105,20 +100,21 @@ class DDLManager(_BaseDDLManager):
         ]
 
         # Se obtienen los datos de los registros a excepción del campo eliminado
-        fields_data: list[ModelRecord.BaseModelField] = self._main.search_read(MODEL_NAME.BASE_MODEL_FIELD, criteria, output_format= 'dict', only_ids_in_relations= True)
+        fields_data: list[ModelRecord.BaseModelField] = self._main.search_read(
+            MODEL_NAME.BASE_MODEL_FIELD,
+            criteria,
+            output_format= 'dict',
+            only_ids_in_relations= True
+        )
 
         # Se crean las instancias de campos para ser añadidas
         fields_atts = [ self._m_model.build_field_atts(field) for field in fields_data ]
-
         # Obtención del nombre de la tabla
-        table_name = self._main.get_value(MODEL_NAME.BASE_MODEL, model_id, 'name')
-
+        table_name = self._strc.get_table_name(model_name)
         # Se elimina la columna de la tabla de base de datos
         self._m_db.drop_column(table_name, field_name)
-
         # Se elimina el modelo de SQLAlchemy
         self._m_model.delete_model(model_name)
-
         # Se vuelve a crear el modelo
         table_model = self._m_model.create_model(table_name)
 
@@ -132,23 +128,33 @@ class DDLManager(_BaseDDLManager):
         field_names: list[str] = [],
     ) -> None:
 
-        default_fields = ['create_uid', 'write_uid']
-        complete_field_names = field_names + default_fields
-
+        # Inicialización de los campos plantilla del modelo
+        model_fields_template = []
+        # Se añaden los campos UID
+        model_fields_template = field_names + uid_fields
         # Inicialización de la lista de datos a retornar
         fields_data: list[NewRecord.ModelField] = []
 
         # Creación de los datos por cada nombre de campo
-        for field_name in complete_field_names:
+        for field_name in model_fields_template:
 
             # Se obtiene una copia de la plantilla de información
-            field_data = default_field_template[field_name].copy()
-
-            # Se asigna la ID del modelo
-            field_data['model_id'] = model_id
-
+            field_data = self.build_default_field(field_name, model_id)
             # Se añaden los datos del campo a la lista de datos a retornar
             fields_data.append(field_data)
 
         # Se crea la información de los campos
         self._main.create(MODEL_NAME.BASE_MODEL_FIELD, fields_data)
+
+    def build_default_field(
+        self,
+        field_name: str,
+        model_id: int,
+    ) -> NewRecord.ModelField:
+
+        # Obtención de los datos prestablecidos de la definición del campo
+        field_template = default_field_template[field_name].copy()
+        # Se asigna la ID del modelo
+        field_template['model_id'] = model_id
+
+        return field_template

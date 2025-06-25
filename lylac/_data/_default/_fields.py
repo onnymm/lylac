@@ -28,3 +28,5 @@ default_field_template: dict[str, NewRecord.ModelField] = {
         'related_model_id': 4,
     },
 }
+
+uid_fields = ['create_uid', 'write_uid']

@@ -50,7 +50,6 @@ class _Reset():
 
         # Inicialización de modelos
         self._build_models_structure()
-
         # Inicialización de campos
         self._build_fields_structure()
 
@@ -133,10 +132,8 @@ class _Reset():
 
         # Inicialización de la base de datos
         self._main._base.metadata.create_all(self._engine)
-
         # Registro del usuario inicial
         self._main.create(MODEL_NAME.BASE_USERS, base_user)
-
         # Registro de los datos iniciales
         for ( model_name, data ) in initial_data.items():
             self._main.create(model_name, data)
@@ -161,7 +158,6 @@ class _Reset():
 
         # Eliminación de todos los datos
         self._main._base.metadata.drop_all(self._engine)
-
         # Se reinicia el estado de inicialización
         self._state = False
 
