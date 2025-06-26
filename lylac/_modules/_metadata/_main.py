@@ -33,6 +33,9 @@ class Metadata():
         self._main = instance
 
         class _Base(DeclarativeBase):
+            pass
+
+        class ModelTemplate():
             # ID del registro
             id: Mapped[int] = mapped_column(Integer, primary_key= True, autoincrement= True)
             # Nombre o título representativo del registro
@@ -42,7 +45,7 @@ class Metadata():
             # Última fecha de modificación del registro
             write_date: Mapped[datetime] = mapped_column(DateTime, default= datetime.now, onupdate= datetime.now)
 
-        class BaseUsers(_Base):
+        class BaseUsers(_Base, ModelTemplate):
             __tablename__ = 'base_users'
 
             # Inicio de sesión
@@ -56,7 +59,7 @@ class Metadata():
             # Sincronizar
             sync: Mapped[bool] = mapped_column(Boolean, default= True)
 
-        class BaseModel_(_Base):
+        class BaseModel_(_Base, ModelTemplate):
             __tablename__ = 'base_model'
 
             # Nombre representativo para usarse en el servidor
@@ -68,7 +71,7 @@ class Metadata():
             # Tipo de modelo
             state: Mapped[str] = mapped_column(String(60), nullable= False, default= 'generic')
 
-        class BaseModelField(_Base):
+        class BaseModelField(_Base, ModelTemplate):
             __tablename__ = 'base_model_field'
 
             # ID del modelo al que pertenece
@@ -102,7 +105,7 @@ class Metadata():
                 foreign_keys=[related_model_id],
             )
 
-        class BaseModelFieldSelection(_Base):
+        class BaseModelFieldSelection(_Base, ModelTemplate):
             __tablename__ = 'base_model_field_selection'
 
             # ID del campo al que pertenece
@@ -110,11 +113,9 @@ class Metadata():
             # Etiqueta del valor de selección
             label: Mapped[str] = mapped_column(String(60), nullable= False)
 
-            # # Relación al campo al que pertenece
-            # field: Mapped["BaseModelField"] = relationship(back_populates= 'selection_ids')
-
         # Se almacena _Base
         self._main._base = _Base
+        self._main._model_template = ModelTemplate
 
         # Se almacenan los demás modelos para mantenerlos en la memoria de la ejecución
         self._models = [

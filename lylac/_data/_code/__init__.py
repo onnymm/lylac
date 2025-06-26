@@ -1,1 +1,1 @@
-from ._models import MODELS_CODE
+from ._models import MODEL_TABLE_TEMPLATE

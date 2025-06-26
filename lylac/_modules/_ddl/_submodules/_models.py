@@ -16,7 +16,7 @@ from sqlalchemy.types import (
     Time,
 )
 from ...._constants import MODEL_NAME
-from ...._data import MODELS_CODE
+from ...._data import MODEL_TABLE_TEMPLATE
 from ...._module_types import (
     FieldDefinition,
     ModelRecord,
@@ -37,8 +37,9 @@ class _Models(_BaseModels):
         self._ddl = instance
         # Asignación de la instancia principal
         self._main = instance._main
-        # Asignación de modelo base
+        # Asignación de modelos base
         self._base = instance._main._base
+        self._model_template = instance._main._model_template
 
         # Inicialización de mapa de funciones
         self._initialize()
@@ -134,7 +135,7 @@ class _Models(_BaseModels):
         # Inicialización de un objeto
         data = {'model': None}
         # Creación del código
-        f = MODELS_CODE.format(**{'model_name': model_name})
+        f = MODEL_TABLE_TEMPLATE.format(**{'model_name': model_name})
         # Ejecución del código
         exec(f)
         # Obtención del modelo

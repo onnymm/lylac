@@ -17,6 +17,7 @@ from ._base import (
 class BaseBaseLylac():
     _credentials: CredentialsAlike
     _base: type[DeclarativeBase]
+    _model_template: type[DeclarativeBase]
     _algorythms: BaseAlgorythms
     _engine: Engine
     _models: BaseModels
