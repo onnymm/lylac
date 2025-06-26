@@ -89,11 +89,11 @@ class Metadata():
             help_info: Mapped[str] = mapped_column(Text, nullable= True)
             # Modelo de relación
             related_model_id: Mapped[Optional[int]] = mapped_column(ForeignKey('base_model.id'), nullable= True)
+            # Campo de relación
+            related_field: Mapped[str] = mapped_column(String(60), nullable= True)
             # Tipo de modelo
             state: Mapped[str] = mapped_column(String(60), nullable= False, default= 'generic')
 
-            # # Relación con valores de selección (Solo si el tipo de dato del campo es `selection`)
-            # selection_ids: Mapped[Optional[List["BaseModelFieldSelection"]]] = relationship(back_populates= 'field', cascade= 'all, delete-orphan')
             # Relación hacia el modelo al que pertenece
             model: Mapped["BaseModel_"] = relationship(BaseModel_, foreign_keys= [model_id])
             # Relación hacia el modelo relacionado (opcional, si es many2one)

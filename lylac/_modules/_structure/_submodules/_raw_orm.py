@@ -23,7 +23,7 @@ class _RawORM():
     def get_model_fields(
         self,
         model_name,
-    ) -> list[Tuple[str, TType, None | str]]:
+    ) -> list[Tuple[str, TType, None | str, None | str]]:
 
         # Obtención de modelos base
         BaseModel = self._main._models.get_table_model('base.model')
@@ -39,6 +39,7 @@ class _RawORM():
                 self._main._index[BaseModelField]['name'],
                 self._main._index[BaseModelField]['ttype'],
                 self._main._index[RelatedModel]['model'],
+                self._main._index[BaseModelField]['related_field'],
             )
             .outerjoin(
                 FieldModel,

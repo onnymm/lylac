@@ -7,7 +7,10 @@ from ._module_types import (
     TTypesMapping,
     OperationData,
 )
-from sqlalchemy import select
+from sqlalchemy import (
+    select,
+    func,
+)
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from sqlalchemy.orm.attributes import InstrumentedAttribute
@@ -43,7 +46,6 @@ class Select_():
 
         # Inicialización de los datos de operación
         operation_data = OperationData()
-
         # Obtención del modelo de la tabla
         model_model = self._strc.get_model(model_name)
 
@@ -51,8 +53,8 @@ class Select_():
             self._add_field(
                 field,
                 model_name,
-                operation_data,
                 model_model,
+                operation_data,
             )
 
         # Creación de query
@@ -71,8 +73,8 @@ class Select_():
         self,
         field_name: str,
         model_name: str,
+        model_model: type[DeclarativeBase],
         operation_data: OperationData,
-        model_model: Optional[type[DeclarativeBase]] = None,
     ) -> None:
 
         # Obtención de cadena de campos separados por punto
@@ -168,17 +170,23 @@ class Select_():
         # Obtención del tipo de dato del campo
         field_ttype = self._strc.get_field_ttype(model_name, field_name)
 
-        if field_ttype == 'one2many':
-            return
-
         # Obtención o reasignación de variable al modelo
         if model_model is not None:
             computed_model_model = model_model
         else:
             computed_model_model = aliased( self._strc.get_model(model_name) )
 
+        if field_ttype == 'one2many':
+            self._add_one2many_field(
+                field_name,
+                model_name,
+                computed_model_model,
+                operation_data,
+                label,
+            )
+
         # Si el campo es many2one...
-        if field_ttype == 'many2one':
+        elif field_ttype == 'many2one':
             self._add_many2one_field(
                 field_name,
                 model_name,
@@ -195,6 +203,67 @@ class Select_():
                 operation_data,
                 label,
             )
+
+    def _add_one2many_field(
+        self,
+        field_name: str,
+        model_name: str,
+        model_model: type[DeclarativeBase],
+        operation_data: OperationData,
+        label: str,
+    ) -> None:
+
+        # Obtención del nombre del modelo relacionado
+        related_model_name = self._strc.get_related_model_name(model_name, field_name)
+        # Obtención del modelo relacionado
+        related_model_model = aliased( self._strc.get_model(related_model_name) )
+        # Obtención del nombre del campo relacionado
+        related_field_name = self._strc.get_related_field_name(model_name, field_name)
+
+        # Obtención de la instancia del campo de ID
+        id_field_instance = self._index[model_model]['id']
+        # Obtención de la instancia del campo de ID del modelo relacionado
+        related_model_id_field_instance = self._index[related_model_model]['id']
+        # Obtención de la instancia del campo de ID relacionado del modelo relacionado
+        related_model_related_id_field_instance = self._index[related_model_model][related_field_name]
+
+        # Creación de un subquery que más adelante se une a la tabla principal creada
+        sub_stmt = (
+            # Creación del comando de selección de columnas
+            select(
+                # Campo de ID
+                id_field_instance,
+                # Función de agregación del campo de ID del modelo relacionado con alias como el nombre del campo requerido
+                func.array_agg(related_model_id_field_instance ).label(field_name)
+            )
+            # Especificación del modelo a usar
+            .select_from(model_model)
+            # Unión con el modelo relacionado por medio del campo de ID relacionado
+            .outerjoin(
+                related_model_model,
+                id_field_instance == related_model_related_id_field_instance
+            )
+            # Agrupación por campo de ID
+            .group_by(id_field_instance)
+            # Ordenamiento ascendente por campo de ID
+            .order_by(id_field_instance)
+            # Transformación a sunquery
+            .subquery()
+        )
+
+        # Se procesan los datos del subquery como campo común
+        self._add_common_field(
+            field_name,
+            model_name,
+            sub_stmt.c,
+            operation_data,
+            label,
+        )
+
+        # Obtención del campo de ID relacionado desde el subquery creado
+        sub_stmt_id_field_instance = self._index[sub_stmt.c]['id']
+        # Se añade el JOIN
+        operation_data.outerjoins.append( ( sub_stmt, id_field_instance == sub_stmt_id_field_instance ) )
 
     def _add_many2one_field(
         self,
@@ -220,7 +289,7 @@ class Select_():
             field_computed_name = field_name
 
         # Se añade el campo propio
-        id_current_field_instance = self._add_common_field(
+        current_id_field_instance = self._add_common_field(
             field_name,
             model_name,
             model_model,
@@ -240,7 +309,7 @@ class Select_():
 
         # Se añade el JOIN
         self._add_join(
-            id_current_field_instance,
+            current_id_field_instance,
             related_model_model,
             operation_data,
         )
@@ -257,7 +326,6 @@ class Select_():
 
         # Obtención del tipo de dato del campo
         field_ttype = self._strc.get_field_ttype(model_name, field_name)
-
         # Obtención de la instancia del campo
         field_instance = self._index[model_model][field_name]
 
@@ -274,6 +342,7 @@ class Select_():
 
         # Se añaden los datos obtenidos
         operation_data.field_instances.append(field_instance)
+
         # Se añade el tipo de dato si no se especificó lo contrario
         if add_ttype:
             operation_data.ttypes_mapping.append( (field_computed_name, field_ttype) )

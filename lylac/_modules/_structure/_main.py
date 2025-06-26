@@ -90,20 +90,31 @@ class Structure(BaseStructure):
 
         return related_model_name
 
+    def get_related_field_name(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> str:
+
+        # Obtención del campo de ID relacionado
+        related_field_name = self.models[model_name]['fields'][field_name]['related_field']
+
+        return related_field_name
+
     def register_field(
         self,
         model_name: str,
         field_name: str,
         ttype: TType,
-        relation: str | None,
+        related_model: str | None,
+        related_field: str | None
     ) -> None:
 
         # Asignación de valores
         self.models[model_name]['fields'][field_name] = {
             'ttype': ttype,
-            'related_model': relation,
-            # TODO reemplazar en implementación de tipo de dato one2many
-            'related_field': None,
+            'related_model': related_model,
+            'related_field': related_field,
         }
 
     def unregister_field(
@@ -140,9 +151,9 @@ class Structure(BaseStructure):
         # Registro de los campos
         for atts in fields_atts:
             # Destructuración de los valores en la tupla
-            ( field_name, ttype, field_relation ) = atts
+            ( field_name, ttype, related_model, related_field ) = atts
             # Registro por cada campo
-            self.register_field(model_name, field_name, ttype, field_relation)
+            self.register_field(model_name, field_name, ttype, related_model, related_field)
 
     def unregister_table(
         self,

@@ -16,7 +16,7 @@ class _Initialize():
         # Asignación de instancia principal
         self._main = instance._main
         # Generación de nombres de modelos iniciales
-        self._initial_models = list(initial_data.keys()) + ['base.users']
+        self._initial_models = [ model for ( model, _ ) in initial_data ] + ['base.users']
 
     def initialize_data(
         self,

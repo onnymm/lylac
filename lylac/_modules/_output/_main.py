@@ -37,7 +37,7 @@ class Output(_BaseOutput):
     ) -> pd.DataFrame | list[dict[str, Any]]:
 
         # Obtención de lista de campos
-        fields = [ field_name for ( field_name, ttype ) in ttypes if ttype != 'one2many' ]
+        fields = [ field_name for ( field_name, _ ) in ttypes ]
 
         # Si el DataFrame de respuesta está vacío...
         if len(response) == 0:
@@ -52,9 +52,6 @@ class Output(_BaseOutput):
                 if only_ids_in_relations and ttype == 'many2one':
                     # Se manejan los tipos many2one como enteros
                     ttype = 'integer'
-                # TODO Falta manejar tipo de dato one2many
-                elif ttype == 'one2many':
-                    continue
                 # Recuperación de tipos de dato por columna
                 data = self._m_data.recover_ttype[ttype](data, field_name)
 

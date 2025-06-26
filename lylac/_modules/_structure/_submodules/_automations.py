@@ -26,16 +26,19 @@ class _Automations():
         model_name = self._main.get_value(MODEL_NAME.BASE_MODEL, params.record_data['model_id'], 'model')
 
         # Inicialización del modelo de relación como nulo
-        field_relation = None
+        related_model = None
+        related_field = None
 
         # Si existe una ID relacionada, se obtiene el nombre del modelo relacionado
         if params.record_data['related_model_id'] is not None:
-            field_relation = self._main.get_value(MODEL_NAME.BASE_MODEL, params.record_data['related_model_id'], 'model')
+            related_model = self._main.get_value(MODEL_NAME.BASE_MODEL, params.record_data['related_model_id'], 'model')
+            related_field = params.record_data['related_field']
 
         # Registro del campo
         self._strc.register_field(
             model_name,
             params.record_data['name'],
             params.record_data['ttype'],
-            field_relation,
+            related_model,
+            related_field,
         )

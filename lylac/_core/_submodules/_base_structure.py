@@ -47,6 +47,13 @@ class BaseStructure():
     ) -> str:
         ...
 
+    def get_related_field_name(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> str:
+        ...
+
     def register_table(
         self,
         table_instance: type[DeclarativeBase],

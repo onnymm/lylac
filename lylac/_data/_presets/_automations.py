@@ -102,6 +102,7 @@ preset_automations: list[AutomationData] = [
             'ttype',
             'model_id',
             'related_model_id',
+            'related_field',
         ],
         'method': 'record',
     },

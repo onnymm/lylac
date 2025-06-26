@@ -37,6 +37,21 @@ fields_atts: dict[str, dict[str, FieldProperties]] = {
             'related_model': None,
             'related_field': None,
         },
+        'state': {
+            'ttype': 'selection',
+            'related_model': None,
+            'related_field': None,
+        },
+        'field_ids': {
+            'ttype': 'one2many',
+            'related_model': 'base.model.field',
+            'related_field': 'model_id',
+        },
+        'related_field_ids': {
+            'ttype': 'one2many',
+            'related_model': 'base.model.field',
+            'related_field': 'related_model_id',
+        },
     },
     'base.model.field': {
         'id': {
@@ -104,10 +119,20 @@ fields_atts: dict[str, dict[str, FieldProperties]] = {
             'related_model': 'base.model.field',
             'related_field': None,
         },
+        'related_field': {
+            'ttype': 'char',
+            'related_model': None,
+            'related_field': None,
+        },
         'state': {
             'ttype': 'selection',
             'related_model': None,
             'related_field': None,
+        },
+        'selection_ids': {
+            'ttype': 'one2many',
+            'related_model': 'base.model.field.selection',
+            'related_field': 'field_id',
         },
     },
     'base.model.field.selection': {

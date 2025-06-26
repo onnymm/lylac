@@ -39,6 +39,7 @@ class _DataTypes():
             'text': lambda df, field: self._bypass_value(df, field),
             'selection': lambda df, field: self._bypass_value(df, field),
             'many2one': lambda df, field: self.transform_many2one(df, field),
+            'one2many': lambda df, field: self.transform_one2many(df, field),
         }
 
     def transform_many2one(
@@ -57,6 +58,29 @@ class _DataTypes():
                 }
             )
         )
+
+    def transform_one2many(
+        self,
+        data: pd.DataFrame,
+        field: str,
+    ) -> pd.DataFrame:
+        return (
+            data
+            .assign(
+                **{
+                    field: lambda df: df[field].apply(self._create_one2many_value)
+                }
+            )
+        )
+
+    def _create_one2many_value(
+        self,
+        value: list[int | None],
+    ) -> list[int]:
+
+        if value == [None]:
+            return []
+        return value
 
     def _create_many2one_value(
         self,
