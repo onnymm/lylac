@@ -32,6 +32,7 @@ from ._modules import (
     Metadata,
     Models,
     Output,
+    Preprocess,
     Select,
     Structure,
     Query,
@@ -63,6 +64,7 @@ class Lylac(_Lylac):
         self._index = Index(self)
         self._ddl = DDLManager(self)
         self._where = Where(self)
+        self._preprocess = Preprocess(self)
         self._query = Query(self)
         self._select = Select(self)
         self._automations = Automations(self)
@@ -210,6 +212,9 @@ class Lylac(_Lylac):
         # Conversión de datos entrantes si es necesaria
         if isinstance(data, dict):
             data = [data,]
+
+        # Preprocesamiento de datos en creación
+        self._preprocess.process_data_on_create(table_name, data)
 
         # Ejecución de validaciones
         self._validations.run_validations_on_create(table_name, data)
@@ -938,6 +943,9 @@ class Lylac(_Lylac):
 
         # Obtención de la instancia de la tabla
         table_model = self._models.get_table_model(table_name)
+
+        # Preprocesamiento de datos en actualización
+        self._preprocess.process_data_on_update(table_name, data)
 
         # Creación del query base
         stmt = update(table_model)
