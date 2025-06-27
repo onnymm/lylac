@@ -39,7 +39,8 @@ class _DataTypes():
             'text': lambda df, field: self._bypass_value(df, field),
             'selection': lambda df, field: self._bypass_value(df, field),
             'many2one': lambda df, field: self.transform_many2one(df, field),
-            'one2many': lambda df, field: self.transform_one2many(df, field),
+            'one2many': lambda df, field: self.transform_ids_list(df, field),
+            'many2many': lambda df, field: self.transform_ids_list(df, field),
         }
 
     def transform_many2one(
@@ -59,7 +60,7 @@ class _DataTypes():
             )
         )
 
-    def transform_one2many(
+    def transform_ids_list(
         self,
         data: pd.DataFrame,
         field: str,
@@ -79,6 +80,8 @@ class _DataTypes():
     ) -> list[int]:
 
         if value == [None]:
+            return []
+        elif value is None:
             return []
         return value
 

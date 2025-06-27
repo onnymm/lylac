@@ -19,7 +19,7 @@ class _Automations():
 
     def register_field_atts(
         self,
-        params: DataPerRecord[ModelRecord.BaseModelField]
+        params: DataPerRecord[ModelRecord.BaseModelField],
     ) -> None:
 
         # Obtención del nombre del modelo propietario
@@ -42,3 +42,15 @@ class _Automations():
             related_model,
             related_field,
         )
+
+    def unregister_fields_atts(
+        self,
+        params: DataPerRecord[ModelRecord.BaseModelField],
+    ) -> None:
+
+        # Obtención del nombre del modelo propietario
+        model_name = self._main.get_value(MODEL_NAME.BASE_MODEL, params.record_data['model_id'], 'model')
+        # Obtención del nombre del campo
+        field_name = params.record_data['name']
+
+        self._strc.unregister_field(model_name, field_name)

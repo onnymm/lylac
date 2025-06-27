@@ -1,6 +1,8 @@
 from ..._module_types import AutomationData
 
 preset_automations: list[AutomationData] = [
+
+    # base.model
     # Creación de tabla en base de datos cuando un modelo se crea
     {
         'submodule': '_ddl',
@@ -61,6 +63,8 @@ preset_automations: list[AutomationData] = [
         'fields': ['name', 'model'],
         'method': 'record',
     },
+
+    # base.model.field
     # Creación de una columna de base de datos cuando un campo se crea
     {
         'submodule': '_ddl',
@@ -69,8 +73,10 @@ preset_automations: list[AutomationData] = [
         'transaction': 'create',
         'criteria': [
             '&',
-                ('state', '!=', 'base'),
-                ('name', 'not in', ['id', 'name', 'create_date', 'write_date'])
+                ('ttype', '!=', 'one2many'),
+                '&',
+                    ('state', '!=', 'base'),
+                    ('name', 'not in', ['id', 'name', 'create_date', 'write_date'])
         ],
         'fields': [
             'name',
@@ -110,6 +116,16 @@ preset_automations: list[AutomationData] = [
     {
         'submodule': '_ddl',
         'callback': 'delete_column',
+        'model': 'base.model.field',
+        'transaction': 'delete',
+        'criteria': [('ttype', '!=', 'one2many')],
+        'fields': ['name', 'model_id'],
+        'method': 'record',
+    },
+    # Eliminación de las propiedades de campo cuando un campo se elimina
+    {
+        'submodule': '_strc',
+        'callback': 'unregister_fields_atts',
         'model': 'base.model.field',
         'transaction': 'delete',
         'criteria': [],
