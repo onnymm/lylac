@@ -52,6 +52,8 @@ class _Reset():
         self._build_models_structure()
         # Inicialización de campos
         self._build_fields_structure()
+        # Inicialización de tablas de relación
+        self._build_relation_models_structure()
 
     def _build_models_structure(
         self,
@@ -82,9 +84,11 @@ class _Reset():
             MODEL_NAME.BASE_MODEL_FIELD,
             [
                 '&',
-                    ('state', '!=', 'base'),
-                    ('name', 'not in', ['id', 'name', 'create_date', 'write_date']),
-                ],
+                    '&',
+                        ('state', '!=', 'base'),
+                        ('name', 'not in', ['id', 'name', 'create_date', 'write_date']),
+                    ('ttype', '!=', 'many2many'),
+            ],
             [
                 'name',
                 'model_id',
@@ -114,6 +118,29 @@ class _Reset():
 
         # Se establece el estado de inicialización a verdadero
         self._state = True
+
+    def _build_relation_models_structure(
+        self,
+    ) -> None:
+
+        field_records = self._main.search_read(
+            MODEL_NAME.BASE_MODEL_FIELD,
+            [('ttype', '=', 'many2many')],
+            [
+                'model_id.model',
+                'related_model_id.model',
+            ],
+            output_format= 'dict',
+            only_ids_in_relations= True,
+        )
+
+        for record in field_records:
+            # Obtención del nombre del modelo al que el campo pertenece
+            model_name = record['model_id.model']
+            # Obtención del nombre del modelo al que el campo se relaciona
+            related_model_name = record['related_model_id.model']
+            # Creación del modelo SQLAlchemy
+            self._ddl._m_model.create_relation(model_name, related_model_name)
 
     def _initialize(
         self

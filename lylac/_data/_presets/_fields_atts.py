@@ -116,7 +116,7 @@ fields_atts: dict[str, dict[str, FieldProperties]] = {
         },
         'related_model_id': {
             'ttype': 'many2one',
-            'related_model': 'base.model.field',
+            'related_model': 'base.model',
             'related_field': None,
         },
         'related_field': {

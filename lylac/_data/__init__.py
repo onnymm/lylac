@@ -10,4 +10,7 @@ from ._presets import (
     preset_automations,
     validations_data,
 )
-from ._code import MODEL_TABLE_TEMPLATE
+from ._code import (
+    MODEL_TABLE_TEMPLATE,
+    RELATION_TABLE_TEMPLATE,
+)

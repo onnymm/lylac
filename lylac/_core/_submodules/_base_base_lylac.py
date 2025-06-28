@@ -81,11 +81,26 @@ class BaseBaseLylac():
     ) -> DataOutput:
         ...
 
+    def update(
+        self,
+        table_name: str,
+        record_ids: int | list[int],
+        data: RecordData,
+    ) -> bool:
+        ...
+
     def update_where(
         self,
         table_name: str,
         search_criteria: CriteriaStructure,
         data: RecordData,
+    ) -> bool:
+        ...
+
+    def delete(
+        self,
+        table_name: str,
+        record_ids: int | list[int]
     ) -> bool:
         ...
 

@@ -25,6 +25,13 @@ class _BaseModels():
     ) -> type[DeclarativeBase]:
         ...
 
+    def create_relation(
+        self,
+        owner_model_name: str,
+        referenced_model_name: str,
+    ) -> type[DeclarativeBase]:
+        ...
+
     def delete_model(
         self,
         model_name: str,
@@ -75,6 +82,20 @@ class _BaseDDLManager():
         self,
         model_name: str,
         params: ModelRecord.BaseModelField
+    ) -> None:
+        ...
+
+    def new_relation(
+        self,
+        owner_model_name: str,
+        referenced_model_name: str,
+    ) -> None:
+        ...
+
+    def delete_relation(
+        self,
+        model_name: str,
+        field_name: str,
     ) -> None:
         ...
 

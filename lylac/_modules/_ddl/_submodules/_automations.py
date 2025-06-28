@@ -70,6 +70,31 @@ class _Automations():
         # Ejecución del método del módulo principal
         self._ddl.delete_field(model_name, field_name)
 
+    def create_relation_table(
+        self,
+        params: DataPerRecord[ModelRecord.BaseModelField],
+    ) -> None:
+
+        # Nombre del modelo propietario
+        model_name = self._main.get_value(MODEL_NAME.BASE_MODEL, params.record_data['model_id'], 'model')
+        # Nombre del modelo referenciado
+        related_model_name = self._main.get_value(MODEL_NAME.BASE_MODEL, params.record_data['related_model_id'], 'model')
+        # Creación de la tabla de relación
+        self._ddl.new_relation(model_name, related_model_name)
+
+    def delete_relation_table(
+        self,
+        params: DataPerRecord[ModelRecord.BaseModelField],
+    ) -> None:
+
+        # Nombre del modelo propietario
+        model_name = self._main.get_value(MODEL_NAME.BASE_MODEL, params.record_data['model_id'], 'model')
+        # Nombre del campo
+        field_name = params.record_data['name']
+
+        # Se elimina la tabla de relación
+        self._ddl.delete_relation(model_name, field_name)
+
     def create_base_fields(
         self,
         params: DataPerRecord[ModelRecord.BaseModel_]

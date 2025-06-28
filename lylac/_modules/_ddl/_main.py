@@ -55,6 +55,32 @@ class DDLManager(_BaseDDLManager):
         # Se crea el modelo como tabla en la base de datos
         table_model.__table__.create(self._engine)
 
+    def new_relation(
+        self,
+        owner_model_name: str,
+        referenced_model_name: str,
+    ) -> None:
+
+        # Inicialización de la tabla de relación
+        relation_model = self._m_model.create_relation(owner_model_name, referenced_model_name)
+        # Se crea el modelo como tabla en la base de datos
+        relation_model.__table__.create(self._engine)
+
+    def delete_relation(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> None:
+
+        # Obtención del nombre del modelo relacionado
+        relation_model_name = self._strc.get_relation_model_name(model_name, field_name)
+        # Obtención del modelo relacionado
+        relation_model = self._strc.get_model(relation_model_name)
+        # Se elimina la tabla de la base de datos
+        relation_model.__table__.drop(self._engine)
+        # Se elimina el modelo
+        self._m_model.delete_model(relation_model_name)
+
     def new_field(
         self,
         model_name: str,

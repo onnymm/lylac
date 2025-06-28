@@ -73,7 +73,7 @@ preset_automations: list[AutomationData] = [
         'transaction': 'create',
         'criteria': [
             '&',
-                ('ttype', '!=', 'one2many'),
+                ('ttype', 'not in', ['one2many', 'many2many']),
                 '&',
                     ('state', '!=', 'base'),
                     ('name', 'not in', ['id', 'name', 'create_date', 'write_date'])
@@ -90,6 +90,16 @@ preset_automations: list[AutomationData] = [
             'help_info',
             'related_model_id'
         ],
+        'method': 'record',
+    },
+    # Creación de tabla de relación de campo many2many cuando un campo many2many se crea
+    {
+        'submodule': '_ddl',
+        'callback': 'create_relation_table',
+        'model': 'base.model.field',
+        'transaction': 'create',
+        'criteria': [('ttype', '=', 'many2many')],
+        'fields': ['model_id', 'related_model_id'],
         'method': 'record',
     },
     # Registro de las propiedades de campo cuando un campo se crea
@@ -112,13 +122,23 @@ preset_automations: list[AutomationData] = [
         ],
         'method': 'record',
     },
+    # Eliminación de tabla de relación de campo many2many cuando un campo many2many se elimina
+    {
+        'submodule': '_ddl',
+        'callback': 'delete_relation_table',
+        'model': 'base.model.field',
+        'transaction': 'delete',
+        'criteria': [('ttype', '=', 'many2many')],
+        'fields': ['name', 'model_id'],
+        'method': 'record',
+    },
     # Eliminación de una columna de base de datos cuando un modelo se elimina
     {
         'submodule': '_ddl',
         'callback': 'delete_column',
         'model': 'base.model.field',
         'transaction': 'delete',
-        'criteria': [('ttype', '!=', 'one2many')],
+        'criteria': [('ttype', 'not in', ['one2many', 'many2many'])],
         'fields': ['name', 'model_id'],
         'method': 'record',
     },

@@ -68,6 +68,23 @@ class Structure(BaseStructure):
 
         return field_names
 
+    def get_model_many2many_field_names(
+        self,
+        model_name: str,
+    ) -> list[str]:
+
+        # Obtención de la lista de tuplas de campo y propiedades
+        fields = [ (field_name, field_properties) for (field_name, field_properties) in self.models[model_name]['fields'].items() ]
+
+        # Obtención de los campos que son de tipo many2many
+        many2many_fields = self._main._algorythms._get_from(
+            fields,
+            lambda value: value[1]['ttype'] == 'many2many',
+            lambda value: value[0],
+        )
+
+        return many2many_fields
+
     def get_field_ttype(
         self,
         model_name: str,
@@ -139,6 +156,48 @@ class Structure(BaseStructure):
         self.models[model_name] = self._initialize_model_properties(model_model)
         # Registro de las propiedades de los campos de la tabla
         self.register_table_fields_atts(model_name)
+
+    def register_relation(
+        self,
+        model_model: type[DeclarativeBase],
+    ) -> None:
+
+        # Obtención del nombre de la tabla
+        table_name = self.get_table_name(model_model)
+        # Obtención del nombre del modelo
+        model_name = table_name.replace('_rel_', '_rel.').replace('__', '.')
+        # Se registra el modelo de la tabla en el diccionario de modelos
+        self.models[model_name] = self._initialize_model_properties(model_model)
+
+    def get_relation_model(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> type[DeclarativeBase]:
+
+        # Obtención del nombre del modelo de relación
+        relation_model_name = self.get_relation_model_name(model_name, field_name)
+        # Obtención del modelo
+        relation_model = self.get_model(relation_model_name)
+
+        return relation_model
+
+    def get_relation_model_name(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> str:
+
+        # Obtención del nombre de la tabla
+        table_name = self.get_table_name(model_name)
+        # Obtención del nombre del modelo relacionado
+        related_model_name = self.get_related_model_name(model_name, field_name)
+        # Obtención del nombre de la tabla del modelo relacionado
+        related_table_name = self.get_table_name(related_model_name)
+        # Se construye la llave de acceso al modelo de relación many2many
+        relation_model_name = f'_rel.{table_name}.{related_table_name}'
+
+        return relation_model_name
 
     def register_table_fields_atts(
         self,

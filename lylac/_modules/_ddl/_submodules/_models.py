@@ -16,7 +16,10 @@ from sqlalchemy.types import (
     Time,
 )
 from ...._constants import MODEL_NAME
-from ...._data import MODEL_TABLE_TEMPLATE
+from ...._data import (
+    MODEL_TABLE_TEMPLATE,
+    RELATION_TABLE_TEMPLATE,
+)
 from ...._module_types import (
     FieldDefinition,
     ModelRecord,
@@ -37,6 +40,8 @@ class _Models(_BaseModels):
         self._ddl = instance
         # Asignación de la instancia principal
         self._main = instance._main
+        # Asignación de la instancia de estructura interna
+        self._strc = instance._main._strc
         # Asignación de modelos base
         self._base = instance._main._base
         self._model_template = instance._main._model_template
@@ -57,6 +62,19 @@ class _Models(_BaseModels):
         model = self._create_model_class(model_name)
         # Registro del modelo en la estructura de SQLAlchemy
         self._main._strc.register_table(model)
+        # Se retorna el modelo para ser usado por otros métodos
+        return model
+
+    def create_relation(
+        self,
+        owner_model_name: str,
+        referenced_model_name: str,
+    ) -> type[DeclarativeBase]:
+
+        # Creación de la tabla de relación
+        model = self._create_relation_class(owner_model_name, referenced_model_name)
+        # Registro de la relación en la estructura de SQLAlchemy
+        self._main._strc.register_relation(model)
         # Se retorna el modelo para ser usado por otros métodos
         return model
 
@@ -136,6 +154,31 @@ class _Models(_BaseModels):
         data = {'model': None}
         # Creación del código
         f = MODEL_TABLE_TEMPLATE.format(**{'model_name': model_name})
+        # Ejecución del código
+        exec(f)
+        # Obtención del modelo
+        model_model: type[DeclarativeBase] = data['model']
+
+        return model_model
+
+    def _create_relation_class(
+        self,
+        owner_model_name: str,
+        referenced_model_name: str,
+    ) -> type[DeclarativeBase]:
+
+        # Inicialización del objeto
+        data = {'model': None}
+        # Obtención de los modelos
+        owner_model = self._strc.get_model(owner_model_name)
+        referenced_model = self._strc.get_model(referenced_model_name)
+        # Creación del código
+        f = RELATION_TABLE_TEMPLATE.format(
+            **{
+                'main_model': owner_model.__tablename__,
+                'referenced_model': referenced_model.__tablename__
+            }
+        )
         # Ejecución del código
         exec(f)
         # Obtención del modelo

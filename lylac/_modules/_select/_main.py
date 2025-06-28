@@ -194,6 +194,16 @@ class Select_():
                 operation_data,
                 label,
             )
+
+        elif field_ttype == 'many2many':
+            self._add_many2many_field(
+                field_name,
+                model_name,
+                computed_model_model,
+                operation_data,
+                label,
+            )
+
         # Si el campo es de otro tipo de dato...
         else:
             self._add_common_field(
@@ -247,7 +257,7 @@ class Select_():
             .group_by(id_field_instance)
             # Ordenamiento ascendente por campo de ID
             .order_by(id_field_instance)
-            # Transformación a sunquery
+            # Transformación a subquery
             .subquery()
         )
 
@@ -313,6 +323,63 @@ class Select_():
             related_model_model,
             operation_data,
         )
+
+    def _add_many2many_field(
+        self,
+        field_name: str,
+        model_name: str,
+        model_model: type[DeclarativeBase],
+        operation_data: OperationData,
+        label: str,
+    ):
+
+        # Obtención del modelo de relación 
+        relation_model = self._strc.get_relation_model(model_name, field_name)
+
+        # Obtención del nombre de la tabla
+        table_name = self._strc.get_table_name(model_name)
+        # Obtención del nombre del modelo relacionado
+        related_model_name = self._strc.get_related_model_name(model_name, field_name)
+        # Obtención del nombre de la tabla del modelo relacionado
+        related_table_name = self._strc.get_table_name(related_model_name)
+
+        # Obtención de la instancia de ID de registros propios
+        model_id_field_instance = self._index[relation_model]['x'].label('id')
+        # Obtención de la instancia de ID de registros referenciados
+        related_model_id_field_instance = self._index[relation_model]['y']
+
+        # Creación del subquery
+        sub_stmt = (
+            # Creación de la selección de columnas
+            select(
+                # Campo de ID
+                model_id_field_instance,
+                # Función de agregación del campo de ID del modelo referenciado con alias como el nombre del campo requerido
+                func.array_agg(related_model_id_field_instance).label(field_name),
+            )
+            # Especificación del modelo a usar
+            .select_from(relation_model)
+            # Agrupación por campo de ID
+            .group_by(model_id_field_instance)
+            # Transformación a subquery
+            .subquery()
+        )
+
+        # Se procesan los datos del subquery como campo en común
+        self._add_common_field(
+            field_name,
+            model_name,
+            sub_stmt.c,
+            operation_data,
+            label,
+        )
+
+        # Obtención del campo de ID del modelo principal
+        id_field_instance = self._index[model_model]['id']
+        # Obtención del campo de ID relacionado desde el subquery relacionado
+        sub_stmt_id_field_instance = self._index[sub_stmt.c]['id']
+        # Se añade el JOIN
+        operation_data.outerjoins.append( ( sub_stmt, id_field_instance == sub_stmt_id_field_instance ) )
 
     def _add_common_field(
         self,

@@ -26,6 +26,7 @@ from ._module_types import (
 from ._modules import (
     Algorythms,
     Automations,
+    Compiler,
     Connection,
     DDLManager,
     Index,
@@ -62,6 +63,7 @@ class Lylac(_Lylac):
         self._strc = Structure(self)
         self._models = Models(self)
         self._index = Index(self)
+        self._compiler = Compiler(self)
         self._ddl = DDLManager(self)
         self._where = Where(self)
         self._preprocess = Preprocess(self)
@@ -214,7 +216,7 @@ class Lylac(_Lylac):
             data = [data,]
 
         # Preprocesamiento de datos en creación
-        self._preprocess.process_data_on_create(table_name, data)
+        pos_creation_callback = self._preprocess.process_data_on_create(table_name, data)
 
         # Ejecución de validaciones
         self._validations.run_validations_on_create(table_name, data)
@@ -241,6 +243,9 @@ class Lylac(_Lylac):
             'create',
             inserted_records,
         )
+
+        # Ejecución de la función poscreación
+        pos_creation_callback(inserted_records)
 
         # Retorno de las IDs creadas
         return inserted_records
@@ -898,13 +903,14 @@ class Lylac(_Lylac):
             record_ids = [record_ids,]
 
         # Ejecución del método UPDATE WHERE
-        return self.update_where(table_name, [('id', 'in', record_ids)], data)
+        return self.update_where(table_name, [('id', 'in', record_ids)], data, record_ids)
 
     def update_where(
         self,
         table_name: str,
         search_criteria: CriteriaStructure,
         data: RecordData,
+        _record_ids: list[int] = []
     ) -> bool:
         """
         "" Actualización de registros donde...
@@ -944,8 +950,8 @@ class Lylac(_Lylac):
         # Obtención de la instancia de la tabla
         table_model = self._models.get_table_model(table_name)
 
-        # Preprocesamiento de datos en actualización
-        self._preprocess.process_data_on_update(table_name, data)
+        # Preprocesamiento de datos en actualización y obtención de función posactualización
+        after_update_callback = self._preprocess.process_data_on_update(table_name, _record_ids, data)
 
         # Creación del query base
         stmt = update(table_model)
@@ -971,6 +977,9 @@ class Lylac(_Lylac):
             'update',
             modified_records,
         )
+
+        # Ejecución de función posactualización
+        after_update_callback()
 
         # Retorno de confirmación de movimientos
         return True

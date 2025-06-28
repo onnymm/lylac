@@ -33,6 +33,12 @@ class BaseStructure():
     ) -> list[str]:
         ...
 
+    def get_model_many2many_field_names(
+        self,
+        model_name: str,
+    ) -> list[str]:
+        ...
+
     def get_field_ttype(
         self,
         model_name: str,
@@ -58,6 +64,26 @@ class BaseStructure():
         self,
         table_instance: type[DeclarativeBase],
     ) -> None:
+        ...
+
+    def register_relation(
+        self,
+        model_model: type[DeclarativeBase],
+    ) -> None:
+        ...
+
+    def get_relation_model(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> type[DeclarativeBase]:
+        ...
+
+    def get_relation_model_name(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> str:
         ...
 
     def unregister_table(

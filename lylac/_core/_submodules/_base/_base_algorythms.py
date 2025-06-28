@@ -27,3 +27,11 @@ class BaseAlgorythms():
         groupby: Callable[[_T], _C],
     ) -> dict[_C, list[_E]]:
         ...
+
+    def _get_from(
+        self,
+        data: list[_T],
+        condition: Callable[[_T], bool],
+        value: Callable[[_T], _E] = lambda value: value,
+    ) -> list[_E]:
+        ...

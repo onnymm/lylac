@@ -1,6 +1,7 @@
 from ._submodules import (
     BaseAlgorythms,
     BaseAutomations,
+    BaseCompiler,
     BaseConnection,
     BaseFieldsGetter,
     BaseIndex,
