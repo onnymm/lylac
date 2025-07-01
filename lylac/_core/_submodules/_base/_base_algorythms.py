@@ -28,7 +28,7 @@ class BaseAlgorythms():
     ) -> dict[_C, list[_E]]:
         ...
 
-    def _get_from(
+    def get_from(
         self,
         data: list[_T],
         condition: Callable[[_T], bool],

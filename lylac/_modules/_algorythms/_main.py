@@ -77,6 +77,15 @@ class Algorythms(BaseAlgorythms):
             # Se retorna un diccionario agrupando los duplicados
             return duplicated_data
 
+    def get_from(
+        self,
+        data: list[_T],
+        condition: Callable[[_T], bool],
+        value: Callable[[_T], _E] = lambda value: value,
+    ) -> list[_E]:
+
+        return [ value(item) for item in data if condition(item) ]
+
     def _find_raw_duplicates(
         self,
         data: list[_T],
@@ -106,12 +115,3 @@ class Algorythms(BaseAlgorythms):
                     duplicated.append(item_a)
 
         return duplicated
-
-    def _get_from(
-        self,
-        data: list[_T],
-        condition: Callable[[_T], bool],
-        value: Callable[[_T], _E] = lambda value: value,
-    ) -> list[_E]:
-
-        return [ value(item) for item in data if condition(item) ]
