@@ -11,12 +11,12 @@ from ._generics import (
 )
 from ._literals import (
     AutomationMethod,
+    ExecutionMethod,
     ModelName,
     ModificationTransaction,
     OutputOptions,
     Submodule,
     Transaction,
     TType,
-    ValidationMethod,
 )
 from ._models import DataBaseDataType

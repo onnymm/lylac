@@ -54,12 +54,12 @@ Tipo de dato válido en un campo de un modelo de la base de datos.
 - `'many2many'`: Muchos a muchos
 """
 
-# Método de ejecución de validación
-ValidationMethod = Literal['record', 'list']
+# Método de ejecución
+ExecutionMethod = Literal['record', 'list']
 """
-#### Método de validación
-Tipo de dato usado para especificar el método de validación que una
-función de validación va a utilizar.
+#### Método de ejecución
+Tipo de dato usuado para especificar el método de ejecución de una
+automatización o validación.
 - `'record'`: Validación por registro.
 - `'list'`: Validación por lista de registros.
 """

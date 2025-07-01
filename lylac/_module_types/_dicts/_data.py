@@ -4,7 +4,7 @@ from .._base_categories._literals import (
     ModelName,
     Transaction,
     AutomationMethod,
-    ValidationMethod,
+    ExecutionMethod,
 )
 from .._base_categories._filter import CriteriaStructure
 
@@ -184,7 +184,7 @@ class ValidationData(TypedDict):
     - `'update'`: Método de modificación en la base de datos
     - `'delete'`: Método de eliminación en la base de datos
     """
-    method: ValidationMethod
+    method: ExecutionMethod
     """
     #### Método de validación
     Tipo de dato usado para especificar el método de validación que una

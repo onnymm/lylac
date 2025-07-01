@@ -11,12 +11,12 @@ from ._base_categories import (
     AutomationMethod,
     ComparisonOperator,
     DataBaseDataType,
+    ExecutionMethod,
     LogicOperator,
     ModificationTransaction,
     OutputOptions,
     Transaction,
     TType,
-    ValidationMethod,
 )
 from ._callbacks import (
     AutomationTemplate,

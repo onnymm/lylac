@@ -23,13 +23,12 @@ Gestor de conexión a bases de datos altamente personalizable.
 - [`CriteriaStructure` Estructura de criterio de búsqueda](#criteriastructure-estructura-de-criterio-de-búsqueda)
 
 **[Literales](#literales)**
-- [`AutomationMethod` Método de automatización](#automationmethod-método-de-automatización)
+- [`ExecutionMethod` Método de ejecución](#executionmethod-método-de-validación)
 - [`ModelName` Nombre de modelo](#modelname-nombre-de-modelo)
 - [`ModificationTransaction` Transacción de modificación](#modificationtransaction-transacción-de-modificación)
 - [`Submodule` Nombre de submódulo de Lylac](#submodule-nombre-de-submódulo-de-lylac)
 - [`Transaction` Transación de base de datos](#transaction-transación-de-base-de-datos)
 - [`TType` Tipo de dato en campo de modelo en la base de datos](#ttype-tipo-de-dato-en-campo-de-modelo-en-la-base-de-datos)
-- [`ValidationMethod` Método de validación](#validationmethod-método-de-validación)
 - [`OutputOptions` Salida de datos](#outputoptions-salida-de-datos)
 
 **[Modelos](#modelos)**
@@ -280,6 +279,45 @@ Estas tuplas deben contenerse en una lista. En caso de haber más de una condici
 
 ### Literales
 
+#### `ExecutionMethod` Método de validación
+```py
+ExecutionMethod = Literal['record', 'list']
+```
+Tipo de dato usado para especificar el método de ejecución que una función de automatización o validación va a utilizar.
+- `'record'`: Ejecución por registro.
+- `'list'`: Ejecución por lista de registros.
+
+#### `ModelName` Nombre de modelo
+```py
+ModelName = Literal[
+    'base.model',
+    'base.model.field',
+    'base.model.field.selection',
+    'base.users',
+]
+```
+Nombre de modelo base de la base de datos.
+
+Nombres disponibles:
+- `'base.model'`: Modelos
+- `'base.model.field'`: Campos
+- `'base.model.field.selection'`: Valores de selección
+- `'base.users'`: Usuarios
+
+#### `ModificationTransaction` Transacción de modificación
+```py
+ModificationTransaction = Literal['create', 'update']
+```
+Tipo de dato usado para especificación de transacciones de modificación en la base de datos.
+- `'create'`: Método de creación en la base de datos
+- `'update'`: Método de modificación en la base de datos
+
+#### `OutputOptions` Salida de datos
+```py
+OutputOptions = Literal['dataframe', 'dict']
+```
+Opciones de salida de datos.
+
 #### `Submodule` Nombre de submódulo de Lylac
 ```py
 Submodule = Literal[
@@ -296,6 +334,18 @@ Valores disponibles:
 - `'_ddl'`: Módulo de definición de datos de la base de datos
 - `'_strc'`: Módulo de la estructura de la base de datos
 - `'_validations'`: Módulo de validaciones
+
+#### `Transaction` Transación de base de datos
+```py
+Transaction = Union[ModificationTransaction, Literal['delete']]
+```
+Tipo de dato usado para especificación de transacción en la base de datos. Se omite el método `'select'` ya que no se utiliza para este tipado.
+- `'create'`: Método de creación en la base de datos
+- `'update'`: Método de modificación en la base de datos
+- `'delete'`: Método de eliminación en la base de datos
+
+> Para saber más sobre los tipos de datos usados consulta:
+> - [`RecordValue` Valor de registro](#recordvalue-valor-de-registro)
 
 #### `TType` Tipo de dato en campo de modelo en la base de datos
 ```py
@@ -329,65 +379,6 @@ Tipo de dato válido en un campo de un modelo de la base de datos.
 - `'many2one'`: Muchos a uno
 - `'one2many'`: Uno a muchos
 - `'many2many'`: Muchos a muchos
-
-#### `ValidationMethod` Método de validación
-```py
-ValidationMethod = Literal['record', 'list']
-```
-Tipo de dato usado para especificar el método de validación que una función de validación va a utilizar.
-- `'record'`: Validación por registro.
-- `'list'`: Validación por lista de registros.
-
-#### `AutomationMethod` Método de automatización
-```py
-AutomationMethod = Literal['record', 'list']
-```
-Tipo de dato usado para especificar el método de automatización que una función de automatización va a utilizar.
-- `'record'`: Automatización por registro.
-- `'list'`: Automatización por lista de registros.
-
-#### `ModificationTransaction` Transacción de modificación
-```py
-ModificationTransaction = Literal['create', 'update']
-```
-Tipo de dato usado para especificación de transacciones de modificación en la base de datos.
-- `'create'`: Método de creación en la base de datos
-- `'update'`: Método de modificación en la base de datos
-
-#### `Transaction` Transación de base de datos
-```py
-Transaction = Union[ModificationTransaction, Literal['delete']]
-```
-Tipo de dato usado para especificación de transacción en la base de datos. Se omite el método `'select'` ya que no se utiliza para este tipado.
-- `'create'`: Método de creación en la base de datos
-- `'update'`: Método de modificación en la base de datos
-- `'delete'`: Método de eliminación en la base de datos
-
-> Para saber más sobre los tipos de datos usados consulta:
-> - [`RecordValue` Valor de registro](#recordvalue-valor-de-registro)
-
-#### `ModelName` Nombre de modelo
-```py
-ModelName = Literal[
-    'base.model',
-    'base.model.field',
-    'base.model.field.selection',
-    'base.users',
-]
-```
-Nombre de modelo base de la base de datos.
-
-Nombres disponibles:
-- `'base.model'`: Modelos
-- `'base.model.field'`: Campos
-- `'base.model.field.selection'`: Valores de selección
-- `'base.users'`: Usuarios
-
-#### `OutputOptions` Salida de datos
-```py
-OutputOptions = Literal['dataframe', 'dict']
-```
-Opciones de salida de datos.
 
 ### Modelos
 
@@ -469,8 +460,8 @@ class ValidationData(TypedDict):
     callback: str
     # Transación de base de datos
     transaction: Transaction
-    # Método de validación
-    method: ValidationMethod
+    # Método de ejecución
+    method: ExecutionMethod
     # Mensaje de error
     message: str
 ```
@@ -498,7 +489,7 @@ Uso:
 > - [`Submodule` Nombre de submódulo de Lylac](#submodule-nombre-de-submódulo-de-lylac)
 > - [`ModelName` Nombre de modelo](#modelname-nombre-de-modelo)
 > - [`Transaction` Transación de base de datos](#transaction-transación-de-base-de-datos)
-> - [`ValidationMethod` Método de validación](#validationmethod-método-de-validación)
+> - [`ExecutionMethod` Método de validación](#executionmethod-método-de-validación)
 
 ### Diccionarios de credenciales
 
