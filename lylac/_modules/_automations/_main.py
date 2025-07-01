@@ -173,7 +173,7 @@ class Automations(BaseAutomations):
         # Inicialización de estructura central de automatizaciones
         self._hub: AutomationsHub = {}
         # Obtención de los nombres de modelos registrados
-        registered_model_names = self._strc.get_registered_model_names()
+        registered_model_names = self._strc.get_model_names()
         # Iteración por cada nombre de tabla existente en la base de datos
         for model_name in registered_model_names:
             # Creación de desencadenantes de automatización vacíos

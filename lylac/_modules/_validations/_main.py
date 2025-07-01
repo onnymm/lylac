@@ -31,6 +31,8 @@ class Validations(BaseValidations):
 
         # Asignación de instancia principal
         self._main = instance
+        # Asignación de instancia de estructura interna
+        self._strc = instance._strc
 
         # Inicialización de submódulos
         self._m_automations = _Automations(self)

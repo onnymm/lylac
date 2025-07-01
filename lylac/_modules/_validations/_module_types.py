@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from ..._module_types import (
     _T,
     RecordData,
-    ValidationMethod,
+    ExecutionMethod,
 )
 
 # Tipos de validación
@@ -37,7 +37,7 @@ class _ValidationOnCreateParams(TypedDict, Generic[_T]):
 
     callback: _T
     """Función de validación en la creación de registros."""
-    method: ValidationMethod
+    method: ExecutionMethod
     """
     Método de ejecución de validación.
     >>> Literal['record', 'list']
@@ -76,7 +76,7 @@ class _ValidationOnUpdateParams(TypedDict, Generic[_T]):
 
     callback: _T
     """Función de validación en la creación de registros."""
-    method: ValidationMethod
+    method: ExecutionMethod
     """
     Método de ejecución de validación.
     >>> Literal['record', 'list']
@@ -121,7 +121,7 @@ class Validation():
             >>>     # Función de validación en la creación de registros.
             >>>     callback: Validation.Create.Mixed.Callback
             >>>     # Método de ejecución de validación.
-            >>>     method: _ValidationMethod
+            >>>     method: ExecutionMethod
             >>>     # Mensaje de error arrojado si los datos evaluados no son válidos.
             >>>     message: str
             """

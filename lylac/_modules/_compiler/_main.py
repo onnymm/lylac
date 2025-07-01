@@ -1,5 +1,4 @@
 from sqlalchemy import delete
-from sqlalchemy.orm.decl_api import DeclarativeBase
 from sqlalchemy.orm import Session
 from ..._core import _Lylac, BaseCompiler
 from ..._module_types import RecordData
