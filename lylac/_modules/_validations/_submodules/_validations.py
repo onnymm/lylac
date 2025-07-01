@@ -17,7 +17,7 @@ class _Validations():
         # Asignación de instancia principal
         self._main = instance._main
 
-    def reject_id_values(
+    def reject_id_values_on_create(
         self,
         params: Validation.Create.Individual.Args,
     ) -> Any:
@@ -26,7 +26,16 @@ class _Validations():
         if 'id' in params.data.keys():
             return True
 
-    def reject_create_date_values(
+    def reject_id_values_on_update(
+        self,
+        params: Validation.Update.Individual.Args,
+    ) -> Any:
+
+        # Comprobación de existencia de ID en modificación
+        if 'id' in params.data.keys():
+            return True
+
+    def reject_create_date_values_on_create(
         self,
         params: Validation.Create.Individual.Args,
     ) -> Any:
@@ -35,7 +44,7 @@ class _Validations():
         if 'create_date' in params.data.keys():
             return True
 
-    def reject_write_date_values(
+    def reject_write_date_values_on_create(
         self,
         params: Validation.Create.Individual.Args,
     ) -> Any:
@@ -43,6 +52,72 @@ class _Validations():
         # Comprobación de existencia de Fecha de modificación en creación
         if 'write_date' in params.data.keys():
             return True
+
+    def reject_create_date_values_on_update(
+        self,
+        params: Validation.Update.Individual.Args,
+    ) -> Any:
+
+        # Comprobación de existencia de Fecha de creación en creación
+        if 'create_date' in params.data.keys():
+            return True
+
+    def reject_write_date_values_on_update(
+        self,
+        params: Validation.Update.Individual.Args,
+    ) -> Any:
+
+        # Comprobación de existencia de Fecha de modificación en creación
+        if 'write_date' in params.data.keys():
+            return True
+
+    def validate_selection_fields_on_create(
+        self,
+        params: Validation.Create.Individual.Args,
+    ) -> Any:
+
+        # Obtención de los campos de tipo selección del modelo actual
+        selection_ttype_fields = self._validations._strc.get_ttype_fields(params.model_name, 'selection')
+
+        # Iteración por cada campo de selección encontrado
+        for selection_field in selection_ttype_fields:
+            # Si existe un campo de tipo selección en los datos...
+            if selection_field in params.data.keys():
+                # Obtención de los valores permitidos para el campo de tipo selección
+                selection_values = self._validations._strc.get_field_selection_values(params.model_name, selection_field)
+                # Si el valor del campo no se encuentra dentro de los valores permitidos...
+                if params.data[selection_field] not in selection_values:
+                    # Se retorna el valor para generar el error
+                    return params.data[selection_field]
+
+    def validate_selection_fields_on_update(
+        self,
+        params: Validation.Update.Individual.Args,
+    ) -> Any:
+
+        # Obtención de los campos de tipo selección del modelo actual
+        selection_ttype_fields = self._validations._strc.get_ttype_fields(params.model_name, 'selection')
+
+        # Iteración por cada campo de selección encontrado
+        for selection_field in selection_ttype_fields:
+            # Si existe un campo de tipo selección en los datos...
+            if selection_field in params.data.keys():
+                # Obtención de los valores permitidos para el campo de tipo selección
+                selection_values = self._validations._strc.get_field_selection_values(params.model_name, selection_field)
+                # Si el valor del campo no se encuentra dentro de los valores permitidos...
+                if params.data[selection_field] not in selection_values:
+                    # Se retorna el valor para generar el error
+                    return params.data[selection_field]
+
+    def reject_model_modification(
+        self,
+        params: Validation.Update.Individual.Args[ModelRecord.BaseModel_],
+    ) -> Any:
+
+        # Revisión de los valores que se intentan escribir en el modelo
+        for field in params.data.keys():
+            if field not in ['label', 'decription']:
+                return True
 
     def validate_required_fields(
         self,
@@ -264,6 +339,53 @@ class _Validations():
         # Si existen nombres duplicados se retornan éstos
         if len(duplicated):
             return duplicated
+
+    def unique_selection_value_per_field_db_validation(
+        self,
+        params: Validation.Create.Individual.Args[ModelRecord.BaseModelFieldSelection],
+    ) -> Any:
+
+        # Búsqueda de resultados
+        results_qty = self._main.search_count(
+            MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
+            [
+                '&',
+                    ('name', '=', params.data['name']),
+                    ('model_id', '=', params.data['model_id']),
+            ],
+        )
+
+        # Si existe algún registro...
+        if results_qty:
+            # Se retorna el nombre del valor repetido
+            return ( params.data['name'] )
+
+    def unique_selection_value_per_field_data_validation(
+        self,
+        params: Validation.Create.Group.Args[ModelRecord.BaseModelFieldSelection],
+    ) -> Any:
+
+        # Búsqueda de valores duplicados
+        duplicated_values = self._main._algorythms.find_duplicates(
+            params.data,
+            lambda value: ( value['name'], value['field_id'] )
+        )
+
+        # Si existen valores duplicados en los datos entrantes
+        if len(duplicated_values):
+            return duplicated_values
+
+    def reject_selection_value_modification(
+        self,
+        params: Validation.Update.Individual.Args[ModelRecord.BaseModelFieldSelection],
+    ) -> Any:
+
+        # Iteración por cada campo que se intenta modificar en el registro
+        for field in params.data.keys():
+            # Si el campo no existe en los valores permitidos...
+            if field not in ['label']:
+                # Se genera el error
+                return True
 
     def avoid_password_creation(
         self,

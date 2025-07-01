@@ -63,6 +63,36 @@ preset_automations: list[AutomationData] = [
         'fields': ['name', 'model'],
         'method': 'record',
     },
+    # Eliminación de una columna de base de datos cuando un modelo se elimina
+    {
+        'submodule': '_ddl',
+        'callback': 'delete_column',
+        'model': 'base.model.field',
+        'transaction': 'delete',
+        'criteria': [('ttype', 'not in', ['one2many', 'many2many'])],
+        'fields': ['name', 'model_id'],
+        'method': 'record',
+    },
+    # Eliminación de las propiedades de campo cuando un campo se elimina
+    {
+        'submodule': '_strc',
+        'callback': 'unregister_fields_atts',
+        'model': 'base.model.field',
+        'transaction': 'delete',
+        'criteria': [],
+        'fields': ['name', 'model_id'],
+        'method': 'record',
+    },
+    # Eliminación de registro de validaciones de modelo cuando un modelo se elimina
+    {
+        'submodule': '_validations',
+        'callback': 'delete_validations',
+        'model': 'base.model',
+        'transaction': 'delete',
+        'criteria': [],
+        'fields': ['model'],
+        'method': 'record',
+    },
 
     # base.model.field
     # Creación de una columna de base de datos cuando un campo se crea
@@ -132,34 +162,26 @@ preset_automations: list[AutomationData] = [
         'fields': ['name', 'model_id'],
         'method': 'record',
     },
-    # Eliminación de una columna de base de datos cuando un modelo se elimina
+
+    # base.model.field.selection
+    # Actualización de los valores de selección de un campo de tipo de selección cuando un registro se crea en la tabla de valores de selección de campos
     {
         'submodule': '_ddl',
-        'callback': 'delete_column',
-        'model': 'base.model.field',
-        'transaction': 'delete',
-        'criteria': [('ttype', 'not in', ['one2many', 'many2many'])],
-        'fields': ['name', 'model_id'],
+        'callback': 'update_selection_values_on_create',
+        'model': 'base.model.field.selection',
+        'transaction': 'create',
+        'criteria': [],
+        'fields': ['field_id'],
         'method': 'record',
     },
-    # Eliminación de las propiedades de campo cuando un campo se elimina
+    # Actualización de los valores de selección de un campo de tipo de selección cuando un registro se elimina en la tabla de valores de selección de campos
     {
-        'submodule': '_strc',
-        'callback': 'unregister_fields_atts',
-        'model': 'base.model.field',
+        'submodule': '_ddl',
+        'callback': 'update_selection_values_on_delete',
+        'model': 'base.model.field.selection',
         'transaction': 'delete',
         'criteria': [],
-        'fields': ['name', 'model_id'],
-        'method': 'record',
-    },
-    # Eliminación de registro de validaciones de modelo cuando un modelo se elimina
-    {
-        'submodule': '_validations',
-        'callback': 'delete_validations',
-        'model': 'base.model',
-        'transaction': 'delete',
-        'criteria': [],
-        'fields': ['model'],
+        'fields': ['field_id'],
         'method': 'record',
     },
 ]

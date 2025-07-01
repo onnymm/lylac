@@ -1,19 +1,30 @@
 from ..._module_types import ValidationData
 
 validations_data: list[ValidationData] = [
+
+    # Genéricos
     # Restricción de creación de registros con valor de ID en creación de un registro en cualquier tabla
     {
         'module': '_validations',
-        'callback': 'reject_id_values',
+        'callback': 'reject_id_values_on_create',
         'transaction': 'create',
         'method': 'record',
         'model': 'generic',
         'message': 'No se puede crear el valor de ID para el registro {data}.'
     },
+    # Restricción de modificación a valores de ID en modificación de registros en cualquier tabla
+    {
+        'module': '_validations',
+        'callback': 'reject_id_values_on_update',
+        'transaction': 'update',
+        'method': 'record',
+        'model': 'generic',
+        'message': 'No se pueden sobreescribir valores de ID en registros de la base de datos.',
+    },
     # Restricción de creación de registros con valor de Fecha de creación en creación de un registro en cualquier tabla
     {
         'module': '_validations',
-        'callback': 'reject_create_date_values',
+        'callback': 'reject_create_date_values_on_create',
         'transaction': 'create',
         'method': 'record',
         'model': 'generic',
@@ -22,11 +33,29 @@ validations_data: list[ValidationData] = [
     # Restricción de creación de registros con valor de Fecha de modificación en creación de un registro en cualquier tabla
     {
         'module': '_validations',
-        'callback': 'reject_write_date_values',
+        'callback': 'reject_write_date_values_on_create',
         'transaction': 'create',
         'method': 'record',
         'model': 'generic',
         'message': 'No se puede crear el valor de Fecha de modificación para el registro {data}.'
+    },
+    # Restricción de modificación a valores de Fecha de creación en modificación de registros en cualquier tabla
+    {
+        'module': '_validations',
+        'callback': 'reject_create_date_values_on_update',
+        'transaction': 'update',
+        'method': 'record',
+        'model': 'generic',
+        'message': 'No se pueden sobreescribir valores de Fecha de creación en registros de la base de datos.',
+    },
+    # Restricción de modificación a valores de Fecha de modificación en modificación de registros en cualquier tabla
+    {
+        'module': '_validations',
+        'callback': 'reject_write_date_values_on_update',
+        'transaction': 'update',
+        'method': 'record',
+        'model': 'generic',
+        'message': 'No se pueden sobreescribir valores de Fecha de modificación en registros de la base de datos.',
     },
     # Validación de campos requeridos en creación de un registro en cualquier tabla
     {
@@ -37,6 +66,26 @@ validations_data: list[ValidationData] = [
         'model': 'generic',
         'message': 'Los campos {value} son requeridos en el registro {data}.',
     },
+    # Restricción a valores de selección permitidos dentro de campos de tipo selección en creación de registros en cualquier tabla
+    {
+        'module': '_validations',
+        'callback': 'validate_selection_fields_on_create',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'generic',
+        'message': 'El valor {value} no está permitido en el tipo de campo de selección.'
+    },
+    # Restricción a valores de selección permitidos dentro de campos de tipo selección en modificación de registros en cualquier tabla
+    {
+        'module': '_validations',
+        'callback': 'validate_selection_fields_on_update',
+        'transaction': 'update',
+        'method': 'record',
+        'model': 'generic',
+        'message': 'El valor {value} no está permitido en el tipo de campo de selección.'
+    },
+
+    # base.model
     # Caracteres válidos en etiqueta de modelo en creación de un registro en la tabla de modelos
     {
         'module': '_validations',
@@ -55,6 +104,16 @@ validations_data: list[ValidationData] = [
         'model': 'base.model',
         'message': 'El nombre y nombre de modelo de "{value}" deben ser coincidir con el patrón "model_name" - "model.name" respectivamente.',
     },
+    {
+        'module': '_validations',
+        'callback': 'reject_model_modification',
+        'transaction': 'update',
+        'method': 'record',
+        'model': 'base.model',
+        'message': 'Los modelos no pueden ser modificados a excepción de su nombre y descripción.',
+    },
+
+    # base.model.field
     # Restricción para no modificar propiedades de un campo ya creado en modificación de un registro en la tabla de campos
     {
         'module': '_validations',
@@ -117,5 +176,31 @@ validations_data: list[ValidationData] = [
         'method': 'record',
         'model': 'base.users',
         'message': 'No se puede cambiar la contraseña de un usuario por medio de la API de CRUD de Lylac.',
+    },
+
+    # base.model.field.selection
+    {
+        'module': '_validations',
+        'callback': 'unique_selection_value_per_field_db_validation',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'base.model.field.selection',
+        'message': 'El valor de selección [{value}] ya existe como valor de selección del campo.',
+    },
+    {
+        'module': '_validations',
+        'callback': 'unique_selection_value_per_field_db_validation',
+        'transaction': 'create',
+        'method': 'list',
+        'model': 'base.model.field.selection',
+        'message': 'No se pueden registrar valores de selección con el mismo nombre vinculados al mismo campo. Valores de error: {value}.'
+    },
+    {
+        'module': '_validations',
+        'callback': 'reject_selection_value_modification',
+        'transaction': 'update',
+        'method': 'record',
+        'model': 'base.model.field.selection',
+        'message': 'No se pueden modificar los datos de un valor de selección. En su lugar, borra el registro completo y vuelve a crearlo.',
     },
 ]

@@ -124,3 +124,71 @@ class _Automations():
         model_id = params.id
         # Se añaden los campos predeterminados
         self._ddl.add_default_to_model(model_id)
+
+    def update_selection_values_on_create(
+        self,
+        params: DataPerRecord[ModelRecord.BaseModelFieldSelection],
+    ) -> None:
+
+        # Obtención de la ID del campo propietario
+        field_id = params.record_data['field_id']
+        # Obtención de la ID del modelo propietario
+        model_id = self._main.get_value(MODEL_NAME.BASE_MODEL_FIELD, field_id, 'model_id')
+        # Obtención del nombre del modelo propietario
+        model_name = self._main.get_value(MODEL_NAME.BASE_MODEL, model_id, 'model')
+        # Obtención del nombre del campo propietario
+        field_name = self._main.get_value(MODEL_NAME.BASE_MODEL_FIELD, field_id, 'name')
+
+        # Obtención de los valores de selección
+        selection_values = (
+            self._main.search_read(
+                MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
+                [('field_id', '=', field_id)],
+                ['name'],
+            )
+            ['name']
+            .to_list()
+        )
+
+        # Actualización de los valores de selección
+        self._strc.update_selection_values(
+            model_name,
+            field_name,
+            selection_values,
+        )
+
+    def update_selection_values_on_delete(
+        self,
+        params: DataPerRecord[ModelRecord.BaseModelFieldSelection],
+    ) -> None:
+
+        # Obtención de la ID del campo propietario
+        field_id = params.record_data['field_id']
+        # Obtención de la ID del modelo propietario
+        model_id = self._main.get_value(MODEL_NAME.BASE_MODEL_FIELD, field_id, 'model_id')
+        # Obtención del nombre del modelo propietario
+        model_name = self._main.get_value(MODEL_NAME.BASE_MODEL, model_id, 'model')
+        # Obtención del nombre del campo propietario
+        field_name = self._main.get_value(MODEL_NAME.BASE_MODEL_FIELD, field_id, 'name')
+
+        # Obtención de los valores de selección
+        selection_values = (
+            self._main.search_read(
+                MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
+                [
+                    '&',
+                        ('field_id', '=', field_id),
+                        ('id', '!=', params.id),
+                ],
+                ['name'],
+            )
+            ['name']
+            .to_list()
+        )
+
+        # Actualización de los valores de selección
+        self._strc.update_selection_values(
+            model_name,
+            field_name,
+            selection_values,
+        )
