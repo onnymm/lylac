@@ -122,7 +122,7 @@ class Preprocess():
         # Inicialización de lista de valores
         pending_many2many_updates: list[RecordMany2ManyData] = []
         # Obtención de los nombres de campos many2many
-        many2many_fields = self._strc.get_model_many2many_field_names(model_name)
+        many2many_fields = self._strc.get_ttype_fields(model_name, 'many2many')
 
         # Iteración por la lista de registros
         for record in data:
@@ -170,7 +170,7 @@ class Preprocess():
     ) -> PosUpdateCallback:
 
         # Obtención de los nombres de campos many2many del modelo
-        many2many_fields = self._strc.get_model_many2many_field_names(model_name)
+        many2many_fields = self._strc.get_ttype_fields(model_name, 'many2many')
         # Inicialización de lista de actualizaciones a realizar
         individual_many2many_creations: list[Callable[[], None]] = []
 
