@@ -1,4 +1,4 @@
 from ._fields import (
-    default_field_template,
-    uid_fields,
+    DEFAULT_FIELD_TEMPLATE,
+    UID_FIELDS,
 )

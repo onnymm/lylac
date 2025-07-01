@@ -1,6 +1,6 @@
 from ..._module_types import ValidationData
 
-validations_data: list[ValidationData] = [
+VALIDATIONS_DATA: list[ValidationData] = [
 
     # Genéricos
     # Restricción de creación de registros con valor de ID en creación de un registro en cualquier tabla

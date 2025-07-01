@@ -1,5 +1,5 @@
 from ...._constants import MODEL_NAME
-from ...._data import base_fields
+from ...._data import BASE_FIELDS_TEMPLATE
 from ...._module_types import (
     DataPerRecord,
     ModelRecord,
@@ -104,7 +104,7 @@ class _Automations():
         fields_data: list[ModelRecord.BaseModelField] = []
 
         # Se crea la información
-        for base_field in base_fields:
+        for base_field in BASE_FIELDS_TEMPLATE:
             # Se crea una copia de la información
             field_data = base_field.copy()
             # Se añade la ID del modelo a vincular

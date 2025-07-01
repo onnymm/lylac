@@ -4,7 +4,7 @@ from ..._core import (
     _Lylac,
     BaseStructure,
 )
-from ..._data import fields_atts
+from ..._data import FIELDS_ATTS
 from ..._module_types import TType, ModelMap
 from ._submodules import (
     _Automations,
@@ -286,7 +286,7 @@ class Structure(BaseStructure):
         # Si el parámetro de obtener desde los datos predeterminados es verdedero...
         if from_data:
             # Se obtienen los datos correspondientes
-            fields_data = fields_atts[model_name]
+            fields_data = FIELDS_ATTS[model_name]
         # Si el parámetro de obtener desde los datos predeterminados es falso...
         else:
             # Se inicializa un diccionario vacío para el mapa de campos

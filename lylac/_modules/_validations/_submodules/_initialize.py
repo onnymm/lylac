@@ -1,6 +1,6 @@
 from ...._data import (
-    initial_data,
-    validations_data,
+    INITIAL_DATA,
+    VALIDATIONS_DATA,
 )
 from ...._core import BaseValidations
 
@@ -16,7 +16,7 @@ class _Initialize():
         # Asignación de instancia principal
         self._main = instance._main
         # Generación de nombres de modelos iniciales
-        self._initial_models = [ model for ( model, _ ) in initial_data ] + ['base.users']
+        self._initial_models = [ model for ( model, _ ) in INITIAL_DATA ] + ['base.users']
 
     def initialize_data(
         self,
@@ -29,7 +29,7 @@ class _Initialize():
         for model_name in self._initial_models:
             self._validations.initialize_model_validations(model_name)
 
-        for validation_data in validations_data:
+        for validation_data in VALIDATIONS_DATA:
             # Si no fue definido un modelo específico para la validación
             if validation_data['model'] is None:
                 # Se define la validación para todos los modelos

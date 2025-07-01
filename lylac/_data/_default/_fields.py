@@ -1,19 +1,20 @@
 from ..._module_types import NewRecord
+from ..._constants import BASE_USERS_MODEL_ID
 
-default_field_template: dict[str, NewRecord.ModelField] = {
+DEFAULT_FIELD_TEMPLATE: dict[str, NewRecord.ModelField] = {
     'create_uid': {
         'label': 'Creado por',
         'name': 'create_uid',
         'ttype': 'many2one',
         'nullable': True,
-        'related_model_id': 4,
+        'related_model_id': BASE_USERS_MODEL_ID,
     },
     'write_uid': {
         'label': 'Modificado por',
         'name': 'write_uid',
         'ttype': 'many2one',
         'nullable': True,
-        'related_model_id': 4,
+        'related_model_id': BASE_USERS_MODEL_ID,
     },
     'sequence': {
         'label': 'Secuencia',
@@ -25,8 +26,8 @@ default_field_template: dict[str, NewRecord.ModelField] = {
         'name': 'user_id',
         'ttype': 'many2one',
         'nullable': True,
-        'related_model_id': 4,
+        'related_model_id': BASE_USERS_MODEL_ID,
     },
 }
 
-uid_fields = ['create_uid', 'write_uid']
+UID_FIELDS = ['create_uid', 'write_uid']

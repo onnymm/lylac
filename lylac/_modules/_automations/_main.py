@@ -3,7 +3,7 @@ from ..._core import (
     BaseAutomations,
     _Lylac,
 )
-from ..._data import preset_automations
+from ..._data import PRESET_AUTOMATIONS
 from ..._module_types import (
     AutomationModel,
     CriteriaStructure,
@@ -147,7 +147,7 @@ class Automations(BaseAutomations):
     ) -> None:
 
         # Registro de las automatizaciones precargadas
-        for automation in [ AutomationModel(**data) for data in preset_automations ]:
+        for automation in [ AutomationModel(**data) for data in PRESET_AUTOMATIONS ]:
 
             # Obtención del módulo que contiene la automatización
             submodule = getattr(self._main, automation.submodule)

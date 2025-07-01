@@ -1,6 +1,6 @@
 from ..._module_types import FieldProperties
 
-fields_atts: dict[str, dict[str, FieldProperties]] = {
+FIELDS_ATTS: dict[str, dict[str, FieldProperties]] = {
     'base.model': {
         'id': {
             'ttype': 'integer',

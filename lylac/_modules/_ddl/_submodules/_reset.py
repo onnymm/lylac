@@ -4,8 +4,8 @@ from ...._constants import (
     MODEL_NAME,
 )
 from ...._data import (
-    base_user,
-    initial_data,
+    BASE_USERS_INITIAL_DATA,
+    INITIAL_DATA,
 )
 from ...._errors import InitializationError
 from ._base import _BaseDDLManager
@@ -26,7 +26,7 @@ class _Reset():
         # Asignación del motor de conexión
         self._engine = instance._main._engine
         # Asignación de modelos iniciales
-        self._base_models = [ model for ( model, _ ) in initial_data ] + [MODEL_NAME.BASE_USERS]
+        self._base_models = [ model for ( model, _ ) in INITIAL_DATA ] + [MODEL_NAME.BASE_USERS]
 
     def initialize_from_data(
         self,
@@ -160,9 +160,9 @@ class _Reset():
         # Inicialización de la base de datos
         self._main._base.metadata.create_all(self._engine)
         # Registro del usuario inicial
-        self._main.create(MODEL_NAME.BASE_USERS, base_user)
+        self._main.create(MODEL_NAME.BASE_USERS, BASE_USERS_INITIAL_DATA)
         # Registro de los datos iniciales
-        for ( model_name, data ) in initial_data:
+        for ( model_name, data ) in INITIAL_DATA:
             self._main.create(model_name, data)
 
         # Se añaden los campos 'create_uid' y'write_uid'

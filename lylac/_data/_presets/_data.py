@@ -1,11 +1,11 @@
 from ..._module_types import NewRecord
 
-base_user: NewRecord.User = {
+BASE_USERS_INITIAL_DATA: NewRecord.User = {
     'name': 'IACele',
     'login': 'iacele',
     'active': False,
 }
-initial_data = [
+INITIAL_DATA = [
     (
         'base.model',
         [

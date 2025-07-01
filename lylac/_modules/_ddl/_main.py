@@ -1,8 +1,8 @@
 from ..._constants import MODEL_NAME
 from ..._core import _Lylac
 from ..._data import (
-    default_field_template,
-    uid_fields,
+    DEFAULT_FIELD_TEMPLATE,
+    UID_FIELDS,
 )
 from ..._module_types import (
     CriteriaStructure,
@@ -157,7 +157,7 @@ class DDLManager(_BaseDDLManager):
         # Inicialización de los campos plantilla del modelo
         model_fields_template = []
         # Se añaden los campos UID
-        model_fields_template = field_names + uid_fields
+        model_fields_template = field_names + UID_FIELDS
         # Inicialización de la lista de datos a retornar
         fields_data: list[NewRecord.ModelField] = []
 
@@ -179,7 +179,7 @@ class DDLManager(_BaseDDLManager):
     ) -> NewRecord.ModelField:
 
         # Obtención de los datos prestablecidos de la definición del campo
-        field_template = default_field_template[field_name].copy()
+        field_template = DEFAULT_FIELD_TEMPLATE[field_name].copy()
         # Se asigna la ID del modelo
         field_template['model_id'] = model_id
 

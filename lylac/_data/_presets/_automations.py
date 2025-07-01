@@ -1,6 +1,6 @@
 from ..._module_types import AutomationData
 
-preset_automations: list[AutomationData] = [
+PRESET_AUTOMATIONS: list[AutomationData] = [
 
     # base.model
     # Creación de tabla en base de datos cuando un modelo se crea

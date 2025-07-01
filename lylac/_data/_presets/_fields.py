@@ -1,6 +1,6 @@
 from ..._module_types import NewRecord
 
-base_fields: list[NewRecord.ModelField] = [
+BASE_FIELDS_TEMPLATE: list[NewRecord.ModelField] = [
     {
         'name': 'id',
         'label': 'ID',

@@ -1,4 +1,4 @@
-class MODEL_NAME():
+class MODEL_NAME:
     BASE_USERS = 'base.users'
     BASE_MODEL = 'base.model'
     BASE_MODEL_FIELD = 'base.model.field'
