@@ -15,13 +15,13 @@ from ._base import (
 )
 
 class BaseBaseLylac():
-    _credentials: CredentialsAlike
-    _base: type[DeclarativeBase]
-    _model_template: type[DeclarativeBase]
     _algorythms: BaseAlgorythms
-    _engine: Engine
-    _models: BaseModels
+    _base: type[DeclarativeBase]
+    _credentials: CredentialsAlike
     _connection: BaseConnection
+    _engine: Engine
+    _model_template: type[DeclarativeBase]
+    _models: BaseModels
 
     def create(
         self,
