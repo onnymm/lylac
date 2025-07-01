@@ -29,6 +29,82 @@ class Structure(BaseStructure):
         # Inicialización de la estructura de tablas y atributos de campos
         self._initialize()
 
+    def register_table(
+        self,
+        model_model: type[DeclarativeBase]
+    ) -> None:
+
+        # Obtención del nombre de la tabla
+        table_name = self.get_table_name(model_model)
+        # Obtención del nombre del modelo
+        model_name = table_name.replace('_', '.')
+        # Se registra el modelo de la tabla en el diccionario de modelos
+        self.models[model_name] = self._initialize_model_properties(model_model)
+        # Registro de las propiedades de los campos de la tabla
+        self._register_table_fields_atts(model_name)
+
+    def unregister_table(
+        self,
+        model_name: str
+    ) -> None:
+
+        # Obtención del modelo de la tabla
+        table_model = self.get_model(model_name)
+        # Se borra el modelo
+        del table_model
+        # Se borra la llave y valor del diccionario de modelos
+        del self.models[model_name]
+
+    def register_field(
+        self,
+        model_name: str,
+        field_name: str,
+        ttype: TType,
+        related_model: str | None,
+        related_field: str | None,
+    ) -> None:
+
+        try:
+            self.models[model_name]['fields'][field_name]
+        except KeyError:
+            self.models[model_name]['fields'][field_name] = {}
+
+        # Asignación de valores
+        self.models[model_name]['fields'][field_name]['ttype'] = ttype
+        self.models[model_name]['fields'][field_name]['related_model'] = related_model
+        self.models[model_name]['fields'][field_name]['related_field'] = related_field
+
+    def unregister_field(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> None:
+
+        # Eliminación del registro
+        del self.models[model_name]['fields'][field_name]
+
+    def register_relation(
+        self,
+        model_model: type[DeclarativeBase],
+    ) -> None:
+
+        # Obtención del nombre de la tabla
+        table_name = self.get_table_name(model_model)
+        # Obtención del nombre del modelo
+        model_name = table_name.replace('_rel_', '_rel.').replace('__', '.')
+        # Se registra el modelo de la tabla en el diccionario de modelos
+        self.models[model_name] = self._initialize_model_properties(model_model)
+
+    def update_selection_values(
+        self,
+        model_name: str,
+        field_name: str,
+        selection_values: list[str],
+    ) -> None:
+
+        # Asignación de los valores de selección
+        self.models[model_name]['fields'][field_name]['selection_values'] = selection_values
+
     def get_model(
         self,
         model_name: str,
@@ -36,20 +112,20 @@ class Structure(BaseStructure):
 
         return self.models[model_name]['model']
 
-    def get_table_name(
+    def get_relation_model(
         self,
-        model_model: type[DeclarativeBase] | str,
-    ) -> str:
+        model_name: str,
+        field_name: str,
+    ) -> type[DeclarativeBase]:
 
-        # Obtención del modelo en caso de haberse proporcionado una valor en texto
-        if isinstance(model_model, str):
-            model_model = self.get_model(model_model)
-        # Obtención del nombre de la tabla
-        table_name = model_model.__tablename__
+        # Obtención del nombre del modelo de relación
+        relation_model_name = self.get_relation_model_name(model_name, field_name)
+        # Obtención del modelo
+        relation_model = self.get_model(relation_model_name)
 
-        return table_name
+        return relation_model
 
-    def get_registered_model_names(
+    def get_model_names(
         self,
     ) -> list[str]:
 
@@ -67,34 +143,6 @@ class Structure(BaseStructure):
         field_names = list( self.models[model_name]['fields'].keys() )
 
         return field_names
-
-    def get_model_many2many_field_names(
-        self,
-        model_name: str,
-    ) -> list[str]:
-
-        # Obtención de la lista de tuplas de campo y propiedades
-        fields = [ (field_name, field_properties) for (field_name, field_properties) in self.models[model_name]['fields'].items() ]
-
-        # Obtención de los campos que son de tipo many2many
-        many2many_fields = self._main._algorythms._get_from(
-            fields,
-            lambda value: value[1]['ttype'] == 'many2many',
-            lambda value: value[0],
-        )
-
-        return many2many_fields
-
-    def get_field_ttype(
-        self,
-        model_name: str,
-        field_name: str,
-    ) -> TType:
-
-        # Obtención del tipo de dato del campo
-        ttype = self.models[model_name]['fields'][field_name]['ttype']
-
-        return ttype
 
     def get_related_model_name(
         self,
@@ -118,70 +166,6 @@ class Structure(BaseStructure):
 
         return related_field_name
 
-    def register_field(
-        self,
-        model_name: str,
-        field_name: str,
-        ttype: TType,
-        related_model: str | None,
-        related_field: str | None
-    ) -> None:
-
-        # Asignación de valores
-        self.models[model_name]['fields'][field_name] = {
-            'ttype': ttype,
-            'related_model': related_model,
-            'related_field': related_field,
-        }
-
-    def unregister_field(
-        self,
-        model_name: str,
-        field_name: str,
-    ) -> None:
-
-        # Eliminación del registro
-        del self.models[model_name]['fields'][field_name]
-
-    def register_table(
-        self,
-        model_model: type[DeclarativeBase]
-    ) -> None:
-
-        # Obtención del nombre de la tabla
-        table_name = self.get_table_name(model_model)
-        # Obtención del nombre del modelo
-        model_name = table_name.replace('_', '.')
-        # Se registra el modelo de la tabla en el diccionario de modelos
-        self.models[model_name] = self._initialize_model_properties(model_model)
-        # Registro de las propiedades de los campos de la tabla
-        self.register_table_fields_atts(model_name)
-
-    def register_relation(
-        self,
-        model_model: type[DeclarativeBase],
-    ) -> None:
-
-        # Obtención del nombre de la tabla
-        table_name = self.get_table_name(model_model)
-        # Obtención del nombre del modelo
-        model_name = table_name.replace('_rel_', '_rel.').replace('__', '.')
-        # Se registra el modelo de la tabla en el diccionario de modelos
-        self.models[model_name] = self._initialize_model_properties(model_model)
-
-    def get_relation_model(
-        self,
-        model_name: str,
-        field_name: str,
-    ) -> type[DeclarativeBase]:
-
-        # Obtención del nombre del modelo de relación
-        relation_model_name = self.get_relation_model_name(model_name, field_name)
-        # Obtención del modelo
-        relation_model = self.get_model(relation_model_name)
-
-        return relation_model
-
     def get_relation_model_name(
         self,
         model_name: str,
@@ -199,7 +183,63 @@ class Structure(BaseStructure):
 
         return relation_model_name
 
-    def register_table_fields_atts(
+    def get_field_ttype(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> TType:
+
+        # Obtención del tipo de dato del campo
+        ttype = self.models[model_name]['fields'][field_name]['ttype']
+
+        return ttype
+
+    def get_table_name(
+        self,
+        model_model: type[DeclarativeBase] | str,
+    ) -> str:
+
+        # Obtención del modelo en caso de haberse proporcionado una valor en texto
+        if isinstance(model_model, str):
+            model_model = self.get_model(model_model)
+        # Obtención del nombre de la tabla
+        table_name = model_model.__tablename__
+
+        return table_name
+
+    def get_ttype_fields(
+        self,
+        model_name: str,
+        ttype: TType,
+    ) -> list[str]:
+
+        # Obtención de los campos del modelo
+        model_fields = self.models[model_name]['fields']
+        # Construcción de lista de campos que cumplen con el tipo de campo
+        fields = [ field_name for ( field_name, atts ) in model_fields.items() if atts['ttype'] == ttype ]
+
+        return fields
+
+    def get_field_selection_values(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> list[str]:
+
+        # Obtención de los valores de selección desde los datos de la instancia
+        selection_values = self.models[model_name]['fields'][field_name]['selection_values']
+
+        return selection_values
+
+    def initialize_fields_atts(
+        self,
+    ) -> None:
+
+        # Registro de los atributos de campos de modelos existentes registrados
+        for model_name in self.models.keys():
+            self._register_table_fields_atts(model_name)
+
+    def _register_table_fields_atts(
         self,
         model_name,
     ) -> None:
@@ -213,26 +253,6 @@ class Structure(BaseStructure):
             ( field_name, ttype, related_model, related_field ) = atts
             # Registro por cada campo
             self.register_field(model_name, field_name, ttype, related_model, related_field)
-
-    def unregister_table(
-        self,
-        model_name: str
-    ) -> None:
-
-        # Obtención del modelo de la tabla
-        table_model = self.get_model(model_name)
-        # Se borra el modelo
-        del table_model
-        # Se borra la llave y valor del diccionario de modelos
-        del self.models[model_name]
-
-    def initialize_fields_atts(
-        self,
-    ) -> None:
-
-        # Registro de los atributos de campos de modelos existentes registrados
-        for model_name in self.models.keys():
-            self.register_table_fields_atts(model_name)
 
     def _initialize(
         self,
