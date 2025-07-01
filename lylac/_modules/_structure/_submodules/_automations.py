@@ -1,6 +1,6 @@
 from ...._module_types import (
     DataPerRecord,
-    ModelRecord,
+    ModelRecordData,
 )
 from ...._constants import MODEL_NAME
 from ...._core import BaseStructure
@@ -19,7 +19,7 @@ class _Automations():
 
     def register_field_atts(
         self,
-        params: DataPerRecord[ModelRecord.BaseModelField],
+        params: DataPerRecord[ModelRecordData.BaseModelField],
     ) -> None:
 
         # Obtención del nombre del modelo propietario
@@ -45,7 +45,7 @@ class _Automations():
 
     def unregister_fields_atts(
         self,
-        params: DataPerRecord[ModelRecord.BaseModelField],
+        params: DataPerRecord[ModelRecordData.BaseModelField],
     ) -> None:
 
         # Obtención del nombre del modelo propietario

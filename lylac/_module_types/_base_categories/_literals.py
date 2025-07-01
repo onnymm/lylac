@@ -54,6 +54,13 @@ Tipo de dato válido en un campo de un modelo de la base de datos.
 - `'many2many'`: Muchos a muchos
 """
 
+State = Literal['base', 'generic']
+"""
+#### Tipo de registro
+Valor que indica si el registro es parte de los datos iniciales de la base de
+datos (`'base'`) o es parte de los datos creados posteriormente (`'generic'`).
+"""
+
 # Método de ejecución
 ExecutionMethod = Literal['record', 'list']
 """

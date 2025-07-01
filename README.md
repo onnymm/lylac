@@ -55,6 +55,11 @@ Gestor de conexión a bases de datos altamente personalizable.
     - [`ModelField` Nuevo registro de campo](#modelfield-nuevo-registro-de-campo)
     - [`ModelFieldSelection` Nuevo registro de selección de campo](#modelfieldselection-nuevo-registro-de-selección-de-campo)
     - [`User` Nuevo registro de usuario](#user-nuevo-registro-de-usuario)
+- [`ModelRecordData` Datos de registros en la base de datos](#modelrecorddata-datos-de-registros-en-la-base-de-datos)
+    - [`BaseModel_` Datos de modelo](#basemodel_-datos-de-modelo)
+    - [`BaseModelField` Datos de campo](#basemodelfield-datos-de-campo)
+    - [`BaseModelFieldSelection` Datos de valores de selección de campo](#basemodelfieldselection-datos-de-valores-de-selección-de-campo)
+    - [`BaseUsers` Datos de usuario](#baseusers-datos-de-usuario)
 
 ### **[[Tipados de Modelos](#tipados-de-modelos-1)]**
 
@@ -68,13 +73,6 @@ Gestor de conexión a bases de datos altamente personalizable.
 
 **[Modelos de credenciales](#modelos-de-credenciales)**
 - [`CredentialsFromEnv` Credenciales de la base de datos](#credentialsfromenv-credenciales-de-la-base-de-datos)
-
-**[Modelos de datos de registros](#modelos-de-datos-de-registros)**
-- [`ModelRecord` Datos de registros](#modelrecord-datos-de-registros)
-    - [`BaseModel_` Datos de modelo](#basemodel_-datos-de-modelo)
-    - [`BaseModelField` Datos de campo](#basemodelfield-datos-de-campo)
-    - [`BaseModelFieldSelection` Datos de selección de campo](#basemodelfieldselection-datos-de-selección-de-campo)
-    - [`BaseUser` Datos de usuario](#baseuser-datos-de-usuario)
 
 ### **[[Tipados de funciones](#tipados-de-funciones-1)]**
 
@@ -729,6 +727,146 @@ Los subtipos disponibles son:
 > }
 > ```
 
+#### `ModelRecordData` Datos de registros en la base de datos
+```py
+class ModelRecordData:
+    class BaseModel_(TypedDict...):
+        ...
+    class BaseModelField(TypedDict...):
+        ...
+    class BaseModelFieldSelection(TypedDict...):
+        ...
+    class BaseUsers(TypedDict...):
+        ...
+```
+Tipados de datos de registros de diferentes modelos en la base de datos.
+- `BaseModel_`: Datos de modelos
+- `BaseModelField`: Datos de campos
+- `BaseModelFieldSelection`: Datos de valores de selección de campos
+- `BaseUsers`: Datos de usuarios
+
+> #### `BaseModel_` Datos de modelo
+> ```py
+> {
+>     # ID del registro
+>     'id': 1,
+>     # Nombre del registro
+>     'name': 'base_model',
+>     # Fecha de creación
+>     'create_date': '2025-07-01-10:00:00',
+>     # Fecha de modificación
+>     'write_date': '2025-07-01-10:00:00',
+>     # Usuario de creación
+>     'create_uid': 1,
+>     # Usuario de modificación
+>     'write_uid': 1,
+>     # Etiqueta
+>     'label': 'Modelos',
+>     # Tipo
+>     'state': 'base',
+>     # Nombre del modelo
+>     'model': 'base.model',
+>     # Descripción
+>     'description': '...',
+>     # Campos
+>     'field_ids': [1, 2, 3, ...],
+>     # Campos relacionados al modelo
+>     'related_field_ids': [5, 8, ...],
+> }
+> ```
+> 
+> #### `BaseModelField` Datos de campo
+> ```py
+> {
+>     # ID del registro
+>     'id': 1,
+>     # Nombre del registro
+>     'name': 'nullable',
+>     # Fecha de creación
+>     'create_date': '2025-07-01-10:00:00',
+>     # Fecha de modificación
+>     'write_date': '2025-07-01-10:00:00',
+>     # Usuario de creación
+>     'create_uid': 1,
+>     # Usuario de modificación
+>     'write_uid': 1,
+>     # Etiqueta
+>     'label': 'Puede ser nulo',
+>     # Tipo
+>     'state': 'base',
+>     # ID de modelo
+>     'model_id': 2,
+>     # Tipo de dato en campo
+>     'ttype': 'boolean',
+>     # Puede ser nulo
+>     'nullable': True,
+>     # Es requerido
+>     'is_required': False,
+>     # Valor predeterminado
+>     'default_value': None,
+>     # Es valor único
+>     'unique': False,
+>     # Información de ayuda
+>     'help_info': '...',
+>     # Modelo relacionado
+>     'related_model_id': None,
+>     # Campo relacionado
+>     'related_field': None,
+>     # Valores de selección
+>     'selection_ids': [],
+> }
+> ```
+> 
+> #### `BaseModelFieldSelection` Datos de valores de selección de campo
+> ```py
+> {
+>     # ID del registro
+>     'id': 2,
+>     # Nombre del registro
+>     'name': 'generic',
+>     # Fecha de creación
+>     'create_date': '2025-07-01-10:00:00',
+>     # Fecha de modificación
+>     'write_date': '2025-07-01-10:00:00',
+>     # Usuario de creación
+>     'create_uid': 1,
+>     # Usuario de modificación
+>     'write_uid': 1,
+>     # Etiqueta
+>     'label': 'Puede ser nulo',
+>     # ID de campo
+>     'field_id': 8,
+> }
+> ```
+> 
+> #### `BaseUsers` Datos de usuario
+> ```py
+> {
+>     # ID del registro
+>     'id': 1,
+>     # Nombre del registro
+>     'name': 'iaCele',
+>     # Fecha de creación
+>     'create_date': '2025-07-01-10:00:00',
+>     # Fecha de modificación
+>     'write_date': '2025-07-01-10:00:00',
+>     # Usuario de creación
+>     'create_uid': 1,
+>     # Usuario de modificación
+>     'write_uid': 1,
+>     # Está activo
+>     'active': True,
+>     # Sincronizar
+>     'sync': False,
+>     # Nombre de usuario
+>     'login': 'iacele',
+>     # ID de Odoo
+>     'odoo_id': None,
+>     # Contraseña
+>     'password': '...',
+> }
+> ```
+
 ----
 
 ## Tipados de modelos
@@ -855,121 +993,6 @@ class Credentials(BaseModel):
     password: str
 ```
 
-### Modelos de datos de registros
-
-#### `ModelRecord` Datos de registros
-```py
-class ModelRecord():
-    class BaseModel_(BaseModel):
-        ...
-    class BaseModelField(BaseModel):
-        ...
-    class BaseModelFieldSelection(BaseModel):
-        ...
-    class BaseUser(BaseModel):
-        ...
-```
-Tipados de datos de registros de diferentes modelos.
-
-Los subtipos disponibles son:
-- `Model`: Nuevo registro de modelo
-- `ModelField`: Nuevo registro de campo
-- `ModelFieldSelection`: Nuevo registro de selección de campo
-- `User`: Nuevo registro de usuario
-
-> #### `BaseModel_` Datos de modelo
-> ```py
-> class BaseModel_(BaseModel):
->     # ID
->     id: int
->     # Nombre
->     name: str
->     # Fecha de creación
->     create_date: str
->     # Fecha de modificación
->     write_date: str
->     # Etiqueta
->     label: str
->     # Nombre de modelo
->     model: ModelName
->     # Descripción
->     description: str
-> ```
-> > Para saber más sobre los tipos de datos usados consulta:
-> > - [`ModelName` Nombre de modelo](#modelname-nombre-de-modelo)
-> 
-> #### `BaseModelField` Datos de campo
-> ```py
-> class BaseModelField(BaseModel):
->     # ID
->     id: int
->     # Nombre
->     name: str
->     # Fecha de creación
->     create_date: str
->     # Fecha de modificación
->     write_date: str
->     # Etiqueta
->     label: str
->     # Tipo de dato en campo de modelo en la base de datos
->     ttype: TType
->     # ID de modelo
->     model_id: int
->     # Puede ser nulo
->     nullable: bool
->     # Es único
->     unique: bool
->     # Requerido
->     is_required: bool
->     # Valor predeterminado
->     default_value: Optional[str]
->     # Información
->     help_info: str | None
->     # ID de modelo relacionado
->     related_model_id: int | None
-> ```
-> > Para saber más sobre los tipos de datos usados consulta:
-> > - [`TType` Tipo de dato en campo de modelo en la base de datos](#ttype-tipo-de-dato-en-campo-de-modelo-en-la-base-de-datos)
-> 
-> #### `BaseModelFieldSelection` Datos de selección de campo
-> ```py
-> class BaseModelFieldSelection(BaseModel):
->     # ID
->     id: int
->     # Nombre
->     name: str
->     # Fecha de creación
->     create_date: str
->     # Fecha de modificación
->     write_date: str
->     # Etiqueta
->     label: str
->     # ID de campo
->     field_id: int
-> ```
-> 
-> #### `BaseUser` Datos de usuario
-> ```py
-> class BaseUser(BaseModel):
->     # ID
->     id: int
->     # Nombre
->     name: str
->     # Fecha de creación
->     create_date: str
->     # Fecha de modificación
->     write_date: str
->     # Nombre de usuario
->     login: str
->     # ID de Odoo
->     odoo_id: int
->     # Sincronizar
->     sync: bool
->     # Activo
->     active: bool
-> ```
-
-----
 
 ## Tipados de funciones
 

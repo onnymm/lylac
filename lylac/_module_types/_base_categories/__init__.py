@@ -15,6 +15,7 @@ from ._literals import (
     ModelName,
     ModificationTransaction,
     OutputOptions,
+    State,
     Submodule,
     Transaction,
     TType,

@@ -26,6 +26,7 @@ from ._dicts import (
     CredentialsArgs,
     FieldProperties,
     ModelMap,
+    ModelRecordData,
     NewRecord,
     ValidationData,
 )
@@ -39,5 +40,4 @@ from ._models import (
     DataPerRecord,
     DataPerTransaction,
     FieldDefinition,
-    ModelRecord,
 )

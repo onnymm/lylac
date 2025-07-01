@@ -8,3 +8,4 @@ from ._structure import (
     FieldProperties,
     ModelMap,
 )
+from ._model_records import ModelRecordData

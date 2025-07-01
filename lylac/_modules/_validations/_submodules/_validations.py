@@ -2,7 +2,7 @@ import re
 from typing import Any
 from ...._constants import MODEL_NAME
 from ...._core import BaseValidations
-from ...._module_types import ModelRecord
+from ...._module_types import ModelRecordData
 from .._module_types import Validation
 
 class _Validations():
@@ -111,7 +111,7 @@ class _Validations():
 
     def reject_model_modification(
         self,
-        params: Validation.Update.Individual.Args[ModelRecord.BaseModel_],
+        params: Validation.Update.Individual.Args[ModelRecordData.BaseModel_],
     ) -> Any:
 
         # Revisión de los valores que se intentan escribir en el modelo
@@ -121,7 +121,7 @@ class _Validations():
 
     def validate_required_fields(
         self,
-        params: Validation.Create.Individual.Args[ModelRecord.BaseModelField],
+        params: Validation.Create.Individual.Args[ModelRecordData.BaseModelField],
     ) -> Any:
         """
         ### Validación de campos requeridos
@@ -164,7 +164,7 @@ class _Validations():
 
     def coherent_label_and_name_in_new_model(
         self,
-        params: Validation.Create.Individual.Args[ModelRecord.BaseModel_],
+        params: Validation.Create.Individual.Args[ModelRecordData.BaseModel_],
     ) -> Any:
         """
         ### Coherencia en nombre y etiqueta de modelo
@@ -189,7 +189,7 @@ class _Validations():
 
     def valid_model_label(
         self,
-        params: Validation.Create.Individual.Args[ModelRecord.BaseModel_],
+        params: Validation.Create.Individual.Args[ModelRecordData.BaseModel_],
     ) -> Any:
         """
         ### Etiqueta de modulo válida
@@ -209,7 +209,7 @@ class _Validations():
 
     def unmutable_field_properties(
         self,
-        params: Validation.Update.Individual.Args[ModelRecord.BaseModelField],
+        params: Validation.Update.Individual.Args[ModelRecordData.BaseModelField],
     ) -> Any:
         """
         ### Propiedades de campo inmutables
@@ -230,7 +230,7 @@ class _Validations():
 
     def forbid_duplicated_fields_in_same_model(
         self,
-        params: Validation.Create.Individual.Args[ModelRecord.BaseModelField],
+        params: Validation.Create.Individual.Args[ModelRecordData.BaseModelField],
     ) -> Any:
         """
         ### Prohibir campos duplicados en modelo
@@ -263,7 +263,7 @@ class _Validations():
 
     def forbid_duplicated_fields_in_same_model_in_incoming_data(
         self,
-        params: Validation.Create.Group.Args[ModelRecord.BaseModelField],
+        params: Validation.Create.Group.Args[ModelRecordData.BaseModelField],
     ) -> Any:
         """
         Prohibir campos duplicados en modelo desde datos entrantes
@@ -291,7 +291,7 @@ class _Validations():
 
     def unique_field_label_in_model(
         self,
-        params: Validation.Create.Individual.Args[ModelRecord.BaseModelField],
+        params: Validation.Create.Individual.Args[ModelRecordData.BaseModelField],
     ) -> Any:
         """
         ### Etiqueta de campo única por modelo
@@ -321,7 +321,7 @@ class _Validations():
 
     def unique_field_label_in_model_in_incomig_data(
         self,
-        params: Validation.Create.Group.Args[ModelRecord.BaseModelField],
+        params: Validation.Create.Group.Args[ModelRecordData.BaseModelField],
     ) -> Any:
         """
         ### Etiqueta de campo única por modelo en datos entrantes
@@ -342,7 +342,7 @@ class _Validations():
 
     def unique_selection_value_per_field_db_validation(
         self,
-        params: Validation.Create.Individual.Args[ModelRecord.BaseModelFieldSelection],
+        params: Validation.Create.Individual.Args[ModelRecordData.BaseModelFieldSelection],
     ) -> Any:
 
         # Búsqueda de resultados
@@ -362,7 +362,7 @@ class _Validations():
 
     def unique_selection_value_per_field_data_validation(
         self,
-        params: Validation.Create.Group.Args[ModelRecord.BaseModelFieldSelection],
+        params: Validation.Create.Group.Args[ModelRecordData.BaseModelFieldSelection],
     ) -> Any:
 
         # Búsqueda de valores duplicados
@@ -377,7 +377,7 @@ class _Validations():
 
     def reject_selection_value_modification(
         self,
-        params: Validation.Update.Individual.Args[ModelRecord.BaseModelFieldSelection],
+        params: Validation.Update.Individual.Args[ModelRecordData.BaseModelFieldSelection],
     ) -> Any:
 
         # Iteración por cada campo que se intenta modificar en el registro
@@ -389,7 +389,7 @@ class _Validations():
 
     def avoid_password_creation(
         self,
-        params: Validation.Create.Individual.Args[ModelRecord.BaseUser],
+        params: Validation.Create.Individual.Args[ModelRecordData.BaseUsers],
     ) -> Any:
         """
         ### Restricción de contraseña inicial
@@ -402,7 +402,7 @@ class _Validations():
 
     def avoid_password_modification(
         self,
-        params: Validation.Update.Individual.Args[ModelRecord.BaseUser],
+        params: Validation.Update.Individual.Args[ModelRecordData.BaseUsers],
     ) -> Any:
 
         # Comprobación de existencia de Contraseña en datos entrantes

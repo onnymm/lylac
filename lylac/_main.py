@@ -1,7 +1,4 @@
-from typing import (
-    Callable,
-    Literal,
-)
+from typing import Callable
 import pandas as pd
 from sqlalchemy import (
     select,
@@ -21,7 +18,7 @@ from ._module_types import (
     OutputOptions,
     Transaction,
     RecordValue,
-    AutomationMethod,
+    ExecutionMethod,
 )
 from ._modules import (
     Algorythms,
@@ -51,10 +48,8 @@ class Lylac(_Lylac):
 
         # Asignación del modelo base
         self._metadata = Metadata(self)
-
         # Inicialización del módulo de manejo de formato de salida
         self._output = Output(self, output_format)
-
         # Creación de la instancia de conexión con la base de datos
         self._connection = Connection(self, credentials)
 
@@ -85,7 +80,7 @@ class Lylac(_Lylac):
         transation: Transaction,
         fields: list[str] = ['id'],
         execute_if: CriteriaStructure = [],
-        method: AutomationMethod = 'record',
+        method: ExecutionMethod = 'record',
     ):
         """
         ## Registro de automatización
@@ -97,9 +92,13 @@ class Lylac(_Lylac):
         >>>     'my.table',
         >>>     # La automatización se ejecuta tras crearse un registro
         >>>     'create',
+        >>>     # Campos del registro a usar en la automatización
+        >>>     ['name'],
         >>> )
         >>> def do_something(params) -> None:
-        >>>     print(f'Se creó un registro con ID {params.id}')
+        >>>     record_id = params.id
+        >>>     record_name = params.record_data['name']
+        >>>     print(f'Se creó un registro con ID {record_id} y nombre {record_name}')
 
         Automatización más específica:
         >>> @lylac.register_automation(
@@ -124,9 +123,9 @@ class Lylac(_Lylac):
         función a registrar en el decorador. Se utilizan tipos de dato nativos de
         Python.
         Ejemplo:
-        >>> from lylac.params import BaseRecord, DataPerRecord
+        >>> from lylac.params import ModelRecord, DataPerRecord
         >>> 
-        >>> class MyTable(BaseRecord):
+        >>> class MyTable(ModelRecord):
         >>>     value: str
         >>>     sync: bool
         >>> 

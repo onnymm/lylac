@@ -2,7 +2,7 @@ from sqlalchemy.orm.decl_api import DeclarativeBase
 from ...._core import _Lylac
 from ...._module_types import (
     FieldDefinition,
-    ModelRecord,
+    ModelRecordData,
     TType,
 )
 from .._module_types import ColumnGenerator
@@ -47,7 +47,7 @@ class _BaseModels():
 
     def build_field_atts(
         self,
-        params: ModelRecord.BaseModelField,
+        params: ModelRecordData.BaseModelField,
     ) -> FieldDefinition:
         ...
 
@@ -81,7 +81,7 @@ class _BaseDDLManager():
     def new_field(
         self,
         model_name: str,
-        params: ModelRecord.BaseModelField
+        params: ModelRecordData.BaseModelField
     ) -> None:
         ...
 

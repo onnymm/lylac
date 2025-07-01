@@ -2,7 +2,7 @@ from ...._constants import MODEL_NAME
 from ...._data import BASE_FIELDS_TEMPLATE
 from ...._module_types import (
     DataPerRecord,
-    ModelRecord,
+    ModelRecordData,
 )
 from ._base import _BaseDDLManager
 
@@ -26,7 +26,7 @@ class _Automations():
 
     def create_table(
         self,
-        params: DataPerRecord[ModelRecord.BaseModel_],
+        params: DataPerRecord[ModelRecordData.BaseModel_],
     ) -> None:
 
         # Obtención del nombre del modelo creado
@@ -36,7 +36,7 @@ class _Automations():
 
     def create_column(
         self,
-        params: DataPerRecord[ModelRecord.BaseModelField],
+        params: DataPerRecord[ModelRecordData.BaseModelField],
     ) -> None:
 
         # Obtención de la ID del modelo del campo creado
@@ -48,7 +48,7 @@ class _Automations():
 
     def delete_table(
         self,
-        params: DataPerRecord[ModelRecord.BaseModel_],
+        params: DataPerRecord[ModelRecordData.BaseModel_],
     ) -> None:
 
         # Obtención del nombre del modelo
@@ -58,7 +58,7 @@ class _Automations():
 
     def delete_column(
         self,
-        params: DataPerRecord[ModelRecord.BaseModelField]
+        params: DataPerRecord[ModelRecordData.BaseModelField]
     ) -> None:
 
         # Obtención de la ID del modelo del campo creado
@@ -72,7 +72,7 @@ class _Automations():
 
     def create_relation_table(
         self,
-        params: DataPerRecord[ModelRecord.BaseModelField],
+        params: DataPerRecord[ModelRecordData.BaseModelField],
     ) -> None:
 
         # Nombre del modelo propietario
@@ -84,7 +84,7 @@ class _Automations():
 
     def delete_relation_table(
         self,
-        params: DataPerRecord[ModelRecord.BaseModelField],
+        params: DataPerRecord[ModelRecordData.BaseModelField],
     ) -> None:
 
         # Nombre del modelo propietario
@@ -97,11 +97,11 @@ class _Automations():
 
     def create_base_fields(
         self,
-        params: DataPerRecord[ModelRecord.BaseModel_]
+        params: DataPerRecord[ModelRecordData.BaseModel_]
     ) -> None:
 
         # Inicialización de los datos
-        fields_data: list[ModelRecord.BaseModelField] = []
+        fields_data: list[ModelRecordData.BaseModelField] = []
 
         # Se crea la información
         for base_field in BASE_FIELDS_TEMPLATE:
@@ -117,7 +117,7 @@ class _Automations():
 
     def add_preset_fields(
         self,
-        params: DataPerRecord[ModelRecord.BaseModel_],
+        params: DataPerRecord[ModelRecordData.BaseModel_],
     ) -> None:
 
         # Obtención de la ID del modelo
@@ -127,7 +127,7 @@ class _Automations():
 
     def update_selection_values_on_create(
         self,
-        params: DataPerRecord[ModelRecord.BaseModelFieldSelection],
+        params: DataPerRecord[ModelRecordData.BaseModelFieldSelection],
     ) -> None:
 
         # Obtención de la ID del campo propietario
@@ -159,7 +159,7 @@ class _Automations():
 
     def update_selection_values_on_delete(
         self,
-        params: DataPerRecord[ModelRecord.BaseModelFieldSelection],
+        params: DataPerRecord[ModelRecordData.BaseModelFieldSelection],
     ) -> None:
 
         # Obtención de la ID del campo propietario

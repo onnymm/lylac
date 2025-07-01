@@ -22,7 +22,7 @@ from ...._data import (
 )
 from ...._module_types import (
     FieldDefinition,
-    ModelRecord,
+    ModelRecordData,
 )
 from ._base import (
     _BaseDDLManager,
@@ -119,7 +119,7 @@ class _Models(_BaseModels):
 
     def build_field_atts(
         self,
-        params: ModelRecord.BaseModelField,
+        params: ModelRecordData.BaseModelField,
     ) -> FieldDefinition:
         """
         ### Construcción de atributos de campo
@@ -188,7 +188,7 @@ class _Models(_BaseModels):
 
     def _parse_default_value(
         self,
-        params: ModelRecord.BaseModelField,
+        params: ModelRecordData.BaseModelField,
     ) -> (int | float | str | bool | None):
 
         # Si no existe valor por defecto se termina la ejecución

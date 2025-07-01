@@ -1,7 +1,7 @@
 from ...._constants import MODEL_NAME
 from ...._module_types import (
     DataPerRecord,
-    ModelRecord,
+    ModelRecordData,
 )
 from ...._core import BaseValidations
 
@@ -19,7 +19,7 @@ class _Automations():
 
     def initialize_validations(
         self,
-        params: DataPerRecord[ModelRecord.BaseModel_],
+        params: DataPerRecord[ModelRecordData.BaseModel_],
     ) -> None:
 
         # Ejecución de inicialización de validaciones de modelo
@@ -27,7 +27,7 @@ class _Automations():
 
     def delete_validations(
         self,
-        params: DataPerRecord[ModelRecord.BaseModel_],
+        params: DataPerRecord[ModelRecordData.BaseModel_],
     ) -> None:
 
         # Ejecución de eliminación de validaciones de modelo

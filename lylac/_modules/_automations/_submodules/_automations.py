@@ -1,6 +1,6 @@
 from ...._module_types import (
     DataPerRecord,
-    ModelRecord,
+    ModelRecordData,
 )
 from ...._core import BaseAutomations
 
@@ -16,7 +16,7 @@ class _Automations():
 
     def register_new_model(
         self,
-        params: DataPerRecord[ModelRecord.BaseModel_],
+        params: DataPerRecord[ModelRecordData.BaseModel_],
     ) -> None:
 
         self._automations.register_model(params.record_data['model'])

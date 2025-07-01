@@ -6,7 +6,7 @@ from ..._data import (
 )
 from ..._module_types import (
     CriteriaStructure,
-    ModelRecord,
+    ModelRecordData,
     NewRecord,
 )
 from ._submodules import (
@@ -84,7 +84,7 @@ class DDLManager(_BaseDDLManager):
     def new_field(
         self,
         model_name: str,
-        params: ModelRecord.BaseModelField,
+        params: ModelRecordData.BaseModelField,
     ) -> None:
 
         # Obtención del modelo de SQLAlchemy
@@ -126,7 +126,7 @@ class DDLManager(_BaseDDLManager):
         ]
 
         # Se obtienen los datos de los registros a excepción del campo eliminado
-        fields_data: list[ModelRecord.BaseModelField] = self._main.search_read(
+        fields_data: list[ModelRecordData.BaseModelField] = self._main.search_read(
             MODEL_NAME.BASE_MODEL_FIELD,
             criteria,
             output_format= 'dict',
