@@ -48,6 +48,11 @@ class FieldProperties(TypedDict):
     #### Campo relacionado
     Nombre del campo relacionado.
     """
+    selection_values: list[str]
+    """
+    #### Valores de selección
+    Valores de selección si el tipo de dato del campo es `'selection'`.
+    """
 
 class ModelMap(TypedDict):
     """
