@@ -1,8 +1,4 @@
-from datetime import datetime
-from typing import (
-    List,
-    Optional,
-)
+from typing import Optional
 from sqlalchemy import (
     ForeignKey,
 )
@@ -14,12 +10,12 @@ from sqlalchemy.orm import (
 )
 from sqlalchemy.types import (
     Boolean,
-    DateTime,
     Integer,
     String,
     Text,
 )
 from ..._core import _Lylac
+from ..._module_types import ModelTemplate
 from ...security import default_password
 
 class Metadata():
@@ -34,16 +30,6 @@ class Metadata():
 
         class _Base(DeclarativeBase):
             pass
-
-        class ModelTemplate():
-            # ID del registro
-            id: Mapped[int] = mapped_column(Integer, primary_key= True, autoincrement= True)
-            # Nombre o título representativo del registro
-            name: Mapped[str] = mapped_column(String(60), nullable= False)
-            # Fecha de creación del registro
-            create_date: Mapped[datetime] = mapped_column(DateTime, default= datetime.now)
-            # Última fecha de modificación del registro
-            write_date: Mapped[datetime] = mapped_column(DateTime, default= datetime.now, onupdate= datetime.now)
 
         class BaseUsers(_Base, ModelTemplate):
             __tablename__ = 'base_users'
@@ -115,7 +101,6 @@ class Metadata():
 
         # Se almacena _Base
         self._main._base = _Base
-        self._main._model_template = ModelTemplate
 
         # Se almacenan los demás modelos para mantenerlos en la memoria de la ejecución
         self._models = [

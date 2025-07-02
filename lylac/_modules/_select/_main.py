@@ -36,6 +36,9 @@ class Select_():
         fields: list[str] = [],
     ) -> tuple[Select[Any], TTypesMapping]:
 
+        # Se realiza una copia de la lista de los campos
+        fields = fields.copy()
+
         # Si no fue provista una lista de campos se toma la lista completa para iterar
         if len(fields) == 0:
             fields = self._strc.get_model_field_names(model_name)

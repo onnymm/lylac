@@ -23,6 +23,7 @@ from ._callbacks import (
 )
 from ._dicts import (
     AutomationData,
+    BaseRecordData,
     CredentialsArgs,
     FieldProperties,
     ModelMap,
@@ -34,6 +35,7 @@ from ._interface import (
     CredentialsAlike,
     DataOutput,
 )
+from ._metadata import ModelTemplate
 from ._models import (
     AutomationModel,
     CredentialsFromEnv,

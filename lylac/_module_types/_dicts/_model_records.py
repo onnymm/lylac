@@ -4,7 +4,7 @@ from .._base_categories import (
     State,
 )
 
-class _BaseRecord(TypedDict):
+class BaseRecordData(TypedDict):
     id: int
     """
     ID del registro
@@ -84,7 +84,7 @@ class ModelRecordData:
     """
 
     class BaseModel_(
-        _BaseRecord,
+        BaseRecordData,
         _HasLabel,
         _HasState,
     ):
@@ -135,7 +135,7 @@ class ModelRecordData:
         """
 
     class BaseModelField(
-        _BaseRecord,
+        BaseRecordData,
         _HasLabel,
         _HasState,
         _HasModelID,
@@ -216,7 +216,7 @@ class ModelRecordData:
         """
 
     class BaseModelFieldSelection(
-        _BaseRecord,
+        BaseRecordData,
         _HasLabel,
     ):
         """
@@ -246,7 +246,7 @@ class ModelRecordData:
         """
 
     class BaseUsers(
-        _BaseRecord,
+        BaseRecordData,
         _HasActive,
         _HasSync,
     ):

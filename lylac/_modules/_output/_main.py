@@ -1,5 +1,6 @@
 from typing import Any
 import pandas as pd
+from sqlalchemy.engine.cursor import CursorResult
 from ..._core import _Lylac
 from ..._module_types import OutputOptions, TType
 from ._submodules import (
@@ -26,6 +27,16 @@ class Output(_BaseOutput):
         self._m_data = _DataTypes(self)
         # Creación del submódulo de Raw ORM
         self._m_orm = _RawORM(self)
+
+    def get_found_ids(
+        self,
+        response: CursorResult[int],
+    ) -> list[int]:
+
+        # Obtención de los valores
+        found_ids: list[int] = [ getattr(row, 'id') for row in response ]
+
+        return found_ids
 
     def build_output(
         self,

@@ -1,7 +1,10 @@
 from sqlalchemy import delete
 from sqlalchemy.orm import Session
 from ..._core import _Lylac, BaseCompiler
-from ..._module_types import RecordData
+from ..._module_types import (
+    ModelTemplate,
+    RecordData,
+)
 
 class Compiler(BaseCompiler):
 
@@ -16,6 +19,35 @@ class Compiler(BaseCompiler):
         self._strc = instance._strc
         # Asignación de la instancia de índice
         self._index = instance._index
+        # Asignación de la instancia de conexión
+        self._connection = instance._connection
+        # Asignación del motor de conexión
+        self._engine = instance._engine
+
+    def create(
+        self,
+        model_name: str,
+        data: list[RecordData],
+    ) -> list[int]:
+
+        # Obtención de la instancia de la tabla
+        model_model = self._strc.get_model(model_name)
+        # Instanciación de objetos para crear en la base de datos
+        records: list[ModelTemplate] = [ model_model(**record) for record in data ]
+
+        # Ejecución de la transacción
+        with Session(self._engine) as session:
+            session.add_all(records)
+            session.commit()
+
+            # Actualización de los objetos registrados
+            for record in records:
+                session.refresh(record)
+
+        # Obtención de las IDs creadas
+        inserted_records = [ record.id for record in records ]
+
+        return inserted_records
 
     def create_many2many(
         self,
@@ -29,7 +61,7 @@ class Compiler(BaseCompiler):
         instanced_data = [ model_model(**record) for record in data ]
 
         # Creación de registros en la base de datos
-        with Session(self._main._engine) as session:
+        with Session(self._engine) as session:
             session.add_all(instanced_data)
             session.commit()
 
@@ -52,4 +84,4 @@ class Compiler(BaseCompiler):
         )
 
         # Ejecución de la transacción en la base de datos
-        self._main._connection.execute(stmt, commit= True)
+        self._connection.execute(stmt, commit= True)

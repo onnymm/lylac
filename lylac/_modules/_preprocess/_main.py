@@ -1,9 +1,9 @@
 from typing import Callable
 from ..._core import _Lylac
-from ..._module_types import RecordData
-from sqlalchemy import delete
-from sqlalchemy.orm.decl_api import DeclarativeBase
-from sqlalchemy.orm import Session
+from ..._module_types import (
+    _T,
+    RecordData,
+)
 
 RecordIds = list[int]
 PosCreationCallback = Callable[[RecordIds], None]
@@ -22,6 +22,16 @@ class Preprocess():
         self._main = instance
         # Asignación de la instancia de estructura interna
         self._strc = instance._strc
+
+    def convert_to_list(
+        self,
+        data: _T | list[_T],
+    ) -> list[_T]:
+
+        if not isinstance(data, list):
+            return [data,]
+        else:
+            return data
 
     def process_data_on_create(
         self,

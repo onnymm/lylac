@@ -8,4 +8,7 @@ from ._structure import (
     FieldProperties,
     ModelMap,
 )
-from ._model_records import ModelRecordData
+from ._model_records import (
+    BaseRecordData,
+    ModelRecordData,
+)

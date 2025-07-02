@@ -44,7 +44,6 @@ class _Models(_BaseModels):
         self._strc = instance._main._strc
         # Asignación de modelos base
         self._base = instance._main._base
-        self._model_template = instance._main._model_template
 
         # Inicialización de mapa de funciones
         self._initialize()

@@ -20,7 +20,6 @@ class BaseBaseLylac():
     _credentials: CredentialsAlike
     _connection: BaseConnection
     _engine: Engine
-    _model_template: type[DeclarativeBase]
     _models: BaseModels
 
     def create(

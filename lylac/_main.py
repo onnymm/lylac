@@ -7,7 +7,7 @@ from sqlalchemy import (
     update,
     func,
 )
-from sqlalchemy.orm import Session
+from ._constants import FIELD_NAME
 from ._core import _Lylac
 from ._module_types import (
     _T,
@@ -76,20 +76,20 @@ class Lylac(_Lylac):
 
     def register_automation(
         self,
-        table_name: str,
+        model_name: str,
         transation: Transaction,
-        fields: list[str] = ['id'],
+        fields: list[str] = [FIELD_NAME.ID],
         execute_if: CriteriaStructure = [],
         method: ExecutionMethod = 'record',
     ):
         """
-        ## Registro de automatización
+        ### Registro de automatización
         Este decorador permite registrar una automatización en la instancia del
         módulo.
         Ejemplo de uso:
         >>> @lylac.register_automation(
-        >>>     # Tabla donde se ejecutará la automatización
-        >>>     'my.table',
+        >>>     # Modelo donde se ejecutará la automatización
+        >>>     'custom.model',
         >>>     # La automatización se ejecuta tras crearse un registro
         >>>     'create',
         >>>     # Campos del registro a usar en la automatización
@@ -103,7 +103,7 @@ class Lylac(_Lylac):
         Automatización más específica:
         >>> @lylac.register_automation(
         >>>     # Tabla donde se ejecutará la automatización
-        >>>     'my.table',
+        >>>     'custom.model',
         >>>     # La automatización se ejecuta tras crearse un registro
         >>>     'create',
         >>>     # Campos a utilizar en la automatización
@@ -118,25 +118,25 @@ class Lylac(_Lylac):
         >>>     print(f'El nuevo registro tiene el nombre {params.record_data["name"]}')
         >>>     print(f'El valor del nuevo registro es {params.record_data["value"]})
 
-        ### Tipado dinámico
+        #### Tipado dinámico
         Puede utilizarse tipado dedicado para mejorar el flujo de desarrollo de la
         función a registrar en el decorador. Se utilizan tipos de dato nativos de
         Python.
         Ejemplo:
-        >>> from lylac.params import ModelRecord, DataPerRecord
+        >>> from lylac.utils import BaseRecordData, DataPerRecord
         >>> 
-        >>> class MyTable(ModelRecord):
+        >>> class CustomModel(BaseRecordData):
         >>>     value: str
         >>>     sync: bool
         >>> 
         >>> @lylac.register_automation(...)
-        >>> def do_something(params: DataPerRecord[MyTable]) -> None:
+        >>> def do_something(params: DataPerRecord[CustomModel]) -> None:
         >>>     ...
 
         De esta manera el editor de código realizará el autocompletado al acceder a
         las llaves de la información.
 
-        ### Nota:
+        #### Nota:
         En el argumento `fields` se debe especificar qué campos se van a utilizar
         en la lectura del registro dentro de la automatización. Esto es
         indispensable para reducir las cargas de información solicitadas a la base
@@ -146,99 +146,76 @@ class Lylac(_Lylac):
         # Creación del decorador que registrará la automatización
         def decorator(new_automation: Callable[[DataPerRecord[_T]], None]):
 
-            # Creación de la función envuelta a retornar por el decorador
-            def wraper(params: DataPerRecord[_T]) -> None:
-
-                # Ejecución de la automatización provista
-                return new_automation(params)
-
             # Registro de la automatización en la estructura central
             self._automations.register_automation(
-                table_name,
+                model_name,
                 transation,
-                wraper,
+                new_automation,
                 fields,
                 execute_if,
                 method,
             )
 
-            return wraper
+            return new_automation
 
         # Retorno del decorador
         return decorator
 
     def create(
         self,
-        table_name: str,
+        model_name: str,
         data: RecordData | list[RecordData],
     ) -> list[int]:
         """
-        ## Creación de registros
+        ### Creación de registros
         Este método realiza la creación de uno o muchos registros a partir del
-        nombre de la tabla proporcionado y un diccionario (un único registro) o
-        una lista de diccionarios (muchos registros).
+        nombre de un modelo proporcionado y un diccionario (un único registro)
+        o una lista de diccionarios (muchos registros).
 
         Uso:
         >>> # Para un solo registro
         >>> record = {
-        >>>     'user': 'onnymm',
+        >>>     'login': 'onnymm',
         >>>     'name': 'Onnymm Azzur',
         >>> }
         >>> 
-        >>> db.create('users', record)
-        >>> #    id    user          name
+        >>> db.create('base.users', record)
+        >>> #    id   login          name
         >>> # 0   2  onnymm  Onnymm Azzur
         >>> 
         >>> # Para muchos registros
         >>> records = [
         >>>     {
-        >>>         'user': 'onnymm',
+        >>>         'login': 'onnymm',
         >>>         'name': 'Onnymm Azzur',
         >>>     },
         >>>     {
-        >>>         'user': 'lumii',
+        >>>         'login': 'lumii',
         >>>         'name': 'Lumii Mynx',
         >>>     },
         >>> ]
         >>> 
-        >>> db.create('users', records)
-        >>> #    id    user          name
+        >>> db.create('base.users', records)
+        >>> #    id   login          name
         >>> # 0   2  onnymm  Onnymm Azzur
         >>> # 1   3   lumii    Lumii Mynx
         """
 
-        # Obtención de la instancia de la tabla
-        table_model = self._models.get_table_model(table_name)
-
         # Conversión de datos entrantes si es necesaria
-        if isinstance(data, dict):
-            data = [data,]
+        data = self._preprocess.convert_to_list(data)
 
         # Preprocesamiento de datos en creación
-        pos_creation_callback = self._preprocess.process_data_on_create(table_name, data)
+        pos_creation_callback = self._preprocess.process_data_on_create(model_name, data)
 
         # Ejecución de validaciones
-        self._validations.run_validations_on_create(table_name, data)
+        self._validations.run_validations_on_create(model_name, data)
 
-        # Instanciación de objetos para crear en la base de datos
-        records = [ table_model(**record) for record in data ]
-
-        # Se usa Session ya que CREATE no inserta valores en campos referenciados de manera correcta
-        # Ejecución de creación de registros
-        with Session(self._engine) as session:
-            session.add_all(records)
-            session.commit()
-
-            # Actualización de los objetos registrados
-            for record in records:
-                session.refresh(record)
-
-        # Obtención de las IDs creadas
-        inserted_records = [ self._index[record]['id'] for record in records ]
+        # Creación de los registros y obtención de las IDs creadas
+        inserted_records = self._compiler.create(model_name, data)
 
         # Ejecución de las automatizaciones correspondientes
         self._automations.run_after_transaction(
-            table_name,
+            model_name,
             'create',
             inserted_records,
         )
@@ -251,42 +228,62 @@ class Lylac(_Lylac):
 
     def search(
         self,
-        table_name: str,
+        model_name: str,
         search_criteria: CriteriaStructure = [],
         offset: int | None = None,
         limit: int | None = None,
     ) -> list[int]:
         """
-        ## Búsqueda de registros
+        ### Búsqueda de registros
         Este método retorna todos los registros de una tabla o los registros que cumplan
         con la condición de búsqueda provista, además de segmentar desde un índice
         inicial de desfase y/o un límite de cantidad de registros retornada.
 
         Uso:
         >>> # Ejemplo 1
-        >>> db.search('users')
+        >>> lylac.search('base.users')
         >>> # [1, 2, 3, 4, 5]
         >>> 
         >>> # Ejemplo 2
-        >>> db.search('commisions', [('user_id', '=', 213)])
+        >>> lylac.search('base.model.field', [('create_uid', '=', 2)])
         >>> # [7, 9, 12, 13, 17, 21, ...]
-
-        ### Los parámetros de entrada son:
-        - `table_name`: Nombre de la tabla de donde se tomarán los registros.
-        - `search_criteria`: Criterio de búsqueda para retornar únicamente los resultados que
-        cumplan con las condiciones provistas (Consultar estructura más abajo).
-        - `offset`: Desfase de inicio de primer registro a mostrar.
-        - `limit`: Límite de registros retornados por la base de datos.
 
         ----
         ### Estructura de criterio de búsqueda
-        La estructura del criterio de búsqueda consiste en una lista de tuplas de 3 valores, mejor
-        conocidas como tripletas. Cada una de estas tripletas consiste en 3 diferentes parámetros:
-        1. Nombre del campo de la tabla
+        La estructura del criterio de búsqueda consiste en una lista de dos tipos de
+        dato:
+        - `TripletStructure`: Estructura de tripletas para queries SQL
+        - `LogicOperator`: Operador lógico
+
+        Estas tuplas deben contenerse en una lista. En caso de haber más de una condición, se deben
+        unir por operadores lógicos `'AND'` u `'OR'`. Siendo el operador lógico el que toma la
+        primera posición:
+        >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
+        >>> # "amount" es mayor a 500 y "name" contiene "as"
+        >>> ['|', ('id', '=', 5), ('state', '=', 'posted')]
+        >>> # "id" es igual a 5 o "state" es igual a "posted"
+
+        ----
+        #### Operador lógico
+        Tipo de dato que representa un operador lógico.
+
+        Los operadores lógicos disponibles son:
+        - `'&'`: AND
+        - `'|'`: OR
+
+        ----
+        #### Estructura de tripletas para queries SQL
+        Este tipo de dato representa una condición sencilla para usarse en una
+        transacción en base de datos.
+
+        La estructura de una tripleta consiste en 3 diferentes parámetros:
+        1. Nombre del campo del modelo
         2. Operador de comparación
         3. Valor de comparación
 
         Algunos ejemplos de tripletas son:
+        >>> ('name', '=', 'Onnymm')
+        >>> # Nombre es igual a "Onnymm"
         >>> ('id', '=', 5)
         >>> # ID es igual a 5
         >>> ('amount', '>', 500)
@@ -294,94 +291,45 @@ class Lylac(_Lylac):
         >>> ('name', 'ilike', 'as')
         >>> # "name" contiene "as"
 
-        Los operadores de comparación disponibles son:
-        - `'='`: Igual a
-        - `'!='`: Diferente de
-        - `'>'`: Mayor a
-        - `'>='`: Mayor o igual a
-        - `'<`': Menor que
-        - `'<='`: Menor o igual que
-        - `'><'`: Entre
-        - `'in'`: Está en
-        - `'not in'`: No está en
-        - `'ilike'`: Contiene
-        - `'not ilike'`: No contiene
-        - `'~'`: Coincide con expresión regular (sensible a mayúsculas y minúsculas)
-        - `'~*'`: Coincide con expresión regular (no sensible a mayúsculas y minúsculas)
-
-        Estas tuplas deben contenerse en una lista. En caso de haber más de una condición, se deben
-        Unir por operadores lógicos `'AND'` u `'OR'`. Siendo el operador lógico el que toma la
-        primera posición:
-        >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
-        >>> # "amount" es mayor a 500 y "name" contiene "as"
-        >>> ['|', ('id', '=', 5), ('state', '=', 'posted')]
-        >>> # "id" es igual a 5 o "state" es igual a "posted"
-
-        Los operadores lógicos disponibles son:
-        - `'&'`: AND
-        - `'|'`: OR
-
-        ----
-        ### Criterios de búsqueda muy específicos
-        También es posible formular criterios de búsqueda más avanzados como el que se muestra a
-        continuación:
-        >>> search_criteria = [
-        >>>     '&',
-        >>>         '|',
-        >>>             ('partner_id', '=', 14418),
-        >>>             ('partner_id', '=', 14417),
-        >>>         ('salesperson_id', '=', 213)
-        >>> ]
-        >>> # "partner_id" es igual a 14418 o "partner_id" es igual a 14417 y a su vez "salesperson_id" es igual a 213.
-        
-        Si el criterio es demasiado largo, también se puede declarar por fuera. También se puede importar
-        el tipo de dato `CriteriaStructure` para facilitar la creación apoyandose con el la herramienta de
-        autocompletado del editor de código:
-        >>> from app.core._types import CriteriaStructure
-        >>> search_criteria: CriteriaStructure = ...
-
         ----
         ### Desfase de registros para paginación
         Este parámetro sirve para retornar los registros a partir del índice indicado por éste. Suponiendo que
         una búsqueda normal arrojaría los siguientes resultados:
-        >>> db.search('users')
-        >>> # [3, 4, 5, 6, 7]
+        >>> lylac.search('base.users')
+        >>> # [1, 2, 3, 4, 5, 6, 7]
 
         Se puede especificar que el retorno de los registros considerará solo a partir desde cierto registro, como
         por ejemplo lo siguiente:
-        >>> db.search('users', offset= 2)
-        >>> # [4, 5, 6, 7]
+        >>> lylac.search('base.users', offset= 2)
+        >>> # [3, 4, 5, 6, 7]
 
         ----
         ### Límite de registros retornados para paginación
         También es posible establecer una cantidad máxima de registros desde la base de datos. Suponiendo que una
         búsqueda normal arrojaría los siguientes registros:
-        >>> db.search('users')
+        >>> lylac.search('base.users')
         >>> # [3, 4, 5, 6, 7]
 
         Se puede especificar que solo se requiere obtener una cantidad máxima de registros a partir de un
         número provisto:
-        >>> db.search('users', limit= 3)
-        >>> # [3, 4, 5]
+        >>> lylac.search('base.users', limit= 3)
+        >>> # [1, 2, 3]
         """
 
         # Obtención de la instancia de la tabla
-        table_model = self._models.get_table_model(table_name)
-
+        model_model = self._models.get_table_model(model_name)
         # Creación del query SELECT
-        ( stmt, _ ) = self._select.build(table_name, ['id'])
+        ( stmt, _ ) = self._select.build(model_name, [FIELD_NAME.ID])
 
         # Si hay criterios de búsqueda se genera el 'where'
         if len(search_criteria) > 0:
-
             # Creación del query where
-            where_query = self._where.build_where(table_model, search_criteria)
-
+            where_query = self._where.build_where(model_model, search_criteria)
             # Conversión del query SQL
             stmt = stmt.where(where_query)
 
         # Ordenamiento de los datos
-        stmt = stmt.order_by(asc('id'))
+        stmt = stmt.order_by( asc(FIELD_NAME.ID) )
 
         # Segmentación de inicio y fin en caso de haberlos
         stmt = self._query.build_segmentation(stmt, offset, limit)
@@ -390,14 +338,100 @@ class Lylac(_Lylac):
         response = self._connection.execute(stmt)
 
         # Obtención de las IDs encontradas
-        found_ids: list[int] = [getattr(row, 'id') for row in response]
+        found_ids = self._output.get_found_ids(response)
 
-        # Retorno de las IDs encontradas
         return found_ids
+
+    def get_value(
+        self,
+        model_name: str,
+        record_id: int,
+        field: str,
+    ) -> RecordValue:
+        """
+        ### Obtención de un valor
+        Este método retorna el valor especificado de un registro en la base de
+        datos a partir de una ID proporcionada y el campo del que se desea
+        obtener su valor.
+
+        Uso:
+        >>> # Ejemplo 1
+        >>> lylac.get_value('base.users', 2, 'name')
+        >>> # 'onnymm'
+        >>> 
+        >>> # Ejemplo 2
+        >>> lylac.get_value('base.permissions', 5, 'create_date')
+        >>> # '2025-07-01 10:00:00'
+        """
+
+        # Obtención del único elemento contenido en la lista
+        [ value ] = (
+            # Se utiliza el método de lectura con el registro específico
+            self.read(
+                model_name,
+                record_id,
+                [field],
+                output_format= 'dataframe',
+                only_ids_in_relations= True,
+            )
+            # Se accede a la columna
+            [field]
+            # Se convierte la serie de una lista de un elemento
+            .to_list()
+        )
+
+        return value
+
+    def get_values(
+        self,
+        model_name: str,
+        record_id: int,
+        fields: list[str],
+    ) -> tuple:
+        """
+        ### Obtención de valores
+        Este método retorna los valores especificados de un registro en la base
+        de datos a partir de una ID proporcionada y los campos de los cuales se
+        desea obtener sus valores.
+
+        Uso:
+        >>> # Ejemplo 1
+        >>> lylac.get_values('base.users', 1, ['name', 'create_date'])
+        >>> # ('onnymm', '2024-11-04 11:16:59')
+        >>> 
+        >>> # Ejemplo 2
+        >>> lylac.get_values('base.permissions', 5, ['label', 'create_uid'])
+        >>> # ('Valores de selección de campos - Administrador', 3)
+        """
+
+        # Obtención de la lista de valores
+        values = (
+            # Se utiliza el método de lectura con el registro específico
+            self.read(
+                model_name,
+                record_id,
+                fields,
+                output_format= 'dataframe',
+                only_ids_in_relations= True,
+            )
+            # Se accede a la columna
+            [fields]
+            # Se transpone el DataFrame
+            .T
+            # Se accede a la columna creada
+            [0]
+            # Se convierte la serie de una lista de valores
+            .to_list()
+        )
+
+        # Se convierte el resultado a tupla
+        values = tuple(values)
+
+        return values
 
     def read(
         self,
-        table_name: str,
+        model_name: str,
         record_ids: int | list[int],
         fields: list[str] = [],
         sortby: str | list[str] = None,
@@ -406,50 +440,41 @@ class Lylac(_Lylac):
         only_ids_in_relations: bool = False,
     ) -> pd.DataFrame | list[dict[str, RecordValue]]:
         """
-        ## Lectura de registros
+        ### Lectura de registros
         Este método retorna un DataFrame con el contenido de los registros de
         una tabla de la base de datos a partir de una lista de IDs, en el orden
         en el que se especificaron los campos o todos los campos en caso de no
         haber sido especificados.
 
-        ### Los parámetros de entrada son:
-        - `table_name`: Nombre de la tabla de donde se tomarán los registros.
-        - `record_ids`: IDs de los respectivos registros a leer.
-        - `fields`: Campos a mostrar. En caso de no ser especificado, se toman todos los
-        campos de la tabla de la base de datos.
-        - `offset`: Desfase de inicio de primer registro a mostrar.
-        - `limit`: Límite de registros retornados por la base de datos.
-
         Uso:
         >>> # Ejemplo 1
-        >>> db.search_read('users', [2])
-        >>> #    id    user          name         create_date          write_date
+        >>> lylac.search_read('base.users', [2])
+        >>> #    id   login          name         create_date          write_date
         >>> # 0   2  onnymm  Onnymm Azzur 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> 
-        >>> db.search_read('users', [2, 3])
-        >>> #    id    user          name         create_date          write_date
+        >>> lylac.search_read('base.users', [2, 3])
+        >>> #    id   login          name         create_date          write_date
         >>> # 0   2  onnymm  Onnymm Azzur 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> # 1   3   lumii    Lumii Mynx 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> 
         >>> # Ejemplo 3
-        >>> db.search_read('users', [2, 3], ['user', 'create_date'])
+        >>> lylac.search_read('base.users', [2, 3], ['user', 'create_date'])
         >>> #    id         name         create_date
         >>> # 0   2 Onnymm Azzur 2024-11-04 11:16:59
         >>> # 1   3   Lumii Mynx 2024-11-04 11:16:59
         """
 
         # Conversión de datos entrantes si es necesaria
-        if isinstance(record_ids, int):
-            record_ids = [record_ids,]
+        record_ids = self._preprocess.convert_to_list(record_ids)
 
         # Obtención de la instancia de la tabla
-        table_model = self._models.get_table_model(table_name)
+        model_model = self._models.get_table_model(model_name)
 
         # Creación del query base
-        ( stmt, ttypes ) = self._select.build(table_name, fields)
+        ( stmt, ttypes ) = self._select.build(model_name, fields)
 
         # Creación del query where
-        where_query = self._where.build_where(table_model, [('id', 'in', record_ids)])
+        where_query = self._where.build_where(model_model, [(FIELD_NAME.ID, 'in', record_ids)])
 
         # Conversión del query SQL
         stmt = stmt.where(where_query)
@@ -457,7 +482,7 @@ class Lylac(_Lylac):
         # Creación de parámetros de ordenamiento
         stmt = self._query.build_sort(
             stmt,
-            table_model,
+            model_model,
             sortby,
             ascending,
         )
@@ -466,121 +491,14 @@ class Lylac(_Lylac):
         response = self._connection.execute(stmt)
 
         # Inicialización del DataFrame de retorno
-        data = pd.DataFrame(response.fetchall())
+        data = pd.DataFrame( response.fetchall() )
 
         # Retorno en formato de salida configurado
         return self._output.build_output(data, ttypes, output_format, 'dataframe', only_ids_in_relations)
 
-    def get_value(
-        self,
-        table_name: str,
-        record_id: int,
-        field: str,
-    ) -> RecordValue:
-        """
-        ## Obtención de un valor
-        Este método retorna el valor especificado de un registro en la base de
-        datos a partir de una ID proporcionada y el campo del que se desea
-        obtener su valor.
-
-        ### Los parámetros de entrada son:
-        - `table_name`: Nombre de la tabla de donde se tomarán los registros.
-        - `record_id`: ID del registro a leer.
-        - `field`: Nombre del campo de la tabla del que se desea obtener su
-        valor.
-
-        Uso:
-        >>> # Ejemplo 1
-        >>> db_connection.get_value('users', 1, 'name')
-        >>> # 'onnymm'
-        >>> 
-        >>> # Ejemplo 2
-        >>> db_connection.get_value('products', 5, 'price')
-        >>> # 35.50
-        """
-
-        # Obtención de la instancia de la tabla
-        table_model = self._models.get_table_model(table_name)
-
-        # Obtención de los campos de la tabla
-        table_field = self._models.get_table_field(table_model, field)
-
-        # Creación del query base
-        stmt = select(table_field)
-
-        # Creación del query where
-        where_query = self._where.build_where(table_model, [('id', '=', record_id)])
-
-        # Conversión del query SQL
-        stmt = stmt.where(where_query)
-
-        # Ejecución de la transacción
-        response = self._connection.execute(stmt)
-
-        # Destructuración de la tupla dentro de la lista
-        [ data ] = response.fetchall()
-
-        # Destructuración del valor dentro de la tupla obtenida
-        ( value, ) = data
-
-        # Retorno del valor
-        return value
-
-    def get_values(
-        self,
-        table_name: str,
-        record_id: int,
-        fields: list[str],
-    ) -> tuple:
-        """
-        ## Obtención de valores
-        Este método retorna los valores especificados de un registro en la base
-        de datos a partir de una ID proporcionada y los campos de los cuales se
-        desea obtener sus valores.
-
-        ### Los parámetros de entrada son:
-        - `table_name`: Nombre de la tabla de donde se tomarán los registros.
-        - `record_id`: ID del registro a leer.
-        - `field`: Nombre de los campos de los cuales se desea obtener sus
-        valores.
-
-        Uso:
-        >>> # Ejemplo 1
-        >>> db_connection.get_values('users', 1, ['name', 'create_date'])
-        >>> # ('onnymm', '2024-11-04 11:16:59')
-        >>> 
-        >>> # Ejemplo 2
-        >>> db_connection.get_values('products', 5, ['price', 'create_uid'])
-        >>> # (35.50, 3)
-        """
-
-        # Obtención de la instancia de la tabla
-        table_model = self._models.get_table_model(table_name)
-
-        # Obtención de los campos de la tabla
-        table_fields = self._models.get_table_fields(table_model, fields, include_id= False)
-
-        # Creación del query base
-        stmt = select(*table_fields)
-
-        # Creación del query where
-        where_query = self._where.build_where(table_model, [('id', '=', record_id)])
-
-        # Conversión del query SQL
-        stmt = stmt.where(where_query)
-
-        # Ejecución de la transacción
-        response = self._connection.execute(stmt)
-
-        # Destructuración de la tupala desde la lista obtenida
-        [ data ] = response.fetchall()
-
-        # Retorno de la tupla de valores
-        return data
-
     def search_read(
         self,
-        table_name: str,
+        model_name: str,
         search_criteria: CriteriaStructure = [],
         fields: list[str] = [],
         offset: int | None = None,
@@ -591,47 +509,65 @@ class Lylac(_Lylac):
         only_ids_in_relations: bool = False,
     ) -> pd.DataFrame | dict[str, RecordValue]:
         """
-        ## Búsqueda y lectura de registros
+        ### Búsqueda y lectura de registros
         Este método retorna un DataFrame con el contenido de los registros de una
         tabla de la base de datos, en el orden en el que se especificaron los campos
         o todos los campos en caso de no haber sido especificados.
 
-        ### Los parámetros de entrada son:
-        - `table_name`: Nombre de la tabla de donde se tomarán los registros.
-        - `search_criteria`: Criterio de búsqueda para retornar únicamente los resultados que
-        cumplan con las condiciones provistas (Consultar estructura más abajo).
-        - `fields`: Campos a mostrar. En caso de no ser especificado, se toman todos los
-        campos de la tabla de la base de datos.
-        - `offset`: Desfase de inicio de primer registro a mostrar.
-        - `limit`: Límite de registros retornados por la base de datos.
-
         Uso:
         >>> # Ejemplo 1
-        >>> db.search_read('users')
-        >>> #    id    user          name         create_date          write_date
+        >>> lylac.search_read('base.users')
+        >>> #    id   login          name         create_date          write_date
         >>> # 0   2  onnymm  Onnymm Azzur 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> # 1   3   lumii    Lumii Mynx 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> 
         >>> # Ejemplo 2
-        >>> db.search_read('users', [('user', '=', 'onnymm')])
-        >>> #    id    user          name         create_date          write_date
+        >>> lylac.search_read('base.users', [('user', '=', 'onnymm')])
+        >>> #    id   login          name         create_date          write_date
         >>> # 0   2  onnymm  Onnymm Azzur 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> 
         >>> # Ejemplo 3
-        >>> db.search_read('users', [], ['user', 'create_date'])
+        >>> lylac.search_read('base.users', [], ['user', 'create_date'])
         >>> #    id         name         create_date
         >>> # 0   2 Onnymm Azzur 2024-11-04 11:16:59
         >>> # 1   3   Lumii Mynx 2024-11-04 11:16:59
 
         ----
         ### Estructura de criterio de búsqueda
-        La estructura del criterio de búsqueda consiste en una lista de tuplas de 3 valores, mejor
-        conocidas como tripletas. Cada una de estas tripletas consiste en 3 diferentes parámetros:
-        1. Nombre del campo de la tabla
+        La estructura del criterio de búsqueda consiste en una lista de dos tipos de
+        dato:
+        - `TripletStructure`: Estructura de tripletas para queries SQL
+        - `LogicOperator`: Operador lógico
+
+        Estas tuplas deben contenerse en una lista. En caso de haber más de una condición, se deben
+        unir por operadores lógicos `'AND'` u `'OR'`. Siendo el operador lógico el que toma la
+        primera posición:
+        >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
+        >>> # "amount" es mayor a 500 y "name" contiene "as"
+        >>> ['|', ('id', '=', 5), ('state', '=', 'posted')]
+        >>> # "id" es igual a 5 o "state" es igual a "posted"
+
+        ----
+        #### Operador lógico
+        Tipo de dato que representa un operador lógico.
+
+        Los operadores lógicos disponibles son:
+        - `'&'`: AND
+        - `'|'`: OR
+
+        ----
+        #### Estructura de tripletas para queries SQL
+        Este tipo de dato representa una condición sencilla para usarse en una
+        transacción en base de datos.
+
+        La estructura de una tripleta consiste en 3 diferentes parámetros:
+        1. Nombre del campo del modelo
         2. Operador de comparación
         3. Valor de comparación
 
         Algunos ejemplos de tripletas son:
+        >>> ('name', '=', 'Onnymm')
+        >>> # Nombre es igual a "Onnymm"
         >>> ('id', '=', 5)
         >>> # ID es igual a 5
         >>> ('amount', '>', 500)
@@ -639,58 +575,12 @@ class Lylac(_Lylac):
         >>> ('name', 'ilike', 'as')
         >>> # "name" contiene "as"
 
-        Los operadores de comparación disponibles son:
-        - `'='`: Igual a
-        - `'!='`: Diferente de
-        - `'>'`: Mayor a
-        - `'>='`: Mayor o igual a
-        - `'<`': Menor que
-        - `'<='`: Menor o igual que
-        - `'><'`: Entre
-        - `'in'`: Está en
-        - `'not in'`: No está en
-        - `'ilike'`: Contiene
-        - `'not ilike'`: No contiene
-        - `'~'`: Coincide con expresión regular (sensible a mayúsculas y minúsculas)
-        - `'~*'`: Coincide con expresión regular (no sensible a mayúsculas y minúsculas)
-
-        Estas tuplas deben contenerse en una lista. En caso de haber más de una condición, se deben
-        Unir por operadores lógicos `'AND'` u `'OR'`. Siendo el operador lógico el que toma la
-        primera posición:
-        >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
-        >>> # "amount" es mayor a 500 y "name" contiene "as"
-        >>> ['|', ('id', '=', 5), ('state', '=', 'posted')]
-        >>> # "id" es igual a 5 o "state" es igual a "posted"
-
-        Los operadores lógicos disponibles son:
-        - `'&'`: AND
-        - `'|'`: OR
-
-        ----
-        ### Criterios de búsqueda muy específicos
-        También es posible formular criterios de búsqueda más avanzados como el que se muestra a
-        continuación:
-        >>> search_criteria = [
-        >>>     '&',
-        >>>         '|',
-        >>>             ('partner_id', '=', 14418),
-        >>>             ('partner_id', '=', 14417),
-        >>>         ('salesperson_id', '=', 213)
-        >>> ]
-        >>> # "partner_id" es igual a 14418 o "partner_id" es igual a 14417 y a su vez "salesperson_id" es igual a 213.
-        
-        Si el criterio es demasiado largo, también se puede declarar por fuera. También se puede importar
-        el tipo de dato `CriteriaStructure` para facilitar la creación apoyandose con el la herramienta de
-        autocompletado del editor de código:
-        >>> from app.core._types import CriteriaStructure
-        >>> search_criteria: CriteriaStructure = ...
-
         ----
         ### Desfase de registros para paginación
         Este parámetro sirve para retornar los registros a partir del índice indicado por éste. Suponiendo que
         una búsqueda normal arrojaría los siguientes resultados:
-        >>> db.search_read('users')
-        >>> #    id     user                  name
+        >>> lylac.search_read('base.users')
+        >>> #    id    login                  name
         >>> # 0   3   onnymm          Onnymm Azzur
         >>> # 1   4    lumii            Lumii Mynx
         >>> # 2   5  user001  Persona Sin Nombre 1
@@ -699,7 +589,7 @@ class Lylac(_Lylac):
 
         Se puede especificar que el retorno de los registros considerará solo a partir desde cierto registro, como
         por ejemplo lo siguiente:
-        >>> db.search_read('users', offset= 2)
+        >>> lylac.search_read('base.users', offset= 2)
         >>> # 1   4    lumii            Lumii Mynx
         >>> # 2   5  user001  Persona Sin Nombre 1
         >>> # 3   6  user002  Persona Sin Nombre 2
@@ -709,8 +599,8 @@ class Lylac(_Lylac):
         ### Límite de registros retornados para paginación
         También es posible establecer una cantidad máxima de registros desde la base de datos. Suponiendo que una
         búsqueda normal arrojaría los siguientes registros:
-        >>> db.search_read('users')
-        >>> #    id     user                  name
+        >>> lylac.search_read('base.users')
+        >>> #    id    login                  name
         >>> # 0   3   onnymm          Onnymm Azzur
         >>> # 1   4    lumii            Lumii Mynx
         >>> # 2   5  user001  Persona Sin Nombre 1
@@ -719,26 +609,26 @@ class Lylac(_Lylac):
 
         Se puede especificar que solo se requiere obtener una cantidad máxima de registros a partir de un
         número provisto:
-        >>> db.search_read('users', limit= 3)
-        >>> #    id     user                  name
+        >>> lylac.search_read('base.users', limit= 3)
+        >>> #    id    login                  name
         >>> # 0   3   onnymm          Onnymm Azzur
         >>> # 1   4    lumii            Lumii Mynx
         >>> # 2   5  user001  Persona Sin Nombre 1
         """
 
         # Obtención de la instancia de la tabla
-        table_model = self._models.get_table_model(table_name)
+        model_model = self._models.get_table_model(model_name)
 
         # Creación del query base
-        ( stmt, ttypes ) = self._select.build(table_name, fields)
+        ( stmt, ttypes ) = self._select.build(model_name, fields)
 
         # Creación del segmento WHERE en caso de haberlo
-        stmt = self._where.add_query(stmt, table_model, search_criteria)
+        stmt = self._where.add_query(stmt, model_model, search_criteria)
 
         # Creación de parámetros de ordenamiento
         stmt = self._query.build_sort(
             stmt,
-            table_model,
+            model_model,
             sortby,
             ascending,
         )
@@ -757,103 +647,79 @@ class Lylac(_Lylac):
 
     def search_count(
         self,
-        table_name: str,
+        model_name: str,
         search_criteria: CriteriaStructure = [],
     ) -> int:
         """
-        ## Búsqueda y conteo de resultados
+        ### Búsqueda y conteo de resultados
         Este método retorna el conteo de de todos los registros de una tabla o los
         registros que cumplan con la condición de búsqueda provista, ideal para funcionalidades
         de paginación que muestran un total de registros.
 
         Uso:
         >>> # Ejemplo 1
-        >>> db.search_count('users')
+        >>> lylac.search_count('base.users')
         >>> # 5
         >>> 
         >>> # Ejemplo 2
-        >>> db.search_count('commisions', [('user_id', '=', 213)])
+        >>> lylac.search_count('base.permissions', [('create_uid', '=', 5)])
         >>> # 126
-
-        ### Los parámetros de entrada son:
-        - `table_name`: Nombre de la tabla de donde se tomarán los registros.
-        - `search_criteria`: Criterio de búsqueda para retornar únicamente los resultados que
-        cumplan con las condiciones provistas (Consultar estructura más abajo).
 
         ----
         ### Estructura de criterio de búsqueda
-        La estructura del criterio de búsqueda consiste en una lista de tuplas de 3 valores, mejor
-        conocidas como tripletas. Cada una de estas tripletas consiste en 3 diferentes parámetros:
-        1. Nombre del campo de la tabla
-        2. Operador de comparación
-        3. Valor de comparación
-
-        Algunos ejemplos de tripletas son:
-        >>> ('id', '=', 5)
-        >>> # ID es igual a 5
-        >>> ('amount', '>', 500)
-        >>> # "amount" es mayor a 500
-        >>> ('name', 'ilike', 'as')
-        >>> # "name" contiene "as"
-
-        Los operadores de comparación disponibles son:
-        - `'='`: Igual a
-        - `'!='`: Diferente de
-        - `'>'`: Mayor a
-        - `'>='`: Mayor o igual a
-        - `'<`': Menor que
-        - `'<='`: Menor o igual que
-        - `'><'`: Entre
-        - `'in'`: Está en
-        - `'not in'`: No está en
-        - `'ilike'`: Contiene
-        - `'not ilike'`: No contiene
-        - `'~'`: Coincide con expresión regular (sensible a mayúsculas y minúsculas)
-        - `'~*'`: Coincide con expresión regular (no sensible a mayúsculas y minúsculas)
+        La estructura del criterio de búsqueda consiste en una lista de dos tipos de
+        dato:
+        - `TripletStructure`: Estructura de tripletas para queries SQL
+        - `LogicOperator`: Operador lógico
 
         Estas tuplas deben contenerse en una lista. En caso de haber más de una condición, se deben
-        Unir por operadores lógicos `'AND'` u `'OR'`. Siendo el operador lógico el que toma la
+        unir por operadores lógicos `'AND'` u `'OR'`. Siendo el operador lógico el que toma la
         primera posición:
         >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
         >>> # "amount" es mayor a 500 y "name" contiene "as"
         >>> ['|', ('id', '=', 5), ('state', '=', 'posted')]
         >>> # "id" es igual a 5 o "state" es igual a "posted"
 
+        ----
+        #### Operador lógico
+        Tipo de dato que representa un operador lógico.
+
         Los operadores lógicos disponibles son:
         - `'&'`: AND
         - `'|'`: OR
 
         ----
-        ### Criterios de búsqueda muy específicos
-        También es posible formular criterios de búsqueda más avanzados como el que se muestra a
-        continuación:
-        >>> search_criteria = [
-        >>>     '&',
-        >>>         '|',
-        >>>             ('partner_id', '=', 14418),
-        >>>             ('partner_id', '=', 14417),
-        >>>         ('salesperson_id', '=', 213)
-        >>> ]
-        >>> # "partner_id" es igual a 14418 o "partner_id" es igual a 14417 y a su vez "salesperson_id" es igual a 213.
-        
-        Si el criterio es demasiado largo, también se puede declarar por fuera. También se puede importar
-        el tipo de dato `CriteriaStructure` para facilitar la creación apoyandose con el la herramienta de
-        autocompletado del editor de código:
-        >>> from app.core._types import CriteriaStructure
-        >>> search_criteria: CriteriaStructure = ...
+        #### Estructura de tripletas para queries SQL
+        Este tipo de dato representa una condición sencilla para usarse en una
+        transacción en base de datos.
+
+        La estructura de una tripleta consiste en 3 diferentes parámetros:
+        1. Nombre del campo del modelo
+        2. Operador de comparación
+        3. Valor de comparación
+
+        Algunos ejemplos de tripletas son:
+        >>> ('name', '=', 'Onnymm')
+        >>> # Nombre es igual a "Onnymm"
+        >>> ('id', '=', 5)
+        >>> # ID es igual a 5
+        >>> ('amount', '>', 500)
+        >>> # "amount" es mayor a 500
+        >>> ('name', 'ilike', 'as')
+        >>> # "name" contiene "as"
         """
 
         # Obtenciónde la instancia de la tabla
-        table_model = self._models.get_table_model(table_name)
+        model_model = self._models.get_table_model(model_name)
 
         # Creación del query base
         stmt = (
             select( func.count() )
-            .select_from(table_model)
+            .select_from(model_model)
         )
 
         # Creación del segmento WHERE en caso de haberlo
-        stmt = self._where.add_query(stmt, table_model, search_criteria)
+        stmt = self._where.add_query(stmt, model_model, search_criteria)
 
         # Ejecución de la transacción
         response = self._connection.execute(stmt)
@@ -868,19 +734,14 @@ class Lylac(_Lylac):
         data: RecordData,
     ) -> bool:
         """
-        ## Actualización de registros
+        ### Actualización de registros
         Este método realiza la actualización de uno o más registros a partir de su respectiva
         ID provista, actualizando uno o más campos con el valor provisto. Este método solo
         sobreescribe un mismo valor por cada campo a todos los registros provistos.
 
-        ### Los parámetros de entrada son:
-        - `table_name`: Nombre de la tabla en donde se harán los cambios
-        - `record_ids`: ID o lista de IDs a actualizar
-        - `data`: Diccionario de valores a modificar masivamente
-
         Uso:
-        >>> db.search_read('users', fields= ['user', 'name'])
-        >>> #    id     user                  name
+        >>> lylac.search_read('base.users', fields= ['login', 'name'])
+        >>> #    id    login                  name
         >>> # 0   3   onnymm          Onnymm Azzur
         >>> # 1   4    lumii            Lumii Mynx
         >>> # 2   5  user001  Persona Sin Nombre 1
@@ -888,8 +749,8 @@ class Lylac(_Lylac):
         >>> # 4   7  user003  Persona Sin Nombre 3
         >>> 
         >>> # Modificación
-        >>> db.update("users", [3, 4, 5], {'name': 'Cambiado'})
-        >>> #    id     user                  name
+        >>> lylac.update('base.users', [3, 4, 5], {'name': 'Cambiado'})
+        >>> #    id    login                  name
         >>> # 0   3   onnymm              Cambiado
         >>> # 1   4    lumii              Cambiado
         >>> # 2   5  user001              Cambiado
@@ -906,13 +767,13 @@ class Lylac(_Lylac):
 
     def update_where(
         self,
-        table_name: str,
+        model_name: str,
         search_criteria: CriteriaStructure,
         data: RecordData,
         _record_ids: list[int] = []
     ) -> bool:
         """
-        "" Actualización de registros donde...
+        ### Actualización de registros donde...
         Este método realiza la actualización de uno o más registros a partir de una
         condición provista, actualizando uno o más campos con el valor provisto. Este
         método solo sobreescribe un mismo valor por cada campo a todos los registros
@@ -925,8 +786,8 @@ class Lylac(_Lylac):
         - `data`: Diccionario de valores a modificar masivamente
 
         Uso:
-        >>> db.search_read('users', fields= ['user', 'name'])
-        >>> #    id     user                  name
+        >>> lylac.search_read('base.users', fields= ['login', 'name'])
+        >>> #    id    login                  name
         >>> # 0   3   onnymm          Onnymm Azzur
         >>> # 1   4    lumii            Lumii Mynx
         >>> # 2   5  user001  Persona Sin Nombre 1
@@ -934,8 +795,8 @@ class Lylac(_Lylac):
         >>> # 4   7  user003  Persona Sin Nombre 3
         >>> 
         >>> # Modificación
-        >>> db.update("users", [('name', 'ilike', 'sin nombre')], {'name': 'Zopilote'})
-        >>> #    id     user          name
+        >>> db.update('base.users', [('name', 'ilike', 'sin nombre')], {'name': 'Zopilote'})
+        >>> #    id    login          name
         >>> # 0   3   onnymm  Onnymm Azzur
         >>> # 1   4    lumii    Lumii Mynx
         >>> # 2   5  user001      Zopilote
@@ -944,37 +805,37 @@ class Lylac(_Lylac):
         """
 
         # Ejecución de validaciones
-        self._validations.run_validations_on_update(table_name, search_criteria, data)
+        self._validations.run_validations_on_update(model_name, search_criteria, data)
 
         # Obtención de la instancia de la tabla
-        table_model = self._models.get_table_model(table_name)
+        model_model = self._models.get_table_model(model_name)
 
         # Preprocesamiento de datos en actualización y obtención de función posactualización
-        after_update_callback = self._preprocess.process_data_on_update(table_name, _record_ids, data)
+        after_update_callback = self._preprocess.process_data_on_update(model_name, _record_ids, data)
 
         # Creación del query base
-        stmt = update(table_model)
+        stmt = update(model_model)
 
         # Creación del segmento WHERE
-        stmt = self._where.add_query(stmt, table_model, search_criteria)
+        stmt = self._where.add_query(stmt, model_model, search_criteria)
 
         # Declaración de valores a cambiar
         stmt = stmt.values(data)
 
         # Declaración para obtener las IDs modificadas
-        stmt = stmt.returning(self._models.get_id_field(table_model))
+        stmt = stmt.returning(self._models.get_id_field(model_model))
 
         # Ejecución de la transacción
         response = self._connection.execute(stmt, commit= True)
 
         # Obtención de las IDs creadas
-        modified_records: list[int] = [getattr(row, 'id') for row in response]
+        updated_records: list[int] = [getattr(row, 'id') for row in response]
 
         # Ejecución de las automatizaciones correspondientes
         self._automations.run_after_transaction(
-            table_name,
+            model_name,
             'update',
-            modified_records,
+            updated_records,
         )
 
         # Ejecución de función posactualización
@@ -985,7 +846,7 @@ class Lylac(_Lylac):
 
     def delete(
         self,
-        table_name: str,
+        model_name: str,
         record_ids: int | list[int]
     ) -> bool:
         """
@@ -1011,30 +872,29 @@ class Lylac(_Lylac):
         """
 
         # Conversión de datos entrantes si es necesaria
-        if isinstance(record_ids, int):
-            record_ids = [record_ids,]
+        record_ids = self._preprocess.convert_to_list(record_ids)
 
         # Creación de función de ejecución de automatizaciones
         run_post_delete_automations = self._automations.generate_before_transaction(
-            table_name,
+            model_name,
             record_ids,
         )
 
         # Obtención de la instancia de la tabla
-        table_model = self._models.get_table_model(table_name)
+        model_model = self._models.get_table_model(model_name)
 
         # Creación del query
         stmt = (
-            delete(table_model)
-            .where(getattr(table_model, 'id').in_(record_ids))
-            .returning(self._models.get_id_field(table_model))
+            delete(model_model)
+            .where(getattr(model_model, FIELD_NAME.ID).in_(record_ids))
+            .returning(self._models.get_id_field(model_model))
         )
 
         # Ejecución de la transacción
         response = self._connection.execute(stmt, commit= True)
 
         # Obtención de las IDs encontradas
-        deleted_ids: list[int] = [getattr(row, 'id') for row in response]
+        deleted_ids: list[int] = [getattr(row, FIELD_NAME.ID) for row in response]
 
         # Ejecución de las automatizaciones correspondientes
         run_post_delete_automations(deleted_ids)
