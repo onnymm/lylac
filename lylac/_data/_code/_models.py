@@ -1,6 +1,6 @@
 MODEL_TABLE_TEMPLATE = (
 """
-class {model_name}(self._base, self._model_template):
+class {model_name}(self._base, ModelTemplate):
     __tablename__ = '{model_name}'
 
 data['model'] = {model_name}

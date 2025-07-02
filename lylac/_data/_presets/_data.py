@@ -462,7 +462,7 @@ INITIAL_DATA = [
                 'label': 'Uno a muchos',
             },
             {
-                'name': 'many2one',
+                'name': 'many2many',
                 'field_id': 15,
                 'label': 'Muchos a muchos',
             },

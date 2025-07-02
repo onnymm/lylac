@@ -144,8 +144,6 @@ class Preprocess():
                 if many2many_field in record.keys():
                     # Se guardan los datos en el diccionario de actualizaciones
                     record_many2many_data[many2many_field] = record[many2many_field].copy()
-                    # Se eliminan los datos del diccionario
-                    del record[many2many_field]
             # Se añade el diccionario de actualizaciones a la lista
             pending_many2many_updates.append(record_many2many_data)
 

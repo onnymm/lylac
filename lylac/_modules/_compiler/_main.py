@@ -30,6 +30,8 @@ class Compiler(BaseCompiler):
         data: list[RecordData],
     ) -> list[int]:
 
+        # Se remueven los campos many2many
+        self._remove_many2many_fields(model_name, data)
         # Obtención de la instancia de la tabla
         model_model = self._strc.get_model(model_name)
         # Instanciación de objetos para crear en la base de datos
@@ -48,6 +50,24 @@ class Compiler(BaseCompiler):
         inserted_records = [ record.id for record in records ]
 
         return inserted_records
+
+    def _remove_many2many_fields(
+        self,
+        model_name: str,
+        data: list[RecordData],
+    ) -> None:
+
+        # Obtención de los nombres de campos many2many del modelo
+        many2many_fields = self._strc.get_ttype_fields(model_name, 'many2many')
+
+        # Iteración por cada registro a crear
+        for record in data:
+            # Búsqueda por cada campo many2many que pueda existir en el diccionario
+            for many2many_field in many2many_fields:
+                # Si se encuentra un campo many2many...
+                if many2many_field in record.keys():
+                    # Se remueve éste de los datos
+                    del record[many2many_field]
 
     def create_many2many(
         self,

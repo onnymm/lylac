@@ -23,6 +23,7 @@ from ...._data import (
 from ...._module_types import (
     FieldDefinition,
     ModelRecordData,
+    ModelTemplate as ModelTemplate, # Uso en compilación de código de archivos
 )
 from ._base import (
     _BaseDDLManager,
