@@ -1,33 +1,39 @@
 from ..._module_types import NewRecord
-from ..._constants import BASE_USERS_MODEL_ID
+from ..._constants import (
+    FIELD_NAME,
+    MODEL_ID,
+)
 
 DEFAULT_FIELD_TEMPLATE: dict[str, NewRecord.ModelField] = {
-    'create_uid': {
+    FIELD_NAME.CREATE_UID: {
         'label': 'Creado por',
-        'name': 'create_uid',
+        'name': FIELD_NAME.CREATE_UID,
         'ttype': 'many2one',
         'nullable': True,
-        'related_model_id': BASE_USERS_MODEL_ID,
+        'related_model_id': MODEL_ID.BASE_USERS,
     },
-    'write_uid': {
+    FIELD_NAME.WRITE_UID: {
         'label': 'Modificado por',
-        'name': 'write_uid',
+        'name': FIELD_NAME.WRITE_UID,
         'ttype': 'many2one',
         'nullable': True,
-        'related_model_id': BASE_USERS_MODEL_ID,
+        'related_model_id': MODEL_ID.BASE_USERS,
     },
-    'sequence': {
+    FIELD_NAME.SEQUENCE: {
         'label': 'Secuencia',
-        'name': 'sequence',
+        'name': FIELD_NAME.SEQUENCE,
         'ttype': 'integer',
     },
-    'user_id': {
+    FIELD_NAME.USER_ID: {
         'label': 'Usuario',
-        'name': 'user_id',
+        'name': FIELD_NAME.USER_ID,
         'ttype': 'many2one',
         'nullable': True,
-        'related_model_id': BASE_USERS_MODEL_ID,
+        'related_model_id': MODEL_ID.BASE_USERS,
     },
 }
 
-UID_FIELDS = ['create_uid', 'write_uid']
+UID_FIELDS = [
+    FIELD_NAME.CREATE_UID,
+    FIELD_NAME.WRITE_UID,
+]

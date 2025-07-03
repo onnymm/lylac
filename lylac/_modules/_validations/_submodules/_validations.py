@@ -1,6 +1,9 @@
 import re
 from typing import Any
-from ...._constants import MODEL_NAME
+from ...._constants import (
+    FIELD_NAME,
+    MODEL_NAME,
+)
 from ...._core import BaseValidations
 from ...._module_types import ModelRecordData
 from .._module_types import Validation
@@ -23,7 +26,7 @@ class _Validations():
     ) -> Any:
 
         # Comprobación de existencia de ID en creación
-        if 'id' in params.data.keys():
+        if FIELD_NAME.ID in params.data.keys():
             return True
 
     def reject_id_values_on_update(
@@ -32,7 +35,7 @@ class _Validations():
     ) -> Any:
 
         # Comprobación de existencia de ID en modificación
-        if 'id' in params.data.keys():
+        if FIELD_NAME.ID in params.data.keys():
             return True
 
     def reject_create_date_values_on_create(

@@ -39,7 +39,7 @@ PRESET_AUTOMATIONS: list[AutomationData] = [
         'callback': 'add_preset_fields',
         'model': 'base.model',
         'transaction': 'create',
-        'criteria': [('state', '!=', 'base')],
+        'criteria': [],
         'fields': ['id'],
         'method': 'record',
     },

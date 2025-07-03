@@ -1,4 +1,5 @@
 from typing import Callable
+from ..._constants import FIELD_NAME
 from ..._core import (
     BaseAutomations,
     _Lylac,
@@ -49,7 +50,7 @@ class Automations(BaseAutomations):
         model_name: str,
         transaction: Transaction,
         callback: AutomationTemplate,
-        fields: list[str] = ['id',],
+        fields: list[str] = [FIELD_NAME.ID,],
         criteria: CriteriaStructure = [],
         method: AutomationMethod = 'record'
     ) -> None:
@@ -204,9 +205,9 @@ class Automations(BaseAutomations):
         # Si existe un criterio a cumplir se hace una conjunción con la lista de IDs de registros encontradas
         if len(autom_criteria):
             return self._main.and_(
-                [('id', 'in', record_ids)],
+                [(FIELD_NAME.ID, 'in', record_ids)],
                 autom_criteria
             )
         # Si no existe un criterio a cumplir se crea un criterio de solo las IDs de registros encontradas
         else:
-            return [('id', 'in', record_ids)]
+            return [(FIELD_NAME.ID, 'in', record_ids)]

@@ -2,6 +2,7 @@ from typing import (
     Any,
     Optional,
 )
+from ..._constants import FIELD_NAME
 from ..._core import _Lylac
 from ._module_types import (
     TTypesMapping,
@@ -43,9 +44,9 @@ class Select_():
         if len(fields) == 0:
             fields = self._strc.get_model_field_names(model_name)
         else:
-            if 'id' in fields:
-                fields.remove('id')
-            fields.insert(0, 'id')
+            if FIELD_NAME.ID in fields:
+                fields.remove(FIELD_NAME.ID)
+            fields.insert(0, FIELD_NAME.ID)
 
         # Inicialización de los datos de operación
         operation_data = OperationData()
@@ -234,9 +235,9 @@ class Select_():
         related_field_name = self._strc.get_related_field_name(model_name, field_name)
 
         # Obtención de la instancia del campo de ID
-        id_field_instance = self._index[model_model]['id']
+        id_field_instance = self._index[model_model][FIELD_NAME.ID]
         # Obtención de la instancia del campo de ID del modelo relacionado
-        related_model_id_field_instance = self._index[related_model_model]['id']
+        related_model_id_field_instance = self._index[related_model_model][FIELD_NAME.ID]
         # Obtención de la instancia del campo de ID relacionado del modelo relacionado
         related_model_related_id_field_instance = self._index[related_model_model][related_field_name]
 
@@ -274,7 +275,7 @@ class Select_():
         )
 
         # Obtención del campo de ID relacionado desde el subquery creado
-        sub_stmt_id_field_instance = self._index[sub_stmt.c]['id']
+        sub_stmt_id_field_instance = self._index[sub_stmt.c][FIELD_NAME.ID]
         # Se añade el JOIN
         operation_data.outerjoins.append( ( sub_stmt, id_field_instance == sub_stmt_id_field_instance ) )
 
@@ -347,7 +348,7 @@ class Select_():
         related_table_name = self._strc.get_table_name(related_model_name)
 
         # Obtención de la instancia de ID de registros propios
-        model_id_field_instance = self._index[relation_model]['x'].label('id')
+        model_id_field_instance = self._index[relation_model]['x'].label(FIELD_NAME.ID)
         # Obtención de la instancia de ID de registros referenciados
         related_model_id_field_instance = self._index[relation_model]['y']
 
@@ -378,9 +379,9 @@ class Select_():
         )
 
         # Obtención del campo de ID del modelo principal
-        id_field_instance = self._index[model_model]['id']
+        id_field_instance = self._index[model_model][FIELD_NAME.ID]
         # Obtención del campo de ID relacionado desde el subquery relacionado
-        sub_stmt_id_field_instance = self._index[sub_stmt.c]['id']
+        sub_stmt_id_field_instance = self._index[sub_stmt.c][FIELD_NAME.ID]
         # Se añade el JOIN
         operation_data.outerjoins.append( ( sub_stmt, id_field_instance == sub_stmt_id_field_instance ) )
 
@@ -428,7 +429,7 @@ class Select_():
     ) -> None:
 
         # Obtención de instancia del campo de ID del modelo relacionado
-        id_related_field = self._index[related_model_model]['id']
+        id_related_field = self._index[related_model_model][FIELD_NAME.ID]
         # Creación de unión ON
         on = id_current_field_instance == id_related_field
         # Se añade el JOIN

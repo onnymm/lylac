@@ -5,3 +5,7 @@ class FIELD_NAME:
     WRITE_DATE = 'write_date'
     CREATE_UID = 'create_uid'
     WRITE_UID = 'write_uid'
+    SEQUENCE = 'sequence'
+    USER_ID = 'user_id'
+    SYNC = 'sync'
+    ACTIVE = 'active'

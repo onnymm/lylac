@@ -4,6 +4,7 @@ from sqlalchemy import (
     desc,
 )
 from sqlalchemy.orm.decl_api import DeclarativeBase
+from ..._constants import FIELD_NAME
 from ..._core import _Lylac
 from ..._module_types import _T
 
@@ -31,7 +32,7 @@ class Query():
         # Ordenamiento de los datos
         if sortby is None:
             # Ordenamiento de los datos por IDs
-            stmt = stmt.order_by( asc( getattr(model_model, 'id') ) )
+            stmt = stmt.order_by( asc( getattr(model_model, FIELD_NAME.ID) ) )
 
         elif isinstance(sortby, str):
             # Creación del query

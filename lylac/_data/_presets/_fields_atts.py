@@ -1,7 +1,8 @@
 from ..._module_types import FieldProperties
+from ..._constants import MODEL_NAME
 
 FIELDS_ATTS: dict[str, dict[str, FieldProperties]] = {
-    'base.model': {
+    MODEL_NAME.BASE_MODEL: {
         'id': {
             'ttype': 'integer',
             'related_model': None,
@@ -55,18 +56,18 @@ FIELDS_ATTS: dict[str, dict[str, FieldProperties]] = {
         },
         'field_ids': {
             'ttype': 'one2many',
-            'related_model': 'base.model.field',
+            'related_model': MODEL_NAME.BASE_MODEL_FIELD,
             'related_field': 'model_id',
             'selection_values': [],
         },
         'related_field_ids': {
             'ttype': 'one2many',
-            'related_model': 'base.model.field',
+            'related_model': MODEL_NAME.BASE_MODEL_FIELD,
             'related_field': 'related_model_id',
             'selection_values': [],
         },
     },
-    'base.model.field': {
+    MODEL_NAME.BASE_MODEL_FIELD: {
         'id': {
             'ttype': 'integer',
             'related_model': None,
@@ -93,7 +94,7 @@ FIELDS_ATTS: dict[str, dict[str, FieldProperties]] = {
         },
         'model_id': {
             'ttype': 'many2one',
-            'related_model': 'base.model',
+            'related_model': MODEL_NAME.BASE_MODEL,
             'related_field': None,
             'selection_values': [],
         },
@@ -155,7 +156,7 @@ FIELDS_ATTS: dict[str, dict[str, FieldProperties]] = {
         },
         'related_model_id': {
             'ttype': 'many2one',
-            'related_model': 'base.model',
+            'related_model': MODEL_NAME.BASE_MODEL,
             'related_field': None,
             'selection_values': [],
         },
@@ -176,12 +177,12 @@ FIELDS_ATTS: dict[str, dict[str, FieldProperties]] = {
         },
         'selection_ids': {
             'ttype': 'one2many',
-            'related_model': 'base.model.field.selection',
+            'related_model': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
             'related_field': 'field_id',
             'selection_values': [],
         },
     },
-    'base.model.field.selection': {
+    MODEL_NAME.BASE_MODEL_FIELD_SELECTION: {
         'id': {
             'ttype': 'integer',
             'related_model': None,
@@ -209,11 +210,11 @@ FIELDS_ATTS: dict[str, dict[str, FieldProperties]] = {
         },
         'field_id': {
             'ttype': 'many2one',
-            'related_model': 'base.model.field',
+            'related_model': MODEL_NAME.BASE_MODEL_FIELD,
             'related_field': None,
         },
     },
-    'base.users': {
+    MODEL_NAME.BASE_USERS: {
         'id': {
             'ttype': 'integer',
             'related_model': None,

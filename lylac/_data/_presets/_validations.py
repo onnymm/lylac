@@ -179,6 +179,7 @@ VALIDATIONS_DATA: list[ValidationData] = [
     },
 
     # base.model.field.selection
+    # Restricción de valores de selección duplicados en la base de datos
     {
         'module': '_validations',
         'callback': 'unique_selection_value_per_field_db_validation',
@@ -187,6 +188,7 @@ VALIDATIONS_DATA: list[ValidationData] = [
         'model': 'base.model.field.selection',
         'message': 'El valor de selección [{value}] ya existe como valor de selección del campo.',
     },
+    # Restricción de valores de selección duplicados en datos entrantes
     {
         'module': '_validations',
         'callback': 'unique_selection_value_per_field_db_validation',
@@ -195,6 +197,7 @@ VALIDATIONS_DATA: list[ValidationData] = [
         'model': 'base.model.field.selection',
         'message': 'No se pueden registrar valores de selección con el mismo nombre vinculados al mismo campo. Valores de error: {value}.'
     },
+    # Restricción de modificación de valores de selección
     {
         'module': '_validations',
         'callback': 'reject_selection_value_modification',

@@ -2,6 +2,10 @@ from typing import Tuple
 import pandas as pd
 from sqlalchemy import select
 from sqlalchemy.orm import aliased
+from ...._constants import (
+    FIELD_NAME,
+    MODEL_NAME,
+)
 from ...._core import (
     BaseStructure,
     _Lylac,
@@ -26,8 +30,8 @@ class _RawORM():
     ) -> list[Tuple[str, TType, None | str, None | str]]:
 
         # Obtención de modelos base
-        BaseModel = self._main._models.get_table_model('base.model')
-        BaseModelField = self._main._models.get_table_model('base.model.field')
+        BaseModel = self._main._models.get_table_model(MODEL_NAME.BASE_MODEL)
+        BaseModelField = self._main._models.get_table_model(MODEL_NAME.BASE_MODEL_FIELD)
 
         # Creación de alias de modelos
         FieldModel = aliased(BaseModel)
@@ -43,11 +47,11 @@ class _RawORM():
             )
             .outerjoin(
                 FieldModel,
-                self._main._index[BaseModelField]['model_id'] == self._main._index[FieldModel]['id'],
+                self._main._index[BaseModelField]['model_id'] == self._main._index[FieldModel][FIELD_NAME.ID],
             )
             .outerjoin(
                 RelatedModel,
-                self._main._index[BaseModelField]['related_model_id'] == self._main._index[RelatedModel]['id'],
+                self._main._index[BaseModelField]['related_model_id'] == self._main._index[RelatedModel][FIELD_NAME.ID],
             )
             .where(
                 self._main._index[FieldModel]['model'] == model_name

@@ -166,7 +166,7 @@ class _Reset():
             self._main.create(model_name, data)
 
         # Se añaden los campos 'create_uid' y'write_uid'
-        self._add_uid_columns()
+        # self._add_uid_columns()
 
         # Se escribe usuario de creación y modificación en todos los registros existentes
         for model_name in self._base_models:

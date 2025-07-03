@@ -3,6 +3,7 @@ from sqlalchemy import inspect
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.properties import ColumnProperty
+from ..._constants import FIELD_NAME
 from ..._core import (
     BaseModels,
     _Lylac,
@@ -35,7 +36,7 @@ class Models(BaseModels):
     ) -> InstrumentedAttribute[int]:
 
         # Retorno de la instancia del campo de ID
-        return getattr(model_model, 'id')
+        return getattr(model_model, FIELD_NAME.ID)
 
     def get_table_field(
         self,
@@ -54,7 +55,7 @@ class Models(BaseModels):
     ) -> list[InstrumentedAttribute[Any]]:
 
         # Inicialización de la lista con el valor de 'id' como primer elemento
-        id_field = ['id',]
+        id_field = [FIELD_NAME.ID,]
 
         # Obtención de todos los campos
         if len(fields) == 0:
@@ -70,7 +71,7 @@ class Models(BaseModels):
         if include_id:
             # Remoción del campo de 'ID en caso de ser solicitado, ara evitar campos duplicados en el retorno de la información
             try:
-                fields.remove('id')
+                fields.remove(FIELD_NAME.ID)
             except ValueError:
                 pass
 

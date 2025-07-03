@@ -199,8 +199,8 @@ class Preprocess():
                     values,
                 )
 
-            # Se añade la función de creción de valores many2many
-            individual_many2many_creations.append(creation_callback)
+                # Se añade la función de creción de valores many2many
+                individual_many2many_creations.append(creation_callback)
 
         def execute_automatic_many2many_updates():
             for callback in individual_many2many_creations:
