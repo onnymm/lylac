@@ -1,6 +1,6 @@
 import os
 from ...._module_types import CredentialsFromEnv
-from ...._settings import ENV_VARIABLES
+from ...._settings import ENV_VARIABLE_NAME
 
 class _Env():
 
@@ -9,11 +9,11 @@ class _Env():
     ) -> None:
 
         # Obtención de los nombres de variables de entorno
-        host= ENV_VARIABLES.DATABASE.HOST
-        port= ENV_VARIABLES.DATABASE.PORT
-        db_name= ENV_VARIABLES.DATABASE.DB_NAME
-        user= ENV_VARIABLES.DATABASE.USER
-        password= ENV_VARIABLES.DATABASE.PASSWORD
+        host= ENV_VARIABLE_NAME.DATABASE.HOST
+        port= ENV_VARIABLE_NAME.DATABASE.PORT
+        db_name= ENV_VARIABLE_NAME.DATABASE.DB_NAME
+        user= ENV_VARIABLE_NAME.DATABASE.USER
+        password= ENV_VARIABLE_NAME.DATABASE.PASSWORD
 
         # Se inicializa el objeto de credenciales obteniendo los valores de variables de entorno
         self.credentials = CredentialsFromEnv(

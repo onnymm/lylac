@@ -1,8 +1,12 @@
-class ENV_VARIABLES():
+class ENV_VARIABLE_NAME():
 
-    class DATABASE():
-        HOST = 'DB_HOST'
-        PORT = 'DB_PORT'
-        DB_NAME = 'DB_NAME'
-        USER = 'DB_USER'
-        PASSWORD = 'DB_PASSWORD'
+    class DATABASE:
+        HOST = 'LYLAC_HOST'
+        PORT = 'LYLAC_PORT'
+        DB_NAME = 'LYLAC_NAME'
+        USER = 'LYLAC_USER'
+        PASSWORD = 'LYLAC_PASSWORD'
+
+    class INTERNAL_USER:
+        LOGIN = 'LYLAC_INTERNAL_USER_LOGIN'
+        NAME = 'LYLAC_INTERNAL_USER_NAME'

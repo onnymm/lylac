@@ -1,14 +1,14 @@
 from ..._module_types import NewRecord
 from ..._constants import (
-    FIELD_NAME,
     MODEL_ID,
     MODEL_NAME,
 )
+from ..._core import ENV_VARIABLES
 
 
 BASE_USERS_INITIAL_DATA: NewRecord.User = {
-    'name': 'IACele',
-    'login': 'iacele',
+    'name': ENV_VARIABLES.INTERNAL_USER.NAME,
+    'login': ENV_VARIABLES.INTERNAL_USER.LOGIN,
     'active': False,
 }
 INITIAL_DATA = [
