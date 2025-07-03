@@ -3,10 +3,12 @@ from ...._constants import (
     MESSAGES,
     MODEL_NAME,
 )
+from ...._core import ENV_VARIABLES
 from ...._data import (
     BASE_USERS_INITIAL_DATA,
     INITIAL_DATA,
 )
+from ....security import hash_password
 from ...._errors import InitializationError
 from ._base import _BaseDDLManager
 
@@ -172,6 +174,9 @@ class _Reset():
         for model_name in self._base_models:
             self._main.update_where(model_name, [], {'create_uid': 1, 'write_uid': 1})
 
+        # Creación del usuario administrador
+        self._create_admin_user()
+
         # Se cambia el estado de inicialización a verdadero
         self._state = True
 
@@ -204,3 +209,16 @@ class _Reset():
         # Creación de las columnas por cada modelo
         for model_id in model_ids:
             self._ddl.add_default_to_model(model_id)
+
+    def _create_admin_user(
+        self,
+    ) -> None:
+
+        self._main.create(
+            MODEL_NAME.BASE_USERS,
+            {
+                'name': ENV_VARIABLES.ADMIN_USER.NAME,
+                'login': ENV_VARIABLES.ADMIN_USER.LOGIN,
+                'password': hash_password(ENV_VARIABLES.ADMIN_USER.PASSWORD),
+            }
+        )
