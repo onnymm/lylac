@@ -193,7 +193,7 @@ class Compiler(BaseCompiler):
     def check_permission(
         self,
         user_id: int,
-        permission: Transaction,
+        transaction: Transaction,
     ) -> bool:
 
         # Obtención de los modelos a usar
@@ -271,7 +271,7 @@ class Compiler(BaseCompiler):
                 # ID de usuario
                 base_users__id == user_id,
                 # Permiso a validar
-                permission_condition[permission],
+                permission_condition[transaction],
             )
         )
 

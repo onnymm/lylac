@@ -20,7 +20,7 @@ class BaseCompiler():
     def check_permission(
         self,
         user_id: int,
-        permission: Transaction,
+        transaction: Transaction,
     ) -> bool:
         ...
 

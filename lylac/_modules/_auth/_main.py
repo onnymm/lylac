@@ -22,6 +22,18 @@ class Auth(BaseAuth):
         # Contexto para hasheo
         self._pwd_context = CryptContext(schemes= ['bcrypt'], deprecated= 'auto')
 
+    def identify_user(
+        self,
+        token: str,
+    ) -> int:
+
+        # Obtención de la UUID de la sesión
+        session_uuid = self._m_token.get_session_uuid_from_token(token)
+        # Obtención de la ID del usuario desde la UUID de la sesión
+        user_id = self._m_session.get_session_uuid_user_id(session_uuid)
+
+        return user_id
+
     def hash_password(
         self,
         password: str,
@@ -82,21 +94,3 @@ class Auth(BaseAuth):
         else:
             # Se retorna falso
             return False
-
-    # def get_user_data(
-    #     self,
-    #     user_id: int,
-    # ) -> UserData:
-
-    #     # Obtención de los datos
-    #     [ data ] = self._main.read(
-    #         MODEL_NAME.BASE_USERS,
-    #         user_id,
-    #         ['name', 'login',],
-    #         output_format= 'dict',
-    #     )
-
-    #     # Creación del objeto de datos
-    #     user_data = UserData(**data)
-
-    #     return user_data

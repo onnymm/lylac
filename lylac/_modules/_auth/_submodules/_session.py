@@ -91,3 +91,23 @@ class UserSession():
             MODEL_NAME.BASE_USERS_SESSION,
             [data_to_insert,],
         )
+
+    def get_session_uuid_user_id(
+        self,
+        session_uuid: str,
+    ) -> int:
+
+        # Obtención de la ID de la sesión del usuario
+        [ session_id ] = self._main.search(
+            MODEL_NAME.BASE_USERS_SESSION,
+            [('name', '=', session_uuid)],
+        )
+
+        # Obtención de la ID de usuario
+        user_id: int = self._main.get_value(
+            MODEL_NAME.BASE_USERS,
+            session_id,
+            'user_id',
+        )
+
+        return user_id
