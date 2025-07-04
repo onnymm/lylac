@@ -10,6 +10,7 @@ from ..._module_types import (
 )
 from ._base import (
     BaseAlgorythms,
+    BaseCompiler,
     BaseConnection,
     BaseModels,
 )
@@ -21,6 +22,7 @@ class BaseBaseLylac():
     _connection: BaseConnection
     _engine: Engine
     _models: BaseModels
+    _compiler: BaseCompiler
 
     def create(
         self,

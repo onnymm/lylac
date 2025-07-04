@@ -1,7 +1,18 @@
-from ._base_base_lylac import BaseBaseLylac
-from ..._module_types import RecordData
+from ...._module_types import RecordData
 
 class BaseCompiler():
+
+    def get_user_data_by_username(
+        self,
+        username: str,
+    ) -> tuple[int, str] | None:
+        ...
+
+    def is_active_user_from_session_uuid(
+        self,
+        session_uuid: str,
+    ) -> bool:
+        ...
 
     def create(
         self,

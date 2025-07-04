@@ -1,5 +1,12 @@
-from sqlalchemy import delete
-from sqlalchemy.orm import Session
+from sqlalchemy import (
+    delete,
+    select,
+)
+from sqlalchemy.orm import (
+    Session,
+    aliased,
+)
+from ..._constants import MODEL_NAME
 from ..._core import _Lylac, BaseCompiler
 from ..._module_types import (
     ModelTemplate,
@@ -23,6 +30,80 @@ class Compiler(BaseCompiler):
         self._connection = instance._connection
         # Asignación del motor de conexión
         self._engine = instance._engine
+
+    def get_user_data_by_username(
+        self,
+        login: str,
+    ) -> tuple[int, str] | None:
+
+        # Obtención de la tabla de usuarios
+        base_users = self._strc.get_model(MODEL_NAME.BASE_USERS)
+        # Obtención de las instancias de columna
+        base_users__id = self._index[base_users]['id']
+        base_users__password = self._index[base_users]['password']
+        base_users__login = self._index[base_users]['login']
+        base_users__active = self._index[base_users]['active']
+
+        # Creación del query
+        stmt = (
+            select(
+                base_users__id,
+                base_users__password,
+            )
+            .where(
+                base_users__login == login,
+                base_users__active == True,
+            )
+        )
+
+        # Ejecución de la transacción
+        response = self._connection.execute(stmt)
+        # Obtención de los datos encontrados
+        found_data = response.fetchall()
+
+        # Si no hay datos...
+        if not found_data:
+            # Se retorna None
+            return None
+
+        # Destructuración de los datos
+        [ ( user_id, hashed_password ) ] = found_data
+
+        return ( user_id, hashed_password )
+
+    def is_active_user_from_session_uuid(
+        self,
+        session_uuid: str,
+    ) -> bool:
+
+        # Obtención de los modelos
+        base_users_session = self._strc.get_model(MODEL_NAME.BASE_USERS_SESSION)
+        base_users = aliased( self._strc.get_model(MODEL_NAME.BASE_USERS) )
+        # Obtención de las instancias de columnas
+        base_users_session__user_id = self._index[base_users_session]['user_id']
+        base_users_session__uuid = self._index[base_users_session]['name']
+        base_users__id = self._index[base_users]['id']
+        base_users__active = self._index[base_users]['active']
+
+        # Creación del query
+        stmt = (
+            select(
+                base_users__active
+            )
+            .select_from(base_users_session)
+            .outerjoin(
+                base_users,
+                base_users_session__user_id == base_users__id,
+            )
+            .where(base_users_session__uuid == session_uuid)
+        )
+
+        # Ejecución en la base de datos
+        response = self._connection.execute(stmt)
+        # Destructuración del resultado
+        [ ( is_active, ) ] = response.fetchall()
+
+        return is_active
 
     def create(
         self,

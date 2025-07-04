@@ -9,3 +9,5 @@ class ENV_VARIABLES:
         LOGIN = os.environ.get(ENV_VARIABLE_NAME.ADMIN_USER.LOGIN)
         NAME = os.environ.get(ENV_VARIABLE_NAME.ADMIN_USER.NAME)
         PASSWORD = os.environ.get(ENV_VARIABLE_NAME.ADMIN_USER.PASSWORD)
+    class CRYPT:
+        AUTH = os.environ.get(ENV_VARIABLE_NAME.CRYPT.AUTH)

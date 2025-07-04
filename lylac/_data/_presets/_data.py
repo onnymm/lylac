@@ -61,6 +61,12 @@ INITIAL_DATA = [
                 'label': 'Roles de usuario',
                 'description': 'Este modelo define los roles de usuario en la base de datos',
             },
+            {
+                'model': MODEL_NAME.BASE_USERS_SESSION,
+                'name': 'base_users_session',
+                'label': 'Sesión de usuario',
+                'description': 'Este modelo almacena las sesiones de los usuarios autenticados desde el frontend.'
+            },
         ],
     ),
     (
@@ -484,6 +490,23 @@ INITIAL_DATA = [
                 'label': 'Roles',
                 'ttype': 'many2many',
                 'related_model_id': MODEL_ID.BASE_USERS_ROLE,
+            },
+            {
+                'name': 'user_id',
+                'model_id': MODEL_ID.BASE_USERS_SESSION,
+                'label': 'Usuario',
+                'ttype': 'many2one',
+                'nullable': False,
+                'is_required': True,
+                'related_model_id': MODEL_ID.BASE_USERS,
+            },
+            {
+                'name': 'expiration_date',
+                'model_id': MODEL_ID.BASE_USERS_SESSION,
+                'label': 'Fecha de expiración',
+                'ttype': 'datetime',
+                'nullable': False,
+                'is_required': True,
             },
         ]
     ),

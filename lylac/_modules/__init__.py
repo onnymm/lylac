@@ -1,4 +1,5 @@
 from ._algorythms import Algorythms
+from ._auth import Auth
 from ._automations import Automations
 from ._compiler import Compiler
 from ._connection import Connection

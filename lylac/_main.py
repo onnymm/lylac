@@ -22,6 +22,7 @@ from ._module_types import (
 )
 from ._modules import (
     Algorythms,
+    Auth,
     Automations,
     Compiler,
     Connection,
@@ -59,6 +60,7 @@ class Lylac(_Lylac):
         self._models = Models(self)
         self._index = Index(self)
         self._compiler = Compiler(self)
+        self._auth = Auth(self)
         self._ddl = DDLManager(self)
         self._where = Where(self)
         self._preprocess = Preprocess(self)
@@ -73,6 +75,14 @@ class Lylac(_Lylac):
         self._ddl._m_reset.initialize_from_data()
         # Inicialización de los datos de validaciones
         self._validations.initialize()
+
+    def login(
+        self,
+        login: str,
+        password: str,
+    ) -> str | bool:
+
+        return self._auth.login(login, password)
 
     def register_automation(
         self,
