@@ -6,7 +6,7 @@ from ..._core import (
 from ..._module_types import (
     CriteriaStructure,
     RecordData,
-    Transaction,
+    ModificationTransaction,
 )
 from ._module_types import (
     ErrorToShow,
@@ -245,7 +245,7 @@ class Validations(BaseValidations):
     def _get_method_validations(
         self,
         model_name: str,
-        transaction: Transaction,
+        transaction: ModificationTransaction,
     ):
 
         # Obtención de validaciones genéricas

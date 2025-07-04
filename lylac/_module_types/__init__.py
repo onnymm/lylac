@@ -10,6 +10,7 @@ from ._base_categories import (
     TripletStructure,
     AutomationMethod,
     ComparisonOperator,
+    CreateOrUpdateTransaction,
     DataBaseDataType,
     ExecutionMethod,
     LogicOperator,

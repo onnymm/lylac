@@ -1,10 +1,10 @@
 from typing import TypedDict
 from .._base_categories._literals import (
-    Submodule,
-    ModelName,
-    Transaction,
     AutomationMethod,
     ExecutionMethod,
+    ModelName,
+    ModificationTransaction,
+    Submodule,
 )
 from .._base_categories._filter import CriteriaStructure
 
@@ -59,7 +59,7 @@ class AutomationData(TypedDict):
     También se puede utilizar un nombre personalizado si es que el modelo ya existe
     en la base de datos.
     """
-    transaction: Transaction
+    transaction: ModificationTransaction
     """
     #### Transación de base de datos
     Tipo de dato usado para especificación de transacción en la base de datos. Se
@@ -175,7 +175,7 @@ class ValidationData(TypedDict):
     También se puede utilizar un nombre personalizado si es que el modelo ya existe
     en la base de datos.
     """
-    transaction: Transaction
+    transaction: ModificationTransaction
     """
     #### Transación de base de datos
     Tipo de dato usado para especificación de transacción en la base de datos. Se

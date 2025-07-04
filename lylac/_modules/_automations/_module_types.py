@@ -6,7 +6,7 @@ from typing import (
 from ..._module_types import (
     CriteriaStructure,
     AutomationTemplate,
-    Transaction,
+    ModificationTransaction,
 )
 
 # Estructura de datos de automatización programada
@@ -85,7 +85,7 @@ class ProgrammedAutomation(TypedDict):
     """
 
 # Desencadenantes de automatización divididos por tipo de transacción
-TransactionProgAutoms = dict[Transaction, list[ProgrammedAutomation]]
+TransactionProgAutoms = dict[ModificationTransaction, list[ProgrammedAutomation]]
 """
 Diccionario que segmenta las automatizaciones por tipo de transacción en la
 base de datos.

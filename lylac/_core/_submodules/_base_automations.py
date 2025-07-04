@@ -2,7 +2,7 @@ from ..._module_types import (
     CriteriaStructure,
     AutomationMethod,
     AutomationTemplate,
-    Transaction,
+    ModificationTransaction,
 )
 from ._base_base_lylac import BaseBaseLylac
 
@@ -12,7 +12,7 @@ class BaseAutomations():
     def register_automation(
         self,
         model_name: str,
-        transaction: Transaction,
+        transaction: ModificationTransaction,
         callback: AutomationTemplate,
         fields: list[str] = ['id',],
         criteria: CriteriaStructure = [],

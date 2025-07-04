@@ -11,6 +11,7 @@ from ._generics import (
 )
 from ._literals import (
     AutomationMethod,
+    CreateOrUpdateTransaction,
     ExecutionMethod,
     ModelName,
     ModificationTransaction,

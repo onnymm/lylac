@@ -15,8 +15,8 @@ from ._module_types import (
     DataPerRecord,
     RecordData,
     CredentialsAlike,
+    ModificationTransaction,
     OutputOptions,
-    Transaction,
     RecordValue,
     ExecutionMethod,
 )
@@ -87,7 +87,7 @@ class Lylac(_Lylac):
     def register_automation(
         self,
         model_name: str,
-        transation: Transaction,
+        transation: ModificationTransaction,
         fields: list[str] = [FIELD_NAME.ID],
         execute_if: CriteriaStructure = [],
         method: ExecutionMethod = 'record',

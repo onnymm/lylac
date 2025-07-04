@@ -12,8 +12,8 @@ from ..._module_types import (
     DataPerTransaction,
     AutomationMethod,
     AutomationTemplate,
+    CreateOrUpdateTransaction,
     ModificationTransaction,
-    Transaction,
 )
 from ._module_types import (
     AutomationsHub,
@@ -48,7 +48,7 @@ class Automations(BaseAutomations):
     def register_automation(
         self,
         model_name: str,
-        transaction: Transaction,
+        transaction: ModificationTransaction,
         callback: AutomationTemplate,
         fields: list[str] = [FIELD_NAME.ID,],
         criteria: CriteriaStructure = [],
@@ -80,7 +80,7 @@ class Automations(BaseAutomations):
     def run_after_transaction(
         self,
         model_name: str,
-        transaction: ModificationTransaction,
+        transaction: CreateOrUpdateTransaction,
         record_ids: list[int],
     ) -> None:
 

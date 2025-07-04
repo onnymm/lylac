@@ -1,11 +1,10 @@
 from pydantic import BaseModel
-from typing import Literal
 from .._base_categories import (
     CriteriaStructure,
     AutomationMethod,
     ModelName,
+    ModificationTransaction,
     Submodule,
-    Transaction,
 )
 
 class _HasSubmodule(BaseModel):
@@ -42,7 +41,7 @@ class _HasModelName(BaseModel):
     """
 
 class _HasTransaction(BaseModel):
-    transaction: Transaction
+    transaction: ModificationTransaction
     """
     #### Transación de base de datos
     Tipo de dato usado para especificación de transacción en la base de datos. Se

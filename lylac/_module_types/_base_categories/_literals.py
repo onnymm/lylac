@@ -81,23 +81,34 @@ función de automatización va a utilizar.
 - `'list'`: Automatización por lista de registros.
 """
 
-# Tipo de transacción de creación o modificación de datos
-ModificationTransaction = Literal['create', 'update']
+# Tipo de transacción de creación o actualización de datos
+CreateOrUpdateTransaction = Literal['create', 'update']
 """
-#### Transacción de modificación
-Tipo de dato usado para especificación de transacciones de modificación en la
-base de datos.
+#### Transacción de creación o actualización en base de datos
+Tipo de dato usado para especificación de transacciones de creación o
+modificación en la base de datos.
 - `'create'`: Método de creación en la base de datos
 - `'update'`: Método de modificación en la base de datos
 """
 
-# Tipo de transacción de datos
-Transaction = Union[ModificationTransaction, Literal['delete']]
+# Tipo de transacción de modificación de datos
+ModificationTransaction = Union[CreateOrUpdateTransaction, Literal['delete']]
 """
-#### Transación de base de datos
-Tipo de dato usado para especificación de transacción en la base de datos. Se
-omite el método `'select'` ya que no se utiliza para este tipado.
+#### Transación de modificación en base de datos
+Tipo de dato usado para especificación de transacción de modificación en la
+base de datos.
 - `'create'`: Método de creación en la base de datos
+- `'update'`: Método de modificación en la base de datos
+- `'delete'`: Método de eliminación en la base de datos
+"""
+
+# Tipo de transacción de datos
+Transaction = Union[ModificationTransaction | Literal['read']]
+"""
+#### Transación en base de datos
+Tipo de dato usado para especificación de transacción en la base de datos.
+- `'create'`: Método de creación en la base de datos
+- `'read'`: Método de lectura en la base de datos
 - `'update'`: Método de modificación en la base de datos
 - `'delete'`: Método de eliminación en la base de datos
 """

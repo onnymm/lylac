@@ -1,7 +1,7 @@
 from ...._core import BaseAutomations
 from .._module_types import ProgrammedAutomation
 from ...._module_types import (
-    ModificationTransaction,
+    CreateOrUpdateTransaction,
     RecordData,
     DataPerRecord,
     DataPerTransaction,
@@ -28,7 +28,7 @@ class _Builder():
         model_name: str,
         found_ids: list[int],
         autom_data: ProgrammedAutomation,
-        transaction: ModificationTransaction,
+        transaction: CreateOrUpdateTransaction,
     ) -> CompiledModificationAutomation:
 
         # Obtención de mapa de información de los registros

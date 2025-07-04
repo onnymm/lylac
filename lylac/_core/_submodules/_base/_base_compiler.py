@@ -1,4 +1,7 @@
-from ...._module_types import RecordData
+from ...._module_types import (
+    RecordData,
+    Transaction,
+)
 
 class BaseCompiler():
 
@@ -11,6 +14,13 @@ class BaseCompiler():
     def is_active_user_from_session_uuid(
         self,
         session_uuid: str,
+    ) -> bool:
+        ...
+
+    def check_permission(
+        self,
+        user_id: int,
+        permission: Transaction,
     ) -> bool:
         ...
 

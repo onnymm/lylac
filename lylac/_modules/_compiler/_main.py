@@ -1,6 +1,8 @@
 from sqlalchemy import (
     delete,
+    distinct,
     select,
+    func,
 )
 from sqlalchemy.orm import (
     Session,
@@ -11,6 +13,7 @@ from ..._core import _Lylac, BaseCompiler
 from ..._module_types import (
     ModelTemplate,
     RecordData,
+    Transaction,
 )
 
 class Compiler(BaseCompiler):
@@ -186,3 +189,96 @@ class Compiler(BaseCompiler):
 
         # Ejecución de la transacción en la base de datos
         self._connection.execute(stmt, commit= True)
+
+    def check_permission(
+        self,
+        user_id: int,
+        permission: Transaction,
+    ) -> bool:
+
+        # Obtención de los modelos a usar
+        base_users = self._strc.get_model('base.users')
+        base_users_role = self._strc.get_model('base.users.role')
+        base_model_access_groups = self._strc.get_model('base.model.access.groups')
+        base_model_access = self._strc.get_model('base.model.access')
+        _rel_base_users__base_users_role = self._strc.get_model('_rel.base_users.base_users_role')
+        _rel_base_users_role__base_model_access_groups = self._strc.get_model('_rel.base_users_role.base_model_access_groups')
+        _rel_base_model_access_groups__base_model_access = self._strc.get_model('_rel.base_model_access_groups.base_model_access')
+
+        # Obtención de las instancias de columnas principales a usar
+        base_model_access__name = self._index[base_model_access]['name']
+        base_model_access__perm_create = self._index[base_model_access]['perm_create']
+        base_model_access__perm_read = self._index[base_model_access]['perm_read']
+        base_model_access__perm_update = self._index[base_model_access]['perm_update']
+        base_model_access__perm_delete = self._index[base_model_access]['perm_delete']
+        # Obtención de las instancias de columnas a usar en outerjoins
+        base_users__id = self._index[base_users]['id']
+        base_users_role__id = self._index[base_users_role]['id']
+        base_model_access_groups__id = self._index[base_model_access_groups]['id']
+        base_model_access__id = self._index[base_model_access]['id']
+        _rel_base_users__base_users_role__x = self._index[_rel_base_users__base_users_role]['x']
+        _rel_base_users__base_users_role__y = self._index[_rel_base_users__base_users_role]['y']
+        _rel_base_users_role__base_model_access_groups__x = self._index[_rel_base_users_role__base_model_access_groups]['x']
+        _rel_base_users_role__base_model_access_groups__y = self._index[_rel_base_users_role__base_model_access_groups]['y']
+        _rel_base_model_access_groups__base_model_access__x = self._index[_rel_base_model_access_groups__base_model_access]['x']
+        _rel_base_model_access_groups__base_model_access__y = self._index[_rel_base_model_access_groups__base_model_access]['y']
+
+        # Creación de condición
+        permission_condition = {
+            'create': base_model_access__perm_create == True,
+            'read': base_model_access__perm_read == True,
+            'update': base_model_access__perm_update == True,
+            'delete': base_model_access__perm_delete == True,
+        }
+
+        # Creación del query
+        stmt = (
+            select(
+                # Obtención de valores únicos
+                func.count(
+                    distinct(base_model_access__name)
+                ),
+            )
+            # Especificación de la tabla de partida
+            .select_from(base_users)
+            # Unión de tablas
+            .outerjoin(
+                _rel_base_users__base_users_role,
+                base_users__id == _rel_base_users__base_users_role__x,
+            )
+            .outerjoin(
+                base_users_role,
+                _rel_base_users__base_users_role__y == base_users_role__id,
+            )
+            .outerjoin(
+                _rel_base_users_role__base_model_access_groups,
+                base_users_role__id == _rel_base_users_role__base_model_access_groups__x,
+            )
+            .outerjoin(
+                base_model_access_groups,
+                _rel_base_users_role__base_model_access_groups__y == base_model_access_groups__id,
+            )
+            .outerjoin(
+                _rel_base_model_access_groups__base_model_access,
+                base_model_access_groups__id == _rel_base_model_access_groups__base_model_access__x,
+            )
+            .outerjoin(
+                base_model_access,
+                _rel_base_model_access_groups__base_model_access__y == base_model_access__id,
+            )
+            # Condiciones
+            .where(
+                # ID de usuario
+                base_users__id == user_id,
+                # Permiso a validar
+                permission_condition[permission],
+            )
+        )
+
+        # Ejecución del query
+        response = self._connection.execute(stmt)
+        # Obtención del conteo de la cantidad de permisos encontrados
+        permissions_qty = response.scalar()
+
+        # Se retorna la validación de si existen o no permisos para la transacción a realizar
+        return permissions_qty > 0
