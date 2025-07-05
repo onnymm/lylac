@@ -137,6 +137,7 @@ class _Validations():
         # Obtención de los campos requeridos
         required_fields: list[str] = (
             self._main.search_read(
+                self._main._TOKEN,
                 MODEL_NAME.BASE_MODEL_FIELD,
                 [
                     '&',
@@ -249,6 +250,7 @@ class _Validations():
 
         # Búsqueda de coincidencias
         records = self._main.search_read(
+            self._main._TOKEN,
             'base.model.field',
             [
                 '&',
@@ -310,6 +312,7 @@ class _Validations():
 
         # Búsqueda de coincidencias
         results = self._main.search_read(
+            self._main._TOKEN,
             'base.model.field',
             [
                 '&',
@@ -350,6 +353,7 @@ class _Validations():
 
         # Búsqueda de resultados
         results_qty = self._main.search_count(
+            self._main._TOKEN,
             MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
             [
                 '&',

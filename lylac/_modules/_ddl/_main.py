@@ -115,7 +115,7 @@ class DDLManager(_BaseDDLManager):
     ) -> None:
 
         # Obtención de la ID del modelo
-        [ model_id ] = self._main.search(MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
+        [ model_id ] = self._main.search(self._main._TOKEN, MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
         # Creación de criterio de búsqueda para encontrar todos los campos pertenientes al modelo
         criteria: CriteriaStructure = [
             '&',
@@ -127,6 +127,7 @@ class DDLManager(_BaseDDLManager):
 
         # Se obtienen los datos de los registros a excepción del campo eliminado
         fields_data: list[ModelRecordData.BaseModelField] = self._main.search_read(
+            self._main._TOKEN,
             MODEL_NAME.BASE_MODEL_FIELD,
             criteria,
             output_format= 'dict',
@@ -170,7 +171,7 @@ class DDLManager(_BaseDDLManager):
             fields_data.append(field_data)
 
         # Se crea la información de los campos
-        self._main.create(MODEL_NAME.BASE_MODEL_FIELD, fields_data)
+        self._main.create(self._main._TOKEN, MODEL_NAME.BASE_MODEL_FIELD, fields_data)
 
     def build_default_field(
         self,

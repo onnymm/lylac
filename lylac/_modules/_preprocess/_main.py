@@ -35,12 +35,13 @@ class Preprocess():
 
     def process_data_on_create(
         self,
+        user_id: int,
         model_name: str,
         data: list[RecordData],
     ) -> PosCreationCallback:
 
         # Escritura de usuario de creación y modificación en los datos entrantes
-        self._sign_create_and_update_user_id(model_name, data)
+        self._sign_create_and_update_user_id(user_id, model_name, data)
         # Creación de función para ejecutar tras la creación de registros
         pos_creation_callback = self._build_pos_creation_callback(model_name, data)
 
@@ -48,13 +49,14 @@ class Preprocess():
 
     def process_data_on_update(
         self,
+        user_id: int,
         model_name: str,
         record_ids: RecordIds,
         data: RecordData,
     ):
 
         # Escritura de usuario de modificación
-        self._sign_update_user_id(model_name, data)
+        self._sign_update_user_id(user_id, model_name, data)
         # Creación de función para ejecutar tras la actualización de registros
         after_update_callback = self._build_pos_update_callback(model_name, record_ids, data)
 
@@ -62,6 +64,7 @@ class Preprocess():
 
     def _sign_create_and_update_user_id(
         self,
+        user_id: int,
         model_name: str,
         data: list[RecordData],
     ) -> None:
@@ -73,11 +76,12 @@ class Preprocess():
         if 'create_uid' in model_field_names and 'write_uid' in model_field_names:
             for record in data:
                 # Escritura de usuario de creación y modificación
-                record['create_uid'] = 1
-                record['write_uid'] = 1
+                record['create_uid'] = user_id
+                record['write_uid'] = user_id
 
     def _sign_update_user_id(
         self,
+        user_id: int,
         model_name: str,
         data: RecordData,
     ) -> None:
@@ -88,7 +92,7 @@ class Preprocess():
         # Si ya existen los campos de creación y modificación se actualizan éstos
         if 'write_uid' in model_field_names:
             # Escritura de usuario de modificación
-            data['write_uid'] = 1
+            data['write_uid'] = user_id
 
     def _build_pos_creation_callback(
         self,

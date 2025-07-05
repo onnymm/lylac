@@ -21,6 +21,7 @@ from ._module_types import (
     ExecutionMethod,
 )
 from ._modules import (
+    Access,
     Algorythms,
     Auth,
     Automations,
@@ -61,6 +62,7 @@ class Lylac(_Lylac):
         self._index = Index(self)
         self._compiler = Compiler(self)
         self._auth = Auth(self)
+        self._access = Access(self)
         self._ddl = DDLManager(self)
         self._where = Where(self)
         self._preprocess = Preprocess(self)
@@ -173,6 +175,7 @@ class Lylac(_Lylac):
 
     def create(
         self,
+        token: str,
         model_name: str,
         data: RecordData | list[RecordData],
     ) -> list[int]:
@@ -211,11 +214,15 @@ class Lylac(_Lylac):
         >>> # 1   3   lumii    Lumii Mynx
         """
 
+        # Autenticación del usuario
+        user_id = self._auth.identify_user(token)
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, 'create')
+
         # Conversión de datos entrantes si es necesaria
         data = self._preprocess.convert_to_list(data)
-
         # Preprocesamiento de datos en creación
-        pos_creation_callback = self._preprocess.process_data_on_create(model_name, data)
+        pos_creation_callback = self._preprocess.process_data_on_create(user_id, model_name, data)
 
         # Ejecución de validaciones
         self._validations.run_validations_on_create(model_name, data)
@@ -238,6 +245,7 @@ class Lylac(_Lylac):
 
     def search(
         self,
+        token: str,
         model_name: str,
         search_criteria: CriteriaStructure = [],
         offset: int | None = None,
@@ -326,6 +334,11 @@ class Lylac(_Lylac):
         >>> # [1, 2, 3]
         """
 
+        # Autenticación del usuario
+        user_id = self._auth.identify_user(token)
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, 'read')
+
         # Obtención de la instancia de la tabla
         model_model = self._models.get_table_model(model_name)
         # Creación del query SELECT
@@ -354,6 +367,7 @@ class Lylac(_Lylac):
 
     def get_value(
         self,
+        token: str,
         model_name: str,
         record_id: int,
         field: str,
@@ -374,10 +388,16 @@ class Lylac(_Lylac):
         >>> # '2025-07-01 10:00:00'
         """
 
+        # Autenticación del usuario
+        user_id = self._auth.identify_user(token)
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, 'read')
+
         # Obtención del único elemento contenido en la lista
         [ value ] = (
             # Se utiliza el método de lectura con el registro específico
             self.read(
+                self._TOKEN,
                 model_name,
                 record_id,
                 [field],
@@ -394,6 +414,7 @@ class Lylac(_Lylac):
 
     def get_values(
         self,
+        token: str,
         model_name: str,
         record_id: int,
         fields: list[str],
@@ -414,10 +435,16 @@ class Lylac(_Lylac):
         >>> # ('Valores de selección de campos - Administrador', 3)
         """
 
+        # Autenticación del usuario
+        user_id = self._auth.identify_user(token)
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, 'read')
+
         # Obtención de la lista de valores
         values = (
             # Se utiliza el método de lectura con el registro específico
             self.read(
+                self._TOKEN,
                 model_name,
                 record_id,
                 fields,
@@ -441,6 +468,7 @@ class Lylac(_Lylac):
 
     def read(
         self,
+        token: str,
         model_name: str,
         record_ids: int | list[int],
         fields: list[str] = [],
@@ -473,6 +501,12 @@ class Lylac(_Lylac):
         >>> # 0   2 Onnymm Azzur 2024-11-04 11:16:59
         >>> # 1   3   Lumii Mynx 2024-11-04 11:16:59
         """
+
+
+        # Autenticación del usuario
+        user_id = self._auth.identify_user(token)
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, 'read')
 
         # Conversión de datos entrantes si es necesaria
         record_ids = self._preprocess.convert_to_list(record_ids)
@@ -508,6 +542,7 @@ class Lylac(_Lylac):
 
     def search_read(
         self,
+        token: str,
         model_name: str,
         search_criteria: CriteriaStructure = [],
         fields: list[str] = [],
@@ -626,6 +661,11 @@ class Lylac(_Lylac):
         >>> # 2   5  user001  Persona Sin Nombre 1
         """
 
+        # Autenticación del usuario
+        user_id = self._auth.identify_user(token)
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, 'read')
+
         # Obtención de la instancia de la tabla
         model_model = self._models.get_table_model(model_name)
 
@@ -657,6 +697,7 @@ class Lylac(_Lylac):
 
     def search_count(
         self,
+        token: str,
         model_name: str,
         search_criteria: CriteriaStructure = [],
     ) -> int:
@@ -719,6 +760,11 @@ class Lylac(_Lylac):
         >>> # "name" contiene "as"
         """
 
+        # Autenticación del usuario
+        user_id = self._auth.identify_user(token)
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, 'read')
+
         # Obtenciónde la instancia de la tabla
         model_model = self._models.get_table_model(model_name)
 
@@ -739,7 +785,8 @@ class Lylac(_Lylac):
 
     def update(
         self,
-        table_name: str,
+        token: str,
+        model_name: str,
         record_ids: int | list[int],
         data: RecordData,
     ) -> bool:
@@ -768,15 +815,15 @@ class Lylac(_Lylac):
         >>> # 4   7  user003  Persona Sin Nombre 3
         """
 
-        # Conversión de datos entrantes si es necesaria
-        if isinstance(record_ids, int):
-            record_ids = [record_ids,]
+        # Conversión de entrada de datos a lista de datos
+        record_ids = self._preprocess.convert_to_list(record_ids)
 
         # Ejecución del método UPDATE WHERE
-        return self.update_where(table_name, [('id', 'in', record_ids)], data, record_ids)
+        return self.update_where(token, model_name, [('id', 'in', record_ids)], data, record_ids)
 
     def update_where(
         self,
+        token: str,
         model_name: str,
         search_criteria: CriteriaStructure,
         data: RecordData,
@@ -814,6 +861,11 @@ class Lylac(_Lylac):
         >>> # 4   7  user003      Zopilote
         """
 
+        # Autenticación del usuario
+        user_id = self._auth.identify_user(token)
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, 'update')
+
         # Ejecución de validaciones
         self._validations.run_validations_on_update(model_name, search_criteria, data)
 
@@ -821,7 +873,7 @@ class Lylac(_Lylac):
         model_model = self._models.get_table_model(model_name)
 
         # Preprocesamiento de datos en actualización y obtención de función posactualización
-        after_update_callback = self._preprocess.process_data_on_update(model_name, _record_ids, data)
+        after_update_callback = self._preprocess.process_data_on_update(user_id, model_name, _record_ids, data)
 
         # Creación del query base
         stmt = update(model_model)
@@ -856,6 +908,7 @@ class Lylac(_Lylac):
 
     def delete(
         self,
+        token: str,
         model_name: str,
         record_ids: int | list[int]
     ) -> bool:
@@ -880,6 +933,11 @@ class Lylac(_Lylac):
         >>> # 3   6  user002  Persona Sin Nombre 2
         >>> # 4   7  user003  Persona Sin Nombre 3
         """
+
+        # Autenticación del usuario
+        user_id = self._auth.identify_user(token)
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, 'delete')
 
         # Conversión de datos entrantes si es necesaria
         record_ids = self._preprocess.convert_to_list(record_ids)

@@ -42,7 +42,7 @@ class _Automations():
         # Obtención de la ID del modelo del campo creado
         model_id = params.record_data['model_id']
         # Obtención del nombre del modelo
-        model_name = self._main.get_value(MODEL_NAME.BASE_MODEL, model_id, 'model')
+        model_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, model_id, 'model')
         # Se añade el campo a la tabla indicada
         self._ddl.new_field(model_name, params.record_data)
 
@@ -64,7 +64,7 @@ class _Automations():
         # Obtención de la ID del modelo del campo creado
         model_id = params.record_data['model_id']
         # Obtención del nombre del modelo
-        model_name = self._main.get_value(MODEL_NAME.BASE_MODEL, model_id, 'model')
+        model_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, model_id, 'model')
         # Obtención del nombre del campo
         field_name = params.record_data['name']
         # Ejecución del método del módulo principal
@@ -76,9 +76,9 @@ class _Automations():
     ) -> None:
 
         # Nombre del modelo propietario
-        model_name = self._main.get_value(MODEL_NAME.BASE_MODEL, params.record_data['model_id'], 'model')
+        model_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, params.record_data['model_id'], 'model')
         # Nombre del modelo referenciado
-        related_model_name = self._main.get_value(MODEL_NAME.BASE_MODEL, params.record_data['related_model_id'], 'model')
+        related_model_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, params.record_data['related_model_id'], 'model')
         # Creación de la tabla de relación
         self._ddl.new_relation(model_name, related_model_name)
 
@@ -88,7 +88,7 @@ class _Automations():
     ) -> None:
 
         # Nombre del modelo propietario
-        model_name = self._main.get_value(MODEL_NAME.BASE_MODEL, params.record_data['model_id'], 'model')
+        model_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, params.record_data['model_id'], 'model')
         # Nombre del campo
         field_name = params.record_data['name']
 
@@ -113,7 +113,7 @@ class _Automations():
             fields_data.append(field_data)
 
         # Se crean los registros en la tabla de campos
-        self._main.create(MODEL_NAME.BASE_MODEL_FIELD, fields_data)
+        self._main.create(self._main._TOKEN, MODEL_NAME.BASE_MODEL_FIELD, fields_data)
 
     def add_preset_fields(
         self,
@@ -133,15 +133,16 @@ class _Automations():
         # Obtención de la ID del campo propietario
         field_id = params.record_data['field_id']
         # Obtención de la ID del modelo propietario
-        model_id = self._main.get_value(MODEL_NAME.BASE_MODEL_FIELD, field_id, 'model_id')
+        model_id = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL_FIELD, field_id, 'model_id')
         # Obtención del nombre del modelo propietario
-        model_name = self._main.get_value(MODEL_NAME.BASE_MODEL, model_id, 'model')
+        model_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, model_id, 'model')
         # Obtención del nombre del campo propietario
-        field_name = self._main.get_value(MODEL_NAME.BASE_MODEL_FIELD, field_id, 'name')
+        field_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL_FIELD, field_id, 'name')
 
         # Obtención de los valores de selección
         selection_values = (
             self._main.search_read(
+                self._main._TOKEN,
                 MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
                 [('field_id', '=', field_id)],
                 ['name'],
@@ -165,15 +166,16 @@ class _Automations():
         # Obtención de la ID del campo propietario
         field_id = params.record_data['field_id']
         # Obtención de la ID del modelo propietario
-        model_id = self._main.get_value(MODEL_NAME.BASE_MODEL_FIELD, field_id, 'model_id')
+        model_id = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL_FIELD, field_id, 'model_id')
         # Obtención del nombre del modelo propietario
-        model_name = self._main.get_value(MODEL_NAME.BASE_MODEL, model_id, 'model')
+        model_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, model_id, 'model')
         # Obtención del nombre del campo propietario
-        field_name = self._main.get_value(MODEL_NAME.BASE_MODEL_FIELD, field_id, 'name')
+        field_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL_FIELD, field_id, 'name')
 
         # Obtención de los valores de selección
         selection_values = (
             self._main.search_read(
+                self._main._TOKEN,
                 MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
                 [
                     '&',

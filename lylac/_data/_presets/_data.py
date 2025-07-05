@@ -708,6 +708,21 @@ INITIAL_DATA = [
                 'perm_update': True,
                 'perm_delete': True,
             },
+            {
+                'name': 'base_users_session_user',
+                'model_id': MODEL_ID.BASE_USERS_SESSION,
+                'label': 'Sesiones de usuario / Usuario',
+                'perm_read': True,
+            },
+            {
+                'name': 'base_users_session_admin',
+                'model_id': MODEL_ID.BASE_USERS_SESSION,
+                'label': 'Sesiones de usuario / Administrador',
+                'perm_create': True,
+                'perm_read': True,
+                'perm_update': True,
+                'perm_delete': True,
+            },
         ],
     ),
     (
@@ -715,11 +730,11 @@ INITIAL_DATA = [
         [
             {
                 'name': 'Usuario base',
-                'permission_ids': [1, 3, 5, 7, 9, 11, 13],
+                'permission_ids': [1, 3, 5, 7, 9, 11, 13, 15],
             },
             {
                 'name': 'Administrador',
-                'permission_ids': [2, 4, 6, 8, 10, 12, 14],
+                'permission_ids': [2, 4, 6, 8, 10, 12, 14, 16],
             },
         ]
     ),

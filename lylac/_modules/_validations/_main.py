@@ -77,7 +77,7 @@ class Validations(BaseValidations):
             return
 
         # Obtención de la ID del modelo
-        [ model_id ] = self._main.search(MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
+        [ model_id ] = self._main.search(self._main._TOKEN, MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
 
         # Obtención de las validaciones del modelo en el método de creación
         transaction_validations: list[Validation.Create.Mixed.Params] = self._get_method_validations(model_name, 'create')
@@ -163,10 +163,10 @@ class Validations(BaseValidations):
             return
 
         # Obtención de la ID del modelo
-        [ model_id ] = self._main.search(MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
+        [ model_id ] = self._main.search(self._main._TOKEN, MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
 
         # Obtención de las IDs de registros
-        record_ids = self._main.search(MODEL_NAME.BASE_MODEL, search_criteria)
+        record_ids = self._main.search(self._main._TOKEN, MODEL_NAME.BASE_MODEL, search_criteria)
 
         # Obtención de las validaciones del modelo en el método de modificación
         transaction_validations: list[Validation.Update.Mixed.Params] = self._get_method_validations(model_name, 'update')

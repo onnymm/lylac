@@ -127,7 +127,7 @@ class _Models(_BaseModels):
         """
 
         # Obtención del nombre del modelo vinculado
-        model_name: str = self._main.get_value(MODEL_NAME.BASE_MODEL, params['model_id'], 'model')
+        model_name: str = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, params['model_id'], 'model')
 
         # Creación de los parámetros para ser usados en las automatizaciones
         field_atts = FieldDefinition(
@@ -241,7 +241,7 @@ class _Models(_BaseModels):
     ) -> str:
 
         # Obtención del nombre de la tabla
-        table_name: str = self._main.get_value(MODEL_NAME.BASE_MODEL, model_id, 'name')
+        table_name: str = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, model_id, 'name')
 
         return table_name
 

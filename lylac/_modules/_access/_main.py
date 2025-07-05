@@ -1,8 +1,11 @@
-from ..._core import _Lylac
+from ..._core import (
+    BaseAccess,
+    _Lylac,
+)
 from ..._module_types import Transaction
 from ..._constants import MESSAGES
 
-class Access():
+class Access(BaseAccess):
 
     def __init__(
         self,
@@ -14,11 +17,25 @@ class Access():
         # Referencia de la instancia de autenticación
         self._auth = instance._auth
 
+        # Se inicializa el módulo en falso
+        self._active = False
+
+    def initialize(
+        self,
+    ) -> None:
+
+        # Se cambia el estado de activo a verdadero
+        self._active = True
+
     def check_permission(
         self,
         user_id: int,
         transaction: Transaction,
     ) -> None:
+
+        # Si el módulo no está activo no se realiza ninguna validación
+        if not self._active:
+            return
 
         # Revisión de permiso de transacción
         granted = self._main._compiler.check_permission(user_id, transaction)

@@ -192,7 +192,7 @@ class Automations(BaseAutomations):
         # Obtención del criterio de búsqueda segmentado solo por las IDs de registros a evaluar
         computed_criteria = self._compute_automation_criteria(record_ids, automation_criteria)
         # Se filtran las IDs por el criterio de búsqueda computado
-        found_ids = self._main.search(model_name, computed_criteria)
+        found_ids = self._main.search(self._main._TOKEN, model_name, computed_criteria)
 
         return found_ids
 

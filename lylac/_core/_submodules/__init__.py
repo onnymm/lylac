@@ -6,6 +6,7 @@ from ._base import (
     BaseFieldsGetter,
     BaseModels,
 )
+from ._base_access import BaseAccess
 from ._base_auth import BaseAuth
 from ._base_automations import BaseAutomations
 from ._base_index import BaseIndex

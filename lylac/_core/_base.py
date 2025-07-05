@@ -1,4 +1,5 @@
 from ._submodules import (
+    BaseAccess,
     BaseAuth,
     BaseAutomations,
     BaseCompiler,
@@ -9,7 +10,7 @@ from ._submodules import (
 from ._submodules import BaseBaseLylac
 
 class _Lylac(BaseBaseLylac):
-
+    _access = BaseAccess
     _auth: BaseAuth
     _automations: BaseAutomations
     _compiler: BaseCompiler

@@ -115,6 +115,7 @@ class _Builder():
         mapped_data: dict[int, RecordData] = {}
         # Se obtienen los datos de los registros
         records_data = self._main.read(
+            self._main._TOKEN,
             model_name,
             found_ids,
             autom_data['fields'],

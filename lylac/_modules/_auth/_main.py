@@ -27,6 +27,11 @@ class Auth(BaseAuth):
         token: str,
     ) -> int:
 
+        # Si se proporcionó el token de administrador...
+        if token == self._main._TOKEN:
+            # Se retorna la ID del usuario base
+            return 1
+
         # Obtención de la UUID de la sesión
         session_uuid = self._m_token.get_session_uuid_from_token(token)
         # Obtención de la ID del usuario desde la UUID de la sesión
