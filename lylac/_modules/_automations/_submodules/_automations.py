@@ -1,8 +1,9 @@
+from ...._contexts import Context
+from ...._core import BaseAutomations
 from ...._module_types import (
     DataPerRecord,
     ModelRecordData,
 )
-from ...._core import BaseAutomations
 
 class _Automations():
 
@@ -16,7 +17,8 @@ class _Automations():
 
     def register_new_model(
         self,
-        params: DataPerRecord[ModelRecordData.BaseModel_],
+        ctx: Context.Individual[ModelRecordData.BaseModel_],
+        # params: DataPerRecord[ModelRecordData.BaseModel_],
     ) -> None:
 
-        self._automations.register_model(params.record_data['model'])
+        self._automations.register_model(ctx.data['model'])

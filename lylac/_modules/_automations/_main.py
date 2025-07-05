@@ -1,5 +1,5 @@
-from typing import Callable
 from ..._constants import FIELD_NAME
+from ..._contexts import AutomationCallback
 from ..._core import (
     BaseAutomations,
     _Lylac,
@@ -8,10 +8,7 @@ from ..._data import PRESET_AUTOMATIONS
 from ..._module_types import (
     AutomationModel,
     CriteriaStructure,
-    DataPerRecord,
-    DataPerTransaction,
     AutomationMethod,
-    AutomationTemplate,
     CreateOrUpdateTransaction,
     ModelName,
     ModificationTransaction,
@@ -50,7 +47,7 @@ class Automations(BaseAutomations):
         self,
         model_name: ModelName,
         transaction: ModificationTransaction,
-        callback: AutomationTemplate,
+        callback: AutomationCallback,
         fields: list[str] = [FIELD_NAME.ID,],
         criteria: CriteriaStructure = [],
         method: AutomationMethod = 'record'
@@ -156,7 +153,7 @@ class Automations(BaseAutomations):
             # Obtención de la instancia de automatizaciones del submódulo
             autom_extension = getattr(submodule, '_m_automations')
             # Obtención de la función a registrar como automatización
-            callback: Callable[[DataPerRecord | DataPerTransaction], None] = getattr(autom_extension, automation.callback)
+            callback: AutomationCallback = getattr(autom_extension, automation.callback)
 
             # Registro de la automatización
             self.register_automation(

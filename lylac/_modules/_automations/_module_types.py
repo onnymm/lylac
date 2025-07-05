@@ -6,9 +6,9 @@ from typing import (
 from pydantic import BaseModel
 from ..._module_types import (
     CriteriaStructure,
-    AutomationTemplate,
     ModificationTransaction,
 )
+from ..._contexts import AutomationCallback
 
 # Estructura de datos de automatización programada
 class ProgrammedAutomation(BaseModel):
@@ -56,11 +56,15 @@ class ProgrammedAutomation(BaseModel):
     """
     criteria: CriteriaStructure
     """Condición que dicta en qué casos se ejecuta la automatización."""
-    callback: AutomationTemplate
+    callback: AutomationCallback
     """
     ### Función de automatización
     Estructura que debe tener una función para registrarse como automatización.
-    >>> def some_automation(params: DataPerRecord[Any]) -> None:
+    >>> # Automatización de ejecución por registro individual
+    >>> def some_automation(ctx: Context.Individual[...]) -> None:
+    >>>     ...
+    >>> # Automatización de ejecución por lista de registros
+    >>> def some_automation(ctx: Context.Group[...]) -> None:
     >>>     ...
     """
     fields: list[str]

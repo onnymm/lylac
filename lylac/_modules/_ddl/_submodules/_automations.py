@@ -1,4 +1,5 @@
 from ...._constants import MODEL_NAME
+from ...._contexts import Context
 from ...._data import BASE_FIELDS_TEMPLATE
 from ...._module_types import (
     DataPerRecord,
@@ -26,25 +27,26 @@ class _Automations():
 
     def create_table(
         self,
-        params: DataPerRecord[ModelRecordData.BaseModel_],
+        ctx: Context.Individual[ModelRecordData.BaseModel_],
     ) -> None:
 
         # Obtención del nombre del modelo creado
-        model_name = params.record_data['name']
+        model_name = ctx.data['name']
         # Creación de la tabla en la base de datos
         self._ddl.new_table(model_name)
 
     def create_column(
         self,
-        params: DataPerRecord[ModelRecordData.BaseModelField],
+        ctx: Context.Individual[ModelRecordData.BaseModelField],
+        # params: DataPerRecord[ModelRecordData.BaseModelField],
     ) -> None:
 
         # Obtención de la ID del modelo del campo creado
-        model_id = params.record_data['model_id']
+        model_id = ctx.data['model_id']
         # Obtención del nombre del modelo
-        model_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, model_id, 'model')
+        model_name = ctx.get_value(MODEL_NAME.BASE_MODEL, model_id, 'model')
         # Se añade el campo a la tabla indicada
-        self._ddl.new_field(model_name, params.record_data)
+        self._ddl.new_field(model_name, ctx.data)
 
     def delete_table(
         self,
@@ -58,46 +60,50 @@ class _Automations():
 
     def delete_column(
         self,
-        params: DataPerRecord[ModelRecordData.BaseModelField]
+        ctx: Context.Individual[ModelRecordData.BaseModelField]
+        # params: DataPerRecord[ModelRecordData.BaseModelField],
     ) -> None:
 
         # Obtención de la ID del modelo del campo creado
-        model_id = params.record_data['model_id']
+        model_id = ctx.data['model_id']
         # Obtención del nombre del modelo
-        model_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, model_id, 'model')
+        model_name = ctx.get_value(MODEL_NAME.BASE_MODEL, model_id, 'model')
         # Obtención del nombre del campo
-        field_name = params.record_data['name']
+        field_name = ctx.data['name']
         # Ejecución del método del módulo principal
         self._ddl.delete_field(model_name, field_name)
 
     def create_relation_table(
         self,
-        params: DataPerRecord[ModelRecordData.BaseModelField],
+        ctx: Context.Individual[ModelRecordData.BaseModelField],
+        # params: DataPerRecord[ModelRecordData.BaseModelField],
     ) -> None:
 
         # Nombre del modelo propietario
-        model_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, params.record_data['model_id'], 'model')
+        model_name = ctx.get_value(MODEL_NAME.BASE_MODEL, ctx.data['model_id'], 'model')
         # Nombre del modelo referenciado
-        related_model_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, params.record_data['related_model_id'], 'model')
+        related_model_name = ctx.get_value(MODEL_NAME.BASE_MODEL, ctx.data['related_model_id'], 'model')
         # Creación de la tabla de relación
         self._ddl.new_relation(model_name, related_model_name)
 
     def delete_relation_table(
         self,
-        params: DataPerRecord[ModelRecordData.BaseModelField],
+        ctx: Context.Individual[ModelRecordData.BaseModelField],
+        # params: DataPerRecord[ModelRecordData.BaseModelField],
     ) -> None:
 
         # Nombre del modelo propietario
-        model_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, params.record_data['model_id'], 'model')
+        model_name = ctx.get_value(MODEL_NAME.BASE_MODEL, ctx.data['model_id'], 'model')
         # Nombre del campo
-        field_name = params.record_data['name']
+        field_name = ctx.data['name']
 
         # Se elimina la tabla de relación
         self._ddl.delete_relation(model_name, field_name)
 
     def create_base_fields(
         self,
-        params: DataPerRecord[ModelRecordData.BaseModel_]
+        ctx: Context.Individual[ModelRecordData.BaseModel_],
+        # params: DataPerRecord[ModelRecordData.BaseModel_],
     ) -> None:
 
         # Inicialización de los datos
@@ -108,41 +114,42 @@ class _Automations():
             # Se crea una copia de la información
             field_data = base_field.copy()
             # Se añade la ID del modelo a vincular
-            field_data['model_id'] = params.id
+            field_data['model_id'] = ctx.data['id']
             # Se añade la información a la lista de datos
             fields_data.append(field_data)
 
         # Se crean los registros en la tabla de campos
-        self._main.create(self._main._TOKEN, MODEL_NAME.BASE_MODEL_FIELD, fields_data)
+        ctx.create(MODEL_NAME.BASE_MODEL_FIELD, fields_data)
 
     def add_preset_fields(
         self,
-        params: DataPerRecord[ModelRecordData.BaseModel_],
+        ctx: Context.Individual[ModelRecordData.BaseModel_],
+        # params: DataPerRecord[ModelRecordData.BaseModel_],
     ) -> None:
 
         # Obtención de la ID del modelo
-        model_id = params.id
+        model_id = ctx.data['id']
         # Se añaden los campos predeterminados
         self._ddl.add_default_to_model(model_id)
 
     def update_selection_values_on_create(
         self,
-        params: DataPerRecord[ModelRecordData.BaseModelFieldSelection],
+        ctx: Context.Individual[ModelRecordData.BaseModelFieldSelection],
+        # params: DataPerRecord[ModelRecordData.BaseModelFieldSelection],
     ) -> None:
 
         # Obtención de la ID del campo propietario
-        field_id = params.record_data['field_id']
+        field_id = ctx.data['field_id']
         # Obtención de la ID del modelo propietario
-        model_id = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL_FIELD, field_id, 'model_id')
+        model_id = ctx.get_value(MODEL_NAME.BASE_MODEL_FIELD, field_id, 'model_id')
         # Obtención del nombre del modelo propietario
-        model_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, model_id, 'model')
+        model_name = ctx.get_value(MODEL_NAME.BASE_MODEL, model_id, 'model')
         # Obtención del nombre del campo propietario
-        field_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL_FIELD, field_id, 'name')
+        field_name = ctx.get_value(MODEL_NAME.BASE_MODEL_FIELD, field_id, 'name')
 
         # Obtención de los valores de selección
         selection_values = (
-            self._main.search_read(
-                self._main._TOKEN,
+            ctx.search_read(
                 MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
                 [('field_id', '=', field_id)],
                 ['name'],
@@ -160,27 +167,27 @@ class _Automations():
 
     def update_selection_values_on_delete(
         self,
-        params: DataPerRecord[ModelRecordData.BaseModelFieldSelection],
+        ctx: Context.Individual[ModelRecordData.BaseModelFieldSelection],
+        # params: DataPerRecord[ModelRecordData.BaseModelFieldSelection],
     ) -> None:
 
         # Obtención de la ID del campo propietario
-        field_id = params.record_data['field_id']
+        field_id = ctx.data['field_id']
         # Obtención de la ID del modelo propietario
-        model_id = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL_FIELD, field_id, 'model_id')
+        model_id = ctx.get_value(MODEL_NAME.BASE_MODEL_FIELD, field_id, 'model_id')
         # Obtención del nombre del modelo propietario
-        model_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, model_id, 'model')
+        model_name = ctx.get_value(MODEL_NAME.BASE_MODEL, model_id, 'model')
         # Obtención del nombre del campo propietario
-        field_name = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL_FIELD, field_id, 'name')
+        field_name = ctx.get_value(MODEL_NAME.BASE_MODEL_FIELD, field_id, 'name')
 
         # Obtención de los valores de selección
         selection_values = (
-            self._main.search_read(
-                self._main._TOKEN,
+            ctx.search_read(
                 MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
                 [
                     '&',
                         ('field_id', '=', field_id),
-                        ('id', '!=', params.id),
+                        ('id', '!=', ctx.data['id']),
                 ],
                 ['name'],
             )

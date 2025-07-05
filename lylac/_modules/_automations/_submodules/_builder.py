@@ -1,3 +1,4 @@
+from ...._contexts import AutomationCallback, Context
 from ...._core import BaseAutomations
 from .._module_types import ProgrammedAutomation
 from ...._module_types import (
@@ -52,11 +53,17 @@ class _Builder():
                     # Obtención del registro a usar para entrada de argumentos a la automatización
                     input_record = mapped_data[record_id]
                     # Creación del objeto a ingresar a la automatización
-                    data = DataPerRecord(
-                        id= record_id,
-                        record_data= input_record,
-                        transaction= transaction
+                    data = Context.Individual(
+                        self._main,
+                        input_record,
+                        model_name,
+                        1,
                     )
+                    # data = DataPerRecord(
+                    #     id= record_id,
+                    #     record_data= input_record,
+                    #     transaction= transaction
+                    # )
                     # Ejecución de la automatización
                     automation_callback(data)
                     # Notificación de ejecución de la automatización
@@ -65,6 +72,12 @@ class _Builder():
             # Ejecución por toda la lista de registros provistos
             else:
                 # Creación del objeto a ingresar a la automatización
+                data = Context.Group(
+                    self._main,
+                    list(mapped_data.values()),
+                    model_name,
+                    1,
+                )
                 data = DataPerTransaction(
                     ids= found_ids,
                     records_data= mapped_data.values(),
@@ -99,9 +112,25 @@ class _Builder():
                 for record_id in applyable_ids:
                     record_data = mapped_data[record_id]
 
-                    autom_data.callback(DataPerRecord(id= record_id, record_data= record_data, transaction= 'delete'))
+                    autom_data.callback(
+                        Context.Individual(
+                            self._main,
+                            record_data,
+                            model_name,
+                            1,
+                        )
+                    )
+                    # autom_data.callback(DataPerRecord(id= record_id, record_data= record_data, transaction= 'delete'))
             else:
-                autom_data.callback(DataPerTransaction(applyable_ids, mapped_data.values(), 'delete'))
+                autom_data.callback(
+                    Context.Group(
+                        self._main,
+                        list(record_data.values()),
+                        model_name,
+                        1,
+                    )
+                )
+                # autom_data.callback(DataPerTransaction(applyable_ids, mapped_data.values(), 'delete'))
 
         return automation_to_execute
 
