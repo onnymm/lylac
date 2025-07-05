@@ -5,6 +5,7 @@ from ..._module_types import (
     RecordData,
     CredentialsAlike,
     DataOutput,
+    ModelName,
     OutputOptions,
     RecordValue,
 )
@@ -29,7 +30,7 @@ class BaseBaseLylac():
     def create(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         data: RecordData | list[RecordData],
     ) -> list[int]:
         ...
@@ -37,7 +38,7 @@ class BaseBaseLylac():
     def search(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         search_criteria: CriteriaStructure = [],
         offset: int | None = None,
         limit: int | None = None,
@@ -47,7 +48,7 @@ class BaseBaseLylac():
     def read(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         record_ids: int | list[int],
         fields: list[str] = [],
         sortby: str | list[str] = None,
@@ -60,7 +61,7 @@ class BaseBaseLylac():
     def get_value(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         record_id: int,
         field: str,
     ) -> RecordValue:
@@ -69,7 +70,7 @@ class BaseBaseLylac():
     def get_values(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         record_id: int,
         fields: list[str]
     ) -> tuple:
@@ -78,7 +79,7 @@ class BaseBaseLylac():
     def search_read(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         search_criteria: CriteriaStructure = [],
         fields: list[str] = [],
         offset: int | None = None,
@@ -93,7 +94,7 @@ class BaseBaseLylac():
     def update(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         record_ids: int | list[int],
         data: RecordData,
     ) -> bool:
@@ -102,7 +103,7 @@ class BaseBaseLylac():
     def update_where(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         search_criteria: CriteriaStructure,
         data: RecordData,
     ) -> bool:
@@ -111,7 +112,7 @@ class BaseBaseLylac():
     def delete(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         record_ids: int | list[int]
     ) -> bool:
         ...

@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from .._base_categories import (
     CriteriaStructure,
     AutomationMethod,
-    ModelName,
     ModificationTransaction,
     Submodule,
 )
@@ -28,7 +27,7 @@ class _HasCallbackName(BaseModel):
     """
 
 class _HasModelName(BaseModel):
-    model: ModelName
+    model: str
     """
     #### Nombre de modelo
     Nombre de modelo base de la base de datos.

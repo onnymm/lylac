@@ -15,6 +15,7 @@ from ._module_types import (
     DataPerRecord,
     RecordData,
     CredentialsAlike,
+    ModelName,
     ModificationTransaction,
     OutputOptions,
     RecordValue,
@@ -88,7 +89,7 @@ class Lylac(_Lylac):
 
     def register_automation(
         self,
-        model_name: str,
+        model_name: ModelName,
         transation: ModificationTransaction,
         fields: list[str] = [FIELD_NAME.ID],
         execute_if: CriteriaStructure = [],
@@ -176,7 +177,7 @@ class Lylac(_Lylac):
     def create(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         data: RecordData | list[RecordData],
     ) -> list[int]:
         """
@@ -246,7 +247,7 @@ class Lylac(_Lylac):
     def search(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         search_criteria: CriteriaStructure = [],
         offset: int | None = None,
         limit: int | None = None,
@@ -368,7 +369,7 @@ class Lylac(_Lylac):
     def get_value(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         record_id: int,
         field: str,
     ) -> RecordValue:
@@ -415,7 +416,7 @@ class Lylac(_Lylac):
     def get_values(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         record_id: int,
         fields: list[str],
     ) -> tuple:
@@ -469,7 +470,7 @@ class Lylac(_Lylac):
     def read(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         record_ids: int | list[int],
         fields: list[str] = [],
         sortby: str | list[str] = None,
@@ -543,7 +544,7 @@ class Lylac(_Lylac):
     def search_read(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         search_criteria: CriteriaStructure = [],
         fields: list[str] = [],
         offset: int | None = None,
@@ -698,7 +699,7 @@ class Lylac(_Lylac):
     def search_count(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         search_criteria: CriteriaStructure = [],
     ) -> int:
         """
@@ -786,7 +787,7 @@ class Lylac(_Lylac):
     def update(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         record_ids: int | list[int],
         data: RecordData,
     ) -> bool:
@@ -824,7 +825,7 @@ class Lylac(_Lylac):
     def update_where(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         search_criteria: CriteriaStructure,
         data: RecordData,
         _record_ids: list[int] = []
@@ -909,7 +910,7 @@ class Lylac(_Lylac):
     def delete(
         self,
         token: str,
-        model_name: str,
+        model_name: ModelName,
         record_ids: int | list[int]
     ) -> bool:
         """

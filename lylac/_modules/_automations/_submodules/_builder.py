@@ -2,6 +2,7 @@ from ...._core import BaseAutomations
 from .._module_types import ProgrammedAutomation
 from ...._module_types import (
     CreateOrUpdateTransaction,
+    ModelName,
     RecordData,
     DataPerRecord,
     DataPerTransaction,
@@ -25,7 +26,7 @@ class _Builder():
 
     def build_runable_modification_automation(
         self,
-        model_name: str,
+        model_name: ModelName,
         found_ids: list[int],
         autom_data: ProgrammedAutomation,
         transaction: CreateOrUpdateTransaction,
@@ -77,7 +78,7 @@ class _Builder():
 
     def build_runable_deletion_automation(
         self,
-        model_name: str,
+        model_name: ModelName,
         found_ids: list[int],
         autom_data: ProgrammedAutomation,
     ) -> CompiledDeletionAutomation:
@@ -106,7 +107,7 @@ class _Builder():
 
     def _get_records_data_for_automation(
         self,
-        model_name: str,
+        model_name: ModelName,
         found_ids: list[int],
         autom_data: ProgrammedAutomation,
     ) -> dict[int, RecordData]:

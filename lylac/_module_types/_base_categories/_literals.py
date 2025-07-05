@@ -119,6 +119,10 @@ ModelName = Literal[
     'base.model.field',
     'base.model.field.selection',
     'base.users',
+    'base.model.access',
+    'base.model.access.groups',
+    'base.users.role',
+    'base.users.session',
 ]
 """
 #### Nombre de modelo

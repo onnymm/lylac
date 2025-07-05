@@ -1,5 +1,6 @@
 from typing import TypedDict, Literal
 from .._base_categories import (
+    ModelName,
     TType,
     State,
 )
@@ -117,7 +118,7 @@ class ModelRecordData:
         >>>     'related_field_ids': [5, 8, ...],
         >>> }
         """
-        model: str
+        model: ModelName
         """
         Nombre del modelo
         """

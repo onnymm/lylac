@@ -8,6 +8,7 @@ from ..._core import (
     BaseModels,
     _Lylac,
 )
+from ..._module_types import ModelName
 
 class Models(BaseModels):
 
@@ -24,7 +25,7 @@ class Models(BaseModels):
 
     def get_table_model(
         self,
-        model_name: str,
+        model_name: ModelName,
     ) -> type[DeclarativeBase]:
 
         # Obtención de la referencia mapeada
