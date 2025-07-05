@@ -3,6 +3,7 @@ from typing import (
     Literal,
     TypedDict,
 )
+from pydantic import BaseModel
 from ..._module_types import (
     CriteriaStructure,
     AutomationTemplate,
@@ -10,7 +11,7 @@ from ..._module_types import (
 )
 
 # Estructura de datos de automatización programada
-class ProgrammedAutomation(TypedDict):
+class ProgrammedAutomation(BaseModel):
     """
     #### Automatización programada
     Este diccionario contiene una condición de filtro para dictar en qué casos la

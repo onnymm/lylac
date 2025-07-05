@@ -43,10 +43,10 @@ class _Builder():
         def automation_to_execute():
 
             # Obtención de la función de automatización a ejecutar
-            automation_callback = autom_data['callback']
+            automation_callback = autom_data.callback
 
             # Si el tipo de ejecución es por registro
-            if autom_data['execution'] == 'record':
+            if autom_data.execution == 'record':
                 # Ejecución de automatización por registro
                 for record_id in found_ids:
                     # Obtención del registro a usar para entrada de argumentos a la automatización
@@ -60,7 +60,7 @@ class _Builder():
                     # Ejecución de la automatización
                     automation_callback(data)
                     # Notificación de ejecución de la automatización
-                    print(f'La automatización [{automation_callback.__name__}] se ha ejecutado con el registro {record_id}')
+                    print(f'La automatización [{automation_callback.__name__}] se ha ejecutado con el registro {record_id} del modelo [{model_name}]')
 
             # Ejecución por toda la lista de registros provistos
             else:
@@ -95,13 +95,13 @@ class _Builder():
             # Se inicializa una lista con las IDs que solo aplican
             applyable_ids = list( set(found_ids) & set(deleted_ids) )
 
-            if autom_data['execution'] == 'record':
+            if autom_data.execution == 'record':
                 for record_id in applyable_ids:
                     record_data = mapped_data[record_id]
 
-                    autom_data['callback'](DataPerRecord(id= record_id, record_data= record_data, transaction= 'delete'))
+                    autom_data.callback(DataPerRecord(id= record_id, record_data= record_data, transaction= 'delete'))
             else:
-                autom_data['callback'](DataPerTransaction(applyable_ids, mapped_data.values(), 'delete'))
+                autom_data.callback(DataPerTransaction(applyable_ids, mapped_data.values(), 'delete'))
 
         return automation_to_execute
 
@@ -119,7 +119,7 @@ class _Builder():
             self._main._TOKEN,
             model_name,
             found_ids,
-            autom_data['fields'],
+            autom_data.fields,
             output_format= 'dict',
             only_ids_in_relations= True,
         )

@@ -57,12 +57,12 @@ class Automations(BaseAutomations):
     ) -> None:
 
         # Creación de la automatización programada
-        autom_data: ProgrammedAutomation = {
-            'criteria': criteria,
-            'callback': callback,
-            'fields': fields,
-            'execution': method,
-        }
+        autom_data = ProgrammedAutomation(
+            criteria= criteria,
+            callback= callback,
+            fields= fields,
+            execution= method,
+        )
 
         # Se añade la automatización programada en la transacción correspondiente de su tabla
         self._hub[model_name][transaction].append(autom_data)
@@ -189,7 +189,7 @@ class Automations(BaseAutomations):
     ) -> list[int]:
 
         # Obtención del criterio de evaluación de la automatización programada
-        automation_criteria = autom_data['criteria']
+        automation_criteria = autom_data.criteria
         # Obtención del criterio de búsqueda segmentado solo por las IDs de registros a evaluar
         computed_criteria = self._compute_automation_criteria(record_ids, automation_criteria)
         # Se filtran las IDs por el criterio de búsqueda computado
