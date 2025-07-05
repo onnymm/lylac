@@ -4,6 +4,7 @@ from typing import (
 )
 from ..._constants import FIELD_NAME
 from ..._core import _Lylac
+from ..._module_types import ModelName
 from ._module_types import (
     TTypesMapping,
     OperationData,
@@ -33,7 +34,7 @@ class Select_():
 
     def build(
         self,
-        model_name: str,
+        model_name: ModelName,
         fields: list[str] = [],
     ) -> tuple[Select[Any], TTypesMapping]:
 
@@ -76,7 +77,7 @@ class Select_():
     def _add_field(
         self,
         field_name: str,
-        model_name: str,
+        model_name: ModelName,
         model_model: type[DeclarativeBase],
         operation_data: OperationData,
     ) -> None:
@@ -115,7 +116,7 @@ class Select_():
         self,
         refs: list[str],
         model_model: type[DeclarativeBase],
-        related_model_name: str,
+        related_model_name: ModelName,
         operation_data: OperationData,
         label: Optional[str] = None
     ) -> None:
@@ -165,7 +166,7 @@ class Select_():
     def _proccess_field(
         self,
         field_name: str,
-        model_name: str,
+        model_name: ModelName,
         operation_data: OperationData,
         model_model: Optional[type[DeclarativeBase]] = None,
         label: Optional[str] = None,
@@ -221,7 +222,7 @@ class Select_():
     def _add_one2many_field(
         self,
         field_name: str,
-        model_name: str,
+        model_name: ModelName,
         model_model: type[DeclarativeBase],
         operation_data: OperationData,
         label: str,
@@ -282,7 +283,7 @@ class Select_():
     def _add_many2one_field(
         self,
         field_name: str,
-        model_name: str,
+        model_name: ModelName,
         model_model: type[DeclarativeBase],
         operation_data: OperationData,
         label: Optional[str] = None,
@@ -331,7 +332,7 @@ class Select_():
     def _add_many2many_field(
         self,
         field_name: str,
-        model_name: str,
+        model_name: ModelName,
         model_model: type[DeclarativeBase],
         operation_data: OperationData,
         label: str,
@@ -388,7 +389,7 @@ class Select_():
     def _add_common_field(
         self,
         field_name: str,
-        model_name: str,
+        model_name: ModelName,
         model_model: type[DeclarativeBase],
         operation_data: OperationData,
         label: Optional[str] = None,

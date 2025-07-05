@@ -3,6 +3,7 @@ from ...._core import _Lylac
 from ...._module_types import (
     FieldDefinition,
     ModelRecordData,
+    ModelName,
     TType,
 )
 from .._module_types import ColumnGenerator
@@ -21,20 +22,20 @@ class _BaseModels():
 
     def create_model(
         self,
-        model_name: str,
+        model_name: ModelName,
     ) -> type[DeclarativeBase]:
         ...
 
     def create_relation(
         self,
-        owner_model_name: str,
+        owner_model_name: ModelName,
         referenced_model_name: str,
     ) -> type[DeclarativeBase]:
         ...
 
     def delete_model(
         self,
-        model_name: str,
+        model_name: ModelName,
     ) -> None:
         ...
 
@@ -80,34 +81,34 @@ class _BaseDDLManager():
 
     def new_field(
         self,
-        model_name: str,
+        model_name: ModelName,
         params: ModelRecordData.BaseModelField
     ) -> None:
         ...
 
     def new_relation(
         self,
-        owner_model_name: str,
+        owner_model_name: ModelName,
         referenced_model_name: str,
     ) -> None:
         ...
 
     def delete_relation(
         self,
-        model_name: str,
+        model_name: ModelName,
         field_name: str,
     ) -> None:
         ...
 
     def delete_table(
         self,
-        model_name: str,
+        model_name: ModelName,
     ) -> None:
         ...
 
     def delete_field(
         self,
-        model_name: str,
+        model_name: ModelName,
         field_name: str
     ) -> None:
         ...

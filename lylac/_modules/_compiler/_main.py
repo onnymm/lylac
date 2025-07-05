@@ -13,6 +13,7 @@ from ..._core import _Lylac, BaseCompiler
 from ..._module_types import (
     ModelTemplate,
     RecordData,
+    ModelName,
     Transaction,
 )
 
@@ -110,7 +111,7 @@ class Compiler(BaseCompiler):
 
     def create(
         self,
-        model_name: str,
+        model_name: ModelName,
         data: list[RecordData],
     ) -> list[int]:
 
@@ -137,7 +138,7 @@ class Compiler(BaseCompiler):
 
     def _remove_many2many_fields(
         self,
-        model_name: str,
+        model_name: ModelName,
         data: list[RecordData],
     ) -> None:
 
@@ -155,7 +156,7 @@ class Compiler(BaseCompiler):
 
     def create_many2many(
         self,
-        model_name: str,
+        model_name: ModelName,
         data: list[RecordData],
     ) -> None:
 
@@ -171,7 +172,7 @@ class Compiler(BaseCompiler):
 
     def delete_many2many(
         self,
-        model_name: str,
+        model_name: ModelName,
         field_name: str,
         record_ids: list[int],
     ) -> None:

@@ -6,6 +6,7 @@ from ..._core import (
 from ..._module_types import (
     CriteriaStructure,
     RecordData,
+    ModelName,
     ModificationTransaction,
 )
 from ._module_types import (
@@ -50,7 +51,7 @@ class Validations(BaseValidations):
 
     def initialize_model_validations(
         self,
-        model_name: str,
+        model_name: ModelName,
     ) -> None:
 
         self._hub[model_name] = {
@@ -61,14 +62,14 @@ class Validations(BaseValidations):
 
     def drop_model_validations(
         self,
-        model_name: str,
+        model_name: ModelName,
     ) -> None:
 
         del self._hub[model_name]
 
     def run_validations_on_create(
         self,
-        model_name: str,
+        model_name: ModelName,
         data: list[RecordData],
     ) -> None:
 
@@ -153,7 +154,7 @@ class Validations(BaseValidations):
 
     def run_validations_on_update(
         self,
-        model_name: str,
+        model_name: ModelName,
         search_criteria: CriteriaStructure,
         data: RecordData,
     ) -> None:
@@ -244,7 +245,7 @@ class Validations(BaseValidations):
 
     def _get_method_validations(
         self,
-        model_name: str,
+        model_name: ModelName,
         transaction: ModificationTransaction,
     ):
 

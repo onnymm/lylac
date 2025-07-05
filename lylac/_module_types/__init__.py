@@ -14,6 +14,7 @@ from ._base_categories import (
     DataBaseDataType,
     ExecutionMethod,
     LogicOperator,
+    ModelName,
     ModificationTransaction,
     OutputOptions,
     Transaction,

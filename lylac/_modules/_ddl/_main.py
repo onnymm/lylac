@@ -8,6 +8,7 @@ from ..._module_types import (
     CriteriaStructure,
     ModelRecordData,
     NewRecord,
+    ModelName,
 )
 from ._submodules import (
     _Automations,
@@ -42,7 +43,7 @@ class DDLManager(_BaseDDLManager):
 
     def new_table(
         self,
-        table_name: str,
+        model_name: ModelName,
     ) -> None:
         """
         ### Nueva tabla
@@ -51,14 +52,14 @@ class DDLManager(_BaseDDLManager):
         """
 
         # Inicialización del modelo
-        table_model = self._m_model.create_model(table_name)
+        table_model = self._m_model.create_model(model_name)
         # Se crea el modelo como tabla en la base de datos
         table_model.__table__.create(self._engine)
 
     def new_relation(
         self,
-        owner_model_name: str,
-        referenced_model_name: str,
+        owner_model_name: ModelName,
+        referenced_model_name: ModelName,
     ) -> None:
 
         # Inicialización de la tabla de relación
@@ -68,7 +69,7 @@ class DDLManager(_BaseDDLManager):
 
     def delete_relation(
         self,
-        model_name: str,
+        model_name: ModelName,
         field_name: str,
     ) -> None:
 
@@ -83,7 +84,7 @@ class DDLManager(_BaseDDLManager):
 
     def new_field(
         self,
-        model_name: str,
+        model_name: ModelName,
         params: ModelRecordData.BaseModelField,
     ) -> None:
 
@@ -98,7 +99,7 @@ class DDLManager(_BaseDDLManager):
 
     def delete_table(
         self,
-        model_name: str,
+        model_name: ModelName,
     ) -> None:
 
         # Obtención del modelo de SQLAlchemy
@@ -110,7 +111,7 @@ class DDLManager(_BaseDDLManager):
 
     def delete_field(
         self,
-        model_name: str,
+        model_name: ModelName,
         field_name: str,
     ) -> None:
 

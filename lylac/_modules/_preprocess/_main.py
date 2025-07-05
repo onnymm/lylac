@@ -3,6 +3,7 @@ from ..._core import _Lylac
 from ..._module_types import (
     _T,
     RecordData,
+    ModelName,
 )
 
 RecordIds = list[int]
@@ -36,7 +37,7 @@ class Preprocess():
     def process_data_on_create(
         self,
         user_id: int,
-        model_name: str,
+        model_name: ModelName,
         data: list[RecordData],
     ) -> PosCreationCallback:
 
@@ -50,7 +51,7 @@ class Preprocess():
     def process_data_on_update(
         self,
         user_id: int,
-        model_name: str,
+        model_name: ModelName,
         record_ids: RecordIds,
         data: RecordData,
     ):
@@ -65,7 +66,7 @@ class Preprocess():
     def _sign_create_and_update_user_id(
         self,
         user_id: int,
-        model_name: str,
+        model_name: ModelName,
         data: list[RecordData],
     ) -> None:
 
@@ -82,7 +83,7 @@ class Preprocess():
     def _sign_update_user_id(
         self,
         user_id: int,
-        model_name: str,
+        model_name: ModelName,
         data: RecordData,
     ) -> None:
 
@@ -96,7 +97,7 @@ class Preprocess():
 
     def _build_pos_creation_callback(
         self,
-        model_name: str,
+        model_name: ModelName,
         data: list[RecordData],
     ) -> PosCreationCallback:
 
@@ -113,7 +114,7 @@ class Preprocess():
 
     def _build_pos_update_callback(
         self,
-        model_name: str,
+        model_name: ModelName,
         record_ids: RecordIds,
         data: RecordData,
     ):
@@ -129,7 +130,7 @@ class Preprocess():
 
     def _build_many2many_updates_after_creation(
         self,
-        model_name: str,
+        model_name: ModelName,
         data: list[RecordData],
     ) -> PosCreationCallback:
 
@@ -176,7 +177,7 @@ class Preprocess():
 
     def _build_many2many_updates_after_update(
         self,
-        model_name: str,
+        model_name: ModelName,
         record_ids: RecordIds,
         data: RecordData,
     ) -> PosUpdateCallback:
@@ -214,7 +215,7 @@ class Preprocess():
 
     def _build_many2many_update_after_update(
         self,
-        model_name: str,
+        model_name: ModelName,
         field_name: str,
         record_ids: RecordIds,
         values: RecordIds,

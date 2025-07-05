@@ -9,6 +9,7 @@ from ..._module_types import (
     _T,
     RecordData,
     ExecutionMethod,
+    ModelName,
 )
 
 # Tipos de validación
@@ -17,7 +18,7 @@ _GroupData = list[RecordData]
 
 class _BaseValidationOnCreateArgs(BaseModel):
 
-    model_name: str
+    model_name: ModelName
     """Nombre del modelo."""
     model_id: int
     """ID del modelo."""
@@ -50,7 +51,7 @@ _IndividualValidationOnCreateCallback = Callable[[ _ValidationOnCreateArgs ], An
 _GroupValidationOnCreateCallback = Callable[[ _ValidationOnCreateArgs_Group ], Any]
 
 class _BaseValidationOnUpdateArgs(BaseModel, Generic[_T]):
-    model_name: str
+    model_name: ModelName
     """Nombre del modelo."""
     model_id: int
     """ID del modelo."""

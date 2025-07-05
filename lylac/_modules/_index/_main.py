@@ -3,6 +3,7 @@ from ..._core import (
     _Lylac,
     BaseIndex,
 )
+from ..._module_types import ModelName
 from ._submodules import _FieldsGetter
 
 class Index(BaseIndex):
@@ -22,7 +23,7 @@ class Index(BaseIndex):
 
     def __getitem__(
         self,
-        model: str | type[DeclarativeBase],
+        model: ModelName | type[DeclarativeBase],
     ) -> _FieldsGetter:
 
         # Obtención de modelo de SQLAlchemy si es que fue provisto solo el nombre

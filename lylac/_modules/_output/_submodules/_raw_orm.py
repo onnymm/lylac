@@ -1,7 +1,10 @@
 from typing import Callable
 import pandas as pd
 from sqlalchemy import select, and_
-from ...._module_types import TType
+from ...._module_types import (
+    TType,
+    ModelName,
+)
 from ._base import _BaseOutput
 
 class _RawORM():
@@ -21,7 +24,7 @@ class _RawORM():
 
     def get_fields_ttypes(
         self,
-        model_name: str,
+        model_name: ModelName,
         fields: list[str],
     ) -> dict[str, TType]:
 
@@ -49,7 +52,7 @@ class _RawORM():
 
     def _get_model_id(
         self,
-        model_name: str
+        model_name: ModelName
     ) -> None:
 
         # Creación del query

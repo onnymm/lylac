@@ -13,6 +13,7 @@ from ..._module_types import (
     AutomationMethod,
     AutomationTemplate,
     CreateOrUpdateTransaction,
+    ModelName,
     ModificationTransaction,
 )
 from ._module_types import (
@@ -47,7 +48,7 @@ class Automations(BaseAutomations):
 
     def register_automation(
         self,
-        model_name: str,
+        model_name: ModelName,
         transaction: ModificationTransaction,
         callback: AutomationTemplate,
         fields: list[str] = [FIELD_NAME.ID,],
@@ -68,10 +69,10 @@ class Automations(BaseAutomations):
 
     def register_model(
         self,
-        table: str,
+        model_name: ModelName,
     ) -> None:
 
-        self._hub[table] = {
+        self._hub[model_name] = {
             'create': [],
             'update': [],
             'delete': [],
@@ -79,7 +80,7 @@ class Automations(BaseAutomations):
 
     def run_after_transaction(
         self,
-        model_name: str,
+        model_name: ModelName,
         transaction: CreateOrUpdateTransaction,
         record_ids: list[int],
     ) -> None:
@@ -110,7 +111,7 @@ class Automations(BaseAutomations):
 
     def generate_before_transaction(
         self,
-        model_name: str,
+        model_name: ModelName,
         record_ids: list[int],
     ):
 
@@ -182,7 +183,7 @@ class Automations(BaseAutomations):
 
     def _find_applyable_records_for_automation(
         self,
-        model_name: str,
+        model_name: ModelName,
         record_ids: list[int],
         autom_data: ProgrammedAutomation,
     ) -> list[int]:

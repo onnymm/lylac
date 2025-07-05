@@ -5,7 +5,10 @@ from ..._core import (
     BaseStructure,
 )
 from ..._data import FIELDS_ATTS
-from ..._module_types import TType, ModelMap
+from ..._module_types import (
+    TType,
+    ModelName,
+)
 from ._submodules import (
     _Automations,
     _RawORM,
@@ -45,7 +48,7 @@ class Structure(BaseStructure):
 
     def unregister_table(
         self,
-        model_name: str
+        model_name: ModelName,
     ) -> None:
 
         # Obtención del modelo de la tabla
@@ -57,7 +60,7 @@ class Structure(BaseStructure):
 
     def register_field(
         self,
-        model_name: str,
+        model_name: ModelName,
         field_name: str,
         ttype: TType,
         related_model: str | None,
@@ -76,7 +79,7 @@ class Structure(BaseStructure):
 
     def unregister_field(
         self,
-        model_name: str,
+        model_name: ModelName,
         field_name: str,
     ) -> None:
 
@@ -97,7 +100,7 @@ class Structure(BaseStructure):
 
     def update_selection_values(
         self,
-        model_name: str,
+        model_name: ModelName,
         field_name: str,
         selection_values: list[str],
     ) -> None:
@@ -107,14 +110,14 @@ class Structure(BaseStructure):
 
     def get_model(
         self,
-        model_name: str,
+        model_name: ModelName,
     ) -> type[DeclarativeBase]:
 
         return self.models[model_name]['model']
 
     def get_relation_model(
         self,
-        model_name: str,
+        model_name: ModelName,
         field_name: str,
     ) -> type[DeclarativeBase]:
 
@@ -136,7 +139,7 @@ class Structure(BaseStructure):
 
     def get_model_field_names(
         self,
-        model_name: str,
+        model_name: ModelName,
     ) -> list[str]:
 
         # Obtención de los nombres de campos existentes del modelo especificado
@@ -146,7 +149,7 @@ class Structure(BaseStructure):
 
     def get_related_model_name(
         self,
-        model_name: str,
+        model_name: ModelName,
         field_name: str,
     ) -> str:
 
@@ -157,7 +160,7 @@ class Structure(BaseStructure):
 
     def get_related_field_name(
         self,
-        model_name: str,
+        model_name: ModelName,
         field_name: str,
     ) -> str:
 
@@ -168,7 +171,7 @@ class Structure(BaseStructure):
 
     def get_relation_model_name(
         self,
-        model_name: str,
+        model_name: ModelName,
         field_name: str,
     ) -> str:
 
@@ -185,7 +188,7 @@ class Structure(BaseStructure):
 
     def get_field_ttype(
         self,
-        model_name: str,
+        model_name: ModelName,
         field_name: str,
     ) -> TType:
 
@@ -209,7 +212,7 @@ class Structure(BaseStructure):
 
     def get_ttype_fields(
         self,
-        model_name: str,
+        model_name: ModelName,
         ttype: TType,
     ) -> list[str]:
 
@@ -222,7 +225,7 @@ class Structure(BaseStructure):
 
     def get_field_selection_values(
         self,
-        model_name: str,
+        model_name: ModelName,
         field_name: str,
     ) -> list[str]:
 
@@ -241,7 +244,7 @@ class Structure(BaseStructure):
 
     def _register_table_fields_atts(
         self,
-        model_name,
+        model_name: ModelName,
     ) -> None:
 
         # Obtención de los atributos de los campos de la tabla

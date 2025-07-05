@@ -24,6 +24,7 @@ from ...._module_types import (
     FieldDefinition,
     ModelRecordData,
     ModelTemplate as ModelTemplate, # Uso en compilación de código de archivos
+    ModelName,
 )
 from ._base import (
     _BaseDDLManager,
@@ -51,7 +52,7 @@ class _Models(_BaseModels):
 
     def create_model(
         self,
-        model_name: str,
+        model_name: ModelName,
     ) -> type[DeclarativeBase]:
         """
         ### Creación de modelo
@@ -67,8 +68,8 @@ class _Models(_BaseModels):
 
     def create_relation(
         self,
-        owner_model_name: str,
-        referenced_model_name: str,
+        owner_model_name: ModelName,
+        referenced_model_name: ModelName,
     ) -> type[DeclarativeBase]:
 
         # Creación de la tabla de relación
@@ -80,7 +81,7 @@ class _Models(_BaseModels):
 
     def delete_model(
         self,
-        model_name: str,
+        model_name: ModelName,
     ) -> None:
         """
         ### Eliminar modelo
@@ -127,7 +128,7 @@ class _Models(_BaseModels):
         """
 
         # Obtención del nombre del modelo vinculado
-        model_name: str = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, params['model_id'], 'model')
+        model_name: ModelName = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, params['model_id'], 'model')
 
         # Creación de los parámetros para ser usados en las automatizaciones
         field_atts = FieldDefinition(
@@ -147,7 +148,7 @@ class _Models(_BaseModels):
 
     def _create_model_class(
         self,
-        model_name: str,
+        model_name: ModelName,
     ) -> type[DeclarativeBase]:
 
         # Inicialización de un objeto
@@ -163,8 +164,8 @@ class _Models(_BaseModels):
 
     def _create_relation_class(
         self,
-        owner_model_name: str,
-        referenced_model_name: str,
+        owner_model_name: ModelName,
+        referenced_model_name: ModelName,
     ) -> type[DeclarativeBase]:
 
         # Inicialización del objeto
