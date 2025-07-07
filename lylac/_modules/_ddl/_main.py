@@ -121,9 +121,11 @@ class DDLManager(_BaseDDLManager):
         criteria: CriteriaStructure = [
             '&',
                 '&',
-                    ('model_id', '=', model_id),
-                    ('name', '!=', field_name),
-                ('name', 'not in', ['id', 'name', 'create_date', 'write_date']),
+                    '&',
+                        ('model_id', '=', model_id),
+                        ('name', '!=', field_name),
+                    ('name', 'not in', ['id', 'name', 'create_date', 'write_date']),
+                ('ttype', 'not in', ['one2many', 'many2many']),
         ]
 
         # Se obtienen los datos de los registros a excepción del campo eliminado

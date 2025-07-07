@@ -44,16 +44,3 @@ class _Automations():
             related_model,
             related_field,
         )
-
-    def unregister_fields_atts(
-        self,
-        ctx: Context.Individual[ModelRecordData.BaseModelField],
-        # params: DataPerRecord[ModelRecordData.BaseModelField],
-    ) -> None:
-
-        # Obtención del nombre del modelo propietario
-        model_name = ctx.get_value(MODEL_NAME.BASE_MODEL, ctx.data['model_id'], 'model')
-        # Obtención del nombre del campo
-        field_name = ctx.data['name']
-
-        self._strc.unregister_field(model_name, field_name)

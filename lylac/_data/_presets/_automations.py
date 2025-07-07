@@ -73,16 +73,6 @@ PRESET_AUTOMATIONS: list[AutomationData] = [
         'fields': ['name', 'model_id'],
         'method': 'record',
     },
-    # Eliminación de las propiedades de campo cuando un campo se elimina
-    {
-        'submodule': '_strc',
-        'callback': 'unregister_fields_atts',
-        'model': 'base.model.field',
-        'transaction': 'delete',
-        'criteria': [],
-        'fields': ['name', 'model_id'],
-        'method': 'record',
-    },
     # Eliminación de registro de validaciones de modelo cuando un modelo se elimina
     {
         'submodule': '_validations',

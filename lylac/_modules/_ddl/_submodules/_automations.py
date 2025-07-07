@@ -2,7 +2,6 @@ from ...._constants import MODEL_NAME
 from ...._contexts import Context
 from ...._data import BASE_FIELDS_TEMPLATE
 from ...._module_types import (
-    DataPerRecord,
     ModelRecordData,
 )
 from ._base import _BaseDDLManager
@@ -50,11 +49,11 @@ class _Automations():
 
     def delete_table(
         self,
-        params: DataPerRecord[ModelRecordData.BaseModel_],
+        params: Context.Individual[ModelRecordData.BaseModel_],
     ) -> None:
 
         # Obtención del nombre del modelo
-        model_name = params.record_data['model']
+        model_name = params.data['model']
         # Ejecución del método del módulo principal
         self._ddl.delete_table(model_name)
 
