@@ -236,6 +236,7 @@ class Lylac(_Lylac):
             model_name,
             'create',
             inserted_records,
+            token,
         )
 
         # Ejecución de la función poscreación
@@ -892,13 +893,14 @@ class Lylac(_Lylac):
         response = self._connection.execute(stmt, commit= True)
 
         # Obtención de las IDs creadas
-        updated_records: list[int] = [getattr(row, 'id') for row in response]
+        updated_records: list[int] = [ getattr(row, 'id') for row in response ]
 
         # Ejecución de las automatizaciones correspondientes
         self._automations.run_after_transaction(
             model_name,
             'update',
             updated_records,
+            token,
         )
 
         # Ejecución de función posactualización
@@ -947,6 +949,7 @@ class Lylac(_Lylac):
         run_post_delete_automations = self._automations.generate_before_transaction(
             model_name,
             record_ids,
+            token,
         )
 
         # Obtención de la instancia de la tabla

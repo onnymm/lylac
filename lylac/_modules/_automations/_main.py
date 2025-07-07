@@ -80,6 +80,7 @@ class Automations(BaseAutomations):
         model_name: ModelName,
         transaction: CreateOrUpdateTransaction,
         record_ids: list[int],
+        user_token: str,
     ) -> None:
 
         # Se inicializa la lista de automatizaciones a ejecutar
@@ -97,7 +98,7 @@ class Automations(BaseAutomations):
                     model_name,
                     applyable_ids,
                     autom_data,
-                    transaction,
+                    user_token,
                 )
                 # Se añade la función preparada
                 automations_to_run.append(automation_to_execute)
@@ -110,6 +111,7 @@ class Automations(BaseAutomations):
         self,
         model_name: ModelName,
         record_ids: list[int],
+        user_token: str,
     ):
 
         # Se inicializa la lista de automatizaciones a ejecutar
@@ -118,7 +120,7 @@ class Automations(BaseAutomations):
         # Iteración por cada automatización programada
         for autom_data in self._hub[model_name]['delete']:
             # Obtención de las IDs de los registros aplicables para la automatización
-            applyable_ids = self._find_applyable_records_for_automation(model_name, record_ids, autom_data )
+            applyable_ids = self._find_applyable_records_for_automation(model_name, record_ids, autom_data)
 
             # Si existen IDs para ejecutar la automatización
             if len(applyable_ids):
@@ -128,6 +130,7 @@ class Automations(BaseAutomations):
                     model_name,
                     applyable_ids,
                     autom_data,
+                    user_token,
                 )
 
                 # Se añade la función preparada
