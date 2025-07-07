@@ -8,11 +8,11 @@ from sqlalchemy import (
     func,
 )
 from ._constants import FIELD_NAME
+from ._contexts import Context
 from ._core import _Lylac
 from ._module_types import (
     _T,
     CriteriaStructure,
-    DataPerRecord,
     RecordData,
     CredentialsAlike,
     ModelName,
@@ -102,52 +102,73 @@ class Lylac(_Lylac):
         Ejemplo de uso:
         >>> @lylac.register_automation(
         >>>     # Modelo donde se ejecutará la automatización
-        >>>     'custom.model',
+        >>>     'base.users',
         >>>     # La automatización se ejecuta tras crearse un registro
         >>>     'create',
         >>>     # Campos del registro a usar en la automatización
-        >>>     ['name'],
+        >>>     ['id'],
         >>> )
-        >>> def do_something(params) -> None:
-        >>>     record_id = params.id
-        >>>     record_name = params.record_data['name']
-        >>>     print(f'Se creó un registro con ID {record_id} y nombre {record_name}')
-
-        Automatización más específica:
-        >>> @lylac.register_automation(
-        >>>     # Tabla donde se ejecutará la automatización
-        >>>     'custom.model',
-        >>>     # La automatización se ejecuta tras crearse un registro
-        >>>     'create',
-        >>>     # Campos a utilizar en la automatización
-        >>>     ['id', 'name', 'value'],
-        >>>     # Criterios a cumplir para que la automatización se ejecute
-        >>>     [('value', '=', 'some_value')],
-        >>>     # Tipo de ejecución
-        >>>     'record',
-        >>> )
-        >>> def do_something(params) -> None:
-        >>>     print(f'Se creó un registro con ID {params.id}')
-        >>>     print(f'El nuevo registro tiene el nombre {params.record_data["name"]}')
-        >>>     print(f'El valor del nuevo registro es {params.record_data["value"]})
+        >>> def create_welcome_tasks(ctx) -> None:
+        >>>     # Obtención de la ID del registro
+        >>>     record_id = ctx.data['id']
+        >>>     # Creación de los datos usando una función personalizada
+        >>>     tasks_data = build_initial_tasks(record_id)
+        >>>     # Creación de los datos en la base de datos
+        >>>     ctx.create('project.task', tasks_data)
 
         #### Tipado dinámico
-        Puede utilizarse tipado dedicado para mejorar el flujo de desarrollo de la
-        función a registrar en el decorador. Se utilizan tipos de dato nativos de
-        Python.
-        Ejemplo:
-        >>> from lylac.utils import BaseRecordData, DataPerRecord
+        Puede utilizarse también un tipado dedicado para mejorar el flujo de desarrollo
+        de la función a registrar en el decorador:
+        >>> from lylac.utils import Context, BaseRecordData
         >>> 
-        >>> class CustomModel(BaseRecordData):
-        >>>     value: str
-        >>>     sync: bool
+        >>> # Representación de una tabla personalizada
+        >>> class AdminReportJournal(BaseRecordData):
+        >>>     title: str
+        >>>     user_id: int
+        >>>     notes: str
+        >>>     state: Literal['open', 'paused', 'closed']
+        >>>     involved_users: list[int]
         >>> 
-        >>> @lylac.register_automation(...)
-        >>> def do_something(params: DataPerRecord[CustomModel]) -> None:
-        >>>     ...
+        >>> @lylac.register_automation(
+        >>>     # Modelo donde se ejecutará la automatización
+        >>>     'admin.report.journal',
+        >>>     # La automatización se ejecuta tras crearse un registro
+        >>>     'create',
+        >>>     # Campos del registro a usar en la automatización
+        >>>     ['title', 'notes', 'user_id'],
+        >>> )
+        >>> def create_new_report_task(
+        >>>     ctx: Context.Individual[AdminReportJournal],
+        >>> ) -> None:
+        >>> 
+        >>>     # Obtención del título del reporte
+        >>>     report_title = ctx.data['title']
+        >>>     # Obtención de las notas del reporte
+        >>>     report_notes = ctx.data['notes']
+        >>>     # Obtención de la ID del usuario
+        >>>     user_id = ctx.data['user_id']
+        >>>     # Creación de la tarea
+        >>>     ctx.create(
+        >>>         'proyect.task',
+        >>>         {
+        >>>             'title': report_title,
+        >>>             'description': report_notes,
+        >>>             'user_id': user_id,
+        >>>         },
+        >>>     )
 
         De esta manera el editor de código realizará el autocompletado al acceder a
         las llaves de la información.
+
+        Se utiliza el tipado de `Context.Individual` que indica que la automatización
+        se ejecuta por registro (creado, en este caso) para ejecutar el código de la
+        función. Seguido de ésta, se utiliza el acceso de índice para especificar el
+        tipo de registro que se va a recibir, en este caso, se usa la representación de
+        una tabla personalizada que pertenecería al modelo `admin.report.journal`.
+        >>> def create_new_report_task(
+        >>>     # Construcción del tipado
+        >>>     ctx: Context.Individual[AdminReportJournal],
+        >>> ) -> None:
 
         #### Nota:
         En el argumento `fields` se debe especificar qué campos se van a utilizar
@@ -157,7 +178,7 @@ class Lylac(_Lylac):
         """
 
         # Creación del decorador que registrará la automatización
-        def decorator(new_automation: Callable[[DataPerRecord[_T]], None]):
+        def decorator(new_automation: Callable[[Context.Group | Context.Individual], None]):
 
             # Registro de la automatización en la estructura central
             self._automations.register_automation(
@@ -193,7 +214,7 @@ class Lylac(_Lylac):
         >>>     'name': 'Onnymm Azzur',
         >>> }
         >>> 
-        >>> db.create('base.users', record)
+        >>> lylac.create(TOKEN, 'base.users', record)
         >>> #    id   login          name
         >>> # 0   2  onnymm  Onnymm Azzur
         >>> 
@@ -209,7 +230,7 @@ class Lylac(_Lylac):
         >>>     },
         >>> ]
         >>> 
-        >>> db.create('base.users', records)
+        >>> lylac.create(TOKEN, 'base.users', records)
         >>> #    id   login          name
         >>> # 0   2  onnymm  Onnymm Azzur
         >>> # 1   3   lumii    Lumii Mynx
@@ -224,7 +245,6 @@ class Lylac(_Lylac):
         data = self._preprocess.convert_to_list(data)
         # Preprocesamiento de datos en creación
         pos_creation_callback = self._preprocess.process_data_on_create(user_id, model_name, data)
-
         # Ejecución de validaciones
         self._validations.run_validations_on_create(model_name, data)
 
@@ -238,7 +258,6 @@ class Lylac(_Lylac):
             inserted_records,
             token,
         )
-
         # Ejecución de la función poscreación
         pos_creation_callback(inserted_records)
 
@@ -261,11 +280,11 @@ class Lylac(_Lylac):
 
         Uso:
         >>> # Ejemplo 1
-        >>> lylac.search('base.users')
+        >>> lylac.search(TOKEN, 'base.users')
         >>> # [1, 2, 3, 4, 5]
         >>> 
         >>> # Ejemplo 2
-        >>> lylac.search('base.model.field', [('create_uid', '=', 2)])
+        >>> lylac.search(TOKEN, 'base.model.field', [('create_uid', '=', 2)])
         >>> # [7, 9, 12, 13, 17, 21, ...]
 
         ----
@@ -312,27 +331,27 @@ class Lylac(_Lylac):
         >>> # "name" contiene "as"
 
         ----
-        ### Desfase de registros para paginación
+        #### Desfase de registros para paginación
         Este parámetro sirve para retornar los registros a partir del índice indicado por éste. Suponiendo que
         una búsqueda normal arrojaría los siguientes resultados:
-        >>> lylac.search('base.users')
+        >>> lylac.search(TOKEN, 'base.users')
         >>> # [1, 2, 3, 4, 5, 6, 7]
 
         Se puede especificar que el retorno de los registros considerará solo a partir desde cierto registro, como
         por ejemplo lo siguiente:
-        >>> lylac.search('base.users', offset= 2)
+        >>> lylac.search(TOKEN, 'base.users', offset= 2)
         >>> # [3, 4, 5, 6, 7]
 
         ----
-        ### Límite de registros retornados para paginación
+        #### Límite de registros retornados para paginación
         También es posible establecer una cantidad máxima de registros desde la base de datos. Suponiendo que una
         búsqueda normal arrojaría los siguientes registros:
-        >>> lylac.search('base.users')
+        >>> lylac.search(TOKEN, 'base.users')
         >>> # [3, 4, 5, 6, 7]
 
         Se puede especificar que solo se requiere obtener una cantidad máxima de registros a partir de un
         número provisto:
-        >>> lylac.search('base.users', limit= 3)
+        >>> lylac.search(TOKEN, 'base.users', limit= 3)
         >>> # [1, 2, 3]
         """
 
@@ -355,7 +374,6 @@ class Lylac(_Lylac):
 
         # Ordenamiento de los datos
         stmt = stmt.order_by( asc(FIELD_NAME.ID) )
-
         # Segmentación de inicio y fin en caso de haberlos
         stmt = self._query.build_segmentation(stmt, offset, limit)
 
@@ -382,11 +400,11 @@ class Lylac(_Lylac):
 
         Uso:
         >>> # Ejemplo 1
-        >>> lylac.get_value('base.users', 2, 'name')
+        >>> lylac.get_value(TOKEN, 'base.users', 2, 'name')
         >>> # 'onnymm'
         >>> 
         >>> # Ejemplo 2
-        >>> lylac.get_value('base.permissions', 5, 'create_date')
+        >>> lylac.get_value(TOKEN, 'base.permissions', 5, 'create_date')
         >>> # '2025-07-01 10:00:00'
         """
 
@@ -429,12 +447,12 @@ class Lylac(_Lylac):
 
         Uso:
         >>> # Ejemplo 1
-        >>> lylac.get_values('base.users', 1, ['name', 'create_date'])
+        >>> lylac.get_values(TOKEN, 'base.users', 1, ['name', 'create_date'])
         >>> # ('onnymm', '2024-11-04 11:16:59')
         >>> 
         >>> # Ejemplo 2
-        >>> lylac.get_values('base.permissions', 5, ['label', 'create_uid'])
-        >>> # ('Valores de selección de campos - Administrador', 3)
+        >>> lylac.get_values(TOKEN, 'base.permissions', 5, ['label', 'create_uid'])
+        >>> # ('Valores de selección de campos / Administrador', 3)
         """
 
         # Autenticación del usuario
@@ -488,43 +506,39 @@ class Lylac(_Lylac):
 
         Uso:
         >>> # Ejemplo 1
-        >>> lylac.search_read('base.users', [2])
+        >>> lylac.search_read(TOKEN, 'base.users', [2])
         >>> #    id   login          name         create_date          write_date
         >>> # 0   2  onnymm  Onnymm Azzur 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> 
-        >>> lylac.search_read('base.users', [2, 3])
+        >>> lylac.search_read(TOKEN, 'base.users', [2, 3])
         >>> #    id   login          name         create_date          write_date
         >>> # 0   2  onnymm  Onnymm Azzur 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> # 1   3   lumii    Lumii Mynx 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> 
         >>> # Ejemplo 3
-        >>> lylac.search_read('base.users', [2, 3], ['user', 'create_date'])
+        >>> lylac.search_read(TOKEN, 'base.users', [2, 3], ['user', 'create_date'])
         >>> #    id         name         create_date
         >>> # 0   2 Onnymm Azzur 2024-11-04 11:16:59
         >>> # 1   3   Lumii Mynx 2024-11-04 11:16:59
         """
 
+        # Conversión de datos entrantes si es necesaria
+        record_ids = self._preprocess.convert_to_list(record_ids)
 
         # Autenticación del usuario
         user_id = self._auth.identify_user(token)
         # Validación de permiso de transacción
         self._access.check_permission(user_id, 'read')
 
-        # Conversión de datos entrantes si es necesaria
-        record_ids = self._preprocess.convert_to_list(record_ids)
-
         # Obtención de la instancia de la tabla
         model_model = self._models.get_table_model(model_name)
 
         # Creación del query base
         ( stmt, ttypes ) = self._select.build(model_name, fields)
-
         # Creación del query where
         where_query = self._where.build_where(model_model, [(FIELD_NAME.ID, 'in', record_ids)])
-
         # Conversión del query SQL
         stmt = stmt.where(where_query)
-
         # Creación de parámetros de ordenamiento
         stmt = self._query.build_sort(
             stmt,
@@ -535,7 +549,6 @@ class Lylac(_Lylac):
 
         # Ejecución de la transacción
         response = self._connection.execute(stmt)
-
         # Inicialización del DataFrame de retorno
         data = pd.DataFrame( response.fetchall() )
 
@@ -563,18 +576,18 @@ class Lylac(_Lylac):
 
         Uso:
         >>> # Ejemplo 1
-        >>> lylac.search_read('base.users')
+        >>> lylac.search_read(TOKEN, 'base.users')
         >>> #    id   login          name         create_date          write_date
         >>> # 0   2  onnymm  Onnymm Azzur 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> # 1   3   lumii    Lumii Mynx 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> 
         >>> # Ejemplo 2
-        >>> lylac.search_read('base.users', [('user', '=', 'onnymm')])
+        >>> lylac.search_read(TOKEN, 'base.users', [('user', '=', 'onnymm')])
         >>> #    id   login          name         create_date          write_date
         >>> # 0   2  onnymm  Onnymm Azzur 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> 
         >>> # Ejemplo 3
-        >>> lylac.search_read('base.users', [], ['user', 'create_date'])
+        >>> lylac.search_read(TOKEN, 'base.users', [], ['user', 'create_date'])
         >>> #    id         name         create_date
         >>> # 0   2 Onnymm Azzur 2024-11-04 11:16:59
         >>> # 1   3   Lumii Mynx 2024-11-04 11:16:59
@@ -626,7 +639,7 @@ class Lylac(_Lylac):
         ### Desfase de registros para paginación
         Este parámetro sirve para retornar los registros a partir del índice indicado por éste. Suponiendo que
         una búsqueda normal arrojaría los siguientes resultados:
-        >>> lylac.search_read('base.users')
+        >>> lylac.search_read(TOKEN, 'base.users')
         >>> #    id    login                  name
         >>> # 0   3   onnymm          Onnymm Azzur
         >>> # 1   4    lumii            Lumii Mynx
@@ -636,7 +649,7 @@ class Lylac(_Lylac):
 
         Se puede especificar que el retorno de los registros considerará solo a partir desde cierto registro, como
         por ejemplo lo siguiente:
-        >>> lylac.search_read('base.users', offset= 2)
+        >>> lylac.search_read(TOKEN, 'base.users', offset= 2)
         >>> # 1   4    lumii            Lumii Mynx
         >>> # 2   5  user001  Persona Sin Nombre 1
         >>> # 3   6  user002  Persona Sin Nombre 2
@@ -646,7 +659,7 @@ class Lylac(_Lylac):
         ### Límite de registros retornados para paginación
         También es posible establecer una cantidad máxima de registros desde la base de datos. Suponiendo que una
         búsqueda normal arrojaría los siguientes registros:
-        >>> lylac.search_read('base.users')
+        >>> lylac.search_read(TOKEN, 'base.users')
         >>> #    id    login                  name
         >>> # 0   3   onnymm          Onnymm Azzur
         >>> # 1   4    lumii            Lumii Mynx
@@ -656,7 +669,7 @@ class Lylac(_Lylac):
 
         Se puede especificar que solo se requiere obtener una cantidad máxima de registros a partir de un
         número provisto:
-        >>> lylac.search_read('base.users', limit= 3)
+        >>> lylac.search_read(TOKEN, 'base.users', limit= 3)
         >>> #    id    login                  name
         >>> # 0   3   onnymm          Onnymm Azzur
         >>> # 1   4    lumii            Lumii Mynx
@@ -673,10 +686,8 @@ class Lylac(_Lylac):
 
         # Creación del query base
         ( stmt, ttypes ) = self._select.build(model_name, fields)
-
         # Creación del segmento WHERE en caso de haberlo
         stmt = self._where.add_query(stmt, model_model, search_criteria)
-
         # Creación de parámetros de ordenamiento
         stmt = self._query.build_sort(
             stmt,
@@ -684,13 +695,11 @@ class Lylac(_Lylac):
             sortby,
             ascending,
         )
-
         # Segmentación de inicio y fin en caso de haberlos
         stmt = self._query.build_segmentation(stmt, offset, limit)
 
         # Ejecución de la transacción
         response = self._connection.execute(stmt)
-
         # Inicialización del DataFrame de retorno
         data = pd.DataFrame(response.fetchall())
 
@@ -711,11 +720,11 @@ class Lylac(_Lylac):
 
         Uso:
         >>> # Ejemplo 1
-        >>> lylac.search_count('base.users')
+        >>> lylac.search_count(TOKEN, 'base.users')
         >>> # 5
         >>> 
         >>> # Ejemplo 2
-        >>> lylac.search_count('base.permissions', [('create_uid', '=', 5)])
+        >>> lylac.search_count(TOKEN, 'base.permissions', [('create_uid', '=', 5)])
         >>> # 126
 
         ----
@@ -769,7 +778,6 @@ class Lylac(_Lylac):
 
         # Obtenciónde la instancia de la tabla
         model_model = self._models.get_table_model(model_name)
-
         # Creación del query base
         stmt = (
             select( func.count() )
@@ -781,9 +789,10 @@ class Lylac(_Lylac):
 
         # Ejecución de la transacción
         response = self._connection.execute(stmt)
+        # Obtención del conteo de registro
+        count = response.scalar()
 
-        # Retorno del conteo de registro
-        return response.scalar()
+        return count
 
     def update(
         self,
@@ -799,7 +808,7 @@ class Lylac(_Lylac):
         sobreescribe un mismo valor por cada campo a todos los registros provistos.
 
         Uso:
-        >>> lylac.search_read('base.users', fields= ['login', 'name'])
+        >>> lylac.search_read(TOKEN, 'base.users', fields= ['login', 'name'])
         >>> #    id    login                  name
         >>> # 0   3   onnymm          Onnymm Azzur
         >>> # 1   4    lumii            Lumii Mynx
@@ -808,7 +817,9 @@ class Lylac(_Lylac):
         >>> # 4   7  user003  Persona Sin Nombre 3
         >>> 
         >>> # Modificación
-        >>> lylac.update('base.users', [3, 4, 5], {'name': 'Cambiado'})
+        >>> lylac.update(TOKEN, 'base.users', [3, 4, 5], {'name': 'Cambiado'})
+        >>> # True
+        >>> lylac.search_read(TOKEN, 'base.users', fields= ['login', 'name'])
         >>> #    id    login                  name
         >>> # 0   3   onnymm              Cambiado
         >>> # 1   4    lumii              Cambiado
@@ -838,14 +849,8 @@ class Lylac(_Lylac):
         método solo sobreescribe un mismo valor por cada campo a todos los registros
         encontrados en base a la condición provista.
 
-        ### Los parámetros de entrada son:
-        - `table_name`: Nombre de la tabla en donde se harán los cambios
-        - `search_criteria`: Condición que deben cumplir los registros a ser
-        modificados.
-        - `data`: Diccionario de valores a modificar masivamente
-
         Uso:
-        >>> lylac.search_read('base.users', fields= ['login', 'name'])
+        >>> lylac.search_read(TOKEN, 'base.users', fields= ['login', 'name'])
         >>> #    id    login                  name
         >>> # 0   3   onnymm          Onnymm Azzur
         >>> # 1   4    lumii            Lumii Mynx
@@ -854,7 +859,7 @@ class Lylac(_Lylac):
         >>> # 4   7  user003  Persona Sin Nombre 3
         >>> 
         >>> # Modificación
-        >>> db.update('base.users', [('name', 'ilike', 'sin nombre')], {'name': 'Zopilote'})
+        >>> lylac.update(TOKEN, 'base.users', [('name', 'ilike', 'sin nombre')], {'name': 'Zopilote'})
         >>> #    id    login          name
         >>> # 0   3   onnymm  Onnymm Azzur
         >>> # 1   4    lumii    Lumii Mynx
@@ -870,28 +875,22 @@ class Lylac(_Lylac):
 
         # Ejecución de validaciones
         self._validations.run_validations_on_update(model_name, search_criteria, data)
-
-        # Obtención de la instancia de la tabla
-        model_model = self._models.get_table_model(model_name)
-
         # Preprocesamiento de datos en actualización y obtención de función posactualización
         after_update_callback = self._preprocess.process_data_on_update(user_id, model_name, _record_ids, data)
 
+        # Obtención de la instancia de la tabla
+        model_model = self._models.get_table_model(model_name)
         # Creación del query base
         stmt = update(model_model)
-
         # Creación del segmento WHERE
         stmt = self._where.add_query(stmt, model_model, search_criteria)
-
         # Declaración de valores a cambiar
         stmt = stmt.values(data)
-
         # Declaración para obtener las IDs modificadas
         stmt = stmt.returning(self._models.get_id_field(model_model))
 
         # Ejecución de la transacción
         response = self._connection.execute(stmt, commit= True)
-
         # Obtención de las IDs creadas
         updated_records: list[int] = [ getattr(row, 'id') for row in response ]
 
@@ -902,7 +901,6 @@ class Lylac(_Lylac):
             updated_records,
             token,
         )
-
         # Ejecución de función posactualización
         after_update_callback()
 
@@ -954,7 +952,6 @@ class Lylac(_Lylac):
 
         # Obtención de la instancia de la tabla
         model_model = self._models.get_table_model(model_name)
-
         # Creación del query
         stmt = (
             delete(model_model)
@@ -964,7 +961,6 @@ class Lylac(_Lylac):
 
         # Ejecución de la transacción
         response = self._connection.execute(stmt, commit= True)
-
         # Obtención de las IDs encontradas
         deleted_ids: list[int] = [getattr(row, FIELD_NAME.ID) for row in response]
 
