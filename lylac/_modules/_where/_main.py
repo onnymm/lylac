@@ -11,7 +11,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.sql.elements import BinaryExpression
-from ..._core import _Lylac
+from ..._core import (
+    _Lylac,
+    BaseWhere,
+)
 from ..._module_types import (
     _T,
     CriteriaStructure,
@@ -24,7 +27,7 @@ from ._submodule_types import (
     ConditionUnionCallback,
 )
 
-class Where():
+class Where(BaseWhere):
 
     _comparison_operation: dict[ComparisonOperator, ComparisonCallback] = {
         '=': lambda field, value: field == value,

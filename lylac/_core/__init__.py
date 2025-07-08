@@ -11,6 +11,7 @@ from ._submodules import (
     BaseSelect,
     BaseStructure,
     BaseValidations,
+    BaseWhere,
 )
 from ._base import _Lylac
 from ._env import ENV_VARIABLES

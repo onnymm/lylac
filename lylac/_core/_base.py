@@ -7,6 +7,7 @@ from ._submodules import (
     BaseSelect,
     BaseStructure,
     BaseValidations,
+    BaseWhere,
 )
 from ._submodules import BaseBaseLylac
 
@@ -19,3 +20,4 @@ class _Lylac(BaseBaseLylac):
     _select: BaseSelect
     _strc: BaseStructure
     _validations: BaseValidations
+    _where: BaseWhere
