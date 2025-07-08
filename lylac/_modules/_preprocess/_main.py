@@ -38,9 +38,11 @@ class Preprocess():
         self,
         user_id: int,
         model_name: ModelName,
-        data: list[RecordData],
+        data: RecordData | list[RecordData],
     ) -> PosCreationCallback:
 
+        # Conversión de datos entrantes si es necesaria
+        data = self.convert_to_list(data)
         # Escritura de usuario de creación y modificación en los datos entrantes
         self._sign_create_and_update_user_id(user_id, model_name, data)
         # Creación de función para ejecutar tras la creación de registros
@@ -99,7 +101,7 @@ class Preprocess():
         self,
         model_name: ModelName,
         data: list[RecordData],
-    ) -> PosCreationCallback:
+    ) -> tuple[list[RecordData], PosCreationCallback]:
 
         # Creación de función de actualizción de valores many2many
         execute_automatic_many2many_updates = self._build_many2many_updates_after_creation(model_name, data)
@@ -110,7 +112,7 @@ class Preprocess():
             # Ejecución de actualizaciones de valores many2many
             execute_automatic_many2many_updates(record_ids)
 
-        return pos_create_callback
+        return ( data, pos_create_callback )
 
     def _build_pos_update_callback(
         self,

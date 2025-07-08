@@ -20,6 +20,7 @@ from ._module_types import (
     OutputOptions,
     RecordValue,
     ExecutionMethod,
+    Transaction,
 )
 from ._modules import (
     Access,
@@ -236,33 +237,25 @@ class Lylac(_Lylac):
         >>> # 1   3   lumii    Lumii Mynx
         """
 
-        # Autenticación del usuario
-        user_id = self._auth.identify_user(token)
-        # Validación de permiso de transacción
-        self._access.check_permission(user_id, 'create')
-
-        # Conversión de datos entrantes si es necesaria
-        data = self._preprocess.convert_to_list(data)
+        # Autenticación y revisión de permisos del usuario
+        user_id = self._authorize(token, 'create')
         # Preprocesamiento de datos en creación
-        pos_creation_callback = self._preprocess.process_data_on_create(user_id, model_name, data)
+        ( data, pos_creation_callback ) = self._preprocess.process_data_on_create(user_id, model_name, data)
         # Ejecución de validaciones
         self._validations.run_validations_on_create(model_name, data)
-
         # Creación de los registros y obtención de las IDs creadas
-        inserted_records = self._compiler.create(model_name, data)
-
+        created_records = self._compiler.create(model_name, data)
         # Ejecución de las automatizaciones correspondientes
         self._automations.run_after_transaction(
             model_name,
             'create',
-            inserted_records,
+            created_records,
             token,
         )
         # Ejecución de la función poscreación
-        pos_creation_callback(inserted_records)
+        pos_creation_callback(created_records)
 
-        # Retorno de las IDs creadas
-        return inserted_records
+        return created_records
 
     def search(
         self,
@@ -1036,3 +1029,16 @@ class Lylac(_Lylac):
         elif len(cs_1):
             # Se retorna sólo el primer criterio de búsqueda
             return cs_1
+
+    def _authorize(
+        self,
+        token: str,
+        transaction: Transaction,
+    ) -> int:
+
+        # Autenticación del usuario
+        user_id = self._auth.identify_user(token)
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, transaction)
+
+        return user_id
