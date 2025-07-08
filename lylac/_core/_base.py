@@ -4,6 +4,7 @@ from ._submodules import (
     BaseAutomations,
     BaseCompiler,
     BaseIndex,
+    BaseSelect,
     BaseStructure,
     BaseValidations,
 )
@@ -15,5 +16,6 @@ class _Lylac(BaseBaseLylac):
     _automations: BaseAutomations
     _compiler: BaseCompiler
     _index: BaseIndex
+    _select: BaseSelect
     _strc: BaseStructure
     _validations: BaseValidations

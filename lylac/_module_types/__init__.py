@@ -38,6 +38,7 @@ from ._interface import (
     DataOutput,
 )
 from ._metadata import ModelTemplate
+from ._miscelaneous import TTypesMapping
 from ._models import (
     AutomationModel,
     CredentialsFromEnv,

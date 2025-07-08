@@ -3,7 +3,10 @@ from typing import (
     Optional,
 )
 from ..._constants import FIELD_NAME
-from ..._core import _Lylac
+from ..._core import (
+    _Lylac,
+    BaseSelect,
+)
 from ..._module_types import ModelName
 from ._module_types import (
     TTypesMapping,
@@ -18,7 +21,7 @@ from sqlalchemy.orm.decl_api import DeclarativeBase
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.selectable import Select
 
-class Select_():
+class Select_(BaseSelect):
 
     def __init__(
         self,

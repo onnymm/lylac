@@ -8,6 +8,7 @@ from ._submodules import (
     BaseFieldsGetter,
     BaseIndex,
     BaseModels,
+    BaseSelect,
     BaseStructure,
     BaseValidations,
 )
