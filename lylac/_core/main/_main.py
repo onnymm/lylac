@@ -17,6 +17,7 @@ from .._interface import (
     Compiler_Interface,
     Connection_Interface,
     DDL_Interface,
+    DQL_Interface,
     Index_Interface,
     Metadata_Interface,
     Models_Interface,
@@ -37,6 +38,7 @@ class _Lylac_Core():
     _compiler: Compiler_Interface
     _connection: Connection_Interface
     _ddl: DDL_Interface
+    _dql: DQL_Interface
     _index: Index_Interface
     _metadata: Metadata_Interface
     _models: Models_Interface

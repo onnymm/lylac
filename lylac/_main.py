@@ -29,6 +29,7 @@ from ._modules import (
     Compiler,
     Connection,
     DDLManager,
+    DQLManager,
     Index,
     Metadata,
     Models,
@@ -61,14 +62,15 @@ class Lylac(_Lylac_Core):
         self._strc = Structure(self)
         self._models = Models(self)
         self._index = Index(self)
+        self._select = Select(self)
+        self._query = Query(self)
+        self._where = Where(self)
         self._compiler = Compiler(self)
         self._auth = Auth(self)
         self._access = Access(self)
         self._ddl = DDLManager(self)
-        self._where = Where(self)
+        self._dql = DQLManager(self)
         self._preprocess = Preprocess(self)
-        self._query = Query(self)
-        self._select = Select(self)
         self._automations = Automations(self)
         self._validations = Validations(self)
 
@@ -349,30 +351,13 @@ class Lylac(_Lylac_Core):
 
         # Autenticación y revisión de permisos del usuario
         self._authorize(token, 'create')
-
-        # Creación del query SELECT
-        ( stmt, _ ) = self._select.build(model_name, [FIELD_NAME.ID])
-
-        # Obtención de la instancia de la tabla
-        model_model = self._models.get_table_model(model_name)
-        # Si hay criterios de búsqueda se genera el 'where'
-        if len(search_criteria) > 0:
-            # Creación del query where
-            where_query = self._where.build_where(model_model, search_criteria)
-            # Conversión del query SQL
-            stmt = stmt.where(where_query)
-
-        # Ordenamiento de los datos
-        stmt = stmt.order_by( asc(FIELD_NAME.ID) )
-        # Segmentación de inicio y fin en caso de haberlos
-        stmt = self._query.build_segmentation(stmt, offset, limit)
-
-        # Ejecución de la transacción
-        response = self._connection.execute(stmt)
-
-        # Obtención de las IDs encontradas
-        found_ids = self._output.get_found_ids(response)
-
+        # Búsqueda de registros
+        found_ids = self._dql.search(
+            model_name,
+            search_criteria,
+            offset,
+            limit,
+        )
         return found_ids
 
     def get_value(

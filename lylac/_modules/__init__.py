@@ -5,6 +5,7 @@ from ._automations import Automations
 from ._compiler import Compiler
 from ._connection import Connection
 from ._ddl import DDLManager
+from ._dql import DQLManager
 from ._index import Index
 from ._metadata import Metadata
 from ._models import Models
