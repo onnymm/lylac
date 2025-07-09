@@ -27,7 +27,7 @@ class Query(Query_Core):
         stmt: Select[_T],
         model_model: type[DeclarativeBase],
         sortby: str | list[str],
-        ascending: str | list[bool],
+        ascending: bool | list[bool],
     ) -> Select[_T]:
 
         # Ordenamiento de los datos
