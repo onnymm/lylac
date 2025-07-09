@@ -1,5 +1,6 @@
 from typing import Callable
-from ..._core import _Lylac
+from ..._core.modules import Preprocess_Core
+from ..._core.main import _Lylac_Core
 from ..._module_types import (
     _T,
     RecordData,
@@ -12,11 +13,11 @@ PosUpdateCallback = Callable[[], None]
 FieldName = str
 RecordMany2ManyData = dict[FieldName, RecordIds]
 
-class Preprocess():
+class Preprocess(Preprocess_Core):
 
     def __init__(
         self,
-        instance: _Lylac
+        instance: _Lylac_Core
     ):
 
         # Asignación de la instancia principal
@@ -56,7 +57,7 @@ class Preprocess():
         model_name: ModelName,
         record_ids: RecordIds,
         data: RecordData,
-    ):
+    ) -> Callable[[], None]:
 
         # Escritura de usuario de modificación
         self._sign_update_user_id(user_id, model_name, data)

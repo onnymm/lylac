@@ -5,14 +5,15 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from ..._constants import FIELD_NAME
-from ..._core import _Lylac
+from ..._core.modules import Query_Core
+from ..._core.main import _Lylac_Core
 from ..._module_types import _T
 
-class Query():
+class Query(Query_Core):
 
     def __init__(
         self,
-        instance: _Lylac,
+        instance: _Lylac_Core,
     ) -> None:
 
         # Asignación de la instancia propietaria

@@ -4,17 +4,15 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.properties import ColumnProperty
 from ..._constants import FIELD_NAME
-from ..._core import (
-    BaseModels,
-    _Lylac,
-)
+from ..._core.modules import Models_Core
+from ..._core.main import _Lylac_Core
 from ..._module_types import ModelName
 
-class Models(BaseModels):
+class Models(Models_Core):
 
     def __init__(
         self,
-        instance: _Lylac,
+        instance: _Lylac_Core,
     ) -> None:
 
         # Asignación de la instancia propietaria

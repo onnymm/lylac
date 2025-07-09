@@ -1,15 +1,13 @@
 from ...._contexts import Context
-from ...._core import BaseAutomations
-from ...._module_types import (
-    DataPerRecord,
-    ModelRecordData,
-)
+from ...._core.modules import Automations_Core
+from ...._module_types import ModelRecordData
 
 class _Automations():
+    _automations: Automations_Core
 
     def __init__(
         self,
-        instance: BaseAutomations,
+        instance: Automations_Core,
     ):
 
         # Asignación de la clase propietaria
@@ -18,7 +16,6 @@ class _Automations():
     def register_new_model(
         self,
         ctx: Context.Individual[ModelRecordData.BaseModel_],
-        # params: DataPerRecord[ModelRecordData.BaseModel_],
     ) -> None:
 
         self._automations.register_model(ctx.data['model'])

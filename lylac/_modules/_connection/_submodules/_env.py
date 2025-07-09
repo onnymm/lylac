@@ -1,8 +1,11 @@
 import os
 from ...._module_types import CredentialsFromEnv
 from ...._settings import ENV_VARIABLE_NAME
+from ...._core.modules._connection import Connection_Core
+from ...._core.submodules.connection import _Env_Interface
 
-class _Env():
+class _Env(_Env_Interface):
+    _connection: Connection_Core
 
     def __init__(
         self,

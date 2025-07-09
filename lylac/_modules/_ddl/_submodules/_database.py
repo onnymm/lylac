@@ -3,15 +3,16 @@ from ...._module_types import (
     FieldDefinition,
     TType,
 )
-from ._base import _BaseDDLManager, _BaseDatabase
+from ...._core.modules import DDL_Core
+from ...._core.submodules.ddl import _Database_Interface
 
-class _Database(_BaseDatabase):
+class _Database(_Database_Interface):
     """
     ### Métodos de base de datos
     Este submódulo agrupa todos los métodos relacionados con la manipulación de la
     base de datos.
     """
-
+    _ddl: DDL_Core
     # Mapeo de nombres a tipos de dato en SQL
     _name_to_type: dict[TType, str] = {
         'integer': 'INTEGER',
@@ -29,7 +30,7 @@ class _Database(_BaseDatabase):
 
     def __init__(
         self,
-        instance: _BaseDDLManager,
+        instance: DDL_Core,
     ) -> None:
 
         # Asignación de la instancia propietaria

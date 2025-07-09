@@ -7,14 +7,16 @@ from ...._constants import (
     FIELD_NAME,
     MODEL_NAME,
 )
-from ...._core import BaseAuth
+from ...._core.submodules.auth import _Session_Interface
+from ...._core.modules import Auth_Core
 from ...._settings import SESSION
 
-class UserSession():
+class UserSession(_Session_Interface):
+    _auth: Auth_Core
 
     def __init__(
         self,
-        instance: BaseAuth,
+        instance: Auth_Core,
     ) -> None:
 
         # Asignación de instancia propietaria

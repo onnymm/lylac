@@ -1,20 +1,20 @@
 from datetime import datetime
 from typing import TypedDict
 import jwt
-from ...._core import (
-    BaseAuth,
-    ENV_VARIABLES,
-)
+from ...._core import ENV_VARIABLES
+from ...._core.submodules.auth import _Token_Interface
+from ...._core.modules import Auth_Core
 
 class TokenData(TypedDict):
     uuid: str
     exp: datetime
 
-class Token():
+class Token(_Token_Interface):
+    _auth: Auth_Core
 
     def __init__(
         self,
-        instance: BaseAuth,
+        instance: Auth_Core,
     ) -> None:
         
         # Asignación de instancia propietaria

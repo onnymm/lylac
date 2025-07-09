@@ -1,8 +1,6 @@
 from ..._constants import MODEL_NAME
-from ..._core import (
-    BaseValidations,
-    _Lylac,
-)
+from ..._core.modules import Validations_Core
+from ..._core.main import _Lylac_Core
 from ..._module_types import (
     CriteriaStructure,
     RecordData,
@@ -20,14 +18,14 @@ from ._submodules import (
     _Validations,
 )
 
-class Validations(BaseValidations):
+class Validations(Validations_Core):
 
     _hub: ValidationsHub = {}
     _active: bool = False
 
     def __init__(
         self,
-        instance: _Lylac,
+        instance: _Lylac_Core,
     ) -> None:
 
         # Asignación de instancia principal

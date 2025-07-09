@@ -1,19 +1,19 @@
 from typing import Any
 import pandas as pd
 from sqlalchemy.engine.cursor import CursorResult
-from ..._core import _Lylac
+from ..._core.modules import Output_Core
+from ..._core.main import _Lylac_Core
 from ..._module_types import OutputOptions, TType
 from ._submodules import (
-    _BaseOutput,
     _DataTypes,
     _RawORM,
 )
 
-class Output(_BaseOutput):
+class Output(Output_Core):
 
     def __init__(
         self,
-        instance: _Lylac,
+        instance: _Lylac_Core,
         output_format: OutputOptions | None
     ) -> None:
 

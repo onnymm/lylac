@@ -1,15 +1,13 @@
-from ..._core import (
-    BaseAccess,
-    _Lylac,
-)
-from ..._module_types import Transaction
 from ..._constants import MESSAGES
+from ..._module_types import Transaction
+from ..._core.modules import Access_Core
+from ..._core.main import _Lylac_Core
 
-class Access(BaseAccess):
+class Access(Access_Core):
 
     def __init__(
         self,
-        instance: _Lylac
+        instance: _Lylac_Core
     ) -> None:
 
         # Asignación de instancia principal

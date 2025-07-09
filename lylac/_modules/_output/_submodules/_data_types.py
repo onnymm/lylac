@@ -3,15 +3,16 @@ import numpy as np
 from typing import Callable
 from pandas._typing import AstypeArg
 from ...._module_types import TType
-from ._base import _BaseOutput
+from ...._core.modules import Output_Core
+from ...._core.submodules.output import _DataTypes_Interface
 
-class _DataTypes():
-
+class _DataTypes(_DataTypes_Interface):
+    _output: Output_Core
     recover_ttype: dict[TType, Callable[[pd.DataFrame, str], pd.DataFrame]]
 
     def __init__(
         self,
-        instance: _BaseOutput,
+        instance: Output_Core,
     ) -> None:
 
         # Asignación de la instancia propietaria
@@ -38,12 +39,12 @@ class _DataTypes():
             'file': lambda df, field: self._bypass_value(df, field),
             'text': lambda df, field: self._bypass_value(df, field),
             'selection': lambda df, field: self._bypass_value(df, field),
-            'many2one': lambda df, field: self.transform_many2one(df, field),
-            'one2many': lambda df, field: self.transform_ids_list(df, field),
-            'many2many': lambda df, field: self.transform_ids_list(df, field),
+            'many2one': lambda df, field: self._transform_many2one(df, field),
+            'one2many': lambda df, field: self._transform_ids_list(df, field),
+            'many2many': lambda df, field: self._transform_ids_list(df, field),
         }
 
-    def transform_many2one(
+    def _transform_many2one(
         self,
         data: pd.DataFrame,
         field: str
@@ -60,7 +61,7 @@ class _DataTypes():
             )
         )
 
-    def transform_ids_list(
+    def _transform_ids_list(
         self,
         data: pd.DataFrame,
         field: str,

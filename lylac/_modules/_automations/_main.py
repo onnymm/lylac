@@ -1,9 +1,7 @@
 from ..._constants import FIELD_NAME
+from ..._core.modules import Automations_Core
+from ..._core.main import _Lylac_Core
 from ..._contexts import AutomationCallback
-from ..._core import (
-    BaseAutomations,
-    _Lylac,
-)
 from ..._data import PRESET_AUTOMATIONS
 from ..._module_types import (
     AutomationModel,
@@ -24,11 +22,11 @@ from ._submodules import (
     _Builder,
 )
 
-class Automations(BaseAutomations):
+class Automations(Automations_Core):
 
     def __init__(
         self,
-        instance: _Lylac,
+        instance: _Lylac_Core,
     ) -> None:
 
         # Asignación de la instancia principal

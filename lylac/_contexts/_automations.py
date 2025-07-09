@@ -8,10 +8,10 @@ from lylac._module_types import (
     ModelName,
     RecordValue,
 )
-from .._core import _Lylac
+from .._core.main import _Lylac_Core
 
 class _BaseContext():
-    _main: _Lylac
+    _main: _Lylac_Core
     """
     Instancia principal.
     """
@@ -22,7 +22,7 @@ class _BaseContext():
 
     def __init__(
         self,
-        instance: _Lylac,
+        instance: _Lylac_Core,
         data,
         model_name: ModelName,
         user_token: str,

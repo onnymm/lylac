@@ -1,5 +1,6 @@
 from ...._contexts import Context
-from ...._core import BaseAutomations
+from ...._core.modules import Automations_Core
+from ...._core.submodules.automations import _Builder_Interface
 from .._module_types import ProgrammedAutomation
 from ...._module_types import (
     ModelName,
@@ -10,11 +11,12 @@ from .._module_types import (
     CompiledModificationAutomation,
 )
 
-class _Builder():
+class _Builder(_Builder_Interface):
+    _automations: Automations_Core
 
     def __init__(
         self,
-        instance: BaseAutomations,
+        instance: Automations_Core,
     ):
 
         # Asignación de la instancia propietaria

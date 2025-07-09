@@ -1,16 +1,17 @@
 from typing import Literal
 from passlib.context import CryptContext
-from ..._core import _Lylac, BaseAuth
+from ..._core.modules import Auth_Core
+from ..._core.main import _Lylac_Core
 from ._submodules import (
     Token,
     UserSession,
 )
 
-class Auth(BaseAuth):
+class Auth(Auth_Core):
 
     def __init__(
         self,
-        instance: _Lylac
+        instance: _Lylac_Core
     ) -> None:
 
         # Asignación de instancia principal

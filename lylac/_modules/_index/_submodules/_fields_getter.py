@@ -1,20 +1,18 @@
-from sqlalchemy.orm.decl_api import DeclarativeBase
 from sqlalchemy.orm.attributes import InstrumentedAttribute
-from ...._core import (
-    BaseFieldsGetter,
-    BaseIndex,
-    _Lylac,
-)
+from ...._core.modules import Index_Core
+from ...._core.submodules.index import _FieldsGetter_Interface
 
-class _FieldsGetter(BaseFieldsGetter):
+class _FieldsGetter(_FieldsGetter_Interface):
+    _index: Index_Core
 
     def __init__(
         self,
-        instance: BaseIndex,
+        instance: Index_Core,
     ) -> None:
 
         # Asignación de instancia propietaria
         self._index = instance
+        self._models = instance._main._models
 
     def __getitem__(
         self,
@@ -22,7 +20,7 @@ class _FieldsGetter(BaseFieldsGetter):
     ) -> InstrumentedAttribute:
 
         # Obtención de instancia del campo solicitado
-        field_instance = self._index._models.get_table_field(
+        field_instance = self._models.get_table_field(
             self._available_model,
             field_name,
         )

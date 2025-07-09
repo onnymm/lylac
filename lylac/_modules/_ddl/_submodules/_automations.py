@@ -1,16 +1,15 @@
 from ...._constants import MODEL_NAME
+from ...._core.modules import DDL_Core
 from ...._contexts import Context
 from ...._data import BASE_FIELDS_TEMPLATE
-from ...._module_types import (
-    ModelRecordData,
-)
-from ._base import _BaseDDLManager
+from ...._module_types import ModelRecordData
 
 class _Automations():
+    _ddl: DDL_Core
 
     def __init__(
         self,
-        instance: _BaseDDLManager,
+        instance: DDL_Core,
     ) -> None:
 
         # Asignación de la instancia propietaria

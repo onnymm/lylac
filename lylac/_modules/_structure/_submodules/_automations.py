@@ -1,16 +1,17 @@
 from ...._constants import MODEL_NAME
 from ...._contexts import Context
-from ...._core import BaseStructure
+from ...._core.modules import Structure_Core
 from ...._module_types import (
     DataPerRecord,
     ModelRecordData,
 )
 
 class _Automations():
+    _strc: Structure_Core
 
     def __init__(
         self,
-        instance: BaseStructure,
+        instance: Structure_Core,
     ) -> None:
 
         # Asignación de la instancia propietaria

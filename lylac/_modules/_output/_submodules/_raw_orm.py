@@ -5,13 +5,15 @@ from ...._module_types import (
     TType,
     ModelName,
 )
-from ._base import _BaseOutput
+from ...._core.modules import Output_Core
+from ...._core.submodules.output import _RawORM_Interface
 
-class _RawORM():
+class _RawORM(_RawORM_Interface):
+    _output: Output_Core
 
     def __init__(
         self,
-        instance: _BaseOutput,
+        instance: Output_Core,
     ) -> None:
 
         # Asignación de la instancia propietaria

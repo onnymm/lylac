@@ -3,21 +3,19 @@ from typing import (
     Optional,
     overload,
 )
-from ..._core import (
-    BaseAlgorythms,
-    _Lylac,
-)
+from ..._core.modules import Algorythms_Core
+from ..._core.main import _Lylac_Core
 from ..._module_types import (
     _C,
     _E,
     _T,
 )
 
-class Algorythms(BaseAlgorythms):
+class Algorythms(Algorythms_Core):
 
     def __init__(
         self,
-        instance: _Lylac,
+        instance: _Lylac_Core,
     ) -> None:
 
         # Asignación de instancia principal

@@ -16,6 +16,8 @@ from sqlalchemy.types import (
     Time,
 )
 from ...._constants import MODEL_NAME
+from ...._core.modules import DDL_Core
+from ...._core.submodules.ddl import _Models_Interface
 from ...._data import (
     MODEL_TABLE_TEMPLATE,
     RELATION_TABLE_TEMPLATE,
@@ -25,17 +27,25 @@ from ...._module_types import (
     ModelRecordData,
     ModelTemplate as ModelTemplate, # Uso en compilación de código de archivos
     ModelName,
+    TType,
 )
-from ._base import (
-    _BaseDDLManager,
-    _BaseModels,
-)
+from .._module_types import ColumnGenerator
 
-class _Models(_BaseModels):
+class _Models(_Models_Interface):
+    _ddl: DDL_Core
+    build_column: dict[TType, ColumnGenerator]
+    """
+    ### Construcción de columna
+    Este mapa de métodos construye una columna tipada para un modelo de SQLALchemy.
+    Uso:
+    >>> # Creación de un campo tipo 'integer'
+    >>> field = NewField(...)
+    >>> column = self.build_column['integer'](field)
+    """
 
     def __init__(
         self,
-        instance: _BaseDDLManager,
+        instance: DDL_Core,
     ) -> None:
 
         # Asignación de la instancia propietaria
@@ -268,6 +278,7 @@ class _Models(_BaseModels):
                 **self._build_field_kwargs(field)
             ),
         }
+
 
         # Inicialización de atributos de campo
         self._atts = [

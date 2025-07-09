@@ -10,13 +10,15 @@ from ...._data import (
 )
 from ....security import hash_password
 from ...._errors import InitializationError
-from ._base import _BaseDDLManager
+from ...._core.modules import DDL_Core
+from ...._core.submodules.ddl import _Reset_Interface
 
-class _Reset():
+class _Reset(_Reset_Interface):
+    _ddl: DDL_Core
 
     def __init__(
         self,
-        instance: _BaseDDLManager,
+        instance: DDL_Core,
     ) -> None:
 
         # Se inicializa estado de inicialización en falso

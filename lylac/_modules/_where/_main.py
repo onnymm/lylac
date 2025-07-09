@@ -11,10 +11,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.sql.elements import BinaryExpression
-from ..._core import (
-    _Lylac,
-    BaseWhere,
-)
+from ..._core.modules import Where_Core
+from ..._core.main import _Lylac_Core
 from ..._module_types import (
     _T,
     CriteriaStructure,
@@ -27,7 +25,7 @@ from ._submodule_types import (
     ConditionUnionCallback,
 )
 
-class Where(BaseWhere):
+class Where(Where_Core):
 
     _comparison_operation: dict[ComparisonOperator, ComparisonCallback] = {
         '=': lambda field, value: field == value,
@@ -53,7 +51,7 @@ class Where(BaseWhere):
 
     def __init__(
         self,
-        instance: _Lylac,
+        instance: _Lylac_Core,
     ) -> None:
 
         # Asignación de la instancia propietaria

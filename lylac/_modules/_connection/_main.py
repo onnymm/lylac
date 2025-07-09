@@ -1,16 +1,11 @@
 import re
-from typing import (
-    Optional,
-    Union,
-)
 from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.engine.cursor import CursorResult
 from sqlalchemy.sql.selectable import Select, TypedReturnsRows
 from ..._constants import MESSAGES
-from ..._core import (
-    _Lylac,
-)
+from ..._core.modules import Connection_Core
+from ..._core.main import _Lylac_Core
 from ..._errors import URLFormatError, CredentialsError
 from ..._module_types import (
     CredentialsArgs,
@@ -20,11 +15,11 @@ from ..._module_types import (
 )
 from ._submodules import _Env
 
-class Connection():
+class Connection(Connection_Core):
 
     def __init__(
         self,
-        instance: _Lylac,
+        instance: _Lylac_Core,
         credentials: CredentialsAlike,
     ) -> None:
 

@@ -4,13 +4,14 @@ from ...._module_types import (
     DataPerRecord,
     ModelRecordData,
 )
-from ...._core import BaseValidations
+from ...._core.modules import Validations_Core
 
 class _Automations():
+    _validations: Validations_Core
 
     def __init__(
         self,
-        instance: BaseValidations,
+        instance: Validations_Core,
     ) -> None:
 
         # Asignación de instancia propietaria

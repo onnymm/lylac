@@ -9,9 +9,8 @@ from sqlalchemy import (
 )
 from ._constants import FIELD_NAME
 from ._contexts import Context
-from ._core import _Lylac
+from ._core.main import _Lylac_Core
 from ._module_types import (
-    _T,
     CriteriaStructure,
     RecordData,
     CredentialsAlike,
@@ -42,7 +41,7 @@ from ._modules import (
     Where,
 )
 
-class Lylac(_Lylac):
+class Lylac(_Lylac_Core):
 
     def __init__(
         self,
@@ -239,8 +238,8 @@ class Lylac(_Lylac):
 
         # Autenticación y revisión de permisos del usuario
         user_id = self._authorize(token, 'create')
-        # Preprocesamiento de datos en creación
-        ( data, pos_creation_callback ) = self._preprocess.process_data_on_create(user_id, model_name, data)
+        # Preprocesamiento de datos en creación y creación de funciones poscreación
+        ( data, post_creation_callback ) = self._preprocess.process_data_on_create(user_id, model_name, data)
         # Ejecución de validaciones
         self._validations.run_validations_on_create(model_name, data)
         # Creación de los registros y obtención de las IDs creadas
@@ -253,7 +252,7 @@ class Lylac(_Lylac):
             token,
         )
         # Ejecución de la función poscreación
-        pos_creation_callback(created_records)
+        post_creation_callback(created_records)
 
         return created_records
 
@@ -348,16 +347,14 @@ class Lylac(_Lylac):
         >>> # [1, 2, 3]
         """
 
-        # Autenticación del usuario
-        user_id = self._auth.identify_user(token)
-        # Validación de permiso de transacción
-        self._access.check_permission(user_id, 'read')
+        # Autenticación y revisión de permisos del usuario
+        self._authorize(token, 'create')
 
-        # Obtención de la instancia de la tabla
-        model_model = self._models.get_table_model(model_name)
         # Creación del query SELECT
         ( stmt, _ ) = self._select.build(model_name, [FIELD_NAME.ID])
 
+        # Obtención de la instancia de la tabla
+        model_model = self._models.get_table_model(model_name)
         # Si hay criterios de búsqueda se genera el 'where'
         if len(search_criteria) > 0:
             # Creación del query where

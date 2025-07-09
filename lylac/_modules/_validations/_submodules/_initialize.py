@@ -2,13 +2,15 @@ from ...._data import (
     INITIAL_DATA,
     VALIDATIONS_DATA,
 )
-from ...._core import BaseValidations
+from ...._core.modules import Validations_Core
+from ...._core.submodules.validations import _Initialize_Interface
 
-class _Initialize():
+class _Initialize(_Initialize_Interface):
+    _validations: Validations_Core
 
     def __init__(
         self,
-        instance: BaseValidations,
+        instance: Validations_Core,
     ) -> None:
 
         # Asignación de instancia propietaria

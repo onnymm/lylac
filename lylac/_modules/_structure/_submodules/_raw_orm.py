@@ -6,23 +6,22 @@ from ...._constants import (
     FIELD_NAME,
     MODEL_NAME,
 )
-from ...._core import (
-    BaseStructure,
-    _Lylac,
-)
+from ...._core.modules import Structure_Core
+from ...._core.submodules.structure import _RawORM_Interface
 from ...._module_types import TType
 
-class _RawORM():
+class _RawORM(_RawORM_Interface):
+    _strc: Structure_Core
 
     def __init__(
         self,
-        instance: BaseStructure,
+        instance: Structure_Core,
     ) -> None:
 
         # Asignación de instancia propietaria
         self._strc = instance
         # Asignación de instancia
-        self._main: _Lylac = instance._main
+        self._main = instance._main
 
     def get_model_fields(
         self,

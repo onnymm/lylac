@@ -1,5 +1,4 @@
 from ..._constants import MODEL_NAME
-from ..._core import _Lylac
 from ..._data import (
     DEFAULT_FIELD_TEMPLATE,
     UID_FIELDS,
@@ -12,17 +11,18 @@ from ..._module_types import (
 )
 from ._submodules import (
     _Automations,
-    _BaseDDLManager,
     _Database,
     _Models,
     _Reset
 )
+from ..._core.modules import DDL_Core
+from ..._core.main import _Lylac_Core
 
-class DDLManager(_BaseDDLManager):
+class DDLManager(DDL_Core):
 
     def __init__(
         self,
-        instance: _Lylac,
+        instance: _Lylac_Core,
     ) -> None:
 
         # Asignación de la instancia propietaria

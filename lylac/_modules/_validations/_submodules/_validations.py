@@ -4,21 +4,25 @@ from ...._constants import (
     FIELD_NAME,
     MODEL_NAME,
 )
-from ...._core import BaseValidations
+from ...._core.modules import Validations_Core
+from ...._core.main import _Lylac_Core
 from ...._module_types import ModelRecordData
 from .._module_types import Validation
 
 class _Validations():
+    _validations: Validations_Core
 
     def __init__(
         self,
-        instance: BaseValidations,
+        instance: Validations_Core,
     ) -> None:
 
         # Asignación de instancia propietaria
         self._validations = instance
         # Asignación de instancia principal
         self._main = instance._main
+        # Referencia al módulo de estructura interna
+        self._strc = instance._main._strc
 
     def reject_id_values_on_create(
         self,
@@ -80,14 +84,14 @@ class _Validations():
     ) -> Any:
 
         # Obtención de los campos de tipo selección del modelo actual
-        selection_ttype_fields = self._validations._strc.get_ttype_fields(params.model_name, 'selection')
+        selection_ttype_fields = self._strc.get_ttype_fields(params.model_name, 'selection')
 
         # Iteración por cada campo de selección encontrado
         for selection_field in selection_ttype_fields:
             # Si existe un campo de tipo selección en los datos...
             if selection_field in params.data.keys():
                 # Obtención de los valores permitidos para el campo de tipo selección
-                selection_values = self._validations._strc.get_field_selection_values(params.model_name, selection_field)
+                selection_values = self._strc.get_field_selection_values(params.model_name, selection_field)
                 # Si el valor del campo no se encuentra dentro de los valores permitidos...
                 if params.data[selection_field] not in selection_values:
                     # Se retorna el valor para generar el error
@@ -99,14 +103,14 @@ class _Validations():
     ) -> Any:
 
         # Obtención de los campos de tipo selección del modelo actual
-        selection_ttype_fields = self._validations._strc.get_ttype_fields(params.model_name, 'selection')
+        selection_ttype_fields = self._strc.get_ttype_fields(params.model_name, 'selection')
 
         # Iteración por cada campo de selección encontrado
         for selection_field in selection_ttype_fields:
             # Si existe un campo de tipo selección en los datos...
             if selection_field in params.data.keys():
                 # Obtención de los valores permitidos para el campo de tipo selección
-                selection_values = self._validations._strc.get_field_selection_values(params.model_name, selection_field)
+                selection_values = self._strc.get_field_selection_values(params.model_name, selection_field)
                 # Si el valor del campo no se encuentra dentro de los valores permitidos...
                 if params.data[selection_field] not in selection_values:
                     # Se retorna el valor para generar el error

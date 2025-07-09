@@ -1,9 +1,7 @@
 from typing import Tuple
 from sqlalchemy.orm.decl_api import DeclarativeBase
-from ..._core import (
-    _Lylac,
-    BaseStructure,
-)
+from ..._core.modules import Structure_Core
+from ..._core.main import _Lylac_Core
 from ..._data import FIELDS_ATTS
 from ..._module_types import (
     TType,
@@ -14,18 +12,18 @@ from ._submodules import (
     _RawORM,
 )
 
-class Structure(BaseStructure):
+class Structure(Structure_Core):
 
     def __init__(
         self,
-        instance: _Lylac
+        instance: _Lylac_Core
     ) -> None:
 
         # Asignación de instancia principal
         self._main = instance
 
         # Inicialización del módulo de ORM crudo
-        self._m_raworm = _RawORM(self)
+        self._m_orm = _RawORM(self)
         # Inicialización del módulo de automatizaciones
         self._m_automations = _Automations(self)
 
@@ -248,7 +246,7 @@ class Structure(BaseStructure):
     ) -> None:
 
         # Obtención de los atributos de los campos de la tabla
-        fields_atts = self._m_raworm.get_model_fields(model_name)
+        fields_atts = self._m_orm.get_model_fields(model_name)
 
         # Registro de los campos
         for atts in fields_atts:

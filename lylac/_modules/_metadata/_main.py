@@ -14,15 +14,16 @@ from sqlalchemy.types import (
     String,
     Text,
 )
-from ..._core import _Lylac
+from ..._core.modules import Metadata_Core
+from ..._core.main import _Lylac_Core
 from ..._module_types import ModelTemplate
 from ...security import default_password
 
-class Metadata():
+class Metadata(Metadata_Core):
 
     def __init__(
         self,
-        instance: _Lylac,
+        instance: _Lylac_Core,
     ) -> None:
 
         # Asignación de instancia principal

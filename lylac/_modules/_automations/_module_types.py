@@ -1,7 +1,6 @@
 from typing import (
     Callable,
     Literal,
-    TypedDict,
 )
 from pydantic import BaseModel
 from ..._module_types import (
