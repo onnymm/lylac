@@ -1,5 +1,8 @@
 from ..._constants import MESSAGES
-from ..._module_types import Transaction
+from ..._module_types import (
+    ModelName,
+    Transaction,
+)
 
 class Access_Interface():
 
@@ -11,6 +14,7 @@ class Access_Interface():
     def check_permission(
         self,
         user_id: int,
+        model_name: ModelName,
         transaction: Transaction,
-    ) -> None:
+    ) -> bool:
         ...

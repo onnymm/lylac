@@ -43,6 +43,7 @@ class Compiler_Interface():
     def check_permission(
         self,
         user_id: int,
+        model_name: ModelName,
         transaction: Transaction,
     ) -> bool:
         ...

@@ -1,9 +1,5 @@
 from typing import Callable
 import pandas as pd
-from sqlalchemy import (
-    delete,
-    update,
-)
 from ._constants import FIELD_NAME
 from ._contexts import Context
 from ._core.main import _Lylac_Core
@@ -238,7 +234,7 @@ class Lylac(_Lylac_Core):
         """
 
         # Autenticación y revisión de permisos del usuario
-        user_id = self._authorize(token, 'create')
+        user_id = self._authorize(token, model_name, 'create')
         # Preprocesamiento de datos en creación y creación de funciones poscreación
         ( data, post_creation_callback ) = self._preprocess.process_data_on_create(user_id, model_name, data)
         # Ejecución de validaciones
@@ -349,7 +345,7 @@ class Lylac(_Lylac_Core):
         """
 
         # Autenticación y revisión de permisos del usuario
-        self._authorize(token, 'read')
+        self._authorize(token, model_name, 'read')
         # Búsqueda de registros
         found_ids = self._dql.search(
             model_name,
@@ -385,7 +381,7 @@ class Lylac(_Lylac_Core):
         # Autenticación del usuario
         user_id = self._auth.identify_user(token)
         # Validación de permiso de transacción
-        self._access.check_permission(user_id, 'read')
+        self._access.check_permission(user_id, model_name, 'read')
 
         # Obtención del único elemento contenido en la lista
         [ value ] = (
@@ -432,7 +428,7 @@ class Lylac(_Lylac_Core):
         # Autenticación del usuario
         user_id = self._auth.identify_user(token)
         # Validación de permiso de transacción
-        self._access.check_permission(user_id, 'read')
+        self._access.check_permission(user_id, model_name, 'read')
 
         # Obtención de la lista de valores
         values = (
@@ -497,7 +493,7 @@ class Lylac(_Lylac_Core):
         """
 
         # Autenticación y revisión de permisos del usuario
-        self._authorize(token, 'read')
+        self._authorize(token, model_name, 'read')
         # Conversión de datos entrantes si es necesaria
         record_ids = self._preprocess.convert_to_list(record_ids)
         # Lectura de datos
@@ -635,7 +631,7 @@ class Lylac(_Lylac_Core):
         """
 
         # Autenticación y revisión de permisos del usuario
-        self._authorize(token, 'read')
+        self._authorize(token, model_name, 'read')
         # Búsqueda y lectura de datos
         data = self._dql.search_read(
             model_name,
@@ -717,7 +713,7 @@ class Lylac(_Lylac_Core):
         """
 
         # Autenticación y revisión de permisos del usuario
-        self._authorize(token, 'read')
+        self._authorize(token, model_name, 'read')
         # Conteo de registros
         count = self._dql.search_count(model_name, search_criteria)
 
@@ -803,7 +799,7 @@ class Lylac(_Lylac_Core):
         """
 
         # Autenticación y revisión de permisos del usuario
-        user_id = self._authorize(token, 'update')
+        user_id = self._authorize(token, model_name, 'update')
         # Ejecución de validaciones
         self._validations.run_validations_on_update(model_name, search_criteria, data)
         # Preprocesamiento de datos en actualización y obtención de función posactualización
@@ -851,7 +847,7 @@ class Lylac(_Lylac_Core):
         """
 
         # Autenticación y revisión de permisos del usuario
-        user_id = self._authorize(token, 'delete')
+        user_id = self._authorize(token, model_name, 'delete')
         # Conversión de datos entrantes si es necesaria
         record_ids = self._preprocess.convert_to_list(record_ids)
         # Creación de función de ejecución de automatizaciones
@@ -938,12 +934,13 @@ class Lylac(_Lylac_Core):
     def _authorize(
         self,
         token: str,
+        model_name: ModelName,
         transaction: Transaction,
     ) -> int:
 
         # Autenticación del usuario
         user_id = self._auth.identify_user(token)
         # Validación de permiso de transacción
-        self._access.check_permission(user_id, transaction)
+        self._access.check_permission(user_id, model_name, transaction)
 
         return user_id

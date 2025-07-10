@@ -1,5 +1,8 @@
 from ..._constants import MESSAGES
-from ..._module_types import Transaction
+from ..._module_types import (
+    ModelName,
+    Transaction,
+)
 from ..._core.modules import Access_Core
 from ..._core.main import _Lylac_Core
 
@@ -28,15 +31,16 @@ class Access(Access_Core):
     def check_permission(
         self,
         user_id: int,
+        model_name: ModelName,
         transaction: Transaction,
-    ) -> None:
+    ) -> bool:
 
         # Si el módulo no está activo no se realiza ninguna validación
         if not self._active:
             return
 
         # Revisión de permiso de transacción
-        granted = self._main._compiler.check_permission(user_id, transaction)
+        granted = self._main._compiler.check_permission(user_id, model_name, transaction)
 
         # Si el usuario no tiene permiso de realiza la acción se arroja un error
         if not granted:

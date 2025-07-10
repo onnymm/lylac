@@ -150,10 +150,12 @@ class Compiler(Compiler_Core):
     def check_permission(
         self,
         user_id: int,
+        model_name: ModelName,
         transaction: Transaction,
     ) -> bool:
 
         # Obtención de los modelos a usar
+        base_model = self._strc.get_model('base.model')
         base_users = self._strc.get_model('base.users')
         base_users_role = self._strc.get_model('base.users.role')
         base_model_access_groups = self._strc.get_model('base.model.access.groups')
@@ -169,10 +171,13 @@ class Compiler(Compiler_Core):
         base_model_access__perm_update = self._index[base_model_access]['perm_update']
         base_model_access__perm_delete = self._index[base_model_access]['perm_delete']
         # Obtención de las instancias de columnas a usar en outerjoins
+        base_model__id = self._index[base_model]['id']
+        base_model__model = self._index[base_model]['model']
         base_users__id = self._index[base_users]['id']
         base_users_role__id = self._index[base_users_role]['id']
         base_model_access_groups__id = self._index[base_model_access_groups]['id']
         base_model_access__id = self._index[base_model_access]['id']
+        base_model_access__model_id = self._index[base_model_access]['model_id']
         _rel_base_users__base_users_role__x = self._index[_rel_base_users__base_users_role]['x']
         _rel_base_users__base_users_role__y = self._index[_rel_base_users__base_users_role]['y']
         _rel_base_users_role__base_model_access_groups__x = self._index[_rel_base_users_role__base_model_access_groups]['x']
@@ -223,12 +228,18 @@ class Compiler(Compiler_Core):
                 base_model_access,
                 _rel_base_model_access_groups__base_model_access__y == base_model_access__id,
             )
+            .outerjoin(
+                base_model,
+                base_model_access__model_id == base_model__id,
+            )
             # Condiciones
             .where(
                 # ID de usuario
                 base_users__id == user_id,
                 # Permiso a validar
                 permission_condition[transaction],
+                # Nombre de la tabla
+                base_model__model == model_name
             )
         )
 
