@@ -5,6 +5,7 @@ from ._automations import Automations_Interface
 from ._compiler import Compiler_Interface
 from ._connection import Connection_Interface
 from ._ddl import DDL_Interface
+from ._dml import DML_Interface
 from ._dql import DQL_Interface
 from ._index import Index_Interface
 from ._metadata import Metadata_Interface
