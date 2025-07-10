@@ -26,6 +26,7 @@ from ._modules import (
     Compiler,
     Connection,
     DDLManager,
+    DMLManager,
     DQLManager,
     Index,
     Metadata,
@@ -63,10 +64,11 @@ class Lylac(_Lylac_Core):
         self._query = Query(self)
         self._where = Where(self)
         self._compiler = Compiler(self)
+        self._ddl = DDLManager(self)
+        self._dml = DMLManager(self)
+        self._dql = DQLManager(self)
         self._auth = Auth(self)
         self._access = Access(self)
-        self._ddl = DDLManager(self)
-        self._dql = DQLManager(self)
         self._preprocess = Preprocess(self)
         self._automations = Automations(self)
         self._validations = Validations(self)
@@ -242,7 +244,7 @@ class Lylac(_Lylac_Core):
         # Ejecución de validaciones
         self._validations.run_validations_on_create(model_name, data)
         # Creación de los registros y obtención de las IDs creadas
-        created_records = self._compiler.create(model_name, data)
+        created_records = self._dml.create(model_name, data)
         # Ejecución de las automatizaciones correspondientes
         self._automations.run_after_transaction(
             model_name,
@@ -347,7 +349,7 @@ class Lylac(_Lylac_Core):
         """
 
         # Autenticación y revisión de permisos del usuario
-        self._authorize(token, 'create')
+        self._authorize(token, 'read')
         # Búsqueda de registros
         found_ids = self._dql.search(
             model_name,
@@ -495,7 +497,7 @@ class Lylac(_Lylac_Core):
         """
 
         # Autenticación y revisión de permisos del usuario
-        self._authorize(token, 'create')
+        self._authorize(token, 'read')
         # Conversión de datos entrantes si es necesaria
         record_ids = self._preprocess.convert_to_list(record_ids)
         # Lectura de datos
@@ -633,7 +635,7 @@ class Lylac(_Lylac_Core):
         """
 
         # Autenticación y revisión de permisos del usuario
-        self._authorize(token, 'create')
+        self._authorize(token, 'read')
         # Búsqueda y lectura de datos
         data = self._dql.search_read(
             model_name,
@@ -715,7 +717,7 @@ class Lylac(_Lylac_Core):
         """
 
         # Autenticación y revisión de permisos del usuario
-        self._authorize(token, 'create')
+        self._authorize(token, 'read')
         # Conteo de registros
         count = self._dql.search_count(model_name, search_criteria)
 
@@ -757,9 +759,14 @@ class Lylac(_Lylac_Core):
 
         # Conversión de entrada de datos a lista de datos
         record_ids = self._preprocess.convert_to_list(record_ids)
-
         # Ejecución del método UPDATE WHERE
-        return self.update_where(token, model_name, [('id', 'in', record_ids)], data, record_ids)
+        return self.update_where(
+            token,
+            model_name,
+            [('id', 'in', record_ids)],
+            data,
+            record_ids,
+        )
 
     def update_where(
         self,
@@ -795,32 +802,14 @@ class Lylac(_Lylac_Core):
         >>> # 4   7  user003      Zopilote
         """
 
-        # Autenticación del usuario
-        user_id = self._auth.identify_user(token)
-        # Validación de permiso de transacción
-        self._access.check_permission(user_id, 'update')
-
+        # Autenticación y revisión de permisos del usuario
+        user_id = self._authorize(token, 'update')
         # Ejecución de validaciones
         self._validations.run_validations_on_update(model_name, search_criteria, data)
         # Preprocesamiento de datos en actualización y obtención de función posactualización
         after_update_callback = self._preprocess.process_data_on_update(user_id, model_name, _record_ids, data)
-
-        # Obtención de la instancia de la tabla
-        model_model = self._models.get_table_model(model_name)
-        # Creación del query base
-        stmt = update(model_model)
-        # Creación del segmento WHERE
-        stmt = self._where.add_query(stmt, model_model, search_criteria)
-        # Declaración de valores a cambiar
-        stmt = stmt.values(data)
-        # Declaración para obtener las IDs modificadas
-        stmt = stmt.returning(self._models.get_id_field(model_model))
-
-        # Ejecución de la transacción
-        response = self._connection.execute(stmt, commit= True)
-        # Obtención de las IDs creadas
-        updated_records: list[int] = [ getattr(row, 'id') for row in response ]
-
+        # Actualización de registros
+        updated_records = self._dml.update_where(model_name, search_criteria, data)
         # Ejecución de las automatizaciones correspondientes
         self._automations.run_after_transaction(
             model_name,
@@ -831,7 +820,6 @@ class Lylac(_Lylac_Core):
         # Ejecución de función posactualización
         after_update_callback()
 
-        # Retorno de confirmación de movimientos
         return True
 
     def delete(
@@ -862,35 +850,18 @@ class Lylac(_Lylac_Core):
         >>> # 4   7  user003  Persona Sin Nombre 3
         """
 
-        # Autenticación del usuario
-        user_id = self._auth.identify_user(token)
-        # Validación de permiso de transacción
-        self._access.check_permission(user_id, 'delete')
-
+        # Autenticación y revisión de permisos del usuario
+        user_id = self._authorize(token, 'delete')
         # Conversión de datos entrantes si es necesaria
         record_ids = self._preprocess.convert_to_list(record_ids)
-
         # Creación de función de ejecución de automatizaciones
         run_post_delete_automations = self._automations.generate_before_transaction(
             model_name,
             record_ids,
             token,
         )
-
-        # Obtención de la instancia de la tabla
-        model_model = self._models.get_table_model(model_name)
-        # Creación del query
-        stmt = (
-            delete(model_model)
-            .where(getattr(model_model, FIELD_NAME.ID).in_(record_ids))
-            .returning(self._models.get_id_field(model_model))
-        )
-
-        # Ejecución de la transacción
-        response = self._connection.execute(stmt, commit= True)
-        # Obtención de las IDs encontradas
-        deleted_ids: list[int] = [getattr(row, FIELD_NAME.ID) for row in response]
-
+        # Eliminación de registros
+        deleted_ids = self._dml.delete(model_name, record_ids)
         # Ejecución de las automatizaciones correspondientes
         run_post_delete_automations(deleted_ids)
 

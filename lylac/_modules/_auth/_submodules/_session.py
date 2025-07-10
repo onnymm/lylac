@@ -25,6 +25,8 @@ class UserSession(_Session_Interface):
         self._main = instance._main
         # Referencia del módulo de compilador
         self._compiler = instance._main._compiler
+        # Referencia del módulo de manipulación de datos
+        self._dml = instance._main._dml
 
     def generate_user_session(
         self,
@@ -89,7 +91,7 @@ class UserSession(_Session_Interface):
         }
 
         # Se crean los datos en la base de datos
-        self._compiler.create(
+        self._dml.create(
             MODEL_NAME.BASE_USERS_SESSION,
             [data_to_insert,],
         )

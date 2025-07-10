@@ -5,6 +5,7 @@ from ._automations import Automations_Core
 from ._compiler import Compiler_Core
 from ._connection import Connection_Core
 from ._ddl import DDL_Core
+from ._dml import DML_Core
 from ._dql import DQL_Core
 from ._index import Index_Core
 from ._metadata import Metadata_Core
