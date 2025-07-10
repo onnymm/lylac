@@ -1,11 +1,8 @@
 from typing import Callable
 import pandas as pd
 from sqlalchemy import (
-    select,
     delete,
-    asc,
     update,
-    func,
 )
 from ._constants import FIELD_NAME
 from ._contexts import Context
@@ -497,38 +494,22 @@ class Lylac(_Lylac_Core):
         >>> # 1   3   Lumii Mynx 2024-11-04 11:16:59
         """
 
+        # Autenticación y revisión de permisos del usuario
+        self._authorize(token, 'create')
         # Conversión de datos entrantes si es necesaria
         record_ids = self._preprocess.convert_to_list(record_ids)
-
-        # Autenticación del usuario
-        user_id = self._auth.identify_user(token)
-        # Validación de permiso de transacción
-        self._access.check_permission(user_id, 'read')
-
-        # Obtención de la instancia de la tabla
-        model_model = self._models.get_table_model(model_name)
-
-        # Creación del query base
-        ( stmt, ttypes ) = self._select.build(model_name, fields)
-        # Creación del query where
-        where_query = self._where.build_where(model_model, [(FIELD_NAME.ID, 'in', record_ids)])
-        # Conversión del query SQL
-        stmt = stmt.where(where_query)
-        # Creación de parámetros de ordenamiento
-        stmt = self._query.build_sort(
-            stmt,
-            model_model,
+        # Lectura de datos
+        data = self._dql.read(
+            model_name,
+            record_ids,
+            fields,
             sortby,
             ascending,
+            output_format,
+            only_ids_in_relations,
         )
 
-        # Ejecución de la transacción
-        response = self._connection.execute(stmt)
-        # Inicialización del DataFrame de retorno
-        data = pd.DataFrame( response.fetchall() )
-
-        # Retorno en formato de salida configurado
-        return self._output.build_output(data, ttypes, output_format, 'dataframe', only_ids_in_relations)
+        return data
 
     def search_read(
         self,
@@ -651,35 +632,22 @@ class Lylac(_Lylac_Core):
         >>> # 2   5  user001  Persona Sin Nombre 1
         """
 
-        # Autenticación del usuario
-        user_id = self._auth.identify_user(token)
-        # Validación de permiso de transacción
-        self._access.check_permission(user_id, 'read')
-
-        # Obtención de la instancia de la tabla
-        model_model = self._models.get_table_model(model_name)
-
-        # Creación del query base
-        ( stmt, ttypes ) = self._select.build(model_name, fields)
-        # Creación del segmento WHERE en caso de haberlo
-        stmt = self._where.add_query(stmt, model_model, search_criteria)
-        # Creación de parámetros de ordenamiento
-        stmt = self._query.build_sort(
-            stmt,
-            model_model,
+        # Autenticación y revisión de permisos del usuario
+        self._authorize(token, 'create')
+        # Búsqueda y lectura de datos
+        data = self._dql.search_read(
+            model_name,
+            search_criteria,
+            fields,
+            offset,
+            limit,
             sortby,
             ascending,
+            output_format,
+            only_ids_in_relations,
         )
-        # Segmentación de inicio y fin en caso de haberlos
-        stmt = self._query.build_segmentation(stmt, offset, limit)
 
-        # Ejecución de la transacción
-        response = self._connection.execute(stmt)
-        # Inicialización del DataFrame de retorno
-        data = pd.DataFrame(response.fetchall())
-
-        # Retorno en formato de salida configurado
-        return self._output.build_output(data, ttypes, output_format, 'dataframe', only_ids_in_relations)
+        return data
 
     def search_count(
         self,
@@ -746,26 +714,10 @@ class Lylac(_Lylac_Core):
         >>> # "name" contiene "as"
         """
 
-        # Autenticación del usuario
-        user_id = self._auth.identify_user(token)
-        # Validación de permiso de transacción
-        self._access.check_permission(user_id, 'read')
-
-        # Obtenciónde la instancia de la tabla
-        model_model = self._models.get_table_model(model_name)
-        # Creación del query base
-        stmt = (
-            select( func.count() )
-            .select_from(model_model)
-        )
-
-        # Creación del segmento WHERE en caso de haberlo
-        stmt = self._where.add_query(stmt, model_model, search_criteria)
-
-        # Ejecución de la transacción
-        response = self._connection.execute(stmt)
-        # Obtención del conteo de registro
-        count = response.scalar()
+        # Autenticación y revisión de permisos del usuario
+        self._authorize(token, 'create')
+        # Conteo de registros
+        count = self._dql.search_count(model_name, search_criteria)
 
         return count
 

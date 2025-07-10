@@ -1,8 +1,15 @@
 from typing import Optional
+import pandas as pd
+from sqlalchemy import (
+    select,
+    func,
+)
 from ..._constants import FIELD_NAME
 from ..._module_types import (
     CriteriaStructure,
     ModelName,
+    OutputOptions,
+    RecordValue,
 )
 from ..._core.main import _Lylac_Core
 from ..._core.modules import DQL_Core
@@ -18,6 +25,8 @@ class DQLManager(DQL_Core):
         self._main = instance
         # Asignación de la instancia de conexión
         self._connection = instance._connection
+        # Asignación de la instancia de manejo de modelos de SQLAlchemy
+        self._models = instance._models
         # Asignación de la instancia de manejo de formato de salida
         self._output = instance._output
         # Asignación de la instancia query
@@ -41,14 +50,8 @@ class DQLManager(DQL_Core):
         ( stmt, _ ) = self._select.build(model_name, [FIELD_NAME.ID])
         # Obtención de la instancia de la tabla
         model_model = self._strc.get_model(model_name)
-
-        # Si hay criterios de búsqueda se genera el WHERE
-        if len(search_criteria) > 0:
-            # Creación del query WHERE
-            where_query = self._where.build_where(model_model, search_criteria)
-            # Conversión del Query SQL
-            stmt = stmt.where(where_query)
-
+        # Creación del segmento WHERE en caso de haberlo
+        stmt = self._where.add_query(stmt, model_model, search_criteria)
         # Ordenamiento de los datos
         stmt = self._query.build_sort(stmt, model_model, FIELD_NAME.ID, True)
         # Segmentación de inicio y fin en caso de haberlos
@@ -59,3 +62,108 @@ class DQLManager(DQL_Core):
         found_ids = self._output.get_found_ids(response)
 
         return found_ids
+
+    def read(
+        self,
+        model_name: ModelName,
+        record_ids: int | list[int],
+        fields: list[str],
+        sortby: str | list[str],
+        ascending: bool | list[bool],
+        output_format: Optional[OutputOptions],
+        only_ids_in_relations: bool,
+    ) -> pd.DataFrame | list[dict[str, RecordValue]]:
+
+        # Obtención de la instancia de la tabla
+        model_model = self._models.get_table_model(model_name)
+        # Creación del query base
+        ( stmt, ttypes ) = self._select.build(model_name, fields)
+        # Creación del segmento WHERE
+        stmt = self._where.add_query(stmt, model_model, [(FIELD_NAME.ID, 'in', record_ids)])
+        # Creación de parámetros de ordenamiento
+        stmt = self._query.build_sort(
+            stmt,
+            model_model,
+            sortby,
+            ascending,
+        )
+        # Ejecución de la transacción
+        response = self._connection.execute(stmt)
+        # Inicialización del DataFrame de retorno
+        data = pd.DataFrame( response.fetchall() )
+        # Procesamiento de salida de datos
+        processed_data = self._output.build_output(
+            data,
+            ttypes,
+            output_format,
+            'dataframe',
+            only_ids_in_relations
+        )
+
+        return processed_data
+
+    def search_read(
+        self,
+        model_name: ModelName,
+        search_criteria: CriteriaStructure = [],
+        fields: list[str] = [],
+        offset: int | None = None,
+        limit: int | None = None,
+        sortby: str | list[str] | None = None,
+        ascending: bool | list[bool] = True,
+        output_format: OutputOptions | None = None,
+        only_ids_in_relations: bool = False,
+    ) -> pd.DataFrame | dict[str, RecordValue]:
+
+        # Obtención de la instancia de la tabla
+        model_model = self._models.get_table_model(model_name)
+        # Creación del query base
+        ( stmt, ttypes ) = self._select.build(model_name, fields)
+        # Creación del segmento WHERE en caso de haberlo
+        stmt = self._where.add_query(stmt, model_model, search_criteria)
+        # Creación de parámetros de ordenamiento
+        stmt = self._query.build_sort(
+            stmt,
+            model_model,
+            sortby,
+            ascending,
+        )
+        # Segmentación de inicio y fin en caso de haberlos
+        stmt = self._query.build_segmentation(stmt, offset, limit)
+
+        # Ejecución de la transacción
+        response = self._connection.execute(stmt)
+        # Inicialización del DataFrame de retorno
+        data = pd.DataFrame( response.fetchall() )
+        # Procesamiento de salida de datos
+        processed_data = self._output.build_output(
+            data,
+            ttypes,
+            output_format,
+            'dataframe',
+            only_ids_in_relations
+        )
+
+        return processed_data
+
+    def search_count(
+        self,
+        model_name: ModelName,
+        search_criteria: CriteriaStructure,
+    ) -> int:
+
+        # Obtenciónde la instancia de la tabla
+        model_model = self._models.get_table_model(model_name)
+        # Creación del query base
+        stmt = (
+            select( func.count() )
+            .select_from(model_model)
+        )
+        # Creación del segmento WHERE en caso de haberlo
+        stmt = self._where.add_query(stmt, model_model, search_criteria)
+        # Ejecución de la transacción
+        response = self._connection.execute(stmt)
+        # Obtención del conteo de registro
+        count = response.scalar()
+
+        return count
