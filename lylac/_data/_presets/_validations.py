@@ -104,6 +104,7 @@ VALIDATIONS_DATA: list[ValidationData] = [
         'model': 'base.model',
         'message': 'El nombre y nombre de modelo de "{value}" deben ser coincidir con el patrón "model_name" - "model.name" respectivamente.',
     },
+    # Restricción de modificación de metadatos en modelos
     {
         'module': '_validations',
         'callback': 'reject_model_modification',
@@ -177,35 +178,6 @@ VALIDATIONS_DATA: list[ValidationData] = [
         'model': 'base.users',
         'message': 'No se puede cambiar la contraseña de un usuario por medio de la API de CRUD de Lylac.',
     },
-
-    # base.model.field.selection
-    # Restricción de valores de selección duplicados en la base de datos
-    {
-        'module': '_validations',
-        'callback': 'unique_selection_value_per_field_db_validation',
-        'transaction': 'create',
-        'method': 'record',
-        'model': 'base.model.field.selection',
-        'message': 'El valor de selección [{value}] ya existe como valor de selección del campo.',
-    },
-    # Restricción de valores de selección duplicados en datos entrantes
-    {
-        'module': '_validations',
-        'callback': 'unique_selection_value_per_field_db_validation',
-        'transaction': 'create',
-        'method': 'list',
-        'model': 'base.model.field.selection',
-        'message': 'No se pueden registrar valores de selección con el mismo nombre vinculados al mismo campo. Valores de error: {value}.'
-    },
-    # Restricción de modificación de valores de selección
-    {
-        'module': '_validations',
-        'callback': 'reject_selection_value_modification',
-        'transaction': 'update',
-        'method': 'record',
-        'model': 'base.model.field.selection',
-        'message': 'No se pueden modificar los datos de un valor de selección. En su lugar, borra el registro completo y vuelve a crearlo.',
-    },
     # Restricción de modelo relacionado en tipos de dato sencillo en creación de campos
     {
         'module': '_ddl',
@@ -277,5 +249,79 @@ VALIDATIONS_DATA: list[ValidationData] = [
         'method': 'record',
         'model': 'base.model.field',
         'message': 'Los tipos de dato de campo many2many no pueden tener campo relacionado. El registro con error es {data}.'
+    },
+    # Restricción para relacionar campos existentes en creación de campos one2many
+    {
+        'module': '_ddl',
+        'callback': 'validate_related_field_existence_on_related_field',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'base.model.field',
+        'message': 'El campo al que se intenta relacionar este registro no existe. El registro con error es {data}.',
+    },
+    # Restricción de unicidad en combinación de modelo relacionado y campo relacionado en datos entrantes en creación de campos one2many
+    {
+        'module': '_ddl',
+        'callback': 'unique_relation_on_one2many_in_incomig_data',
+        'transaction': 'create',
+        'model': 'base.model.field',
+        'method': 'list',
+        'message': 'Los valores {value} en modelo relacionado y campo relacionado no pueden repetirse.',
+    },
+    # Restricción de unicidad en combinación de modelo relacionado y campo relacionado
+    {
+        'module': '_ddl',
+        'callback': 'unique_relation_on_one2many',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'base.model.field',
+        'message': 'No pueden existir dos campos de tipo one2many relacionados al mismo campo many2one. El registro con error es {data}.'
+    },
+    # Restricción de tipo de dato many2one a relacionar con campos de tipo one2many
+    {
+        'module': '_ddl',
+        'callback': 'many2one_ttype_only_on_one2many_related_field',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'base.model.field',
+        'message': 'El tipo de dato del campo al que se intenta relacionar debe ser many2one. El registro con error es {data}.'
+    },
+    # Restricción de relaciones bilaterales entre el campo one2many a crear y el campo many2one a relacionar con éste
+    {
+        'module': '_ddl',
+        'callback': 'bilateral_relationship_on_one2many_and_many2one',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'base.model.field',
+        'message': 'El modelo al que pertenece el campo relacionado debe ser el mismo al que pertenece el campo a crear. El registro con error es {data}.'
+    },
+
+    # base.model.field.selection
+    # Restricción de valores de selección duplicados en la base de datos
+    {
+        'module': '_validations',
+        'callback': 'unique_selection_value_per_field_db_validation',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'base.model.field.selection',
+        'message': 'El valor de selección [{value}] ya existe como valor de selección del campo.',
+    },
+    # Restricción de valores de selección duplicados en datos entrantes
+    {
+        'module': '_validations',
+        'callback': 'unique_selection_value_per_field_db_validation',
+        'transaction': 'create',
+        'method': 'list',
+        'model': 'base.model.field.selection',
+        'message': 'No se pueden registrar valores de selección con el mismo nombre vinculados al mismo campo. Valores de error: {value}.'
+    },
+    # Restricción de modificación de valores de selección
+    {
+        'module': '_validations',
+        'callback': 'reject_selection_value_modification',
+        'transaction': 'update',
+        'method': 'record',
+        'model': 'base.model.field.selection',
+        'message': 'No se pueden modificar los datos de un valor de selección. En su lugar, borra el registro completo y vuelve a crearlo.',
     },
 ]

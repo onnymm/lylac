@@ -312,7 +312,6 @@ INITIAL_DATA = [
                 'ttype': 'many2one',
                 'model_id': MODEL_ID.BASE_MODEL_FIELD_SELECTION,
                 'related_model_id': MODEL_ID.BASE_MODEL_FIELD,
-                # 'related_field': 'selection_ids',
                 'is_required': True,
                 'state': 'base',
             },
