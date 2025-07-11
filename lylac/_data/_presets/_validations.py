@@ -206,4 +206,76 @@ VALIDATIONS_DATA: list[ValidationData] = [
         'model': 'base.model.field.selection',
         'message': 'No se pueden modificar los datos de un valor de selección. En su lugar, borra el registro completo y vuelve a crearlo.',
     },
+    # Restricción de modelo relacionado en tipos de dato sencillo en creación de campos
+    {
+        'module': '_ddl',
+        'callback': 'reject_related_model_on_single_ttype',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'base.model.field',
+        'message': 'Los tipos de dato de campo no relacionados no pueden tener modelo relacionado. El registro con error es {data}.'
+    },
+    # Restricción de campo relacionado en tipos de dato sencillo en creación de campos
+    {
+        'module': '_ddl',
+        'callback': 'reject_related_field_on_single_ttype',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'base.model.field',
+        'message': 'Los tipos de dato de campo no relacionados no pueden tener campo relacionado. El registro con error es {data}.'
+    },
+    # Restricción de modelo relacionado nulo en tipos de dato many2one en creación de campos
+    {
+        'module': '_ddl',
+        'callback': 'mandatory_related_model_on_many2one_ttype',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'base.model.field',
+        'message': 'Los tipos de dato de campo many2one deben contener un modelo relacionado. El registro con error es {data}.'
+    },
+    # Restricción de campo relacionado en tipos de dato many2one en creación de campos
+    {
+        'module': '_ddl',
+        'callback': 'reject_related_field_on_many2one_ttype',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'base.model.field',
+        'message': 'Los tipos de dato de campo many2one no pueden tener campo relacionado. El registro con error es {data}.'
+    },
+    # Restricción de modelo relacionado nulo en tipos de dato one2many en creación de campos
+    {
+        'module': '_ddl',
+        'callback': 'mandatory_related_model_on_one2many_ttype',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'base.model.field',
+        'message': 'Los tipos de dato de campo one2many deben tener modelo relacionado. El registro con error es {data}.'
+    },
+    # Restricción de campo relacionado nulo en tipos de dato one2many en creación de campos
+    {
+        'module': '_ddl',
+        'callback': 'mandatory_related_field_on_one2many_ttype',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'base.model.field',
+        'message': 'Los tipos de dato de campo one2many deben tener campo relacionado. El registro con error es {data}.'
+    },
+    # Restricción de modelo relacionado nulo en tipos de dato many2many en creación de campos
+    {
+        'module': '_ddl',
+        'callback': 'mandatory_related_model_on_many2many_ttype',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'base.model.field',
+        'message': 'Los tipos de dato de campo many2many deben contener un modelo relacionado. El registro con error es {data}.'
+    },
+    # Restricción de campo relacionado en tipos de dato many2many en creación de campos
+    {
+        'module': '_ddl',
+        'callback': 'reject_related_field_on_many2many_ttype',
+        'transaction': 'create',
+        'method': 'record',
+        'model': 'base.model.field',
+        'message': 'Los tipos de dato de campo many2many no pueden tener campo relacionado. El registro con error es {data}.'
+    },
 ]

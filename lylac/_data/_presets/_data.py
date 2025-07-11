@@ -312,7 +312,7 @@ INITIAL_DATA = [
                 'ttype': 'many2one',
                 'model_id': MODEL_ID.BASE_MODEL_FIELD_SELECTION,
                 'related_model_id': MODEL_ID.BASE_MODEL_FIELD,
-                'related_field': 'selection_ids',
+                # 'related_field': 'selection_ids',
                 'is_required': True,
                 'state': 'base',
             },
@@ -590,12 +590,12 @@ INITIAL_DATA = [
             },
             {
                 'name': 'base',
-                'field_id': 23,
+                'field_id': 40,
                 'label': 'Campo base',
             },
             {
                 'name': 'generic',
-                'field_id': 23,
+                'field_id': 40,
                 'label': 'Campo genérico',
             },
         ],

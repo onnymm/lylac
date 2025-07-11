@@ -13,7 +13,8 @@ from ._submodules import (
     _Automations,
     _Database,
     _Models,
-    _Reset
+    _Reset,
+    _Validations,
 )
 from ..._core.modules import DDL_Core
 from ..._core.main import _Lylac_Core
@@ -40,6 +41,8 @@ class DDLManager(DDL_Core):
         self._m_reset = _Reset(self)
         # Creación del submódulo de automatizaciones
         self._m_automations = _Automations(self)
+        # Creación del submódulo de validaciones
+        self._m_validations = _Validations(self)
 
     def new_table(
         self,

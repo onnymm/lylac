@@ -5,7 +5,6 @@ from ...._constants import (
     MODEL_NAME,
 )
 from ...._core.modules import Validations_Core
-from ...._core.main import _Lylac_Core
 from ...._module_types import ModelRecordData
 from .._module_types import Validation
 
