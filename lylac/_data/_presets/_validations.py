@@ -113,8 +113,26 @@ VALIDATIONS_DATA: list[ValidationData] = [
         'model': 'base.model',
         'message': 'Los modelos no pueden ser modificados a excepción de su nombre y descripción.',
     },
+    # Restricción de eliminación de modelos base
+    {
+        'module': '_ddl',
+        'callback': 'forbid_base_model_records_deletion',
+        'transaction': 'delete',
+        'method': 'record',
+        'model': 'base.model',
+        'message': 'No se pueden eliminar registros base.'
+    },
 
     # base.model.field
+    # Restricción de eliminación de campos base
+    {
+        'module': '_ddl',
+        'callback': 'forbid_base_field_records_deletion',
+        'transaction': 'delete',
+        'method': 'record',
+        'model': 'base.model.field',
+        'message': 'No se pueden eliminar registros base.'
+    },
     # Restricción para no modificar propiedades de un campo ya creado en modificación de un registro en la tabla de campos
     {
         'module': '_validations',

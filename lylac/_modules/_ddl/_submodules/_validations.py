@@ -21,6 +21,30 @@ class _Validations():
         # Asignación de instancia de algoritmos
         self._algorythms = instance._main._algorythms
 
+    def forbid_base_model_records_deletion(
+        self,
+        params: Validation.Create.Individual.Args[ModelRecordData.BaseModel_],
+    ) -> Any:
+
+        # Obtención del tipo de registro de modelo
+        state = params.data['state']
+        # Si el registros es base
+        if state == 'base':
+            # Se retorna True para arrojar el error
+            return True
+
+    def forbid_base_field_records_deletion(
+        self,
+        params: Validation.Create.Individual.Args[ModelRecordData.BaseModelField],
+    ) -> Any:
+
+        # Obtención del tipo de registro de campo
+        state = params.data['state']
+        # Si el registros es base
+        if state == 'base':
+            # Se retorna True para arrojar el error
+            return True
+
     def reject_related_model_on_single_ttype(
         self,
         params: Validation.Create.Individual.Args[ModelRecordData.BaseModelField],

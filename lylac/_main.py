@@ -847,7 +847,9 @@ class Lylac(_Lylac_Core):
         """
 
         # Autenticación y revisión de permisos del usuario
-        user_id = self._authorize(token, model_name, 'delete')
+        self._authorize(token, model_name, 'delete')
+        # Ejecución de validaciones
+        self._validations.run_validations_on_delete(model_name, record_ids)
         # Conversión de datos entrantes si es necesaria
         record_ids = self._preprocess.convert_to_list(record_ids)
         # Creación de función de ejecución de automatizaciones

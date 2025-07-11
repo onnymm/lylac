@@ -37,3 +37,10 @@ class Validations_Interface():
         data: RecordData,
     ) -> None:
         ...
+
+    def run_validations_on_delete(
+        self,
+        model_name: ModelName,
+        record_ids: list[int],
+    ) -> None:
+        ...

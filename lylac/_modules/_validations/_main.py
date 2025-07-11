@@ -150,6 +150,93 @@ class Validations(Validations_Core):
                 # Se arrojan el error
                 raise AssertionError(complete_message)
 
+    def run_validations_on_delete(
+        self,
+        model_name: ModelName,
+        record_ids: list[int],
+    ) -> None:
+
+        # Si el estado de las automatizaciones aún no es activo
+        if not self._active:
+            return
+
+        # Obtención de la ID del modelo
+        [ model_id ] = self._main.search(self._main._TOKEN, MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
+        # Obtención de los datos de los registros
+        records_data = self._main.read(self._main._TOKEN, model_name, record_ids, output_format= 'dict')
+        # Obtención de las validaciones del modelo en el método de eliminación
+        transaction_validations: list[Validation.Create.Mixed.Params] = self._get_method_validations(model_name, 'delete')
+
+        # Iteración por cada una de las validaciones
+        for validation in transaction_validations:
+
+            # Inicialización de errores
+            errors: list[ErrorToShow] = []
+
+            # Si la validación se debe ejecutar por registro...
+            if validation['method'] == 'record':
+
+                # Obtención de la función de validación a ejecutar
+                validation_to_execute: Validation.Create.Individual.Callback = validation['callback']
+                # Iteración por cada uno de los registros
+                for record in records_data:
+                    # Creación de los datos a proporcionar a la función
+                    data = Validation.Create.Individual.Args(
+                        model_name= model_name,
+                        model_id= model_id,
+                        data= record,
+                    )
+                    # Ejecución de validación y obtención de posible valor a mostrar en error
+                    error_value = validation_to_execute(data)
+
+                    # Si existe valor retornado
+                    if error_value is not None:
+                        # Se añaden datos de error
+                        errors.append(
+                            {
+                                'value': error_value,
+                                'message': validation['message'],
+                                'data': record
+                            }
+                        )
+
+            # Si la validación se debe ejecutar por grupo de registros...
+            else:
+
+                # Obtención de la función validación a ejecutar
+                validation_to_execute: Validation.Create.Group.Callback = validation['callback']
+                # Creación de los datos a proporcionar a la función
+                data = Validation.Create.Individual.Args(
+                    model_name= model_name,
+                    model_id= model_id,
+                    data= records_data,
+                )
+
+                # Se ejecuta la función con todos los registros
+                error_value = validation_to_execute(data)
+
+                # Si existe valor retornado
+                if error_value is not None:
+                    # Se añaden datos de error
+                    errors.append(
+                        {
+                            'value': error_value,
+                            'message': validation['message'],
+                            'data': data,
+                        }
+                    )
+
+            # Si existen errores encontrados
+            if errors:
+                # Inicialización de mensaje completo
+                complete_message = '\n'
+                for err in errors:
+                    message = err['message'].format(value= err['value'], data= err['data'])
+                    complete_message += f'{message}\n'
+
+                # Se arrojan el error
+                raise AssertionError(complete_message)
+
     def run_validations_on_update(
         self,
         model_name: ModelName,
