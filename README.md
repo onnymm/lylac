@@ -1,6 +1,11 @@
 # lylac
 Gestor de conexión a bases de datos altamente personalizable.
 
+Instalación:
+```bash
+pip install git+https://github.com/onnymm/lylac.git
+```
+
 ## *Índice*
 
 ## [TIPADOS](#tipados-1)
