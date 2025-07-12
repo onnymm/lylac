@@ -9,11 +9,13 @@ with open("README.md", "r", encoding="utf-8") as f:
 setup(
     # Library name and version
     name="lylac",
-    version="2.0.1",
+    version="2.0.2",
     
     # Dependencies
     install_requires=[
+        "bcrypt==4.3.0",
         "pandas>=2.2.3",
+        "passlib==1.7.4",
         "psycopg2>=2.9.10",
         "pydantic>=2.11.5",
         "SQLAlchemy>=2.0.41",
