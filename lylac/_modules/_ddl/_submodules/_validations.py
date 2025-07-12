@@ -1,4 +1,5 @@
 from typing import Any
+from ...._constants import ROOT_ID
 from ...._core.modules import DDL_Core
 from ...._module_types import (
     CriteriaStructure,
@@ -146,6 +147,10 @@ class _Validations():
         params: Validation.Create.Individual.Args[ModelRecordData.BaseModelField],
     ) -> Any:
 
+        # Se omite la validación si el tipo de dato no es one2many
+        if params.data['ttype'] != 'one2many':
+            return
+
         # Obtención de la ID del modelo relacionado
         related_model_id = params.data['related_model_id']
         # Obtención del nombre del modelo relacionado
@@ -157,7 +162,7 @@ class _Validations():
                 ('related_field', '=', related_field)
         ]
         # Búsqueda de resultados
-        found_ids = self._main.search(self._main._TOKEN, 'base.model.field', search_criteria)
+        found_ids = self._main.search(ROOT_ID, 'base.model.field', search_criteria)
         # Si ya existen registros...
         if found_ids:
             # Se retona True para arrojar el error
@@ -168,9 +173,19 @@ class _Validations():
         params: Validation.Create.Group.Args[ModelRecordData.BaseModelField],
     ) -> Any:
 
+        # Obtención de los registros de tipos de dato one2many
+        one2many_records = self._algorythms.get_from(
+            params.data,
+            lambda value: value['ttype'] == 'one2many'
+        )
+
+        # Si no existen datos se finaliza la validación
+        if not one2many_records:
+            return
+
         # Búsqueda de duplicados
         duplicated_records = self._algorythms.find_duplicates(
-            params.data,
+            one2many_records,
             lambda record: ( record['related_model_id'], record['related_field'] ),
         )
         # Si existen duplicados...
@@ -183,6 +198,10 @@ class _Validations():
         params: Validation.Create.Individual.Args[ModelRecordData.BaseModelField],
     ) -> Any:
 
+        # Se omite la validación si el tipo de dato no es one2many
+        if params.data['ttype'] != 'one2many':
+            return
+
         # Obtención de la ID del modelo relacionado
         related_model_id = params.data['related_model_id']
         # Obtención del nombre del modelo relacionado
@@ -194,7 +213,7 @@ class _Validations():
                 ('name', '=', related_field)
         ]
         # Búsqueda del campo
-        found_id = self._main.search(self._main._TOKEN, 'base.model.field', search_criteria)
+        found_id = self._main.search(ROOT_ID, 'base.model.field', search_criteria)
         # Si no se encontraron resultados...
         if not found_id:
             # Se retona True para arrojar el error
@@ -204,6 +223,10 @@ class _Validations():
         self,
         params: Validation.Create.Individual.Args[ModelRecordData.BaseModelField],
     ) -> Any:
+
+        # Se omite la validación si el tipo de dato no es one2many
+        if params.data['ttype'] != 'one2many':
+            return
 
         # Obtención de la ID del modelo relacionado
         related_model_id = params.data['related_model_id']
@@ -216,9 +239,9 @@ class _Validations():
                 ('name', '=', related_field)
         ]
         # Búsqueda del registro
-        [ field_id ] = self._main.search(self._main._TOKEN, 'base.model.field', search_criteria)
+        [ field_id ] = self._main.search(ROOT_ID, 'base.model.field', search_criteria)
         # Obtención del tipo de dato
-        ttype = self._main.get_value(self._main._TOKEN, 'base.model.field', field_id, 'ttype')
+        ttype = self._main.get_value(ROOT_ID, 'base.model.field', field_id, 'ttype')
         # Si el tipo de dato del campo no es many2one...
         if ttype != 'many2one':
             # Se retona True para arrojar el error
@@ -228,6 +251,10 @@ class _Validations():
         self,
         params: Validation.Create.Individual.Args[ModelRecordData.BaseModelField],
     ) -> Any:
+
+        # Se omite la validación si el tipo de dato no es one2many
+        if params.data['ttype'] != 'one2many':
+            return
 
         # Obtención del modelo al que pertenecerá el campo a crear
         model_id = params.data['model_id']
@@ -242,9 +269,9 @@ class _Validations():
                 ('name', '=', related_field)
         ]
         # Búsqueda del registro
-        [ field_id ] = self._main.search(self._main._TOKEN, 'base.model.field', search_criteria)
+        [ field_id ] = self._main.search(ROOT_ID, 'base.model.field', search_criteria)
         # Obtención del modelo relacionado del campo relacionado
-        related_field_related_model_id = self._main.get_value(self._main._TOKEN, 'base.model.field', field_id, 'related_model_id')
+        related_field_related_model_id = self._main.get_value(ROOT_ID, 'base.model.field', field_id, 'related_model_id')
         # Si el modelo relacionado del campo relacionado no es el mismo...
         if related_field_related_model_id != model_id:
             # Se retona True para arrojar el error
