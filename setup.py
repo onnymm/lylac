@@ -13,11 +13,12 @@ setup(
     
     # Dependencies
     install_requires=[
-        "bcrypt==4.3.0",
+        "bcrypt>=4.3.0",
         "pandas>=2.2.3",
-        "passlib==1.7.4",
+        "passlib>=1.7.4",
         "psycopg2>=2.9.10",
         "pydantic>=2.11.5",
+        "PyJWT>=2.10.1",
         "SQLAlchemy>=2.0.41",
     ],
 
