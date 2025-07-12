@@ -1,6 +1,6 @@
 from ..main import _Lylac_Core
 from .._interface import Structure_Interface
-from ..submodules.structure import _RawORM_Interface
+from ..submods.structure import _RawORM_Interface
 
 class Structure_Core(Structure_Interface):
     _main: _Lylac_Core

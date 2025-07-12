@@ -1,6 +1,6 @@
 from ..main import _Lylac_Core
 from .._interface import DDL_Interface
-from ..submodules.ddl import (
+from ..submods.ddl import (
     _Database_Interface,
     _Models_Interface,
     _Reset_Interface,

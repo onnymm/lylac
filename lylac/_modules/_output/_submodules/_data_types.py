@@ -4,7 +4,7 @@ from typing import Callable
 from pandas._typing import AstypeArg
 from ...._module_types import TType
 from ...._core.modules import Output_Core
-from ...._core.submodules.output import _DataTypes_Interface
+from ...._core.submods.output import _DataTypes_Interface
 
 class _DataTypes(_DataTypes_Interface):
     _output: Output_Core

@@ -1,7 +1,7 @@
 from ...._constants import ROOT_ID
 from ...._contexts import Context
 from ...._core.modules import Automations_Core
-from ...._core.submodules.automations import _Builder_Interface
+from ...._core.submods.automations import _Builder_Interface
 from .._module_types import ProgrammedAutomation
 from ...._module_types import (
     ModelName,

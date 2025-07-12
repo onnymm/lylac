@@ -20,7 +20,7 @@ from ...._constants import (
     ROOT_ID,
 )
 from ...._core.modules import DDL_Core
-from ...._core.submodules.ddl import _Models_Interface
+from ...._core.submods.ddl import _Models_Interface
 from ...._data import (
     MODEL_TABLE_TEMPLATE,
     RELATION_TABLE_TEMPLATE,

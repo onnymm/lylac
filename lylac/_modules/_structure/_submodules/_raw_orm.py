@@ -7,7 +7,7 @@ from ...._constants import (
     MODEL_NAME,
 )
 from ...._core.modules import Structure_Core
-from ...._core.submodules.structure import _RawORM_Interface
+from ...._core.submods.structure import _RawORM_Interface
 from ...._module_types import TType
 
 class _RawORM(_RawORM_Interface):

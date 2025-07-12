@@ -12,7 +12,7 @@ from ...._data import (
 from ....security import hash_password
 from ...._errors import InitializationError
 from ...._core.modules import DDL_Core
-from ...._core.submodules.ddl import _Reset_Interface
+from ...._core.submods.ddl import _Reset_Interface
 
 class _Reset(_Reset_Interface):
     _ddl: DDL_Core

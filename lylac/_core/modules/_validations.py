@@ -1,6 +1,6 @@
 from ..main import _Lylac_Core
 from .._interface import Validations_Interface
-from ..submodules.validations import _Initialize_Interface
+from ..submods.validations import _Initialize_Interface
 
 class Validations_Core(Validations_Interface):
     _main: _Lylac_Core

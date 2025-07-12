@@ -1,6 +1,6 @@
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from ...._core.modules import Index_Core
-from ...._core.submodules.index import _FieldsGetter_Interface
+from ...._core.submods.index import _FieldsGetter_Interface
 
 class _FieldsGetter(_FieldsGetter_Interface):
     _index: Index_Core

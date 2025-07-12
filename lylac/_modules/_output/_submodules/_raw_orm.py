@@ -6,7 +6,7 @@ from ...._module_types import (
     ModelName,
 )
 from ...._core.modules import Output_Core
-from ...._core.submodules.output import _RawORM_Interface
+from ...._core.submods.output import _RawORM_Interface
 
 class _RawORM(_RawORM_Interface):
     _output: Output_Core

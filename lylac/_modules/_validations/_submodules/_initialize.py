@@ -3,7 +3,7 @@ from ...._data import (
     VALIDATIONS_DATA,
 )
 from ...._core.modules import Validations_Core
-from ...._core.submodules.validations import _Initialize_Interface
+from ...._core.submods.validations import _Initialize_Interface
 
 class _Initialize(_Initialize_Interface):
     _validations: Validations_Core

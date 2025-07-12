@@ -1,6 +1,6 @@
 from ..main import _Lylac_Core
 from .._interface import Output_Interface
-from ..submodules.output import (
+from ..submods.output import (
     _DataTypes_Interface,
     _RawORM_Interface,
 )

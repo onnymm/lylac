@@ -5,7 +5,7 @@ from ...._module_types import (
     TType,
 )
 from ...._core.modules import DDL_Core
-from ...._core.submodules.ddl import _Database_Interface
+from ...._core.submods.ddl import _Database_Interface
 
 class _Database(_Database_Interface):
     """

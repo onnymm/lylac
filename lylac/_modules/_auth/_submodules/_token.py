@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TypedDict
 import jwt
 from ...._core import ENV_VARIABLES
-from ...._core.submodules.auth import _Token_Interface
+from ...._core.submods.auth import _Token_Interface
 from ...._core.modules import Auth_Core
 
 class TokenData(TypedDict):

@@ -1,6 +1,6 @@
 from ..main import _Lylac_Core
 from .._interface import Auth_Interface
-from ..submodules.auth import (
+from ..submods.auth import (
     _Session_Interface,
     _Token_Interface,
 )

@@ -8,7 +8,7 @@ from ...._constants import (
     MODEL_NAME,
     ROOT_ID,
 )
-from ...._core.submodules.auth import _Session_Interface
+from ...._core.submods.auth import _Session_Interface
 from ...._core.modules import Auth_Core
 from ...._settings import SESSION
 
