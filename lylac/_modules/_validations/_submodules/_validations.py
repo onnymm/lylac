@@ -3,6 +3,7 @@ from typing import Any
 from ...._constants import (
     FIELD_NAME,
     MODEL_NAME,
+    ROOT_ID,
 )
 from ...._core.modules import Validations_Core
 from ...._module_types import ModelRecordData
@@ -140,7 +141,7 @@ class _Validations():
         # Obtención de los campos requeridos
         required_fields: list[str] = (
             self._main.search_read(
-                self._main._TOKEN,
+                ROOT_ID,
                 MODEL_NAME.BASE_MODEL_FIELD,
                 [
                     '&',
@@ -253,7 +254,7 @@ class _Validations():
 
         # Búsqueda de coincidencias
         records = self._main.search_read(
-            self._main._TOKEN,
+            ROOT_ID,
             'base.model.field',
             [
                 '&',
@@ -315,7 +316,7 @@ class _Validations():
 
         # Búsqueda de coincidencias
         results = self._main.search_read(
-            self._main._TOKEN,
+            ROOT_ID,
             'base.model.field',
             [
                 '&',
@@ -356,7 +357,7 @@ class _Validations():
 
         # Búsqueda de resultados
         results_qty = self._main.search_count(
-            self._main._TOKEN,
+            ROOT_ID,
             MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
             [
                 '&',

@@ -33,21 +33,21 @@ class Actions(Actions_Core):
 
     def run_action(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         action_name: str,
         record_id: int,
     ) -> None:
 
         # Obtención de los datos del registro
-        [ record_data ] = self._main.read(self._main._TOKEN, model_name, record_id, output_format= 'dict')
+        [ record_data ] = self._main.read(user_id, model_name, record_id, output_format= 'dict')
         # Obtención de la función de acción a ejecutar
         action_callback = self._hub[model_name][action_name]
         # Inicialización del objeto de contexto
         ctx = ActionContext(
             instance= self._main,
             data= record_data,
-            user_token= token,
+            user_id= user_id
         )
         # Ejecución de la acción
         action_callback(ctx)

@@ -13,7 +13,6 @@ from ._module_types import (
     OutputOptions,
     RecordValue,
     ExecutionMethod,
-    Transaction,
 )
 from ._modules import (
     Access,
@@ -86,7 +85,17 @@ class Lylac(_Lylac_Core):
     ) -> str | bool:
 
         return self._auth.login(login, password)
-    
+
+    def authenticate(
+        self,
+        token: str,
+    ) -> int:
+
+        # Obtención de la ID del usuario
+        user_id = self._auth.identify_user(token)
+
+        return user_id
+
     def register_action(
         self,
         model_name: ModelName,
@@ -218,7 +227,7 @@ class Lylac(_Lylac_Core):
 
     def action(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         action_name: str,
         record_id: int,
@@ -226,7 +235,7 @@ class Lylac(_Lylac_Core):
 
         # Ejecución de la acción
         self._actions.run_action(
-            token,
+            user_id,
             model_name,
             action_name,
             record_id,
@@ -234,7 +243,7 @@ class Lylac(_Lylac_Core):
 
     def create(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         data: RecordData | list[RecordData],
     ) -> list[int]:
@@ -251,7 +260,7 @@ class Lylac(_Lylac_Core):
         >>>     'name': 'Onnymm Azzur',
         >>> }
         >>> 
-        >>> lylac.create(TOKEN, 'base.users', record)
+        >>> lylac.create(user_id, 'base.users', record)
         >>> #    id   login          name
         >>> # 0   2  onnymm  Onnymm Azzur
         >>> 
@@ -267,14 +276,14 @@ class Lylac(_Lylac_Core):
         >>>     },
         >>> ]
         >>> 
-        >>> lylac.create(TOKEN, 'base.users', records)
+        >>> lylac.create(user_id, 'base.users', records)
         >>> #    id   login          name
         >>> # 0   2  onnymm  Onnymm Azzur
         >>> # 1   3   lumii    Lumii Mynx
         """
 
-        # Autenticación y revisión de permisos del usuario
-        user_id = self._authorize(token, model_name, 'create')
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, model_name, 'create')
         # Preprocesamiento de datos en creación y creación de funciones poscreación
         ( data, post_creation_callback ) = self._preprocess.process_data_on_create(user_id, model_name, data)
         # Ejecución de validaciones
@@ -286,7 +295,7 @@ class Lylac(_Lylac_Core):
             model_name,
             'create',
             created_records,
-            token,
+            user_id,
         )
         # Ejecución de la función poscreación
         post_creation_callback(created_records)
@@ -295,7 +304,7 @@ class Lylac(_Lylac_Core):
 
     def search(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         search_criteria: CriteriaStructure = [],
         offset: int | None = None,
@@ -309,11 +318,11 @@ class Lylac(_Lylac_Core):
 
         Uso:
         >>> # Ejemplo 1
-        >>> lylac.search(TOKEN, 'base.users')
+        >>> lylac.search(user_id, 'base.users')
         >>> # [1, 2, 3, 4, 5]
         >>> 
         >>> # Ejemplo 2
-        >>> lylac.search(TOKEN, 'base.model.field', [('create_uid', '=', 2)])
+        >>> lylac.search(user_id, 'base.model.field', [('create_uid', '=', 2)])
         >>> # [7, 9, 12, 13, 17, 21, ...]
 
         ----
@@ -363,29 +372,29 @@ class Lylac(_Lylac_Core):
         #### Desfase de registros para paginación
         Este parámetro sirve para retornar los registros a partir del índice indicado por éste. Suponiendo que
         una búsqueda normal arrojaría los siguientes resultados:
-        >>> lylac.search(TOKEN, 'base.users')
+        >>> lylac.search(user_id, 'base.users')
         >>> # [1, 2, 3, 4, 5, 6, 7]
 
         Se puede especificar que el retorno de los registros considerará solo a partir desde cierto registro, como
         por ejemplo lo siguiente:
-        >>> lylac.search(TOKEN, 'base.users', offset= 2)
+        >>> lylac.search(user_id, 'base.users', offset= 2)
         >>> # [3, 4, 5, 6, 7]
 
         ----
         #### Límite de registros retornados para paginación
         También es posible establecer una cantidad máxima de registros desde la base de datos. Suponiendo que una
         búsqueda normal arrojaría los siguientes registros:
-        >>> lylac.search(TOKEN, 'base.users')
+        >>> lylac.search(user_id, 'base.users')
         >>> # [3, 4, 5, 6, 7]
 
         Se puede especificar que solo se requiere obtener una cantidad máxima de registros a partir de un
         número provisto:
-        >>> lylac.search(TOKEN, 'base.users', limit= 3)
+        >>> lylac.search(user_id, 'base.users', limit= 3)
         >>> # [1, 2, 3]
         """
 
-        # Autenticación y revisión de permisos del usuario
-        self._authorize(token, model_name, 'read')
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, model_name, 'read')
         # Búsqueda de registros
         found_ids = self._dql.search(
             model_name,
@@ -397,7 +406,7 @@ class Lylac(_Lylac_Core):
 
     def get_value(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         record_id: int,
         field: str,
@@ -410,16 +419,14 @@ class Lylac(_Lylac_Core):
 
         Uso:
         >>> # Ejemplo 1
-        >>> lylac.get_value(TOKEN, 'base.users', 2, 'name')
+        >>> lylac.get_value(user_id, 'base.users', 2, 'name')
         >>> # 'onnymm'
         >>> 
         >>> # Ejemplo 2
-        >>> lylac.get_value(TOKEN, 'base.permissions', 5, 'create_date')
+        >>> lylac.get_value(user_id, 'base.permissions', 5, 'create_date')
         >>> # '2025-07-01 10:00:00'
         """
 
-        # Autenticación del usuario
-        user_id = self._auth.identify_user(token)
         # Validación de permiso de transacción
         self._access.check_permission(user_id, model_name, 'read')
 
@@ -427,7 +434,7 @@ class Lylac(_Lylac_Core):
         [ value ] = (
             # Se utiliza el método de lectura con el registro específico
             self.read(
-                self._TOKEN,
+                user_id,
                 model_name,
                 record_id,
                 [field],
@@ -444,7 +451,7 @@ class Lylac(_Lylac_Core):
 
     def get_values(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         record_id: int,
         fields: list[str],
@@ -457,16 +464,14 @@ class Lylac(_Lylac_Core):
 
         Uso:
         >>> # Ejemplo 1
-        >>> lylac.get_values(TOKEN, 'base.users', 1, ['name', 'create_date'])
+        >>> lylac.get_values(user_id, 'base.users', 1, ['name', 'create_date'])
         >>> # ('onnymm', '2024-11-04 11:16:59')
         >>> 
         >>> # Ejemplo 2
-        >>> lylac.get_values(TOKEN, 'base.permissions', 5, ['label', 'create_uid'])
+        >>> lylac.get_values(user_id, 'base.permissions', 5, ['label', 'create_uid'])
         >>> # ('Valores de selección de campos / Administrador', 3)
         """
 
-        # Autenticación del usuario
-        user_id = self._auth.identify_user(token)
         # Validación de permiso de transacción
         self._access.check_permission(user_id, model_name, 'read')
 
@@ -474,7 +479,7 @@ class Lylac(_Lylac_Core):
         values = (
             # Se utiliza el método de lectura con el registro específico
             self.read(
-                self._TOKEN,
+                user_id,
                 model_name,
                 record_id,
                 fields,
@@ -498,7 +503,7 @@ class Lylac(_Lylac_Core):
 
     def read(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         record_ids: int | list[int],
         fields: list[str] = [],
@@ -516,24 +521,24 @@ class Lylac(_Lylac_Core):
 
         Uso:
         >>> # Ejemplo 1
-        >>> lylac.search_read(TOKEN, 'base.users', [2])
+        >>> lylac.search_read(user_id, 'base.users', [2])
         >>> #    id   login          name         create_date          write_date
         >>> # 0   2  onnymm  Onnymm Azzur 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> 
-        >>> lylac.search_read(TOKEN, 'base.users', [2, 3])
+        >>> lylac.search_read(user_id, 'base.users', [2, 3])
         >>> #    id   login          name         create_date          write_date
         >>> # 0   2  onnymm  Onnymm Azzur 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> # 1   3   lumii    Lumii Mynx 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> 
         >>> # Ejemplo 3
-        >>> lylac.search_read(TOKEN, 'base.users', [2, 3], ['user', 'create_date'])
+        >>> lylac.search_read(user_id, 'base.users', [2, 3], ['user', 'create_date'])
         >>> #    id         name         create_date
         >>> # 0   2 Onnymm Azzur 2024-11-04 11:16:59
         >>> # 1   3   Lumii Mynx 2024-11-04 11:16:59
         """
 
-        # Autenticación y revisión de permisos del usuario
-        self._authorize(token, model_name, 'read')
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, model_name, 'read')
         # Conversión de datos entrantes si es necesaria
         record_ids = self._preprocess.convert_to_list(record_ids)
         # Lectura de datos
@@ -551,7 +556,7 @@ class Lylac(_Lylac_Core):
 
     def search_read(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         search_criteria: CriteriaStructure = [],
         fields: list[str] = [],
@@ -570,18 +575,18 @@ class Lylac(_Lylac_Core):
 
         Uso:
         >>> # Ejemplo 1
-        >>> lylac.search_read(TOKEN, 'base.users')
+        >>> lylac.search_read(user_id, 'base.users')
         >>> #    id   login          name         create_date          write_date
         >>> # 0   2  onnymm  Onnymm Azzur 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> # 1   3   lumii    Lumii Mynx 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> 
         >>> # Ejemplo 2
-        >>> lylac.search_read(TOKEN, 'base.users', [('user', '=', 'onnymm')])
+        >>> lylac.search_read(user_id, 'base.users', [('user', '=', 'onnymm')])
         >>> #    id   login          name         create_date          write_date
         >>> # 0   2  onnymm  Onnymm Azzur 2024-11-04 11:16:59 2024-11-04 11:16:59
         >>> 
         >>> # Ejemplo 3
-        >>> lylac.search_read(TOKEN, 'base.users', [], ['user', 'create_date'])
+        >>> lylac.search_read(user_id, 'base.users', [], ['user', 'create_date'])
         >>> #    id         name         create_date
         >>> # 0   2 Onnymm Azzur 2024-11-04 11:16:59
         >>> # 1   3   Lumii Mynx 2024-11-04 11:16:59
@@ -633,7 +638,7 @@ class Lylac(_Lylac_Core):
         ### Desfase de registros para paginación
         Este parámetro sirve para retornar los registros a partir del índice indicado por éste. Suponiendo que
         una búsqueda normal arrojaría los siguientes resultados:
-        >>> lylac.search_read(TOKEN, 'base.users')
+        >>> lylac.search_read(user_id, 'base.users')
         >>> #    id    login                  name
         >>> # 0   3   onnymm          Onnymm Azzur
         >>> # 1   4    lumii            Lumii Mynx
@@ -643,7 +648,7 @@ class Lylac(_Lylac_Core):
 
         Se puede especificar que el retorno de los registros considerará solo a partir desde cierto registro, como
         por ejemplo lo siguiente:
-        >>> lylac.search_read(TOKEN, 'base.users', offset= 2)
+        >>> lylac.search_read(user_id, 'base.users', offset= 2)
         >>> # 1   4    lumii            Lumii Mynx
         >>> # 2   5  user001  Persona Sin Nombre 1
         >>> # 3   6  user002  Persona Sin Nombre 2
@@ -653,7 +658,7 @@ class Lylac(_Lylac_Core):
         ### Límite de registros retornados para paginación
         También es posible establecer una cantidad máxima de registros desde la base de datos. Suponiendo que una
         búsqueda normal arrojaría los siguientes registros:
-        >>> lylac.search_read(TOKEN, 'base.users')
+        >>> lylac.search_read(user_id, 'base.users')
         >>> #    id    login                  name
         >>> # 0   3   onnymm          Onnymm Azzur
         >>> # 1   4    lumii            Lumii Mynx
@@ -663,15 +668,15 @@ class Lylac(_Lylac_Core):
 
         Se puede especificar que solo se requiere obtener una cantidad máxima de registros a partir de un
         número provisto:
-        >>> lylac.search_read(TOKEN, 'base.users', limit= 3)
+        >>> lylac.search_read(user_id, 'base.users', limit= 3)
         >>> #    id    login                  name
         >>> # 0   3   onnymm          Onnymm Azzur
         >>> # 1   4    lumii            Lumii Mynx
         >>> # 2   5  user001  Persona Sin Nombre 1
         """
 
-        # Autenticación y revisión de permisos del usuario
-        self._authorize(token, model_name, 'read')
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, model_name, 'read')
         # Búsqueda y lectura de datos
         data = self._dql.search_read(
             model_name,
@@ -689,7 +694,7 @@ class Lylac(_Lylac_Core):
 
     def search_count(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         search_criteria: CriteriaStructure = [],
     ) -> int:
@@ -701,11 +706,11 @@ class Lylac(_Lylac_Core):
 
         Uso:
         >>> # Ejemplo 1
-        >>> lylac.search_count(TOKEN, 'base.users')
+        >>> lylac.search_count(user_id, 'base.users')
         >>> # 5
         >>> 
         >>> # Ejemplo 2
-        >>> lylac.search_count(TOKEN, 'base.permissions', [('create_uid', '=', 5)])
+        >>> lylac.search_count(user_id, 'base.permissions', [('create_uid', '=', 5)])
         >>> # 126
 
         ----
@@ -752,8 +757,8 @@ class Lylac(_Lylac_Core):
         >>> # "name" contiene "as"
         """
 
-        # Autenticación y revisión de permisos del usuario
-        self._authorize(token, model_name, 'read')
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, model_name, 'read')
         # Conteo de registros
         count = self._dql.search_count(model_name, search_criteria)
 
@@ -761,7 +766,7 @@ class Lylac(_Lylac_Core):
 
     def update(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         record_ids: int | list[int],
         data: RecordData,
@@ -773,7 +778,7 @@ class Lylac(_Lylac_Core):
         sobreescribe un mismo valor por cada campo a todos los registros provistos.
 
         Uso:
-        >>> lylac.search_read(TOKEN, 'base.users', fields= ['login', 'name'])
+        >>> lylac.search_read(user_id, 'base.users', fields= ['login', 'name'])
         >>> #    id    login                  name
         >>> # 0   3   onnymm          Onnymm Azzur
         >>> # 1   4    lumii            Lumii Mynx
@@ -782,9 +787,9 @@ class Lylac(_Lylac_Core):
         >>> # 4   7  user003  Persona Sin Nombre 3
         >>> 
         >>> # Modificación
-        >>> lylac.update(TOKEN, 'base.users', [3, 4, 5], {'name': 'Cambiado'})
+        >>> lylac.update(user_id, 'base.users', [3, 4, 5], {'name': 'Cambiado'})
         >>> # True
-        >>> lylac.search_read(TOKEN, 'base.users', fields= ['login', 'name'])
+        >>> lylac.search_read(user_id, 'base.users', fields= ['login', 'name'])
         >>> #    id    login                  name
         >>> # 0   3   onnymm              Cambiado
         >>> # 1   4    lumii              Cambiado
@@ -797,7 +802,7 @@ class Lylac(_Lylac_Core):
         record_ids = self._preprocess.convert_to_list(record_ids)
         # Ejecución del método UPDATE WHERE
         return self.update_where(
-            token,
+            user_id,
             model_name,
             [('id', 'in', record_ids)],
             data,
@@ -806,7 +811,7 @@ class Lylac(_Lylac_Core):
 
     def update_where(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         search_criteria: CriteriaStructure,
         data: RecordData,
@@ -820,7 +825,7 @@ class Lylac(_Lylac_Core):
         encontrados en base a la condición provista.
 
         Uso:
-        >>> lylac.search_read(TOKEN, 'base.users', fields= ['login', 'name'])
+        >>> lylac.search_read(user_id, 'base.users', fields= ['login', 'name'])
         >>> #    id    login                  name
         >>> # 0   3   onnymm          Onnymm Azzur
         >>> # 1   4    lumii            Lumii Mynx
@@ -829,7 +834,7 @@ class Lylac(_Lylac_Core):
         >>> # 4   7  user003  Persona Sin Nombre 3
         >>> 
         >>> # Modificación
-        >>> lylac.update(TOKEN, 'base.users', [('name', 'ilike', 'sin nombre')], {'name': 'Zopilote'})
+        >>> lylac.update(user_id, 'base.users', [('name', 'ilike', 'sin nombre')], {'name': 'Zopilote'})
         >>> #    id    login          name
         >>> # 0   3   onnymm  Onnymm Azzur
         >>> # 1   4    lumii    Lumii Mynx
@@ -838,8 +843,8 @@ class Lylac(_Lylac_Core):
         >>> # 4   7  user003      Zopilote
         """
 
-        # Autenticación y revisión de permisos del usuario
-        user_id = self._authorize(token, model_name, 'update')
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, model_name, 'update')
         # Ejecución de validaciones
         self._validations.run_validations_on_update(model_name, search_criteria, data)
         # Preprocesamiento de datos en actualización y obtención de función posactualización
@@ -851,7 +856,7 @@ class Lylac(_Lylac_Core):
             model_name,
             'update',
             updated_records,
-            token,
+            user_id,
         )
         # Ejecución de función posactualización
         after_update_callback()
@@ -860,7 +865,7 @@ class Lylac(_Lylac_Core):
 
     def delete(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         record_ids: int | list[int]
     ) -> bool:
@@ -886,8 +891,8 @@ class Lylac(_Lylac_Core):
         >>> # 4   7  user003  Persona Sin Nombre 3
         """
 
-        # Autenticación y revisión de permisos del usuario
-        self._authorize(token, model_name, 'delete')
+        # Validación de permiso de transacción
+        self._access.check_permission(user_id, model_name, 'delete')
         # Ejecución de validaciones
         self._validations.run_validations_on_delete(model_name, record_ids)
         # Conversión de datos entrantes si es necesaria
@@ -896,7 +901,7 @@ class Lylac(_Lylac_Core):
         run_post_delete_automations = self._automations.generate_before_transaction(
             model_name,
             record_ids,
-            token,
+            user_id,
         )
         # Eliminación de registros
         deleted_ids = self._dml.delete(model_name, record_ids)
@@ -972,17 +977,3 @@ class Lylac(_Lylac_Core):
         elif len(cs_1):
             # Se retorna sólo el primer criterio de búsqueda
             return cs_1
-
-    def _authorize(
-        self,
-        token: str,
-        model_name: ModelName,
-        transaction: Transaction,
-    ) -> int:
-
-        # Autenticación del usuario
-        user_id = self._auth.identify_user(token)
-        # Validación de permiso de transacción
-        self._access.check_permission(user_id, model_name, transaction)
-
-        return user_id

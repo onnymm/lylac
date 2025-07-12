@@ -15,7 +15,10 @@ from sqlalchemy.types import (
     Text,
     Time,
 )
-from ...._constants import MODEL_NAME
+from ...._constants import (
+    MODEL_NAME,
+    ROOT_ID,
+)
 from ...._core.modules import DDL_Core
 from ...._core.submodules.ddl import _Models_Interface
 from ...._data import (
@@ -138,7 +141,7 @@ class _Models(_Models_Interface):
         """
 
         # Obtención del nombre del modelo vinculado
-        model_name: ModelName = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, params['model_id'], 'model')
+        model_name: ModelName = self._main.get_value(ROOT_ID, MODEL_NAME.BASE_MODEL, params['model_id'], 'model')
 
         # Creación de los parámetros para ser usados en las automatizaciones
         field_atts = FieldDefinition(
@@ -252,7 +255,7 @@ class _Models(_Models_Interface):
     ) -> str:
 
         # Obtención del nombre de la tabla
-        table_name: str = self._main.get_value(self._main._TOKEN, MODEL_NAME.BASE_MODEL, model_id, 'name')
+        table_name: str = self._main.get_value(ROOT_ID, MODEL_NAME.BASE_MODEL, model_id, 'name')
 
         return table_name
 

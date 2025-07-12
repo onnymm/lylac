@@ -1,3 +1,4 @@
+from ...._constants import ROOT_ID
 from ...._contexts import Context
 from ...._core.modules import Automations_Core
 from ...._core.submodules.automations import _Builder_Interface
@@ -29,7 +30,7 @@ class _Builder(_Builder_Interface):
         model_name: ModelName,
         found_ids: list[int],
         autom_data: ProgrammedAutomation,
-        user_token: str,
+        user_id: int,
     ) -> CompiledModificationAutomation:
 
         # Obtención de mapa de información de los registros
@@ -56,7 +57,7 @@ class _Builder(_Builder_Interface):
                         self._main,
                         input_record,
                         model_name,
-                        user_token,
+                        user_id,
                     )
                     # Ejecución de la automatización
                     automation_callback(ctx)
@@ -72,7 +73,7 @@ class _Builder(_Builder_Interface):
                     self._main,
                     data,
                     model_name,
-                    user_token,
+                    user_id,
                 )
                 # Ejecución de la automatización
                 automation_callback(ctx)
@@ -85,7 +86,7 @@ class _Builder(_Builder_Interface):
         model_name: ModelName,
         found_ids: list[int],
         autom_data: ProgrammedAutomation,
-        user_token: str,
+        user_id: int,
     ) -> CompiledDeletionAutomation:
 
         # Obtención de mapa de información de los registros
@@ -112,7 +113,7 @@ class _Builder(_Builder_Interface):
                         self._main,
                         record_data,
                         model_name,
-                        user_token,
+                        user_id,
                     )
                     # Ejecución de la automatización
                     autom_data.callback(ctx)
@@ -125,7 +126,7 @@ class _Builder(_Builder_Interface):
                     self._main,
                     data,
                     model_name,
-                    user_token,
+                    user_id,
                 )
                 # Ejecución de la automatización
                 autom_data.callback(ctx)
@@ -143,7 +144,7 @@ class _Builder(_Builder_Interface):
         mapped_data: dict[int, RecordData] = {}
         # Se obtienen los datos de los registros
         records_data = self._main.read(
-            self._main._TOKEN,
+            ROOT_ID,
             model_name,
             found_ids,
             autom_data.fields,

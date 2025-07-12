@@ -1,4 +1,5 @@
 from sqlalchemy import text
+from ...._constants import ROOT_ID
 from ...._module_types import (
     FieldDefinition,
     TType,
@@ -121,7 +122,7 @@ class _Database(_Database_Interface):
         table_name = params.table_model.__tablename__
         column_name = params.field_name
         constraint_name = f'{table_name}_{column_name}_fkey'
-        referenced_table_name = self._ddl._main.get_value(self._main._TOKEN, 'base.model', params.related_model_id, 'name')
+        referenced_table_name = self._ddl._main.get_value(ROOT_ID, 'base.model', params.related_model_id, 'name')
 
         # Construcción del query
         query = (

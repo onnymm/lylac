@@ -1,4 +1,7 @@
-from ..._constants import FIELD_NAME
+from ..._constants import (
+    FIELD_NAME,
+    ROOT_ID,
+)
 from ..._core.modules import Automations_Core
 from ..._core.main import _Lylac_Core
 from ..._contexts import AutomationCallback
@@ -78,7 +81,7 @@ class Automations(Automations_Core):
         model_name: ModelName,
         transaction: CreateOrUpdateTransaction,
         record_ids: list[int],
-        user_token: str,
+        user_id: int,
     ) -> None:
 
         # Se inicializa la lista de automatizaciones a ejecutar
@@ -96,7 +99,7 @@ class Automations(Automations_Core):
                     model_name,
                     applyable_ids,
                     autom_data,
-                    user_token,
+                    user_id,
                 )
                 # Se añade la función preparada
                 automations_to_run.append(automation_to_execute)
@@ -109,7 +112,7 @@ class Automations(Automations_Core):
         self,
         model_name: ModelName,
         record_ids: list[int],
-        user_token: str,
+        user_id: int,
     ):
 
         # Se inicializa la lista de automatizaciones a ejecutar
@@ -128,7 +131,7 @@ class Automations(Automations_Core):
                     model_name,
                     applyable_ids,
                     autom_data,
-                    user_token,
+                    user_id,
                 )
 
                 # Se añade la función preparada
@@ -191,7 +194,7 @@ class Automations(Automations_Core):
         # Obtención del criterio de búsqueda segmentado solo por las IDs de registros a evaluar
         computed_criteria = self._compute_automation_criteria(record_ids, automation_criteria)
         # Se filtran las IDs por el criterio de búsqueda computado
-        found_ids = self._main.search(self._main._TOKEN, model_name, computed_criteria)
+        found_ids = self._main.search(ROOT_ID, model_name, computed_criteria)
 
         return found_ids
 

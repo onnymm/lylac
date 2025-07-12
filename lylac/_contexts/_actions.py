@@ -21,12 +21,12 @@ class ActionContext(Generic[_T]):
         self,
         instance: _Lylac_Core,
         data: _T,
-        user_token: str,
+        user_id: int,
     ) -> None:
 
         self.data = data
         self._main = instance
-        self._token = user_token
+        self._user_id = user_id
 
     def create(
         self,
@@ -35,7 +35,7 @@ class ActionContext(Generic[_T]):
     ) -> list[int]:
 
         return self._main.create(
-            self._token,
+            self._user_id,
             model_name,
             data,
         )
@@ -49,7 +49,7 @@ class ActionContext(Generic[_T]):
     ) -> list[int]:
 
         return self._main.search(
-            self._token,
+            self._user_id,
             model_name,
             search_criteria,
             offset,
@@ -64,7 +64,7 @@ class ActionContext(Generic[_T]):
     ) -> RecordValue:
 
         return self._main.get_value(
-            self._token,
+            self._user_id,
             model_name,
             record_id,
             field_name,
@@ -78,7 +78,7 @@ class ActionContext(Generic[_T]):
     ) -> tuple:
 
         return self._main.get_values(
-            self._token,
+            self._user_id,
             model_name,
             record_id,
             fields,
@@ -91,7 +91,7 @@ class ActionContext(Generic[_T]):
     ) -> int:
 
         self._main.search_count(
-            self._token,
+            self._user_id,
             model_name,
             search_criteria,
         )
@@ -109,7 +109,7 @@ class ActionContext(Generic[_T]):
     ) -> DataOutput:
         
         return self._main.search_read(
-            self._token,
+            self._user_id,
             model_name,
             search_criteria,
             fields,
@@ -129,7 +129,7 @@ class ActionContext(Generic[_T]):
     ) -> bool:
 
         self._main.update(
-            self._token,
+            self._user_id,
             model_name,
             record_ids,
             data,
@@ -142,7 +142,7 @@ class ActionContext(Generic[_T]):
     ) -> bool:
 
         return self._main.delete(
-            self._token,
+            self._user_id,
             model_name,
             record_ids,
         )

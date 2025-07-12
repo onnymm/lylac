@@ -1,4 +1,7 @@
-from ..._constants import MODEL_NAME
+from ..._constants import (
+    MODEL_NAME,
+    ROOT_ID,
+)
 from ..._core.modules import Validations_Core
 from ..._core.main import _Lylac_Core
 from ..._module_types import (
@@ -76,7 +79,7 @@ class Validations(Validations_Core):
             return
 
         # Obtención de la ID del modelo
-        [ model_id ] = self._main.search(self._main._TOKEN, MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
+        [ model_id ] = self._main.search(ROOT_ID, MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
 
         # Obtención de las validaciones del modelo en el método de creación
         transaction_validations: list[Validation.Create.Mixed.Params] = self._get_method_validations(model_name, 'create')
@@ -161,9 +164,9 @@ class Validations(Validations_Core):
             return
 
         # Obtención de la ID del modelo
-        [ model_id ] = self._main.search(self._main._TOKEN, MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
+        [ model_id ] = self._main.search(ROOT_ID, MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
         # Obtención de los datos de los registros
-        records_data = self._main.read(self._main._TOKEN, model_name, record_ids, output_format= 'dict')
+        records_data = self._main.read(ROOT_ID, model_name, record_ids, output_format= 'dict')
         # Obtención de las validaciones del modelo en el método de eliminación
         transaction_validations: list[Validation.Create.Mixed.Params] = self._get_method_validations(model_name, 'delete')
 
@@ -249,10 +252,10 @@ class Validations(Validations_Core):
             return
 
         # Obtención de la ID del modelo
-        [ model_id ] = self._main.search(self._main._TOKEN, MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
+        [ model_id ] = self._main.search(ROOT_ID, MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
 
         # Obtención de las IDs de registros
-        record_ids = self._main.search(self._main._TOKEN, MODEL_NAME.BASE_MODEL, search_criteria)
+        record_ids = self._main.search(ROOT_ID, MODEL_NAME.BASE_MODEL, search_criteria)
 
         # Obtención de las validaciones del modelo en el método de modificación
         transaction_validations: list[Validation.Update.Mixed.Params] = self._get_method_validations(model_name, 'update')

@@ -1,4 +1,7 @@
-from ..._constants import MODEL_NAME
+from ..._constants import (
+    MODEL_NAME,
+    ROOT_ID,
+)
 from ..._data import (
     DEFAULT_FIELD_TEMPLATE,
     UID_FIELDS,
@@ -119,7 +122,7 @@ class DDLManager(DDL_Core):
     ) -> None:
 
         # Obtención de la ID del modelo
-        [ model_id ] = self._main.search(self._main._TOKEN, MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
+        [ model_id ] = self._main.search(ROOT_ID, MODEL_NAME.BASE_MODEL, [('model', '=', model_name)])
         # Creación de criterio de búsqueda para encontrar todos los campos pertenientes al modelo
         criteria: CriteriaStructure = [
             '&',
@@ -133,7 +136,7 @@ class DDLManager(DDL_Core):
 
         # Se obtienen los datos de los registros a excepción del campo eliminado
         fields_data: list[ModelRecordData.BaseModelField] = self._main.search_read(
-            self._main._TOKEN,
+            ROOT_ID,
             MODEL_NAME.BASE_MODEL_FIELD,
             criteria,
             output_format= 'dict',
@@ -177,7 +180,7 @@ class DDLManager(DDL_Core):
             fields_data.append(field_data)
 
         # Se crea la información de los campos
-        self._main.create(self._main._TOKEN, MODEL_NAME.BASE_MODEL_FIELD, fields_data)
+        self._main.create(ROOT_ID, MODEL_NAME.BASE_MODEL_FIELD, fields_data)
 
     def build_default_field(
         self,

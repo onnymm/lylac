@@ -6,6 +6,7 @@ from datetime import (
 from ...._constants import (
     FIELD_NAME,
     MODEL_NAME,
+    ROOT_ID,
 )
 from ...._core.submodules.auth import _Session_Interface
 from ...._core.modules import Auth_Core
@@ -103,14 +104,14 @@ class UserSession(_Session_Interface):
 
         # Obtención de la ID de la sesión del usuario
         [ session_id ] = self._main.search(
-            self._main._TOKEN,
+            ROOT_ID,
             MODEL_NAME.BASE_USERS_SESSION,
             [('name', '=', session_uuid)],
         )
 
         # Obtención de la ID de usuario
         user_id: int = self._main.get_value(
-            self._main._TOKEN,
+            ROOT_ID,
             MODEL_NAME.BASE_USERS_SESSION,
             session_id,
             'user_id',

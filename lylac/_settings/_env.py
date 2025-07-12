@@ -18,4 +18,3 @@ class ENV_VARIABLE_NAME():
 
     class CRYPT:
         AUTH = 'CRYPT_KEY'
-        ADMIN = 'ADMIN_KEY'

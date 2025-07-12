@@ -16,7 +16,7 @@ class _Builder_Interface():
         model_name: ModelName,
         found_ids: list[int],
         autom_data: ProgrammedAutomation,
-        user_token: str,
+        user_id: int,
     ) -> CompiledModificationAutomation:
         ...
 
@@ -25,7 +25,7 @@ class _Builder_Interface():
         model_name: ModelName,
         found_ids: list[int],
         autom_data: ProgrammedAutomation,
-        user_token: str,
+        user_id: int,
     ) -> CompiledDeletionAutomation:
         ...
 

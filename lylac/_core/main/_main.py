@@ -57,11 +57,9 @@ class _Lylac_Core():
     _base: type[DeclarativeBase]
     _engine: Engine
 
-    _TOKEN = ENV_VARIABLES.CRYPT.ADMIN
-
     def create(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         data: RecordData | list[RecordData],
     ) -> list[int]:
@@ -69,7 +67,7 @@ class _Lylac_Core():
 
     def search(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         search_criteria: CriteriaStructure = [],
         offset: int | None = None,
@@ -79,7 +77,7 @@ class _Lylac_Core():
 
     def get_value(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         record_id: int,
         field: str,
@@ -88,7 +86,7 @@ class _Lylac_Core():
 
     def get_values(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         record_id: int,
         fields: list[str],
@@ -97,7 +95,7 @@ class _Lylac_Core():
 
     def read(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         record_ids: int | list[int],
         fields: list[str] = [],
@@ -110,7 +108,7 @@ class _Lylac_Core():
 
     def search_read(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         search_criteria: CriteriaStructure = [],
         fields: list[str] = [],
@@ -125,7 +123,7 @@ class _Lylac_Core():
 
     def search_count(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         search_criteria: CriteriaStructure = [],
     ) -> int:
@@ -133,7 +131,7 @@ class _Lylac_Core():
 
     def update(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         record_ids: int | list[int],
         data: RecordData,
@@ -142,7 +140,7 @@ class _Lylac_Core():
 
     def update_where(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         search_criteria: CriteriaStructure,
         data: RecordData,
@@ -152,7 +150,7 @@ class _Lylac_Core():
 
     def delete(
         self,
-        token: str,
+        user_id: int,
         model_name: ModelName,
         record_ids: int | list[int]
     ) -> bool:

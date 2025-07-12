@@ -32,7 +32,7 @@ class Automations_Interface():
         model_name: ModelName,
         transaction: CreateOrUpdateTransaction,
         record_ids: list[int],
-        user_token: str,
+        user_id: int,
     ) -> None:
         ...
 
@@ -40,7 +40,7 @@ class Automations_Interface():
         self,
         model_name: ModelName,
         record_ids: list[int],
-        user_token: str,
+        user_id: int,
     ):
         ...
 

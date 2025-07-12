@@ -15,17 +15,13 @@ class _BaseContext():
     """
     Instancia principal.
     """
-    _root_token: str
-    """
-    Token de usuario raíz.
-    """
 
     def __init__(
         self,
         instance: _Lylac_Core,
         data,
         model_name: ModelName,
-        user_token: str,
+        user_id: int,
     ) -> None:
 
         self.data = data
@@ -33,12 +29,11 @@ class _BaseContext():
         """
         Modelo donde se ejecuta la acción.
         """
-        self.user_token = user_token
+        self._user_id = user_id
         """
         Usuario que ejecuta la acción.
         """
         self._main = instance
-        self._root_token = instance._TOKEN
 
     def create(
         self,
@@ -47,7 +42,7 @@ class _BaseContext():
     ) -> list[int]:
 
         return self._main.create(
-            self.user_token,
+            self._user_id,
             model_name,
             data,
         )
@@ -61,7 +56,7 @@ class _BaseContext():
     ) -> list[int]:
 
         return self._main.search(
-            self.user_token,
+            self._user_id,
             model_name,
             search_criteria,
             offset,
@@ -76,7 +71,7 @@ class _BaseContext():
     ) -> RecordValue:
 
         return self._main.get_value(
-            self.user_token,
+            self._user_id,
             model_name,
             record_id,
             field_name,
@@ -90,7 +85,7 @@ class _BaseContext():
     ) -> tuple:
 
         return self._main.get_values(
-            self.user_token,
+            self._user_id,
             model_name,
             record_id,
             fields,
@@ -103,7 +98,7 @@ class _BaseContext():
     ) -> int:
 
         self._main.search_count(
-            self.user_token,
+            self._user_id,
             model_name,
             search_criteria,
         )
@@ -121,7 +116,7 @@ class _BaseContext():
     ) -> DataOutput:
         
         return self._main.search_read(
-            self.user_token,
+            self._user_id,
             model_name,
             search_criteria,
             fields,
@@ -141,7 +136,7 @@ class _BaseContext():
     ) -> bool:
 
         self._main.update(
-            self.user_token,
+            self._user_id,
             model_name,
             record_ids,
             data,
@@ -154,7 +149,7 @@ class _BaseContext():
     ) -> bool:
 
         return self._main.delete(
-            self.user_token,
+            self._user_id,
             model_name,
             record_ids,
         )
