@@ -11,6 +11,7 @@ from ..._module_types import (
 from ..._core._env import ENV_VARIABLES
 from .._interface import (
     Access_Interface,
+    Actions_Interface,
     Algorythms_Interface,
     Auth_Interface,
     Automations_Interface,
@@ -33,6 +34,7 @@ from .._interface import (
 
 class _Lylac_Core():
     _access: Access_Interface
+    _actions: Actions_Interface
     _algorythms: Algorythms_Interface
     _auth: Auth_Interface
     _automations: Automations_Interface

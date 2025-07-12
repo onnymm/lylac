@@ -2,6 +2,7 @@ from typing import Callable
 import pandas as pd
 from ._constants import FIELD_NAME
 from ._contexts import Context
+from ._contexts._actions import ActionCallback
 from ._core.main import _Lylac_Core
 from ._module_types import (
     CriteriaStructure,
@@ -16,6 +17,7 @@ from ._module_types import (
 )
 from ._modules import (
     Access,
+    Actions,
     Algorythms,
     Auth,
     Automations,
@@ -68,6 +70,7 @@ class Lylac(_Lylac_Core):
         self._preprocess = Preprocess(self)
         self._automations = Automations(self)
         self._validations = Validations(self)
+        self._actions = Actions(self)
 
         # Registro de las automatizaciones predeterminadas
         self._automations.create_preset_automations()
@@ -83,6 +86,27 @@ class Lylac(_Lylac_Core):
     ) -> str | bool:
 
         return self._auth.login(login, password)
+    
+    def register_action(
+        self,
+        model_name: ModelName,
+        action_name: str,
+    ) -> None:
+
+        # Creación del decorador que registrará la automatización
+        def decorator(action_callbacK: ActionCallback):
+
+            # Registro de la acción
+            self._actions.register_action(
+                model_name,
+                action_name,
+                action_callbacK,
+            )
+
+            return action_callbacK
+
+        # Retorno del decorador
+        return decorator
 
     def register_automation(
         self,
@@ -191,6 +215,22 @@ class Lylac(_Lylac_Core):
 
         # Retorno del decorador
         return decorator
+
+    def action(
+        self,
+        token: str,
+        model_name: ModelName,
+        action_name: str,
+        record_id: int,
+    ) -> None:
+
+        # Ejecución de la acción
+        self._actions.run_action(
+            token,
+            model_name,
+            action_name,
+            record_id,
+        )
 
     def create(
         self,
