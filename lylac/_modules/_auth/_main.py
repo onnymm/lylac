@@ -1,8 +1,10 @@
 from typing import Literal
 from passlib.context import CryptContext
-from ..._constants import MODEL_NAME
+from ..._constants import MODEL_NAME, MESSAGES
+from ..._core import ENV_VARIABLES
 from ..._core.modules import Auth_Core
 from ..._core.main import _Lylac_Core
+from ..._errors import InvalidPasswordError
 from ._submodules import (
     Token,
     UserSession,
@@ -17,6 +19,8 @@ class Auth(Auth_Core):
 
         # Asignación de instancia principal
         self._main = instance
+        # Asignación de instancia de compilar
+        self._compiler = instance._compiler
         # Inicialización de submódulos
         self._m_session = UserSession(self)
         self._m_token = Token(self)
@@ -53,7 +57,7 @@ class Auth(Auth_Core):
     ) -> str | Literal[False]:
 
         # Obtención de la ID del usuario si las credenciales son correctas
-        user_id = self._authenticate_user(login, password)
+        user_id = self._authenticate_user_by_login(login, password)
         # Si las credenciales son correctas...
         if user_id:
 
@@ -68,6 +72,20 @@ class Auth(Auth_Core):
         else:
             return False
 
+    def reset_password(
+        self,
+        user_id: int,
+    ) -> None:
+
+        # Obtención de la contraseña genérica inicial
+        default_password = ENV_VARIABLES.DEFAULT.PASSWORD
+        # Se hashea la contraseña
+        hashed_password = self.hash_password(default_password)
+        # Se ejecuta la transacción en la base de datos
+        self._compiler.change_password(user_id, hashed_password)
+        # Se cierran las sesiones
+        self._close_sessions(user_id)
+
     def change_password(
         self,
         user_id: int,
@@ -76,47 +94,64 @@ class Auth(Auth_Core):
         close_sessions: bool = True,
     ) -> None:
 
-        # Intento de cambio de contraseña
-        self._main._compiler.change_password(
-            user_id,
-            old_password,
-            new_password,
+        # Verificación de la contraseña actual
+        self._authenticate_user_by_id(user_id, old_password)
+        # Se hashea la nueva contraseña
+        hashed_new_password = self.hash_password(new_password)
+        # Se realiza el cambio de contraseña
+        self._compiler.change_password(user_id, hashed_new_password)
+
+        # Si se especificó que se deben cerrar las sesiones anteriores...
+        if close_sessions:
+            # Se cierran las sesiones
+            self._close_sessions(user_id)
+
+    def _close_sessions(
+        self,
+        user_id: int,
+    ) -> None:
+
+        # Obtención de las IDs de las sesiones anteriores
+        session_ids = self._main.search(
+            self._main._ROOT_USER,
+            MODEL_NAME.BASE_USERS_SESSION,
+            [('user_id', '=', user_id)],
+        )
+        # Se eliminan éstas
+        self._main.delete(
+            self._main._ROOT_USER,
+            MODEL_NAME.BASE_USERS_SESSION,
+            session_ids,
         )
 
-        # Si se especifico que se deben cerrar las sesiones anteriores...
-        if close_sessions:
-            # Obtención de las IDs de las sesiones anteriores
-            session_ids = self._main.search(
-                1,
-                MODEL_NAME.BASE_USERS_SESSION,
-                [('user_id', '=', user_id)],
-            )
-            # Se eliminan éstas
-            self._main.delete(
-                1,
-                MODEL_NAME.BASE_USERS_SESSION,
-                session_ids,
-            )
-
-    def verify_password(
+    def _authenticate_user_by_id(
         self,
+        user_id: int,
         password: str,
-        hashed_password_from_db: str,
-    ) -> bool:
+    ) -> None:
 
+        # Obtención de la contraseña hasheada desde la base de datos
+        hashed_password_from_db= self._main.get_value(
+            self._main._ROOT_USER,
+            MODEL_NAME.BASE_USERS,
+            user_id,
+            'password',
+        )
         # Verificación de la contraseña
-        verified = self._pwd_context.verify(password, hashed_password_from_db)
+        is_correct_password = self._verify_password(password, hashed_password_from_db)
+        # Si la contraseña es incorrecta
+        if not is_correct_password:
+            # Se arroja el error de contraseña inválida
+            raise InvalidPasswordError(MESSAGES.ACCOUNT.WRONG_PASSWORD)
 
-        return verified
-
-    def _authenticate_user(
+    def _authenticate_user_by_login(
         self,
         login: str,
         password: str,
     ) -> int | Literal[False]:
 
         # Obtención de los datos del usuario
-        found_data = self._main._compiler.get_user_data_by_username(login)
+        found_data = self._compiler.get_user_data_by_username(login)
 
         # Si no se encontraron datos...
         if found_data is None:
@@ -127,13 +162,23 @@ class Auth(Auth_Core):
         ( user_id, hashed_password_from_db ) = found_data
 
         # Verificación de la contraseña
-        verified = self._pwd_context.verify(password, hashed_password_from_db)
-
-        # Si la contraseña es correcta...
-        if verified:
-            # Se retorna la ID del usuario
-            return user_id
+        is_correct_password = self._verify_password(password, hashed_password_from_db)
+        # Si la contraseña es incorrecta
+        if not is_correct_password:
+            # Se arroja el error de contraseña inválida
+            raise InvalidPasswordError(MESSAGES.ACCOUNT.WRONG_PASSWORD)
         # Si la contraseña es incorrecta...
         else:
             # Se retorna falso
-            return False
+            return user_id
+
+    def _verify_password(
+        self,
+        typed_password: str,
+        hashed_password_from_db,
+    ) -> bool:
+
+        # Verificación de la contraseña
+        verified = self._pwd_context.verify(typed_password, hashed_password_from_db)
+
+        return verified

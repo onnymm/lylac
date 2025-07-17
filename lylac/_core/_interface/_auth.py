@@ -30,9 +30,8 @@ class Auth_Interface():
     ) -> None:
         ...
 
-    def verify_password(
+    def reset_password(
         self,
-        password: str,
-        hashed_password_from_db: str,
-    ) -> bool:
+        user_id: int,
+    ) -> None:
         ...

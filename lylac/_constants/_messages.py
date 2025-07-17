@@ -6,3 +6,5 @@ class MESSAGES:
         ENGINE_URL_ERROR = 'La URL para la conexión a la base de datos no es correcta. El formato debe tener la estructura [postgresql+psycopg2://postgres:<contraseña>@<host_de_la_base_de_datos>:<puerto>/<nombre_de_la_base_de_datos>]'
     class ACCESS:
         NOT_ALLOWED = 'No tienes permiso para realizar esta acción.'
+    class ACCOUNT:
+        WRONG_PASSWORD = 'Contraseña incorrecta.'

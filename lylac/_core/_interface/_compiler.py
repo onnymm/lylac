@@ -51,7 +51,6 @@ class Compiler_Interface():
     def change_password(
         self,
         user_id: int,
-        old_password: bool,
-        new_password: bool,
-    ) -> bool:
+        hashed_new_password: str,
+    ) -> None:
         ...

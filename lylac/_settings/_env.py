@@ -7,7 +7,7 @@ class ENV_VARIABLE_NAME():
         USER = 'LYLAC_USER'
         PASSWORD = 'LYLAC_PASSWORD'
 
-    class INTERNAL_USER:
+    class ROOT_USER:
         LOGIN = 'LYLAC_INTERNAL_USER_LOGIN'
         NAME = 'LYLAC_INTERNAL_USER_NAME'
 
@@ -18,3 +18,6 @@ class ENV_VARIABLE_NAME():
 
     class CRYPT:
         AUTH = 'CRYPT_KEY'
+
+    class DEFAULT:
+        PASSWORD = 'LYLAC_USER_DEFAULT_PASSWORD'

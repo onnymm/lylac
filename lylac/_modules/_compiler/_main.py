@@ -9,12 +9,13 @@ from sqlalchemy.orm import (
     Session,
     aliased,
 )
-from ...security import hash_password
-from ..._constants import MODEL_NAME
-from ..._core.modules import Compiler_Core
+from ..._constants import (
+    MODEL_NAME,
+    FIELD_NAME,
+)
 from ..._core.main import _Lylac_Core
+from ..._core.modules import Compiler_Core
 from ..._module_types import (
-    ModelTemplate,
     RecordData,
     ModelName,
     Transaction,
@@ -256,30 +257,18 @@ class Compiler(Compiler_Core):
     def change_password(
         self,
         user_id: int,
-        old_password: bool,
-        new_password: bool,
-    ) -> bool:
-
-        # Obtención de la contraseña hasheada
-        hashed_password = self._main.get_value(1, 'base.users', user_id, 'password')
-
-        # Verificación de la contraseña
-        verified = self._main._auth.verify_password(old_password, hashed_password)
-
-        if not verified:
-            return False
+        hashed_new_password: str,
+    ) -> None:
 
         # Obtención del modelo de la tabla
-        base_users = self._strc.get_model('base.users')
+        base_users = self._strc.get_model(MODEL_NAME.BASE_USERS)
         # Obtención de la instancia de campo de ID
-        c_base_users__id = self._index[base_users]['id']
-
+        c_base_users__id = self._index[base_users][FIELD_NAME.ID]
         # Creación del query
         stmt = (
             update(base_users)
             .where(c_base_users__id == user_id)
-            .values({'password': hash_password(new_password)})
+            .values({'password': hashed_new_password})
         )
-
         # Ejecución de la transacción
         self._connection.execute(stmt, commit= True)

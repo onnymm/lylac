@@ -1,6 +1,6 @@
 from typing import Callable
 import pandas as pd
-from ._constants import FIELD_NAME
+from ._constants import FIELD_NAME, MODEL_NAME
 from ._contexts import Context
 from ._contexts._actions import ActionCallback
 from ._core.main import _Lylac_Core
@@ -111,6 +111,24 @@ class Lylac(_Lylac_Core):
             new_password,
             close_sessions,
         )
+
+    def reset_password(
+        self,
+        user_id: int,
+        user_id_to_reset_password: int,
+    ) -> bool:
+
+        # Validación de permiso de transacción
+        self._access.check_permission(
+            user_id,
+            MODEL_NAME.BASE_USERS,
+            'update',
+        )
+
+        # Se restablece la contraseña del usuario especificado
+        self._auth.reset_password(user_id_to_reset_password)
+
+        return True
 
     def register_action(
         self,
