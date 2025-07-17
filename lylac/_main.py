@@ -96,6 +96,22 @@ class Lylac(_Lylac_Core):
 
         return user_id
 
+    def change_password(
+        self,
+        user_id: int,
+        old_password: str,
+        new_password: str,
+        close_sessions: bool = True,
+    ) -> None:
+
+        # Intento de cambio de contraseña
+        self._auth.change_password(
+            user_id,
+            old_password,
+            new_password,
+            close_sessions,
+        )
+
     def register_action(
         self,
         model_name: ModelName,

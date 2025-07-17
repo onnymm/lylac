@@ -1,5 +1,6 @@
 from typing import Literal
 from passlib.context import CryptContext
+from ..._constants import MODEL_NAME
 from ..._core.modules import Auth_Core
 from ..._core.main import _Lylac_Core
 from ._submodules import (
@@ -66,6 +67,47 @@ class Auth(Auth_Core):
         # Si las credenciales no son correctas...
         else:
             return False
+
+    def change_password(
+        self,
+        user_id: int,
+        old_password: str,
+        new_password: str,
+        close_sessions: bool = True,
+    ) -> None:
+
+        # Intento de cambio de contraseña
+        self._main._compiler.change_password(
+            user_id,
+            old_password,
+            new_password,
+        )
+
+        # Si se especifico que se deben cerrar las sesiones anteriores...
+        if close_sessions:
+            # Obtención de las IDs de las sesiones anteriores
+            session_ids = self._main.search(
+                1,
+                MODEL_NAME.BASE_USERS_SESSION,
+                [('user_id', '=', user_id)],
+            )
+            # Se eliminan éstas
+            self._main.delete(
+                1,
+                MODEL_NAME.BASE_USERS_SESSION,
+                session_ids,
+            )
+
+    def verify_password(
+        self,
+        password: str,
+        hashed_password_from_db: str,
+    ) -> bool:
+
+        # Verificación de la contraseña
+        verified = self._pwd_context.verify(password, hashed_password_from_db)
+
+        return verified
 
     def _authenticate_user(
         self,

@@ -47,3 +47,11 @@ class Compiler_Interface():
         transaction: Transaction,
     ) -> bool:
         ...
+
+    def change_password(
+        self,
+        user_id: int,
+        old_password: bool,
+        new_password: bool,
+    ) -> bool:
+        ...

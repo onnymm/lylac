@@ -56,6 +56,7 @@ class _Lylac_Core():
 
     _base: type[DeclarativeBase]
     _engine: Engine
+    _ROOT_USER = 1
 
     def create(
         self,

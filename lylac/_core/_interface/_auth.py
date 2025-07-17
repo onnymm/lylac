@@ -20,3 +20,19 @@ class Auth_Interface():
         password: str,
     ) -> str | Literal[False]:
         ...
+
+    def change_password(
+        self,
+        user_id: int,
+        old_password: str,
+        new_password: str,
+        close_sessions: bool = True,
+    ) -> None:
+        ...
+
+    def verify_password(
+        self,
+        password: str,
+        hashed_password_from_db: str,
+    ) -> bool:
+        ...
