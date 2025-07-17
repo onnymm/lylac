@@ -28,6 +28,16 @@ class ActionContext(Generic[_T]):
         self._main = instance
         self._user_id = user_id
 
+    def reset_password(
+        self,
+        user_id_to_reset_password: int,
+    ) -> bool:
+
+        return self._main.reset_password(
+            self._user_id,
+            user_id_to_reset_password,
+        )
+
     def create(
         self,
         model_name: ModelName,

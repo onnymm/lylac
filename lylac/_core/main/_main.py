@@ -58,6 +58,13 @@ class _Lylac_Core():
     _engine: Engine
     _ROOT_USER = 1
 
+    def reset_password(
+        self,
+        user_id: int,
+        user_id_to_reset_password: int,
+    ) -> bool:
+        ...
+
     def create(
         self,
         user_id: int,
