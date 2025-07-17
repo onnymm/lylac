@@ -80,7 +80,7 @@ class _Reset(_Reset_Interface):
             # Creación de los modelos de SQLAlchemy en la instancia
             self._ddl._m_model.create_model(record['name'])
             # Inicialización de diccionarios de automatizaciones
-            self._main._automations.register_model(record['name'])
+            self._main._automations.register_model(record['model'])
             # Inicialización de diccionarios de validaciones
             self._main._validations.initialize_model_validations(record['model'])
 
