@@ -9,8 +9,8 @@ with open("README.md", "r", encoding="utf-8") as f:
 setup(
     # Library name and version
     name="lylac",
-    version="2.0.2",
-    
+    version="2.1.0",
+
     # Dependencies
     install_requires=[
         "bcrypt>=4.3.0",
