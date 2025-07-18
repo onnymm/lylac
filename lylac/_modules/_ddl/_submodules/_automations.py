@@ -151,6 +151,7 @@ class _Automations():
                 MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
                 [('field_id', '=', field_id)],
                 ['name'],
+                output_format= 'dataframe',
             )
             ['name']
             .to_list()
