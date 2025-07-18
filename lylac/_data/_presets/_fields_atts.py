@@ -136,6 +136,12 @@ FIELDS_ATTS: dict[str, dict[str, FieldProperties]] = {
             'related_field': None,
             'selection_values': [],
         },
+        'readonly': {
+            'ttype': 'boolean',
+            'related_model': None,
+            'related_field': None,
+            'selection_values': [],
+        },
         'default_value': {
             'ttype': 'char',
             'related_model': None,

@@ -191,6 +191,10 @@ class ModelRecordData:
         """
         Es requerido
         """
+        readonly: bool
+        """
+        Solo lectura
+        """
         default_value: str
         """
         Valor predeterminado

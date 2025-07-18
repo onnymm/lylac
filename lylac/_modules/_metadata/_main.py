@@ -71,6 +71,8 @@ class Metadata(Metadata_Core):
             nullable: Mapped[bool] = mapped_column(Boolean, default= True)
             # Es requerido
             is_required: Mapped[bool] = mapped_column(Boolean, default= False)
+            # Solo lectura
+            readonly: Mapped[bool] = mapped_column(Boolean, default= False)
             # Valor inicial
             default_value: Mapped[Optional[str]] = mapped_column(String(255), nullable= True)
             # El valor del campo debe ser único en toda la tabla
