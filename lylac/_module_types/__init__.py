@@ -34,8 +34,10 @@ from ._dicts import (
     ValidationData,
 )
 from ._interface import (
+    FieldAlias,
     CredentialsAlike,
     DataOutput,
+    ModelField,
 )
 from ._metadata import ModelTemplate
 from ._miscelaneous import TTypesMapping

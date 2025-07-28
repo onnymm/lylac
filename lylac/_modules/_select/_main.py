@@ -5,7 +5,7 @@ from typing import (
 from ..._constants import FIELD_NAME
 from ..._core.modules import Select_Core
 from ..._core.main import _Lylac_Core
-from ..._module_types import ModelName
+from ..._module_types import ModelName, FieldAlias, ModelField
 from ._module_types import (
     TTypesMapping,
     OperationData,
@@ -36,7 +36,7 @@ class Select_(Select_Core):
     def build(
         self,
         model_name: ModelName,
-        fields: list[str] = [],
+        fields: list[ModelField] = [],
     ) -> tuple[Select[Any], TTypesMapping]:
 
         # Se realiza una copia de la lista de los campos
@@ -77,11 +77,22 @@ class Select_(Select_Core):
 
     def _add_field(
         self,
-        field_name: str,
+        field: ModelField,
         model_name: ModelName,
         model_model: type[DeclarativeBase],
         operation_data: OperationData,
     ) -> None:
+
+        # Si el campo es alias...
+        if isinstance(field, tuple) and isinstance(field[1], str):
+            # Se asigna el tipo de dato de alias de campo
+            field: FieldAlias = field
+            # Obtención del nombre real del campo y su alias
+            ( field_name, field_alias ) = field
+        else:
+            # Se asignan nombre real y alias por igual
+            field_name: str = field
+            field_alias: str = field
 
         # Obtención de cadena de campos separados por punto
         fields_chain = field_name.split('.')
@@ -100,7 +111,7 @@ class Select_(Select_Core):
                 model_model,
                 related_model_name,
                 operation_data,
-                field_name,
+                field_alias,
             )
 
         # Si no existe una cadena de campos...
@@ -111,7 +122,56 @@ class Select_(Select_Core):
                 model_name,
                 operation_data,
                 model_model,
+                field_alias,
             )
+
+        # # Validación de si el campo es alias
+        # is_field_alias = isinstance(field, tuple) and isinstance(field[1], str)
+        # # Validación de si el campo es nombre de campo
+        # is_field_name = isinstance(field, str)
+
+        # # Si el campo es alias o nombre...
+        # if is_field_alias or is_field_name:
+        #     # Si el campo es alias...
+        #     if is_field_alias:
+        #         # Se asigna el tipo de dato de alias de campo
+        #         field: FieldAlias = field
+        #         # Obtención del nombre real del campo y su alias
+        #         ( field_name, field_alias ) = field
+        #     else:
+        #         # Se asignan nombre real y alias por igual
+        #         field_name: str = field
+        #         field_alias: str = field
+
+        #     # Obtención de cadena de campos separados por punto
+        #     fields_chain = field_name.split('.')
+
+        #     # Si existe una cadena de campos...
+        #     if len(fields_chain) > 1:
+
+        #         # Obtención del nombre del campo inicial
+        #         inicial_field_name = fields_chain[0]
+        #         # Obtención de nombre del modelo relacionado
+        #         related_model_name = self._strc.get_related_model_name(model_name, inicial_field_name)
+
+        #         # Se envía el campo a obtención de relacionados
+        #         self._add_related_field(
+        #             fields_chain,
+        #             model_model,
+        #             related_model_name,
+        #             operation_data,
+        #             field_alias,
+        #         )
+
+        #     # Si no existe una cadena de campos...
+        #     else:
+        #         # Se envía el campo a obtención individual
+        #         self._proccess_field(
+        #             field,
+        #             model_name,
+        #             operation_data,
+        #             model_model,
+        #         )
 
     def _add_related_field(
         self,

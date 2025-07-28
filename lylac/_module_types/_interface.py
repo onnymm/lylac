@@ -30,3 +30,18 @@ Uso:
 >>> # Formato de URL
 >>> f"postgresql+psycopg2://postgres:{password}@{host}:{port}/{database_name}"
 """
+
+FieldAlias = tuple[str, str]
+"""
+### Alias de campo
+Uso de alias en la invocación de un campo.
+
+Uso:
+>>> ('field_id.model_id.name', 'model_name')
+"""
+
+ModelField = Union[str, FieldAlias]
+"""
+### Campo de modelo
+Declaración de uso de un campo de modelo
+"""
