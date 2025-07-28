@@ -3,12 +3,14 @@ from typing import (
     Optional,
 )
 from ..._constants import FIELD_NAME
+from ..._contexts import SelectContext
 from ..._core.modules import Select_Core
 from ..._core.main import _Lylac_Core
-from ..._module_types import ModelName, FieldAlias, ModelField
-from ._module_types import (
+from ..._module_types import (
+    FieldAlias,
     TTypesMapping,
-    OperationData,
+    ModelField,
+    ModelName,
 )
 from sqlalchemy import (
     select,
@@ -51,7 +53,7 @@ class Select_(Select_Core):
             fields.insert(0, FIELD_NAME.ID)
 
         # Inicialización de los datos de operación
-        operation_data = OperationData()
+        operation_data = SelectContext()
         # Obtención del modelo de la tabla
         model_model = self._strc.get_model(model_name)
 
@@ -80,7 +82,7 @@ class Select_(Select_Core):
         field: ModelField,
         model_name: ModelName,
         model_model: type[DeclarativeBase],
-        operation_data: OperationData,
+        operation_data: SelectContext,
     ) -> None:
 
         # Si el campo es alias...
@@ -178,7 +180,7 @@ class Select_(Select_Core):
         refs: list[str],
         model_model: type[DeclarativeBase],
         related_model_name: ModelName,
-        operation_data: OperationData,
+        operation_data: SelectContext,
         label: Optional[str] = None
     ) -> None:
 
@@ -228,7 +230,7 @@ class Select_(Select_Core):
         self,
         field_name: str,
         model_name: ModelName,
-        operation_data: OperationData,
+        operation_data: SelectContext,
         model_model: Optional[type[DeclarativeBase]] = None,
         label: Optional[str] = None,
     ) -> None:
@@ -285,7 +287,7 @@ class Select_(Select_Core):
         field_name: str,
         model_name: ModelName,
         model_model: type[DeclarativeBase],
-        operation_data: OperationData,
+        operation_data: SelectContext,
         label: str,
     ) -> None:
 
@@ -338,15 +340,17 @@ class Select_(Select_Core):
 
         # Obtención del campo de ID relacionado desde el subquery creado
         sub_stmt_id_field_instance = self._index[sub_stmt.c][FIELD_NAME.ID]
+        # Creación de unión ON
+        on = id_field_instance == sub_stmt_id_field_instance
         # Se añade el JOIN
-        operation_data.outerjoins.append( ( sub_stmt, id_field_instance == sub_stmt_id_field_instance ) )
+        operation_data.add_outerjoin(sub_stmt, on)
 
     def _add_many2one_field(
         self,
         field_name: str,
         model_name: ModelName,
         model_model: type[DeclarativeBase],
-        operation_data: OperationData,
+        operation_data: SelectContext,
         label: Optional[str] = None,
     ) -> None:
 
@@ -395,7 +399,7 @@ class Select_(Select_Core):
         field_name: str,
         model_name: ModelName,
         model_model: type[DeclarativeBase],
-        operation_data: OperationData,
+        operation_data: SelectContext,
         label: str,
     ):
 
@@ -444,15 +448,17 @@ class Select_(Select_Core):
         id_field_instance = self._index[model_model][FIELD_NAME.ID]
         # Obtención del campo de ID relacionado desde el subquery relacionado
         sub_stmt_id_field_instance = self._index[sub_stmt.c][FIELD_NAME.ID]
+        # Creación de unión ON
+        on = id_field_instance == sub_stmt_id_field_instance
         # Se añade el JOIN
-        operation_data.outerjoins.append( ( sub_stmt, id_field_instance == sub_stmt_id_field_instance ) )
+        operation_data.add_outerjoin(sub_stmt, on)
 
     def _add_common_field(
         self,
         field_name: str,
         model_name: ModelName,
         model_model: type[DeclarativeBase],
-        operation_data: OperationData,
+        operation_data: SelectContext,
         label: Optional[str] = None,
         add_ttype: bool = True,
     ) -> InstrumentedAttribute[Any]:
@@ -474,11 +480,11 @@ class Select_(Select_Core):
             field_computed_name = field_name
 
         # Se añaden los datos obtenidos
-        operation_data.field_instances.append(field_instance)
+        operation_data.add_field_instance(field_instance)
 
         # Se añade el tipo de dato si no se especificó lo contrario
         if add_ttype:
-            operation_data.ttypes_mapping.append( (field_computed_name, field_ttype) )
+            operation_data.add_ttype_mapping(field_computed_name, field_ttype)
 
         # Se retorna la instancia del campo para posibles usos
         return field_instance
@@ -487,7 +493,7 @@ class Select_(Select_Core):
         self,
         id_current_field_instance: InstrumentedAttribute,
         related_model_model: type[DeclarativeBase],
-        operation_data: OperationData,
+        operation_data: SelectContext,
     ) -> None:
 
         # Obtención de instancia del campo de ID del modelo relacionado
@@ -495,4 +501,4 @@ class Select_(Select_Core):
         # Creación de unión ON
         on = id_current_field_instance == id_related_field
         # Se añade el JOIN
-        operation_data.outerjoins.append( (related_model_model, on) )
+        operation_data.add_outerjoin(related_model_model, on)
