@@ -142,3 +142,12 @@ OutputOptions = Literal['dataframe', 'dict']
 Opciones de salida de datos.
 >>> Literal['dataframe', 'dict']
 """
+
+AggFunctionName = Literal['sum', 'count']
+"""
+#### Nombre de función de agregación
+Nombre de función de agregación para usarse en indexación de funciones de agregación.
+Nombres disponibles
+- `'sum'`: Función de suma.
+- `'count'`: Función de conteo.
+"""

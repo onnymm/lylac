@@ -8,6 +8,7 @@ from ._base_categories import (
     _T,
     CriteriaStructure,
     TripletStructure,
+    AggFunctionName,
     AutomationMethod,
     ComparisonOperator,
     CreateOrUpdateTransaction,
@@ -49,3 +50,10 @@ from ._models import (
     FieldDefinition,
 )
 from ._validations import Validation
+from ._contexts import (
+    _ComputeContextCore,
+    _SelectContextCore,
+    FieldComputation,
+    ComputedFieldCallback,
+    DynamicModelField,
+)

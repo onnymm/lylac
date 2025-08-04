@@ -2,9 +2,13 @@ from typing import Any
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.elements import BinaryExpression
-from .._module_types import TTypesMapping, TType
+from .._module_types import (
+    _SelectContextCore,
+    TTypesMapping,
+    TType,
+)
 
-class SelectContext():
+class SelectContext(_SelectContextCore):
 
     def __init__(
         self,

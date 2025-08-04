@@ -1,14 +1,17 @@
+from types import FunctionType
 from typing import (
     Any,
     Optional,
 )
 from ..._constants import FIELD_NAME
-from ..._contexts import SelectContext
+from ..._contexts import SelectContext, ComputeContext
 from ..._core.modules import Select_Core
 from ..._core.main import _Lylac_Core
 from ..._module_types import (
     FieldAlias,
+    FieldComputation,
     TTypesMapping,
+    DynamicModelField,
     ModelField,
     ModelName,
 )
@@ -38,7 +41,7 @@ class Select_(Select_Core):
     def build(
         self,
         model_name: ModelName,
-        fields: list[ModelField] = [],
+        fields: list[DynamicModelField] = [],
     ) -> tuple[Select[Any], TTypesMapping]:
 
         # Se realiza una copia de la lista de los campos
@@ -85,12 +88,32 @@ class Select_(Select_Core):
         select_ctx: SelectContext,
     ) -> None:
 
-        # Si el campo es alias...
-        if isinstance(field, tuple) and isinstance(field[1], str):
-            # Se asigna el tipo de dato de alias de campo
-            field: FieldAlias = field
-            # Obtención del nombre real del campo y su alias
-            ( field_name, field_alias ) = field
+        # Si la invocación del campo es una tupla...
+        if isinstance(field, tuple):
+            # Si el campo es un cómputo
+            if len(field) == 3 and isinstance(field[2], FunctionType):
+                # Se asigna el tipo de dato de computación de campo
+                field: FieldComputation = field
+                # Obtención del nombre a asignar y la función de cómputo
+                ( field_name, field_ttype, field_computation_callback ) = field
+                # Inicialización de la instancia de cómputo de campo
+                compute_ctx = ComputeContext(model_name, select_ctx, self._main)
+                # Obtención de la instancia de campo
+                field_instance = field_computation_callback(compute_ctx).label(field_name)
+                # Se añade la instancia del campo
+                select_ctx.add_field_instance(field_instance)
+                # Se añade el tipo de dato
+                select_ctx.add_ttype_mapping(field_name, field_ttype)
+
+                return
+
+            # Si el campo es un alias
+            if len(field) == 2 and isinstance(field[1], str):
+                # Se asigna el tipo de dato de alias de campo
+                field: FieldAlias = field
+                # Obtención del nombre real del campo y su alias
+                ( field_name, field_alias ) = field
+
         else:
             # Se asignan nombre real y alias por igual
             field_name: str = field
@@ -127,61 +150,13 @@ class Select_(Select_Core):
                 field_alias,
             )
 
-        # # Validación de si el campo es alias
-        # is_field_alias = isinstance(field, tuple) and isinstance(field[1], str)
-        # # Validación de si el campo es nombre de campo
-        # is_field_name = isinstance(field, str)
-
-        # # Si el campo es alias o nombre...
-        # if is_field_alias or is_field_name:
-        #     # Si el campo es alias...
-        #     if is_field_alias:
-        #         # Se asigna el tipo de dato de alias de campo
-        #         field: FieldAlias = field
-        #         # Obtención del nombre real del campo y su alias
-        #         ( field_name, field_alias ) = field
-        #     else:
-        #         # Se asignan nombre real y alias por igual
-        #         field_name: str = field
-        #         field_alias: str = field
-
-        #     # Obtención de cadena de campos separados por punto
-        #     fields_chain = field_name.split('.')
-
-        #     # Si existe una cadena de campos...
-        #     if len(fields_chain) > 1:
-
-        #         # Obtención del nombre del campo inicial
-        #         inicial_field_name = fields_chain[0]
-        #         # Obtención de nombre del modelo relacionado
-        #         related_model_name = self._strc.get_related_model_name(model_name, inicial_field_name)
-
-        #         # Se envía el campo a obtención de relacionados
-        #         self._add_related_field(
-        #             fields_chain,
-        #             model_model,
-        #             related_model_name,
-        #             select_ctx,
-        #             field_alias,
-        #         )
-
-        #     # Si no existe una cadena de campos...
-        #     else:
-        #         # Se envía el campo a obtención individual
-        #         self._proccess_field(
-        #             field,
-        #             model_name,
-        #             select_ctx,
-        #             model_model,
-        #         )
-
     def _add_related_field(
         self,
         refs: list[str],
         model_model: type[DeclarativeBase],
         related_model_name: ModelName,
         select_ctx: SelectContext,
-        label: Optional[str] = None
+        label: Optional[str] = None,
     ) -> None:
 
         # Obtención del nombre del campo actual

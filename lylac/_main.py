@@ -13,6 +13,7 @@ from ._module_types import (
     OutputOptions,
     RecordValue,
     ExecutionMethod,
+    DynamicModelField,
 )
 from ._modules import (
     Access,
@@ -540,7 +541,7 @@ class Lylac(_Lylac_Core):
         user_id: int,
         model_name: ModelName,
         record_ids: int | list[int],
-        fields: list[str] = [],
+        fields: list[DynamicModelField] = [],
         sortby: str | list[str] = None,
         ascending: bool | list[bool] = True,
         output_format: OutputOptions | None = None,
@@ -593,7 +594,7 @@ class Lylac(_Lylac_Core):
         user_id: int,
         model_name: ModelName,
         search_criteria: CriteriaStructure = [],
-        fields: list[str] = [],
+        fields: list[DynamicModelField] = [],
         offset: int | None = None,
         limit: int | None = None,
         sortby: str | list[str] | None = None,

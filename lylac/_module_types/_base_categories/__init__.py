@@ -10,6 +10,7 @@ from ._generics import (
     _T,
 )
 from ._literals import (
+    AggFunctionName,
     AutomationMethod,
     CreateOrUpdateTransaction,
     ExecutionMethod,

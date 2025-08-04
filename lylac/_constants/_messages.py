@@ -8,3 +8,5 @@ class MESSAGES:
         NOT_ALLOWED = 'No tienes permiso para realizar esta acción.'
     class ACCOUNT:
         WRONG_PASSWORD = 'Contraseña incorrecta.'
+    class TRANSACTION:
+        FIELDS_OVERFLOW = 'Solo se puede referenciar un campo a partir del campo relacional. Si se requiere acceder a más tablas, crea un campo computado en ellas para ser usado aquí.'
