@@ -123,8 +123,10 @@ class _Reset(_Reset_Interface):
             model_model = self._main._models.get_table_model(model_name)
             # Creación del objeto de atributos de campo
             field_atts = self._ddl._m_model.build_field_atts(record)
-            # Adición del campo al modelo SQLAlchemy
-            self._ddl._m_model.add_field_to_model(model_model, field_atts)
+            # Si el campo no es one2many...
+            if field_atts.ttype != 'one2many':
+                # Adición del campo al modelo SQLAlchemy
+                self._ddl._m_model.add_field_to_model(model_model, field_atts)
 
         # Se establece el estado de inicialización a verdadero
         self._state = True
