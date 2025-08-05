@@ -12,8 +12,8 @@ from ..._module_types import (
     FieldComputation,
     TTypesMapping,
     DynamicModelField,
-    ModelField,
     ModelName,
+    TType,
 )
 from sqlalchemy import (
     select,
@@ -82,7 +82,7 @@ class Select_(Select_Core):
 
     def _add_field(
         self,
-        field: ModelField,
+        field: DynamicModelField,
         model_name: ModelName,
         model_model: type[DeclarativeBase],
         select_ctx: SelectContext,
@@ -212,6 +212,8 @@ class Select_(Select_Core):
 
         # Obtención del tipo de dato del campo
         field_ttype = self._strc.get_field_ttype(model_name, field_name)
+        # Obtención del valor de si el campo es computado
+        is_computed = self._strc.is_computed_field(model_name, field_name)
 
         # Obtención o reasignación de variable al modelo
         if model_model is not None:
@@ -219,7 +221,18 @@ class Select_(Select_Core):
         else:
             computed_model_model = aliased( self._strc.get_model(model_name) )
 
-        if field_ttype == 'one2many':
+        # Si el campo es computado
+        if is_computed:
+            # Se añade el campo computado
+            self._add_computed_field(
+                field_name,
+                model_name,
+                field_ttype,
+                select_ctx,
+                label,
+            )
+
+        elif field_ttype == 'one2many':
             self._add_one2many_field(
                 field_name,
                 model_name,
@@ -256,6 +269,28 @@ class Select_(Select_Core):
                 select_ctx,
                 label,
             )
+
+    def _add_computed_field(
+        self,
+        field_name: str,
+        model_name: ModelName,
+        ttype: TType,
+        select_ctx: SelectContext,
+        label: str,
+    ) -> None:
+
+        # Obtención de la instancia del campo
+        field_computation_callback = self._main._compute.hub[model_name][field_name]
+        # Inicialización de la instancia de cómputo de campo
+        compute_ctx = ComputeContext(model_name, select_ctx, self._main)
+        # Inicialización de la instancia de cómputo de campo
+        compute_ctx = ComputeContext(model_name, select_ctx, self._main)
+        # Obtención de la instancia de campo
+        field_instance = field_computation_callback(compute_ctx).label(label)
+        # Se añade la instancia del campo
+        select_ctx.add_field_instance(field_instance)
+        # Se añade el tipo de dato
+        select_ctx.add_ttype_mapping(label, ttype)
 
     def _add_one2many_field(
         self,

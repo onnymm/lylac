@@ -1,4 +1,4 @@
-from ...._contexts import Context
+from ...._contexts import AutomationContext
 from ...._constants import MODEL_NAME
 from ...._module_types import (
     DataPerRecord,
@@ -21,7 +21,7 @@ class _Automations():
 
     def initialize_validations(
         self,
-        ctx: Context.Individual[ModelRecordData.BaseModel_],
+        ctx: AutomationContext.Individual[ModelRecordData.BaseModel_],
         # params: DataPerRecord[ModelRecordData.BaseModel_],
     ) -> None:
 
@@ -30,7 +30,7 @@ class _Automations():
 
     def delete_validations(
         self,
-        ctx: Context.Individual[ModelRecordData.BaseModel_],
+        ctx: AutomationContext.Individual[ModelRecordData.BaseModel_],
         # params: DataPerRecord[ModelRecordData.BaseModel_],
     ) -> None:
 

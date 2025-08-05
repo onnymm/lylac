@@ -798,5 +798,20 @@ INITIAL_DATA = [
                 'group_ids': [1, 2],
             }
         ]
-    )
+    ),
+    (
+        MODEL_NAME.BASE_MODEL_FIELD,
+        [
+            {
+                'name': 'is_computed',
+                'label': 'Computado',
+                'ttype': 'boolean',
+                'model_id': MODEL_ID.BASE_MODEL_FIELD,
+                'readonly': True,
+                'state': 'base',
+                'nullable': False,
+                'default_value': False,
+            },
+        ]
+    ),
 ]

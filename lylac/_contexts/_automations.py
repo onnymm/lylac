@@ -166,8 +166,8 @@ class _Group(_BaseContext, Generic[_T]):
     Lista de diccionarios de datos de registros en el modelo correspondiente.
     """
 
-class Context:
+class AutomationContext:
     Individual = _Individual
     Group = _Group
 
-AutomationCallback = Callable[[Context.Individual | Context.Group], None]
+AutomationCallback = Callable[[AutomationContext.Individual | AutomationContext.Group], None]

@@ -1,5 +1,5 @@
 from ...._constants import ROOT_ID
-from ...._contexts import Context
+from ...._contexts import AutomationContext
 from ...._core.modules import Automations_Core
 from ...._core.submods.automations import _Builder_Interface
 from .._module_types import ProgrammedAutomation
@@ -53,7 +53,7 @@ class _Builder(_Builder_Interface):
                     # Obtención del registro a usar para entrada de argumentos a la automatización
                     input_record = mapped_data[record_id]
                     # Creación del contexto a ingresar a la función automatización
-                    ctx = Context.Individual(
+                    ctx = AutomationContext.Individual(
                         self._main,
                         input_record,
                         model_name,
@@ -69,7 +69,7 @@ class _Builder(_Builder_Interface):
                 # Obtención de los datos a proporcionar
                 data = list( mapped_data.values() )
                 # Creación del contexto a ingresar a la función automatización
-                ctx = Context.Group(
+                ctx = AutomationContext.Group(
                     self._main,
                     data,
                     model_name,
@@ -109,7 +109,7 @@ class _Builder(_Builder_Interface):
                     # Obtención del registro a usar para entrada de argumentos a la automatización
                     record_data = mapped_data[record_id]
                     # Creación del contexto a ingresar a la función automatización
-                    ctx = Context.Individual(
+                    ctx = AutomationContext.Individual(
                         self._main,
                         record_data,
                         model_name,
@@ -122,7 +122,7 @@ class _Builder(_Builder_Interface):
                 # Obtención de los datos a proporcionar
                 data = list( record_data.values() )
                 # Creación del contexto a ingresar a la función automatización
-                ctx = Context.Group(
+                ctx = AutomationContext.Group(
                     self._main,
                     data,
                     model_name,

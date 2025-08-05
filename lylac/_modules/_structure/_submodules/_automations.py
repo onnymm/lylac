@@ -1,5 +1,5 @@
 from ...._constants import MODEL_NAME
-from ...._contexts import Context
+from ...._contexts import AutomationContext
 from ...._core.modules import Structure_Core
 from ...._module_types import (
     DataPerRecord,
@@ -21,7 +21,7 @@ class _Automations():
 
     def register_field_atts(
         self,
-        ctx: Context.Individual[ModelRecordData.BaseModelField],
+        ctx: AutomationContext.Individual[ModelRecordData.BaseModelField],
         # params: DataPerRecord[ModelRecordData.BaseModelField],
     ) -> None:
 

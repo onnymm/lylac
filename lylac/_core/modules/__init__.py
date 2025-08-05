@@ -4,6 +4,7 @@ from ._algorythms import Algorythms_Core
 from ._auth import Auth_Core
 from ._automations import Automations_Core
 from ._compiler import Compiler_Core
+from ._compute import Compute_Core
 from ._connection import Connection_Core
 from ._ddl import DDL_Core
 from ._dml import DML_Core

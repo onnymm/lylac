@@ -1,7 +1,6 @@
 from typing import (
     Any,
     Callable,
-    Literal,
 )
 from sqlalchemy import (
     case,
@@ -20,6 +19,7 @@ from .._module_types import (
     CriteriaStructure,
     AggFunctionName,
     ModelName,
+    TType,
 )
 
 class ComputeContext(_ComputeContextCore):
@@ -39,6 +39,15 @@ class ComputeContext(_ComputeContextCore):
     ID_ALIAS = f'_{FIELD_NAME.ID}'
     """
     Nombre de alias de ID.
+    """
+
+    _zero_value: dict[TType, Any] = {
+        'integer': 0,
+        'float': 0.0,
+        'time': '00:00:00',
+    }
+    """
+    Valor de 0 por defecto en diferentes tipos de dato.
     """
 
     def __init__(
@@ -190,7 +199,7 @@ class ComputeContext(_ComputeContextCore):
         model_model: type[DeclarativeBase],
         relational_field_name: str,
         value_field_name: str,
-        agg_f: Callable[[InstrumentedAttribute], Any],
+        aggregation_callback: Callable[[InstrumentedAttribute], Any],
         search_criteria: CriteriaStructure = [],
     ) -> InstrumentedAttribute:
 
@@ -219,7 +228,7 @@ class ComputeContext(_ComputeContextCore):
                 # Uso del campo de alias de ID
                 id_field_instance_alias,
                 # Uso de función de agregación seleccionada en campo con etiqueta para ser extraído del subquery
-                agg_f(related_model_model__value_field).label(value_field_name),
+                aggregation_callback(related_model_model__value_field).label(value_field_name),
             )
             # Especificación del modelo a usar para la selección de columnas
             .select_from(model_model)
@@ -256,7 +265,16 @@ class ComputeContext(_ComputeContextCore):
         # Obtención de la instancia a retornar
         field_instance = self._main._index[sub_stmt.c][value_field_name]
 
-        return field_instance
+        # Obtención del tipo de dato del campo
+        field_ttype = self._main._strc.get_field_ttype(related_model_name, value_field_name)
+
+        # Reemplazo de valores None por 0
+        processed_field_instance = case(
+            (field_instance == None, self._zero_value[field_ttype]),
+            else_= field_instance,
+        )
+
+        return processed_field_instance
 
     def _add_join(
         self,

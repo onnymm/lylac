@@ -1,19 +1,20 @@
 from typing import Callable
 import pandas as pd
 from ._constants import FIELD_NAME, MODEL_NAME
-from ._contexts import Context
+from ._contexts import AutomationContext
 from ._contexts._actions import ActionCallback
 from ._core.main import _Lylac_Core
 from ._module_types import (
     CriteriaStructure,
     RecordData,
     CredentialsAlike,
+    DynamicModelField,
+    ExecutionMethod,
     ModelName,
     ModificationTransaction,
     OutputOptions,
     RecordValue,
-    ExecutionMethod,
-    DynamicModelField,
+    TType,
 )
 from ._modules import (
     Access,
@@ -21,6 +22,7 @@ from ._modules import (
     Algorythms,
     Auth,
     Automations,
+    Compute,
     Compiler,
     Connection,
     DDLManager,
@@ -71,6 +73,7 @@ class Lylac(_Lylac_Core):
         self._automations = Automations(self)
         self._validations = Validations(self)
         self._actions = Actions(self)
+        self._compute = Compute(self)
 
         # Registro de las automatizaciones predeterminadas
         self._automations.create_preset_automations()
@@ -130,6 +133,29 @@ class Lylac(_Lylac_Core):
         self._auth.reset_password(user_id_to_reset_password)
 
         return True
+
+    def register_computed_field(
+        self,
+        model_name: ModelName,
+        field_name: str,
+        label: str,
+        ttype: TType,
+    ) -> None:
+
+        def decorator(field_computation_callback):
+
+            # Registro de la función
+            self._compute.register_computed_field(
+                model_name,
+                ttype,
+                field_name,
+                label,
+                field_computation_callback,
+            )
+
+            return field_computation_callback
+
+        return decorator
 
     def register_action(
         self,
@@ -243,7 +269,7 @@ class Lylac(_Lylac_Core):
         """
 
         # Creación del decorador que registrará la automatización
-        def decorator(new_automation: Callable[[Context.Group | Context.Individual], None]):
+        def decorator(new_automation: Callable[[AutomationContext.Group | AutomationContext.Individual], None]):
 
             # Registro de la automatización en la estructura central
             self._automations.register_automation(

@@ -8,7 +8,6 @@ from ..._module_types import (
     OutputOptions,
     RecordValue,
 )
-from ..._core._env import ENV_VARIABLES
 from .._interface import (
     Access_Interface,
     Actions_Interface,
@@ -16,6 +15,7 @@ from .._interface import (
     Auth_Interface,
     Automations_Interface,
     Compiler_Interface,
+    Compute_Interface,
     Connection_Interface,
     DDL_Interface,
     DML_Interface,
@@ -39,6 +39,7 @@ class _Lylac_Core():
     _auth: Auth_Interface
     _automations: Automations_Interface
     _compiler: Compiler_Interface
+    _compute: Compute_Interface
     _connection: Connection_Interface
     _ddl: DDL_Interface
     _dml: DML_Interface

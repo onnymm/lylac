@@ -4,6 +4,7 @@ from ._algorythms import Algorythms_Interface
 from ._auth import Auth_Interface
 from ._automations import Automations_Interface
 from ._compiler import Compiler_Interface
+from ._compute import Compute_Interface
 from ._connection import Connection_Interface
 from ._ddl import DDL_Interface
 from ._dml import DML_Interface

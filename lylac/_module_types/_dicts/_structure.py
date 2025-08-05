@@ -53,6 +53,12 @@ class FieldProperties(TypedDict):
     #### Valores de selección
     Valores de selección si el tipo de dato del campo es `'selection'`.
     """
+    is_computed: bool
+    """
+    #### Es campo computado
+    Valor que indica si el valor del campo debe obtenerse directamente desde un registro
+    en la base de datos o calcularse en base a otros campos.
+    """
 
 class ModelMap(TypedDict):
     """

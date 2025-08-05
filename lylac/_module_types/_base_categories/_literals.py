@@ -8,6 +8,7 @@ Submodule = Literal[
     '_ddl',
     '_strc',
     '_validations',
+    '_compute',
 ]
 """
 #### Nombre de submódulo de Lylac

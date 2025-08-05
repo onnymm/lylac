@@ -25,6 +25,7 @@ class Structure_Interface():
         ttype: TType,
         related_model: str | None,
         related_field: str | None,
+        is_computed: bool = False,
     ) -> None:
         ...
 
@@ -99,6 +100,13 @@ class Structure_Interface():
         model_name: ModelName,
         field_name: str,
     ) -> TType:
+        ...
+
+    def is_computed_field(
+        self,
+        model_name: ModelName,
+        field_name: str,
+    ) -> bool:
         ...
 
     def get_table_name(

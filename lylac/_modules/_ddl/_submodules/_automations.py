@@ -1,6 +1,6 @@
 from ...._constants import MODEL_NAME
 from ...._core.modules import DDL_Core
-from ...._contexts import Context
+from ...._contexts import AutomationContext
 from ...._data import BASE_FIELDS_TEMPLATE
 from ...._module_types import ModelRecordData
 
@@ -25,7 +25,7 @@ class _Automations():
 
     def create_table(
         self,
-        ctx: Context.Individual[ModelRecordData.BaseModel_],
+        ctx: AutomationContext.Individual[ModelRecordData.BaseModel_],
     ) -> None:
 
         # Obtención del nombre del modelo creado
@@ -35,7 +35,7 @@ class _Automations():
 
     def create_column(
         self,
-        ctx: Context.Individual[ModelRecordData.BaseModelField],
+        ctx: AutomationContext.Individual[ModelRecordData.BaseModelField],
         # params: DataPerRecord[ModelRecordData.BaseModelField],
     ) -> None:
 
@@ -48,7 +48,7 @@ class _Automations():
 
     def delete_table(
         self,
-        params: Context.Individual[ModelRecordData.BaseModel_],
+        params: AutomationContext.Individual[ModelRecordData.BaseModel_],
     ) -> None:
 
         # Obtención del nombre del modelo
@@ -58,7 +58,7 @@ class _Automations():
 
     def delete_column(
         self,
-        ctx: Context.Individual[ModelRecordData.BaseModelField]
+        ctx: AutomationContext.Individual[ModelRecordData.BaseModelField]
         # params: DataPerRecord[ModelRecordData.BaseModelField],
     ) -> None:
 
@@ -68,12 +68,13 @@ class _Automations():
         model_name = ctx.get_value(MODEL_NAME.BASE_MODEL, model_id, 'model')
         # Obtención del nombre del campo
         field_name = ctx.data['name']
+        print(model_name, field_name)
         # Ejecución del método del módulo principal
         self._ddl.delete_field(model_name, field_name)
 
     def create_relation_table(
         self,
-        ctx: Context.Individual[ModelRecordData.BaseModelField],
+        ctx: AutomationContext.Individual[ModelRecordData.BaseModelField],
         # params: DataPerRecord[ModelRecordData.BaseModelField],
     ) -> None:
 
@@ -86,7 +87,7 @@ class _Automations():
 
     def delete_relation_table(
         self,
-        ctx: Context.Individual[ModelRecordData.BaseModelField],
+        ctx: AutomationContext.Individual[ModelRecordData.BaseModelField],
         # params: DataPerRecord[ModelRecordData.BaseModelField],
     ) -> None:
 
@@ -100,7 +101,7 @@ class _Automations():
 
     def create_base_fields(
         self,
-        ctx: Context.Individual[ModelRecordData.BaseModel_],
+        ctx: AutomationContext.Individual[ModelRecordData.BaseModel_],
         # params: DataPerRecord[ModelRecordData.BaseModel_],
     ) -> None:
 
@@ -121,7 +122,7 @@ class _Automations():
 
     def add_preset_fields(
         self,
-        ctx: Context.Individual[ModelRecordData.BaseModel_],
+        ctx: AutomationContext.Individual[ModelRecordData.BaseModel_],
         # params: DataPerRecord[ModelRecordData.BaseModel_],
     ) -> None:
 
@@ -132,7 +133,7 @@ class _Automations():
 
     def update_selection_values_on_create(
         self,
-        ctx: Context.Individual[ModelRecordData.BaseModelFieldSelection],
+        ctx: AutomationContext.Individual[ModelRecordData.BaseModelFieldSelection],
         # params: DataPerRecord[ModelRecordData.BaseModelFieldSelection],
     ) -> None:
 
@@ -166,7 +167,7 @@ class _Automations():
 
     def update_selection_values_on_delete(
         self,
-        ctx: Context.Individual[ModelRecordData.BaseModelFieldSelection],
+        ctx: AutomationContext.Individual[ModelRecordData.BaseModelFieldSelection],
         # params: DataPerRecord[ModelRecordData.BaseModelFieldSelection],
     ) -> None:
 

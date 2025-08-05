@@ -4,6 +4,7 @@ from ._algorythms import Algorythms
 from ._auth import Auth
 from ._automations import Automations
 from ._compiler import Compiler
+from ._compute import Compute
 from ._connection import Connection
 from ._ddl import DDLManager
 from ._dml import DMLManager

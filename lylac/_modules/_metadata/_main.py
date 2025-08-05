@@ -85,6 +85,8 @@ class Metadata(Metadata_Core):
             related_field: Mapped[str] = mapped_column(String(60), nullable= True)
             # Tipo de modelo
             state: Mapped[str] = mapped_column(String(60), nullable= False, default= 'generic')
+            # Modelo computado
+            is_computed: Mapped[str] = mapped_column(Boolean, nullable= False, default= False)
 
             # Relación hacia el modelo al que pertenece
             model: Mapped["BaseModel_"] = relationship(BaseModel_, foreign_keys= [model_id])

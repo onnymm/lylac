@@ -1,5 +1,4 @@
 from typing import Any
-from ...._core.main import _Lylac_Core
 from ..._base_categories import (
     CriteriaStructure,
     ModelName,
@@ -15,7 +14,7 @@ class _ComputeContextCore():
         self,
         model_name: ModelName,
         select_context: _SelectContextCore,
-        lylac_instance: _Lylac_Core,
+        lylac_instance,
     ) -> None:
         ...
 

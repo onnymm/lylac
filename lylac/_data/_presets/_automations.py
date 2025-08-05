@@ -83,6 +83,26 @@ PRESET_AUTOMATIONS: list[AutomationData] = [
         'fields': ['model'],
         'method': 'record',
     },
+    # Registro de un modelo en el núcleo de campos computados cuando un registro se crea en la tabla de modelos
+    {
+        'submodule': '_compute',
+        'callback': 'register_model',
+        'model': 'base.model',
+        'transaction': 'create',
+        'criteria': [],
+        'fields': ['model'],
+        'method': 'record',
+    },
+    # Eliminación de un modelo en el núcleo de campos computados cuando un registro se elimina en la tabla de modelos
+    {
+        'submodule': '_compute',
+        'callback': 'unregister_model',
+        'model': 'base.model',
+        'transaction': 'delete',
+        'criteria': [],
+        'fields': ['model'],
+        'method': 'record',
+    },
 
     # base.model.field
     # Creación de una columna de base de datos cuando un campo se crea
@@ -93,10 +113,12 @@ PRESET_AUTOMATIONS: list[AutomationData] = [
         'transaction': 'create',
         'criteria': [
             '&',
-                ('ttype', 'not in', ['one2many', 'many2many']),
                 '&',
-                    ('state', '!=', 'base'),
-                    ('name', 'not in', ['id', 'name', 'create_date', 'write_date'])
+                    ('ttype', 'not in', ['one2many', 'many2many']),
+                    '&',
+                        ('state', '!=', 'base'),
+                        ('name', 'not in', ['id', 'name', 'create_date', 'write_date']),
+                ('is_computed', '=', False),
         ],
         'fields': [
             'name',
@@ -129,9 +151,11 @@ PRESET_AUTOMATIONS: list[AutomationData] = [
         'model': 'base.model.field',
         'transaction': 'create',
         'criteria': [
-            '|',
-                ('name', 'in', ['create_uid', 'write_uid']),
-                ('state', '!=', 'base'),
+            '&',
+                '|',
+                    ('name', 'in', ['create_uid', 'write_uid']),
+                    ('state', '!=', 'base'),
+                ('is_computed', '=', False),
         ],
         'fields': [
             'name',

@@ -1,4 +1,3 @@
-from typing import Tuple
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from ..._core.modules import Structure_Core
 from ..._core.main import _Lylac_Core
@@ -63,6 +62,7 @@ class Structure(Structure_Core):
         ttype: TType,
         related_model: str | None,
         related_field: str | None,
+        is_computed: bool = False
     ) -> None:
 
         try:
@@ -74,6 +74,7 @@ class Structure(Structure_Core):
         self.models[model_name]['fields'][field_name]['ttype'] = ttype
         self.models[model_name]['fields'][field_name]['related_model'] = related_model
         self.models[model_name]['fields'][field_name]['related_field'] = related_field
+        self.models[model_name]['fields'][field_name]['is_computed'] = is_computed
 
     def unregister_field(
         self,
@@ -194,6 +195,17 @@ class Structure(Structure_Core):
         ttype = self.models[model_name]['fields'][field_name]['ttype']
 
         return ttype
+
+    def is_computed_field(
+        self,
+        model_name: ModelName,
+        field_name: str,
+    ) -> bool:
+
+        # Obtención del valor
+        is_computed = self.models[model_name]['fields'][field_name]['is_computed']
+
+        return is_computed
 
     def get_table_name(
         self,

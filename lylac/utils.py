@@ -3,5 +3,8 @@ from ._module_types import (
     ModelRecordData,
     CriteriaStructure,
 )
-from ._contexts import Context
+from ._contexts import (
+    AutomationContext,
+    ComputeContext,
+)
 from ._contexts._actions import ActionContext
