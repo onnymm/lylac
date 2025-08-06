@@ -227,7 +227,7 @@ class _Validations():
         """
 
         # Campos válidos
-        valid_fields = ['label']
+        valid_fields = ['label', 'help_info']
 
         # Revisión
         for field in params.data.keys():

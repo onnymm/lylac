@@ -140,7 +140,7 @@ VALIDATIONS_DATA: list[ValidationData] = [
         'transaction': 'update',
         'method': 'record',
         'model': 'base.model.field',
-        'message': 'Las propiedades de los campos que no sea la etiqueta no pueden ser modificadas en {data}. Si realmente deseas realizar modificaciones elimina el campo y vuelve a crearlo.'
+        'message': 'Las propiedades de los campos que no sean la etiqueta o la información de ayuda no pueden ser modificadas en {data}. Si realmente deseas realizar modificaciones elimina el campo y vuelve a crearlo.'
     },
     # Restricción de creación de un campo en un modelo que ya tiene un campo con el mismo nombre en creación de un registro en la tabla de modelos
     {
