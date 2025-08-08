@@ -155,6 +155,7 @@ class _Models(_Models_Interface):
             unique= params['unique'],
             help_info= params['help_info'],
             related_model_id= params['related_model_id'],
+            is_computed= params['is_computed'],
         )
 
         return field_atts

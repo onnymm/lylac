@@ -219,6 +219,10 @@ class ModelRecordData:
         """
         Valores de selección
         """
+        is_computed: bool
+        """
+        Es computado.
+        """
 
     class BaseModelFieldSelection(
         BaseRecordData,

@@ -112,6 +112,7 @@ class _Reset(_Reset_Interface):
                 'help_info',
                 'related_model_id',
                 'default_value',
+                'is_computed',
             ],
             output_format= 'dict',
             only_ids_in_relations= True,
@@ -126,7 +127,7 @@ class _Reset(_Reset_Interface):
             # Creación del objeto de atributos de campo
             field_atts = self._ddl._m_model.build_field_atts(record)
             # Si el campo no es one2many...
-            if field_atts.ttype != 'one2many':
+            if field_atts.ttype != 'one2many' and field_atts.is_computed == False:
                 # Adición del campo al modelo SQLAlchemy
                 self._ddl._m_model.add_field_to_model(model_model, field_atts)
 

@@ -72,3 +72,7 @@ class FieldDefinition(BaseModel):
     """
     ID de modelo relacionado.
     """
+    is_computed: bool = False
+    """
+    Es un campo computado.
+    """
