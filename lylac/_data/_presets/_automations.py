@@ -130,7 +130,8 @@ PRESET_AUTOMATIONS: list[AutomationData] = [
             'unique',
             'default_value',
             'help_info',
-            'related_model_id'
+            'related_model_id',
+            'is_computed',
         ],
         'method': 'record',
     },
