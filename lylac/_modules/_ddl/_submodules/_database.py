@@ -23,6 +23,7 @@ class _Database(_Database_Interface):
         'date': 'DATE',
         'datetime': 'TIMESTAMP',
         'time': 'TIME',
+        'duration': 'INTERVAL',
         'file': 'BYTEA',
         'text': 'TEXT',
         'selection': 'VARCHAR(100)',

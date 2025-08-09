@@ -36,6 +36,7 @@ class _DataTypes(_DataTypes_Interface):
             'date': lambda df, field: self._recover_time_alike(df, field),
             'datetime': lambda df, field: self._recover_time_alike(df, field),
             'time': lambda df, field: self._recover_time_alike(df, field),
+            'duration': lambda df, field: self._recover_time_interval(df, field),
             'file': lambda df, field: self._bypass_value(df, field),
             'text': lambda df, field: self._bypass_value(df, field),
             'selection': lambda df, field: self._bypass_value(df, field),
@@ -125,3 +126,28 @@ class _DataTypes(_DataTypes_Interface):
                 .astype({field: type_arg})
                 .replace({field: {max_value + 1: None}})
             )
+
+    def _recover_time_interval(
+        self,
+        data: pd.DataFrame,
+        field: str,
+    ) -> pd.DataFrame:
+
+        return (
+            data
+            .assign(
+                **{
+                    field: lambda df: df[field].apply(self._format_time_interval)
+                }
+            )
+        )
+
+    def _format_time_interval(
+        self,
+        value: pd.Timedelta,
+    ) -> str:
+
+        total_hours = int(value.total_seconds() // 3600)
+        minutes = int((value.total_seconds() % 3600) // 60)
+        seconds = int(value.total_seconds() - (minutes * 60) - (total_hours * 3600))
+        return f'{total_hours:02d}:{minutes:02d}:{seconds:02d}'

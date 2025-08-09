@@ -491,6 +491,11 @@ INITIAL_DATA = [
                 'label': 'Tiempo',
             },
             {
+                'name': 'duration',
+                'field_id': 23,
+                'label': 'Duración',
+            },
+            {
                 'name': 'file',
                 'field_id': 23,
                 'label': 'Archivo',

@@ -30,6 +30,7 @@ TType = Literal[
     'date',
     'datetime',
     'time',
+    'duration',
     'file',
     'text',
     'selection',
@@ -47,6 +48,7 @@ Tipo de dato válido en un campo de un modelo de la base de datos.
 - `'date'`: Fecha
 - `'datetime'`: Fecha y hora
 - `'time'`: Hora
+- `'duration'`: Duración en tiempo
 - `'file'`: Archivo binario
 - `'text'`: Texto largo
 - `'selection'`: Selección

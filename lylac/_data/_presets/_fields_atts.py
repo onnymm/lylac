@@ -132,6 +132,7 @@ FIELDS_ATTS: dict[str, dict[str, FieldProperties]] = {
                 'date',
                 'datetime',
                 'time',
+                'duration',
                 'file',
                 'text',
                 'selection',

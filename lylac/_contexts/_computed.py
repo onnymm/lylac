@@ -44,6 +44,7 @@ class ComputeContext(_ComputeContextCore):
     _zero_value: dict[TType, Any] = {
         'integer': 0,
         'float': 0.0,
+        'duration': '00:00:00',
         'time': '00:00:00',
     }
     """
