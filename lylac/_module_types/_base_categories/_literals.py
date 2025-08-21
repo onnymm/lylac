@@ -4,6 +4,7 @@ from typing import (
 )
 
 Submodule = Literal[
+    '_actions',
     '_automations',
     '_ddl',
     '_strc',

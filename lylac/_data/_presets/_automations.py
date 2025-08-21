@@ -83,6 +83,26 @@ PRESET_AUTOMATIONS: list[AutomationData] = [
         'fields': ['model'],
         'method': 'record',
     },
+    # Inicialización de registro de acciones cuando un modelo se crea
+    {
+        'submodule': '_actions',
+        'callback': 'register_model',
+        'model': 'base.model',
+        'transaction': 'create',
+        'criteria': [],
+        'fields': ['model'],
+        'method': 'record',
+    },
+    # Eliminación de registro de acciones cuando un modelo se elimina
+    {
+        'submodule': '_actions',
+        'callback': 'unregister_model',
+        'model': 'base.model',
+        'transaction': 'delete',
+        'criteria': [],
+        'fields': ['model'],
+        'method': 'record',
+    },
     # Registro de un modelo en el núcleo de campos computados cuando un registro se crea en la tabla de modelos
     {
         'submodule': '_compute',

@@ -18,3 +18,15 @@ class Actions_Interface():
         record_id: int,
     ) -> None:
         ...
+
+    def register_model(
+        self,
+        model_name: ModelName,
+    ) -> None:
+        ...
+
+    def unregister_model(
+        self,
+        model_name: ModelName,
+    ) -> None:
+        ...

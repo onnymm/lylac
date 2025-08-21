@@ -6,6 +6,7 @@ from ..._core.main import _Lylac_Core
 from ..._core.modules import Actions_Core
 from ..._module_types import ModelName
 from ._module_types import ActionsHub
+from ._submodules import _Automations
 
 
 class Actions(Actions_Core):
@@ -18,6 +19,8 @@ class Actions(Actions_Core):
 
         # Asignación de instancia principal
         self._main = instance
+        # Inicialización del submódulo de automatizaciones
+        self._m_automations = _Automations(self)
         # Inicialización del módulo
         self._initialize()
 
@@ -63,3 +66,19 @@ class Actions(Actions_Core):
         # Se crean los diccionarios de automatizaciones para cada modelo
         for model_name in model_names:
             self._hub[model_name] = {}
+
+    def register_model(
+        self,
+        model_name: ModelName,
+    ) -> None:
+
+        # Se crea el diccionario de automatizaciones para el nuevo modelo
+        self._hub[model_name] = {}
+
+    def unregister_model(
+        self,
+        model_name: ModelName,
+    ) -> None:
+
+        # Se elimina el diccionario de automatizaciones del modelo
+        del self._hub[model_name]
