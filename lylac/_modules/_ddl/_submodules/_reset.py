@@ -85,6 +85,8 @@ class _Reset(_Reset_Interface):
             self._main._validations.initialize_model_validations(record['model'])
             # Inicialización de diccionarios de campos computados
             self._main._compute.register_model(record['model'])
+            # Inicialización de diccionarios de acciones
+            self._main._actions.register_model(record['model'])
 
     def _build_fields_structure(
         self,
