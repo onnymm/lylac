@@ -5,6 +5,7 @@ from ._base import (
 from ._base_categories import (
     _E,
     _C,
+    _M,
     _T,
     CriteriaStructure,
     TripletStructure,

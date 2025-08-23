@@ -1,5 +1,11 @@
 from typing import TypeVar
 
+_M = TypeVar("_M")
+"""
+#### Nombre de modelo personalizado
+Nombre de modelo personalizado
+"""
+
 _T = TypeVar("_T")
 """
 #### Tipo de dato genérico

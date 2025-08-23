@@ -1,10 +1,15 @@
-from typing import Callable
+from typing import (
+    Callable,
+    Generic,
+    Union,
+)
 import pandas as pd
 from ._constants import FIELD_NAME, MODEL_NAME
 from ._contexts import AutomationContext
 from ._contexts._actions import ActionCallback
 from ._core.main import _Lylac_Core
 from ._module_types import (
+    _M,
     CriteriaStructure,
     RecordData,
     CredentialsAlike,
@@ -40,7 +45,7 @@ from ._modules import (
     Where,
 )
 
-class Lylac(_Lylac_Core):
+class Lylac(_Lylac_Core, Generic[_M]):
 
     def __init__(
         self,
@@ -136,7 +141,7 @@ class Lylac(_Lylac_Core):
 
     def register_computed_field(
         self,
-        model_name: ModelName,
+        model_name: Union[ModelName, _M],
         field_name: str,
         label: str,
         ttype: TType,
@@ -159,7 +164,7 @@ class Lylac(_Lylac_Core):
 
     def register_action(
         self,
-        model_name: ModelName,
+        model_name: Union[ModelName, _M],
         action_name: str,
     ) -> None:
 
@@ -180,7 +185,7 @@ class Lylac(_Lylac_Core):
 
     def register_automation(
         self,
-        model_name: ModelName,
+        model_name: Union[ModelName, _M],
         transation: ModificationTransaction,
         fields: list[str] = [FIELD_NAME.ID],
         execute_if: CriteriaStructure = [],
@@ -289,7 +294,7 @@ class Lylac(_Lylac_Core):
     def action(
         self,
         user_id: int,
-        model_name: ModelName,
+        model_name: Union[ModelName, _M],
         action_name: str,
         record_id: int,
     ) -> None:
@@ -305,7 +310,7 @@ class Lylac(_Lylac_Core):
     def create(
         self,
         user_id: int,
-        model_name: ModelName,
+        model_name: Union[ModelName, _M],
         data: RecordData | list[RecordData],
     ) -> list[int]:
         """
@@ -366,7 +371,7 @@ class Lylac(_Lylac_Core):
     def search(
         self,
         user_id: int,
-        model_name: ModelName,
+        model_name: Union[ModelName, _M],
         search_criteria: CriteriaStructure = [],
         offset: int | None = None,
         limit: int | None = None,
@@ -468,7 +473,7 @@ class Lylac(_Lylac_Core):
     def get_value(
         self,
         user_id: int,
-        model_name: ModelName,
+        model_name: Union[ModelName, _M],
         record_id: int,
         field: str,
     ) -> RecordValue:
@@ -513,7 +518,7 @@ class Lylac(_Lylac_Core):
     def get_values(
         self,
         user_id: int,
-        model_name: ModelName,
+        model_name: Union[ModelName, _M],
         record_id: int,
         fields: list[str],
     ) -> tuple:
@@ -565,7 +570,7 @@ class Lylac(_Lylac_Core):
     def read(
         self,
         user_id: int,
-        model_name: ModelName,
+        model_name: Union[ModelName, _M],
         record_ids: int | list[int],
         fields: list[DynamicModelField] = [],
         sortby: str | list[str] = None,
@@ -618,7 +623,7 @@ class Lylac(_Lylac_Core):
     def search_read(
         self,
         user_id: int,
-        model_name: ModelName,
+        model_name: Union[ModelName, _M],
         search_criteria: CriteriaStructure = [],
         fields: list[DynamicModelField] = [],
         offset: int | None = None,
@@ -756,7 +761,7 @@ class Lylac(_Lylac_Core):
     def search_count(
         self,
         user_id: int,
-        model_name: ModelName,
+        model_name: Union[ModelName, _M],
         search_criteria: CriteriaStructure = [],
     ) -> int:
         """
@@ -828,7 +833,7 @@ class Lylac(_Lylac_Core):
     def update(
         self,
         user_id: int,
-        model_name: ModelName,
+        model_name: Union[ModelName, _M],
         record_ids: int | list[int],
         data: RecordData,
     ) -> bool:
@@ -873,7 +878,7 @@ class Lylac(_Lylac_Core):
     def update_where(
         self,
         user_id: int,
-        model_name: ModelName,
+        model_name: Union[ModelName, _M],
         search_criteria: CriteriaStructure,
         data: RecordData,
         _record_ids: list[int] = []
@@ -927,7 +932,7 @@ class Lylac(_Lylac_Core):
     def delete(
         self,
         user_id: int,
-        model_name: ModelName,
+        model_name: Union[ModelName, _M],
         record_ids: int | list[int]
     ) -> bool:
         """

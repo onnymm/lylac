@@ -7,6 +7,7 @@ from ._filter import (
 from ._generics import (
     _C,
     _E,
+    _M,
     _T,
 )
 from ._literals import (
