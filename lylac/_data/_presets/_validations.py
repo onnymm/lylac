@@ -327,7 +327,7 @@ VALIDATIONS_DATA: list[ValidationData] = [
     # Restricción de valores de selección duplicados en datos entrantes
     {
         'module': '_validations',
-        'callback': 'unique_selection_value_per_field_db_validation',
+        'callback': 'unique_selection_value_per_field_data_validation',
         'transaction': 'create',
         'method': 'list',
         'model': 'base.model.field.selection',
