@@ -362,7 +362,7 @@ class _Validations():
             [
                 '&',
                     ('name', '=', params.data['name']),
-                    ('model_id', '=', params.data['model_id']),
+                    ('field_id', '=', params.data['field_id']),
             ],
         )
 
