@@ -1,9 +1,12 @@
 from datetime import datetime
 from typing import TypedDict
 import jwt
+from jwt import ExpiredSignatureError
+from ...._constants import MESSAGES
 from ...._core import ENV_VARIABLES
 from ...._core.submods.auth import _Token_Interface
 from ...._core.modules import Auth_Core
+from ....errors import ExpiredSessionToken
 
 class TokenData(TypedDict):
     uuid: str
@@ -74,11 +77,18 @@ class Token(_Token_Interface):
         token: str,
     ) -> TokenData:
 
-        # Desencriptación del token
-        token_data: TokenData = jwt.decode(
-            token,
-            self._auth_key,
-            self._algorithm,
-        )
+        # Intento de decodificación del token
+        try:
+            # Desencriptación del token
+            token_data: TokenData = jwt.decode(
+                token,
+                self._auth_key,
+                self._algorithm,
+            )
 
-        return token_data
+            return token_data
+
+        # Si el token expiró...
+        except ExpiredSignatureError:
+            # Se arroja el error de sesión expirada
+            raise ExpiredSessionToken(MESSAGES.ACCESS.EXPIRED_TOKEN)

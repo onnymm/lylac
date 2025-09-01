@@ -9,3 +9,6 @@ class InvalidPasswordError(Exception):
 
 class URLFormatError(Exception):
     ...
+
+class ExpiredSessionToken(Exception):
+    ...

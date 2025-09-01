@@ -10,7 +10,7 @@ from ...._data import (
     INITIAL_DATA,
 )
 from ....security import hash_password
-from ...._errors import InitializationError
+from ....errors import InitializationError
 from ...._core.modules import DDL_Core
 from ...._core.submods.ddl import _Reset_Interface
 

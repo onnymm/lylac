@@ -4,7 +4,7 @@ from ..._constants import MODEL_NAME, MESSAGES
 from ..._core import ENV_VARIABLES
 from ..._core.modules import Auth_Core
 from ..._core.main import _Lylac_Core
-from ..._errors import InvalidPasswordError
+from ...errors import InvalidPasswordError
 from ._submodules import (
     Token,
     UserSession,

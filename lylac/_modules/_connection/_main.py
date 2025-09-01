@@ -6,7 +6,7 @@ from sqlalchemy.sql.selectable import Select, TypedReturnsRows
 from ..._constants import MESSAGES
 from ..._core.modules import Connection_Core
 from ..._core.main import _Lylac_Core
-from ..._errors import URLFormatError, CredentialsError
+from ...errors import URLFormatError, CredentialsError
 from ..._module_types import (
     CredentialsArgs,
     CredentialsFromEnv,
