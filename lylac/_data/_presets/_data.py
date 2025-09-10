@@ -381,13 +381,6 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'odoo_id',
-                'label': 'ID de Odoo',
-                'ttype': 'integer',
-                'model_id': MODEL_ID.BASE_USERS,
-                'state': 'base',
-            },
-            {
                 'name': 'active',
                 'label': 'Activo',
                 'ttype': 'boolean',
