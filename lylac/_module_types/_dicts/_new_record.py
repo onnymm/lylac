@@ -212,11 +212,6 @@ class NewRecord():
         #### Nombre de usuario
         Nombre de usuario para inicio de sesión.
         """
-        odoo_id: int
-        """
-        #### ID de Odoo
-        ID de usuario en Odoo correspondiente a este usuario.
-        """
         sync: bool
         """
         #### Sincronizar

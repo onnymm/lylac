@@ -377,7 +377,7 @@ INITIAL_DATA = [
                 'ttype': 'char',
                 'model_id': MODEL_ID.BASE_USERS,
                 'nullable': False,
-                'default_value': '[default_function]',
+                # 'default_value': '[default_function]',
                 'state': 'base',
             },
             {

@@ -280,8 +280,6 @@ class ModelRecordData:
         >>>     'sync': False,
         >>>     # Nombre de usuario
         >>>     'login': 'iacele',
-        >>>     # ID de Odoo
-        >>>     'odoo_id': None,
         >>>     # Contraseña
         >>>     'password': '...',
         >>> }
@@ -289,10 +287,6 @@ class ModelRecordData:
         login: str
         """
         Nombre de usuario
-        """
-        odoo_id: int
-        """
-        ID de Odoo
         """
         password: int
         """

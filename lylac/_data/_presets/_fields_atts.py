@@ -298,12 +298,6 @@ FIELDS_ATTS: dict[str, dict[str, FieldProperties]] = {
             'related_field': None,
             'is_computed': False,
         },
-        'odoo_id': {
-            'ttype': 'integer',
-            'related_model': None,
-            'related_field': None,
-            'is_computed': False,
-        },
         'active': {
             'ttype': 'boolean',
             'related_model': None,
