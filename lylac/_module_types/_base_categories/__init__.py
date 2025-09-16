@@ -3,6 +3,7 @@ from ._filter import (
     TripletStructure,
     ComparisonOperator,
     LogicOperator,
+    RecordIDs,
 )
 from ._generics import (
     _C,
@@ -11,6 +12,8 @@ from ._generics import (
     _T,
 )
 from ._literals import (
+    SubtransactionCreateMode,
+    SubtransactionUpdateMode,
     AggFunctionName,
     AutomationMethod,
     CreateOrUpdateTransaction,
@@ -20,6 +23,8 @@ from ._literals import (
     OutputOptions,
     State,
     Submodule,
+    SubtransactionMode,
+    SubtransactionName,
     Transaction,
     TType,
 )

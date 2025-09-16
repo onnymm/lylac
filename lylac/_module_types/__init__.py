@@ -8,6 +8,8 @@ from ._base_categories import (
     _M,
     _T,
     CriteriaStructure,
+    SubtransactionCreateMode,
+    SubtransactionUpdateMode,
     TripletStructure,
     AggFunctionName,
     AutomationMethod,
@@ -19,11 +21,18 @@ from ._base_categories import (
     ModelName,
     ModificationTransaction,
     OutputOptions,
+    RecordIDs,
+    SubtransactionMode,
+    SubtransactionName,
     Transaction,
     TType,
 )
 from ._callbacks import (
     AutomationTemplate,
+    Many2ManyUpdatesOnCreateCallback,
+    Many2ManyUpdatesOnUpdateCallback,
+    PosCreationCallback,
+    PosUpdateCallback,
 )
 from ._dicts import (
     AutomationData,
@@ -42,7 +51,13 @@ from ._interface import (
     ModelField,
 )
 from ._metadata import ModelTemplate
-from ._miscelaneous import TTypesMapping
+from ._miscelaneous import (
+    SubtransactionCommandData,
+    SubtransactionCommandType,
+    SubtransactionCommand,
+    TTypesMapping,
+    SubtransactionCommands,
+)
 from ._models import (
     AutomationModel,
     CredentialsFromEnv,

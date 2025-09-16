@@ -17,5 +17,6 @@ from ._preprocess import Preprocess_Core
 from ._query import Query_Core
 from ._select import Select_Core
 from ._structure import Structure_Core
+from ._subtransaction import Subtransaction_Core
 from ._validations import Validations_Core
 from ._where import Where_Core

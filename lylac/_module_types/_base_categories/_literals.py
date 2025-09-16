@@ -155,3 +155,36 @@ Nombres disponibles
 - `'sum'`: Función de suma.
 - `'count'`: Función de conteo.
 """
+
+SubtransactionName = Literal['create', 'update', 'delete', 'unlink', 'add', 'clean', 'replace']
+"""
+### Nombre de subtransacción
+Nombre de subtransacción de valores many2many.
+
+Los valores disponibles son:
+- `'create'`: Creación de registros
+- `'update'`: Actualización de registros
+- `'delete'`: Eliminación de registros
+- `'add'`: Vinculación de registros
+- `'unlink'`: Desvinculación de registros
+- `'clean'`: Limpieza de registros
+- `'replace'`: Reemplazo de registros
+"""
+
+SubtransactionCreateMode = Literal['create']
+"""
+Modo de subtransacción en creación.
+"""
+
+SubtransactionUpdateMode = Literal['update']
+"""
+Modo de subtransacción en actualización.
+"""
+
+SubtransactionMode = Union[SubtransactionCreateMode, SubtransactionUpdateMode]
+"""
+### Modo de subtransacción
+Los valores disponibles son:
+- `'create'`: Creación
+- `'update'`: Actualización
+"""

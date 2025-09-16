@@ -4,6 +4,7 @@ from sqlalchemy import (
     select,
     update,
     func,
+    and_
 )
 from sqlalchemy.orm import (
     Session,
@@ -128,6 +129,61 @@ class Compiler(Compiler_Core):
         with Session(self._engine) as session:
             session.add_all(instanced_data)
             session.commit()
+
+    def link_many2many(
+        self,
+        model_name: ModelName,
+        field_name: str,
+        parent_record_ids: list[int],
+        children_record_ids: list[int],
+    ) -> None:
+
+        # Obtención del modelo de tabla de relación
+        model_model = self._strc.get_relation_model(model_name, field_name)
+        # Inicialización de los datos
+        data = [
+            {
+                'x': parent_record_id,
+                'y': record_id,
+            } for parent_record_id in parent_record_ids
+            for record_id in children_record_ids
+        ]
+        # Se crean los objetos instanciados
+        instanced_data = [ model_model(**record) for record in data ]
+        print(data)
+
+        # Creación de registros en la base de datos
+        with Session(self._engine) as session:
+            session.add_all(instanced_data)
+            session.commit()
+
+    def unlink_many2many(
+        self,
+        model_name: ModelName,
+        field_name: str,
+        parent_record_ids: list[int],
+        children_record_ids: list[int],
+    ) -> None:
+
+        # Obtención de modelo de tabla de relación
+        model_model = self._strc.get_relation_model(model_name, field_name)
+        # Obtención de instancia de campo de ID de modelo propietario
+        x_field_instance = self._index[model_model]['y']
+        y_field_instance = self._index[model_model]['x']
+
+        # Creación del query
+        stmt = (
+            delete(model_model)
+            .where(
+                and_(
+                    x_field_instance.in_(parent_record_ids),
+                    y_field_instance.in_(children_record_ids),
+                )
+            )
+        )
+
+        # Ejecución de la transacción en la base de datos
+        self._connection.execute(stmt, commit= True)
 
     def delete_many2many(
         self,

@@ -28,6 +28,7 @@ from .._interface import (
     Query_Interface,
     Select_Interface,
     Structure_Interface,
+    Subtransaction_Interface,
     Validations_Interface,
     Where_Interface,
 )
@@ -52,6 +53,7 @@ class _Lylac_Core():
     _query: Query_Interface
     _select: Select_Interface
     _strc: Structure_Interface
+    _subtransaction: Subtransaction_Interface
     _validations: Validations_Interface
     _where: Where_Interface
 

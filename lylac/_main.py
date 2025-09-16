@@ -40,6 +40,7 @@ from ._modules import (
     Preprocess,
     Select,
     Structure,
+    Subtransaction,
     Query,
     Validations,
     Where,
@@ -77,6 +78,7 @@ class Lylac(_Lylac_Core, Generic[_M]):
         self._preprocess = Preprocess(self)
         self._automations = Automations(self)
         self._validations = Validations(self)
+        self._subtransaction = Subtransaction(self)
         self._actions = Actions(self)
         self._compute = Compute(self)
 

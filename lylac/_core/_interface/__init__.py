@@ -17,5 +17,6 @@ from ._preprocess import Preprocess_Interface
 from ._query import Query_Interface
 from ._select import Select_Interface
 from ._structure import Structure_Interface
+from ._subtransaction import Subtransaction_Interface
 from ._validations import Validations_Interface
 from ._where import Where_Interface

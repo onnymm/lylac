@@ -32,6 +32,24 @@ class Compiler_Interface():
     ) -> None:
         ...
 
+    def link_many2many(
+        self,
+        model_name: ModelName,
+        field_name: str,
+        parent_record_ids: list[int],
+        children_record_ids: list[int],
+    ) -> None:
+        ...
+
+    def unlink_many2many(
+        self,
+        model_name: ModelName,
+        field_name: str,
+        parent_record_ids: list[int],
+        children_record_ids: list[int],
+    ) -> None:
+        ...
+
     def delete_many2many(
         self,
         model_name: ModelName,

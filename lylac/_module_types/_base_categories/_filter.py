@@ -138,3 +138,15 @@ Algunos ejemplos de tripletas son:
 >>> ('name', 'ilike', 'as')
 >>> # "name" contiene "as"
 """
+
+RecordIDs = int | list[int]
+"""
+### IDs de registros
+Valor entero o lista de enteros que representan IDs de registros.
+
+>>> # Valor individual
+>>> 5
+>>> 
+>>> # Lista de valores
+>>> [5, 6, 7]
+"""
