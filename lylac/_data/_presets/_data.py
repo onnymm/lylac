@@ -780,11 +780,21 @@ INITIAL_DATA = [
         [
             {
                 'name': 'Usuario base',
-                'permission_ids': [1, 3, 5, 7, 9, 11, 13, 15],
+                'permission_ids': [
+                    (
+                        'add',
+                        [1, 3, 5, 7, 9, 11, 13, 15]
+                    ),
+                ],
             },
             {
                 'name': 'Administrador',
-                'permission_ids': [2, 4, 6, 8, 10, 12, 14, 16],
+                'permission_ids': [
+                    (
+                        'add',
+                        [2, 4, 6, 8, 10, 12, 14, 16]
+                    ),
+                ],
             },
         ]
     ),
@@ -793,7 +803,12 @@ INITIAL_DATA = [
         [
             {
                 'name': 'Administrador de la base de datos',
-                'group_ids': [1, 2],
+                'group_ids': [
+                    (
+                        'add',
+                        [1, 2]
+                    ),
+                ],
             }
         ]
     ),

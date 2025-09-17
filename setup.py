@@ -9,7 +9,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 setup(
     # Library name and version
     name="lylac",
-    version="2.3.5.0",
+    version="2.3.5.1",
 
     # Dependencies
     install_requires=[

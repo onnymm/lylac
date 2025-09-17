@@ -194,7 +194,14 @@ class _Reset(_Reset_Interface):
         self._create_admin_user()
 
         # Implementación de roles de usuario
-        self._main.update(ROOT_ID, MODEL_NAME.BASE_USERS, [1, 2], {'role_ids': [1]})
+        self._main.update(
+            ROOT_ID,
+            MODEL_NAME.BASE_USERS,
+            [1, 2],
+            {
+                'role_ids': [ ('add', [1]) ],
+            }
+        )
 
         # Se cambia el estado de inicialización a verdadero
         self._state = True
