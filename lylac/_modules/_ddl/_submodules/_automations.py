@@ -68,7 +68,6 @@ class _Automations():
         model_name = ctx.get_value(MODEL_NAME.BASE_MODEL, model_id, 'model')
         # Obtención del nombre del campo
         field_name = ctx.data['name']
-        print(model_name, field_name)
         # Ejecución del método del módulo principal
         self._ddl.delete_field(model_name, field_name)
 

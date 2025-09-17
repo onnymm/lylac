@@ -150,7 +150,6 @@ class Compiler(Compiler_Core):
         ]
         # Se crean los objetos instanciados
         instanced_data = [ model_model(**record) for record in data ]
-        print(data)
 
         # Creación de registros en la base de datos
         with Session(self._engine) as session:
