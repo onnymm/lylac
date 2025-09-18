@@ -123,14 +123,18 @@ class Preprocess(Preprocess_Core):
         creación de los registros, usando las IDs creadas como parámetro de entrada.
         """
 
-        # Creación de función de actualizción de valores many2many
+        # Creación de función de actualización de valores many2many
         execute_many2many_updates_after_create = self._main._subtransaction.build_many2many_updates_after_create(model_name, data)
+        # Creación de función de actualización de valores one2many
+        execute_one2many_updates_after_create = self._main._subtransaction.build_one2many_updates_after_create(model_name, data)
 
         def pos_create_callback(
             record_ids: RecordIds,
         ) -> None:
             # Ejecución de actualizaciones de valores many2many
             execute_many2many_updates_after_create(record_ids)
+            # Ejecución de actualizaciones de valores one2many
+            execute_one2many_updates_after_create(record_ids)
 
         return ( data, pos_create_callback )
 
@@ -147,10 +151,15 @@ class Preprocess(Preprocess_Core):
         """
 
         # Creación de función de actualizción de valores many2many
-        execute_automatic_many2many_updates = self._main._subtransaction.build_many2many_updates_after_update(model_name, record_ids, data)
+        execute_many2many_updates_after_update = self._main._subtransaction.build_many2many_updates_after_update(model_name, record_ids, data)
+        # Creación de función de actualización de valores one2many
+        execute_one2many_updates_after_update = self._main._subtransaction.build_one2many_updates_after_update(model_name, record_ids, data)
 
         # Creación de función principal de ejecución después de actualización principal
         def pos_update_callback():
-            execute_automatic_many2many_updates()
+            # Ejecución de actualizaciones de valores many2many
+            execute_many2many_updates_after_update()
+            # Ejecución de actualizaciones de valores one2many
+            execute_one2many_updates_after_update()
 
         return pos_update_callback
