@@ -607,6 +607,13 @@ INITIAL_DATA = [
                 'default_value': False,
             },
             {
+                'name': 'label',
+                'model_id': MODEL_ID.BASE_MODEL_ACCESS_GROUPS,
+                'label': 'Etiqueta',
+                'ttype': 'char',
+                'is_required': True,
+            },
+            {
                 'name': 'permission_ids',
                 'model_id': MODEL_ID.BASE_MODEL_ACCESS_GROUPS,
                 'label': 'Permisos',
@@ -779,7 +786,8 @@ INITIAL_DATA = [
         MODEL_NAME.BASE_MODEL_ACCESS_GROUPS,
         [
             {
-                'name': 'Usuario base',
+                'name': 'base_user',
+                'label': 'Usuario base',
                 'permission_ids': [
                     (
                         'add',
@@ -788,7 +796,8 @@ INITIAL_DATA = [
                 ],
             },
             {
-                'name': 'Administrador',
+                'name': 'admin_user',
+                'label': 'Administrador',
                 'permission_ids': [
                     (
                         'add',
