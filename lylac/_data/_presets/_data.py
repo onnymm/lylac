@@ -626,7 +626,6 @@ INITIAL_DATA = [
                 'label': 'Grupos',
                 'ttype': 'many2many',
                 'nullable': False,
-                'is_required': True,
                 'related_model_id': MODEL_ID.BASE_MODEL_ACCESS_GROUPS,
             },
             {
