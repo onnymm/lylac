@@ -179,7 +179,7 @@ class Preprocess(Preprocess_Core):
         file_fields = self._strc.get_ttype_fields(model_name, 'file')
 
         # Si los datos son una lista...
-        if isinstance(RecordData, list):
+        if isinstance(data, list):
             # Iteración por cada registro de la lista
             for record in data:
                 # Decodificación de Base64 por cada registro
