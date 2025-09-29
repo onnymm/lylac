@@ -1,4 +1,5 @@
-from typing import Callable, Literal, Any, overload, TypedDict
+import base64
+from typing import Callable
 from ..._core.modules import Preprocess_Core
 from ..._core.main import _Lylac_Core
 from ..._module_types import (
@@ -55,6 +56,8 @@ class Preprocess(Preprocess_Core):
         data = self.convert_to_list(data)
         # Escritura de usuario de creación y modificación en los datos entrantes
         self._sign_create_and_update_user_id(user_id, model_name, data)
+        # Procesamiento de tipos de dato de archivo
+        self._decode_file_types(model_name, data)
         # Creación de función para ejecutar tras la creación de registros
         ( data, pos_creation_callback ) = self._build_pos_creation_callback(model_name, data)
 
@@ -75,6 +78,8 @@ class Preprocess(Preprocess_Core):
 
         # Escritura de usuario de modificación
         self._sign_update_user_id(user_id, model_name, data)
+        # Procesamiento de tipos de dato de archivo
+        self._decode_file_types(model_name, data)
         # Creación de función para ejecutar tras la actualización de registros
         after_update_callback = self._build_pos_update_callback(model_name, record_ids, data)
 
@@ -163,3 +168,37 @@ class Preprocess(Preprocess_Core):
             execute_one2many_updates_after_update()
 
         return pos_update_callback
+
+    def _decode_file_types(
+        self,
+        model_name: ModelName,
+        data: RecordData | list[RecordData],
+    ) -> None:
+
+        # Obtención de los campos de tipo archivo
+        file_fields = self._strc.get_ttype_fields(model_name, 'file')
+
+        # Si los datos son una lista...
+        if isinstance(RecordData, list):
+            # Iteración por cada registro de la lista
+            for record in data:
+                # Decodificación de Base64 por cada registro
+                self._decode_base64(record, file_fields)
+
+        # Si los datos son un diccionario...
+        else:
+            # Decodificación de Base64 de los datos
+            self._decode_base64(data, file_fields)
+
+    def _decode_base64(
+        self,
+        record: RecordData,
+        file_fields: list[str],
+    ) -> None:
+
+        # Iteración por cada campo de tipo archivo
+        for field in file_fields:
+            # Si el campo existe en los datos del registro...
+            if field in record.keys():
+                # Se realiza la decodificación de Base64
+                record[field] = base64.b64decode(record[field])

@@ -1,10 +1,11 @@
+import base64
+from typing import Callable
 import pandas as pd
 import numpy as np
-from typing import Callable
 from pandas._typing import AstypeArg
-from ...._module_types import TType
 from ...._core.modules import Output_Core
 from ...._core.submods.output import _DataTypes_Interface
+from ...._module_types import TType
 
 class _DataTypes(_DataTypes_Interface):
     _output: Output_Core
@@ -27,7 +28,6 @@ class _DataTypes(_DataTypes_Interface):
         self,
     ) -> None:
 
-        # TODO Falta mapear tipos file y many2one
         self.recover_ttype: dict[TType, Callable[[pd.DataFrame, str], pd.DataFrame]] = {
             'integer': lambda df, field: self._recover_numeric(df, field, 'int'),
             'char': lambda df, field: self._bypass_value(df, field),
@@ -37,7 +37,7 @@ class _DataTypes(_DataTypes_Interface):
             'datetime': lambda df, field: self._recover_time_alike(df, field),
             'time': lambda df, field: self._recover_time_alike(df, field),
             'duration': lambda df, field: self._recover_time_interval(df, field),
-            'file': lambda df, field: self._bypass_value(df, field),
+            'file': lambda df, field: self._encode_file(df, field),
             'text': lambda df, field: self._bypass_value(df, field),
             'selection': lambda df, field: self._bypass_value(df, field),
             'many2one': lambda df, field: self._transform_many2one(df, field),
@@ -151,3 +151,22 @@ class _DataTypes(_DataTypes_Interface):
         minutes = int((value.total_seconds() % 3600) // 60)
         seconds = int(value.total_seconds() - (minutes * 60) - (total_hours * 3600))
         return f'{total_hours:02d}:{minutes:02d}:{seconds:02d}'
+
+    def _encode_file(
+        self,
+        data: pd.DataFrame,
+        field: str,
+    ) -> pd.DataFrame:
+
+        return (
+            data
+            .assign(
+                **{
+                    field: lambda df: (
+                        df[field].apply(
+                            lambda value: None if value is None else base64.b64encode(value).decode('utf-8')
+                        )
+                    )
+                }
+            )
+        )
