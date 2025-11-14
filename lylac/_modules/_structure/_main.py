@@ -263,9 +263,9 @@ class Structure(Structure_Core):
         # Registro de los campos
         for atts in fields_atts:
             # Destructuración de los valores en la tupla
-            ( field_name, ttype, related_model, related_field ) = atts
+            ( field_name, ttype, related_model, related_field, is_computed ) = atts
             # Registro por cada campo
-            self.register_field(model_name, field_name, ttype, related_model, related_field)
+            self.register_field(model_name, field_name, ttype, related_model, related_field, is_computed)
 
     def _initialize(
         self,

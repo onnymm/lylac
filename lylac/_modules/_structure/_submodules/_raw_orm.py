@@ -43,6 +43,7 @@ class _RawORM(_RawORM_Interface):
                 self._main._index[BaseModelField]['ttype'],
                 self._main._index[RelatedModel]['model'],
                 self._main._index[BaseModelField]['related_field'],
+                self._main._index[BaseModelField]['is_computed'],
             )
             .outerjoin(
                 FieldModel,

@@ -6,5 +6,5 @@ class _RawORM_Interface():
     def get_model_fields(
         self,
         model_name,
-    ) -> list[Tuple[str, TType, None | str, None | str]]:
+    ) -> list[Tuple[str, TType, None | str, None | str, bool]]:
         ...
