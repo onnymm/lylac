@@ -71,6 +71,7 @@ class Select_(Select_Core):
         # Creación de query
         stmt = (
             select(*select_ctx.field_instances)
+            .select_from(model_model)
         )
 
         # Se añaden los JOINs

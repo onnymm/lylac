@@ -77,8 +77,22 @@ class ComputeContext(_ComputeContextCore):
             field_instance = self._get_related_field(self._model_model, field_chain)
         # Si no existe cadena de campos...
         else:
-            # Obtención de la instancia de campo directamente desde el modelo
-            field_instance = self._get_common_field_instance(self._model_model, field_name)
+            # Evaluación de si el campo es computado
+            is_computed_field = self._main._strc.is_computed_field(self._model_name, field_name)
+
+            # Si el campo es computado...
+            if is_computed_field:
+                # Obtención de la instancia del campo
+                field_computation_callback = self._main._compute.hub[self._model_name][field_name]
+                # Inicialización de la instancia de cómputo de campo
+                compute_ctx = ComputeContext(self._model_name, self._select_context, self._main)
+                # Obtención de la instancia de campo
+                field_instance = field_computation_callback(compute_ctx).label(field_name)
+
+            # Si el campo no es computado...
+            else:
+                # Obtención de la instancia de campo directamente desde el modelo
+                field_instance = self._get_common_field_instance(self._model_model, field_name)
 
         return field_instance
 
@@ -108,7 +122,7 @@ class ComputeContext(_ComputeContextCore):
         # Obtención del campo relacional y el campo para obtener el valor de agregación
         ( relational_field_name, value_field_name ) = self._get_related_and_value_fields(composed_field_name)
         # Obtención de la instancia de campo calculada
-        field_instance = self._add_relational_field(
+        field_instance = self._compute_relational_field_on_agg(
             self._model_model,
             relational_field_name,
             value_field_name,
@@ -191,7 +205,7 @@ class ComputeContext(_ComputeContextCore):
 
         return ( relational_field_name, value_field_name )
 
-    def _add_relational_field(
+    def _compute_relational_field_on_agg(
         self,
         model_model: type[DeclarativeBase],
         relational_field_name: str,
@@ -204,20 +218,48 @@ class ComputeContext(_ComputeContextCore):
         model_name = model_model.__tablename__.replace('_', '.')
         # Obtención del nombre del modelo relacionado
         related_model_name = self._main._strc.get_related_model_name(model_name, relational_field_name)
-        # Obtención del modelo relacionado
-        related_model_model = aliased( self._main._strc.get_model(related_model_name) )
 
         # Obtención de la instancia de campo de ID de tabla padre
         id_field_instance = self._main._index[model_model][FIELD_NAME.ID]
         # Creación de un alias de la instancia de campo de ID de tabla padre para evitar colisiones
         id_field_instance_alias = id_field_instance.label(self.ID_ALIAS)
-        # Obtención de la instancia de campo de valor del modelo relacionado
-        related_model_model__value_field = self._main._index[related_model_model][value_field_name]
 
+        # Evaluación de si el campo a usar en el cálculo es computado
+        value_field_instance_is_computed = self._main._strc.is_computed_field(related_model_name, value_field_name)
         # Obtención del nombre del campo que relaciona a la tabla padre
         related_field_name = self._main._strc.get_related_field_name(model_name, relational_field_name)
-        # Obtención de la instancia del campo que relaciona a la tabla padre
-        related_field_instance = self._main._index[related_model_model][related_field_name]
+
+        # Si el campo a usar en el cálculo es computado...
+        if value_field_instance_is_computed:
+            # Se crea un subquery para obtener el campo computado resultante
+            ( computation_stmt, _ ) = self._main._select.build(
+                related_model_name,
+                [
+                    # Se pide el campo que relaciona a la tabla padre
+                    related_field_name,
+                    # Se pide el campo de valor a usar en función agregada
+                    value_field_name,
+                ],
+            )
+            # Se convierte el query de cómputo a subquery
+            computation_stmt = computation_stmt.subquery()
+            # Obtención de la instancia del campo que relaciona a la tabla padre
+            related_field_instance = self._main._index[computation_stmt.c][related_field_name]
+            # Obtención de la instancia de campo de valor del modelo relacionado
+            related_model_model__value_field = self._main._index[computation_stmt.c][value_field_name]
+            # Se asigna el objetivo de JOIN
+            join_target = computation_stmt
+        # Si el campo a usar en el cálculo no es computado...
+        else:
+            # Obtención del modelo relacionado
+            related_model_model = aliased( self._main._strc.get_model(related_model_name) )
+            # Se asigna el objetivo de JOIN
+            join_target = related_model_model
+            # Obtención de la instancia de campo de valor del modelo relacionado
+            related_model_model__value_field = self._main._index[join_target][value_field_name]
+
+            # Obtención de la instancia del campo que relaciona a la tabla padre
+            related_field_instance = self._main._index[join_target][related_field_name]
 
         stmt = (
             # Selección de campos a usar
@@ -231,7 +273,7 @@ class ComputeContext(_ComputeContextCore):
             .select_from(model_model)
             # OUTER JOIN con la tabla referenciada
             .outerjoin(
-                related_model_model,
+                join_target,
                 id_field_instance == related_field_instance
             )
         )
@@ -241,11 +283,12 @@ class ComputeContext(_ComputeContextCore):
             # Se añade el fragmento de query para filtrar los registros a usar
             stmt = self._main._where.add_query(
                 stmt,
-                related_model_model,
+                join_target,
                 search_criteria,
             )
 
-        sub_stmt = (
+        # Se genera la agrupación por el campo de ID y se convierte el query a subquery
+        stmt = (
             stmt
             # Agrupamiento de registros por ID
             .group_by(id_field_instance)
@@ -255,12 +298,12 @@ class ComputeContext(_ComputeContextCore):
 
         # Se añade el OUTER JOIN al contexto de selección
         self._select_context.add_outerjoin(
-            sub_stmt,
-            id_field_instance == getattr(sub_stmt.c, self.ID_ALIAS)
+            stmt,
+            id_field_instance == getattr(stmt.c, self.ID_ALIAS)
         )
 
         # Obtención de la instancia a retornar
-        field_instance = self._main._index[sub_stmt.c][value_field_name]
+        field_instance = self._main._index[stmt.c][value_field_name]
 
         # Obtención del tipo de dato del campo
         field_ttype = self._main._strc.get_field_ttype(related_model_name, value_field_name)
