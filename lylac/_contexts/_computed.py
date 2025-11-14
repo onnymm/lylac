@@ -145,14 +145,10 @@ class ComputeContext(_ComputeContextCore):
 
         # Si hay más campos por accesar...
         if len(fields_chain) > 2:
-            # Obtención del nombre del modelo relacionado del campo siguiente
-            next_field_related_model_name = self._main._strc.get_related_model_name(related_model_name, next_field_name)
-            # Obtención del modelo relacionado del campo siguiente
-            next_field_related_model_model = aliased( self._main._strc.get_model(next_field_related_model_name) )
             # Se accede a ellos de forma recursiva para obtener la instancia de campo
             field_instance = self._get_related_field(
-                next_field_related_model_model,
-                fields_chain[1:],
+                related_model_model,
+                fields_chain[1:].copy(),
             )
         # Si es el último campo por accesar...
         else:
