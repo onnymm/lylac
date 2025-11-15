@@ -128,6 +128,29 @@ class ComputeContext(_ComputeContextCore):
 
         return computed_field_instance
 
+    def concat(
+        self,
+        *args,
+        sep: str = '',
+    ):
+
+        # Inicialización de lista de argumentos preprocesados
+        preproccesed_args = []
+
+        # Construcción de los argumentos con espacios incluidos
+        for (index, arg) in enumerate(args):
+            # Se añade el argumento en posición i
+            preproccesed_args.append(arg)
+            # Si el índice no es el último...
+            if index != ( len(args) - 1 ):
+                # Se añade un separador
+                preproccesed_args.append(sep)
+
+        # Uso de la función de concatenación
+        field_instance = func.concat(*preproccesed_args)
+
+        return field_instance
+
     def case(
         self,
         *args: tuple[BinaryExpression, Any],

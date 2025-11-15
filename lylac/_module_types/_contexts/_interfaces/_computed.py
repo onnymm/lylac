@@ -38,3 +38,10 @@ class _ComputeContextCore():
         search_criteria: CriteriaStructure = [],
     ) -> InstrumentedAttribute:
         ...
+
+    def concat(
+        self,
+        *args,
+        sep: str = '',
+    ) -> InstrumentedAttribute[str]:
+        ...
