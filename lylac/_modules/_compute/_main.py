@@ -99,7 +99,9 @@ class Compute(Compute_Core):
                 .to_list()
             )
 
+        # Si existen coincidencias...
         else:
+            # Se inicializa la variable como lista vacía
             selection_values = []
 
         # Registro de la función
