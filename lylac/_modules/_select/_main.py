@@ -280,6 +280,11 @@ class Select_(Select_Core):
         label: str,
     ) -> None:
 
+        # Si el campo no tiene función de cálculo...
+        if field_name not in self._main._compute.hub[model_name].keys():
+            # Se termina la ejecución sin generar éste
+            return
+
         # Obtención de la instancia del campo
         field_computation_callback = self._main._compute.hub[model_name][field_name]
         # Inicialización de la instancia de cómputo de campo

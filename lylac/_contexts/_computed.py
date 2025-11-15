@@ -96,6 +96,38 @@ class ComputeContext(_ComputeContextCore):
 
         return field_instance
 
+    def _get_computed_field_from_many2one(
+        self,
+        model_model: type[DeclarativeBase],
+        field_name: str,
+        related_model_name: ModelName,
+        computed_related_field_name: str,
+    ) -> InstrumentedAttribute[Any]:
+
+        # Obtención del subquery
+        ( computation_stmt, _ ) = (
+            self._main._select.build(
+                related_model_name,
+                [computed_related_field_name]
+            )
+        )
+        # Se convierte el query de cómputo a subquery
+        computation_stmt = computation_stmt.subquery()
+
+        # Obtención de la instancia de campo computado del modelo relacionado
+        computed_field_instance = self._main._index[computation_stmt.c][computed_related_field_name]
+        # Obtención de la instancia del modelo que relaciona desde la tabla padre
+        id_field_instance = self._main._index[model_model][field_name]
+        # Obtención de instancia del campo de ID del modelo relacionado
+        id_related_field = self._main._index[computation_stmt.c][FIELD_NAME.ID]
+
+        # Creación de unión ON
+        on = id_field_instance == id_related_field
+        # Se añade el JOIN
+        self._select_context.add_outerjoin(computation_stmt, on)
+
+        return computed_field_instance
+
     def case(
         self,
         *args: tuple[BinaryExpression, Any],
@@ -151,14 +183,13 @@ class ComputeContext(_ComputeContextCore):
         # Obtención de la instancia del campo actual
         id_current_field_instance = self._main._index[model_model][current_field_name]
 
-        # Se añade el outerjoin
-        self._add_join(id_current_field_instance, related_model_model)
-
         # Obtención del nombre del campo siguiente
         next_field_name = fields_chain[1]
 
         # Si hay más campos por accesar...
         if len(fields_chain) > 2:
+            # Se añade el outerjoin
+            self._add_join(id_current_field_instance, related_model_model)
             # Se accede a ellos de forma recursiva para obtener la instancia de campo
             field_instance = self._get_related_field(
                 related_model_model,
@@ -166,8 +197,18 @@ class ComputeContext(_ComputeContextCore):
             )
         # Si es el último campo por accesar...
         else:
-            # Obtención de la instancia del campo desde el modelo relacionado
-            field_instance = self._get_common_field_instance(related_model_model, next_field_name)
+            # Evaluación de si el campo es computado
+            is_computed_field = self._main._strc.is_computed_field(related_model_name, next_field_name)
+            # Si el campo es computado...
+            if is_computed_field:
+                # Obtención del campo computado
+                field_instance = self._get_computed_field_from_many2one(model_model, current_field_name, related_model_name, next_field_name)
+            # Si el campo no es computado...
+            else:
+                # Se añade el outerjoin
+                self._add_join(id_current_field_instance, related_model_model)
+                # Obtención de la instancia del campo desde el modelo relacionado
+                field_instance = self._get_common_field_instance(related_model_model, next_field_name)
 
         return field_instance
 
