@@ -13,7 +13,7 @@ class ModelTemplate():
     # ID del registro
     id: Mapped[int] = mapped_column(Integer, primary_key= True, autoincrement= True)
     # Nombre o título representativo del registro
-    name: Mapped[str] = mapped_column(String(60), nullable= False)
+    name: Mapped[str] = mapped_column(String(60), nullable= True)
     # Fecha de creación del registro
     create_date: Mapped[datetime] = mapped_column(DateTime, default= datetime.now)
     # Última fecha de modificación del registro

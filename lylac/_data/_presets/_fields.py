@@ -13,7 +13,7 @@ BASE_FIELDS_TEMPLATE: list[NewRecord.ModelField] = [
         'label': 'Nombre',
         'ttype': 'char',
         'model_id': 1,
-        'nullable': False,
+        'nullable': True,
     },
     {
         'name': 'create_date',
