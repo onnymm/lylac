@@ -10,9 +10,9 @@ from sqlalchemy.orm import (
 )
 from sqlalchemy.types import (
     Boolean,
-    Integer,
     String,
     Text,
+    LargeBinary,
 )
 from ..._core.modules import Metadata_Core
 from ..._core.main import _Lylac_Core
@@ -39,12 +39,12 @@ class Metadata(Metadata_Core):
             login: Mapped[str] = mapped_column(String(60), nullable= False)
             # Contraseña
             password: Mapped[str] = mapped_column(String(255), default= default_password)
-            # ID de Odoo
-            odoo_id: Mapped[int] = mapped_column(Integer, nullable= True)
             # Es activo
             active: Mapped[bool] = mapped_column(Boolean, default= True)
             # Sincronizar
             sync: Mapped[bool] = mapped_column(Boolean, default= True)
+            # Foto de perfil
+            profile_picture: Mapped[str] = mapped_column(LargeBinary, nullable= True)
 
         class BaseModel_(_Base, ModelTemplate):
             __tablename__ = 'base_model'

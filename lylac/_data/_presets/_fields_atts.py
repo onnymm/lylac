@@ -310,5 +310,11 @@ FIELDS_ATTS: dict[str, dict[str, FieldProperties]] = {
             'related_field': None,
             'is_computed': False,
         },
+        'profile_picture': {
+            'ttype': 'file',
+            'related_model': None,
+            'related_field': None,
+            'is_computed': False,
+        },
     },
 }
