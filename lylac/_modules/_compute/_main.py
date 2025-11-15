@@ -99,6 +99,9 @@ class Compute(Compute_Core):
                 .to_list()
             )
 
+        else:
+            selection_values = []
+
         # Registro de la función
         self._register_field_computation(model_name, field_name, compute_field_callback)
         # Registro de campo en la estructura
