@@ -272,6 +272,7 @@ class Structure(Structure_Core):
                     'base.model.field.selection',
                     [('field_id', '=', field_id)],
                     ['name'],
+                    output_format= 'dataframe',
                 )
                 ['name']
                 .to_list()

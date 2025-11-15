@@ -93,6 +93,7 @@ class Compute(Compute_Core):
                     'base.model.field.selection',
                     [('field_id', '=', created_field_id)],
                     ['name'],
+                    output_format= 'dataframe',
                 )
                 ['name']
                 .to_list()

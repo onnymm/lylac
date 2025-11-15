@@ -189,6 +189,7 @@ class _Automations():
                         ('id', '!=', ctx.data['id']),
                 ],
                 ['name'],
+                output_format= 'dataframe',
             )
             ['name']
             .to_list()
