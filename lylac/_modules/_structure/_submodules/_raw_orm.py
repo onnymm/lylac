@@ -26,7 +26,7 @@ class _RawORM(_RawORM_Interface):
     def get_model_fields(
         self,
         model_name,
-    ) -> list[Tuple[str, TType, None | str, None | str]]:
+    ) -> list[Tuple[int, str, TType, None | str, None | str]]:
 
         # Obtención de modelos base
         BaseModel = self._main._models.get_table_model(MODEL_NAME.BASE_MODEL)
@@ -39,6 +39,7 @@ class _RawORM(_RawORM_Interface):
         # Creación del query
         stmt = (
             select(
+                self._main._index[BaseModelField][FIELD_NAME.ID],
                 self._main._index[BaseModelField]['name'],
                 self._main._index[BaseModelField]['ttype'],
                 self._main._index[RelatedModel]['model'],

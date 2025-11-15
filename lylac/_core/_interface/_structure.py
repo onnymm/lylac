@@ -25,7 +25,8 @@ class Structure_Interface():
         ttype: TType,
         related_model: str | None,
         related_field: str | None,
-        is_computed: bool = False,
+        selection_values: list[str] = [],
+        is_computed: bool = False
     ) -> None:
         ...
 

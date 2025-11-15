@@ -62,18 +62,20 @@ class Structure(Structure_Core):
         ttype: TType,
         related_model: str | None,
         related_field: str | None,
+        selection_values: list[str] = [],
         is_computed: bool = False
     ) -> None:
 
-        try:
-            self.models[model_name]['fields'][field_name]
-        except KeyError:
+        # Si el nombre del campo no existe...
+        if field_name not in self.models[model_name]['fields'].keys():
+            # Se crea el diccionario para mapear los atributos del campo
             self.models[model_name]['fields'][field_name] = {}
 
         # Asignación de valores
         self.models[model_name]['fields'][field_name]['ttype'] = ttype
         self.models[model_name]['fields'][field_name]['related_model'] = related_model
         self.models[model_name]['fields'][field_name]['related_field'] = related_field
+        self.models[model_name]['fields'][field_name]['selection_values'] = selection_values
         self.models[model_name]['fields'][field_name]['is_computed'] = is_computed
 
     def unregister_field(
@@ -263,9 +265,19 @@ class Structure(Structure_Core):
         # Registro de los campos
         for atts in fields_atts:
             # Destructuración de los valores en la tupla
-            ( field_name, ttype, related_model, related_field, is_computed ) = atts
+            ( field_id, field_name, ttype, related_model, related_field, is_computed ) = atts
+            selection_values = (
+                self._main.search_read(
+                    self._main._ROOT_USER,
+                    'base.model.field.selection',
+                    [('field_id', '=', field_id)],
+                    ['name'],
+                )
+                ['name']
+                .to_list()
+            )
             # Registro por cada campo
-            self.register_field(model_name, field_name, ttype, related_model, related_field, is_computed)
+            self.register_field(model_name, field_name, ttype, related_model, related_field, selection_values, is_computed)
 
     def _initialize(
         self,

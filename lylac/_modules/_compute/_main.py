@@ -74,7 +74,7 @@ class Compute(Compute_Core):
         # Si no se encontraron coincidencias...
         if not found_ids:
             # Se crea el registro en la base de datos
-            self._main.create(
+            [ created_field_id ] = self._main.create(
                 self._main._ROOT_USER,
                 MODEL_NAME.BASE_MODEL_FIELD,
                 {
@@ -86,10 +86,22 @@ class Compute(Compute_Core):
                 },
             )
 
+            # Obtención de posibles valores de selección
+            selection_values = (
+                self._main.search_read(
+                    self._main._ROOT_USER,
+                    'base.model.field.selection',
+                    [('field_id', '=', created_field_id)],
+                    ['name'],
+                )
+                ['name']
+                .to_list()
+            )
+
         # Registro de la función
         self._register_field_computation(model_name, field_name, compute_field_callback)
-
-        self._main._strc.register_field(model_name, field_name, ttype, None, None, True)
+        # Registro de campo en la estructura
+        self._main._strc.register_field(model_name, field_name, ttype, None, None, selection_values, True)
 
     def _register_field_computation(
         self,
