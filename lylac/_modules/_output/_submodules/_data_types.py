@@ -83,8 +83,8 @@ class _DataTypes(_DataTypes_Interface):
 
         if value == [None]:
             return []
-        elif value is None:
-            return []
+        else:
+            value.sort()
         return value
 
     def _create_many2one_value(
