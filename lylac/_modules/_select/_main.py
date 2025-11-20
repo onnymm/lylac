@@ -16,6 +16,7 @@ from ..._module_types import (
     TType,
 )
 from sqlalchemy import (
+    case,
     select,
     func,
 )
@@ -98,7 +99,7 @@ class Select_(Select_Core):
                 # Obtención del nombre a asignar y la función de cómputo
                 ( field_name, field_ttype, field_computation_callback ) = field
                 # Inicialización de la instancia de cómputo de campo
-                compute_ctx = ComputeContext(model_name, select_ctx, self._main)
+                compute_ctx = ComputeContext(model_model, select_ctx, self._main)
                 # Obtención de la instancia de campo
                 field_instance = field_computation_callback(compute_ctx).label(field_name)
                 # Se añade la instancia del campo
@@ -222,59 +223,74 @@ class Select_(Select_Core):
         else:
             computed_model_model = aliased( self._strc.get_model(model_name) )
 
-        # Si el campo es computado
-        if is_computed:
-            # Se añade el campo computado
-            self._add_computed_field(
-                field_name,
-                model_name,
-                field_ttype,
-                select_ctx,
-                label,
-            )
-
-        elif field_ttype == 'one2many':
-            self._add_one2many_field(
-                field_name,
+        # Si el campo es el nombre visible del registro...
+        if field_name == FIELD_NAME.DISPLAY_NAME:
+            # Se añade el campo de nombre visible
+            self._add_display_name_field(
                 model_name,
                 computed_model_model,
                 select_ctx,
                 label,
             )
 
-        # Si el campo es many2one...
-        elif field_ttype == 'many2one':
-            self._add_many2one_field(
-                field_name,
-                model_name,
-                computed_model_model,
-                select_ctx,
-                label,
-            )
-
-        elif field_ttype == 'many2many':
-            self._add_many2many_field(
-                field_name,
-                model_name,
-                computed_model_model,
-                select_ctx,
-                label,
-            )
-
-        # Si el campo es de otro tipo de dato...
+        # Si el campo no es el nombre visible del campo...
         else:
-            self._add_common_field(
-                field_name,
-                model_name,
-                computed_model_model,
-                select_ctx,
-                label,
-            )
+
+            # Si el campo es computado
+            if is_computed:
+                # Se añade el campo computado
+                self._add_computed_field(
+                    field_name,
+                    model_name,
+                    model_model,
+                    field_ttype,
+                    select_ctx,
+                    label,
+                )
+
+            elif field_ttype == 'one2many':
+                self._add_one2many_field(
+                    field_name,
+                    model_name,
+                    computed_model_model,
+                    select_ctx,
+                    label,
+                )
+
+            # Si el campo es many2one...
+            elif field_ttype == 'many2one':
+                self._add_many2one_field(
+                    field_name,
+                    model_name,
+                    computed_model_model,
+                    select_ctx,
+                    label,
+                )
+
+            elif field_ttype == 'many2many':
+                self._add_many2many_field(
+                    field_name,
+                    model_name,
+                    computed_model_model,
+                    select_ctx,
+                    label,
+                )
+
+            # Si el campo es de otro tipo de dato...
+            else:
+                self._add_common_field(
+                    field_name,
+                    model_name,
+                    computed_model_model,
+                    select_ctx,
+                    label,
+                )
 
     def _add_computed_field(
         self,
         field_name: str,
         model_name: ModelName,
+        model_model: type[DeclarativeBase],
         ttype: TType,
         select_ctx: SelectContext,
         label: str,
@@ -288,9 +304,7 @@ class Select_(Select_Core):
         # Obtención de la instancia del campo
         field_computation_callback = self._main._compute.hub[model_name][field_name]
         # Inicialización de la instancia de cómputo de campo
-        compute_ctx = ComputeContext(model_name, select_ctx, self._main)
-        # Inicialización de la instancia de cómputo de campo
-        compute_ctx = ComputeContext(model_name, select_ctx, self._main)
+        compute_ctx = ComputeContext(model_model, select_ctx, self._main)
         # Obtención de la instancia de campo
         field_instance = field_computation_callback(compute_ctx).label(label)
         # Se añade la instancia del campo
@@ -393,15 +407,14 @@ class Select_(Select_Core):
             label,
         )
 
-        # Se añade el campo relacionado
-        self._add_common_field(
-            'name',
-            related_model_name,
-            related_model_model,
-            select_ctx,
-            f'{field_computed_name}/name',
-            False,
-        )
+        # Inicialización de la instancia de cómputo de campo
+        compute_ctx = ComputeContext(related_model_model, select_ctx, self._main)
+
+        # Obtención de campo de nombre visible
+        field_instance = compute_ctx[FIELD_NAME.DISPLAY_NAME].label(f'{field_computed_name}/name')
+
+        # Se añaden los datos obtenidos
+        select_ctx.add_field_instance(field_instance)
 
         # Se añade el JOIN
         self._add_join(
@@ -409,6 +422,36 @@ class Select_(Select_Core):
             related_model_model,
             select_ctx,
         )
+
+    def _add_display_name_field(
+        self,
+        model_name: ModelName,
+        computed_model_model: type[DeclarativeBase],
+        select_ctx: SelectContext,
+        label: Optional[str] = None,
+    ) -> None:
+
+        # Si existe una función para computar el nombre visible...
+        if FIELD_NAME.DISPLAY_NAME in self._main._compute.hub[model_name].keys():
+            # Se obtiene el campo usando su función de cómputo
+            self._add_computed_field(
+                FIELD_NAME.DISPLAY_NAME,
+                model_name,
+                computed_model_model,
+                'char',
+                select_ctx,
+                label,
+            )
+
+        # Si no existe una función para computar el nombre...
+        else:
+            # Se obtiene el nombre del registro
+            self._add_default_display_field(
+                model_name,
+                computed_model_model,
+                select_ctx,
+                label,
+            )
 
     def _add_many2many_field(
         self,
@@ -421,14 +464,6 @@ class Select_(Select_Core):
 
         # Obtención del modelo de relación 
         relation_model = self._strc.get_relation_model(model_name, field_name)
-
-        # Obtención del nombre de la tabla
-        table_name = self._strc.get_table_name(model_name)
-        # Obtención del nombre del modelo relacionado
-        related_model_name = self._strc.get_related_model_name(model_name, field_name)
-        # Obtención del nombre de la tabla del modelo relacionado
-        related_table_name = self._strc.get_table_name(related_model_name)
-
         # Obtención de la instancia de ID de registros propios
         model_id_field_instance = self._index[relation_model]['x'].label(FIELD_NAME.ID)
         # Obtención de la instancia de ID de registros referenciados
@@ -468,6 +503,43 @@ class Select_(Select_Core):
         on = id_field_instance == sub_stmt_id_field_instance
         # Se añade el JOIN
         select_ctx.add_outerjoin(sub_stmt, on)
+
+    def _add_default_display_field(
+        self,
+        model_name: ModelName,
+        model_model: type[DeclarativeBase],
+        select_ctx: SelectContext,
+        label: Optional[str] = None,
+    ) -> InstrumentedAttribute[str]:
+
+        # Obtención de instancia de ID del modelo
+        id_field_instance = self._main._index[model_model][FIELD_NAME.ID]
+        # Obtención de instancia de nombre del registro
+        name_field_instance = self._main._index[model_model][FIELD_NAME.NAME]
+
+        # Creación de query conditional
+        field_instance = case(
+            (name_field_instance != None, name_field_instance),
+            else_= func.concat(id_field_instance, ', ', model_name)
+        )
+
+        # Si fue especificada etiqueta de campo...
+        if label is not None:
+            # Se añade la etiqueta al campo
+            field_instance = field_instance.label(label)
+            # Se asigna ésta como nombre computado del campo
+            field_computed_name = label
+        # Si no fue especificada etiqueta de campo...
+        else:
+            # Se asigna el nombre del campo nombre computado de éste
+            field_computed_name = FIELD_NAME.DISPLAY_NAME
+
+        # Se añaden los datos obtenidos
+        select_ctx.add_field_instance(field_instance)
+        # Se añade el tipo de dato
+        select_ctx.add_ttype_mapping(field_computed_name, 'char')
+
+        return field_instance
 
     def _add_common_field(
         self,

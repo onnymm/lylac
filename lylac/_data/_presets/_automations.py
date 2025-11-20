@@ -43,6 +43,16 @@ PRESET_AUTOMATIONS: list[AutomationData] = [
         'fields': ['id'],
         'method': 'record',
     },
+    # Inicialización de campo de nombre visible cuando un modelo se crea
+    {
+        'submodule': '_ddl',
+        'callback': 'initialize_display_name_field',
+        'model': 'base.model',
+        'transaction': 'create',
+        'criteria': [('state', '!=', 'base')],
+        'fields': [],
+        'method': 'record',
+    },
     # Inicialización de registro de validaciones de modelo cuando un modelo se crea
     {
         'submodule': '_validations',

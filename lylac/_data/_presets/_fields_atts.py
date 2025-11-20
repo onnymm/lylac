@@ -31,6 +31,13 @@ FIELDS_ATTS: dict[str, dict[str, FieldProperties]] = {
             'selection_values': [],
             'is_computed': False,
         },
+        'display_name': {
+            'ttype': 'char',
+            'related_model': None,
+            'related_field': None,
+            'selection_values': [],
+            'is_computed': True,
+        },
         'model': {
             'ttype': 'char',
             'related_model': None,
@@ -105,6 +112,13 @@ FIELDS_ATTS: dict[str, dict[str, FieldProperties]] = {
             'related_field': None,
             'selection_values': [],
             'is_computed': False,
+        },
+        'display_name': {
+            'ttype': 'char',
+            'related_model': None,
+            'related_field': None,
+            'selection_values': [],
+            'is_computed': True,
         },
         'model_id': {
             'ttype': 'many2one',
@@ -248,6 +262,13 @@ FIELDS_ATTS: dict[str, dict[str, FieldProperties]] = {
             'related_field': None,
             'is_computed': False,
         },
+        'display_name': {
+            'ttype': 'char',
+            'related_model': None,
+            'related_field': None,
+            'selection_values': [],
+            'is_computed': True,
+        },
         'label': {
             'ttype': 'char',
             'related_model': None,
@@ -285,6 +306,13 @@ FIELDS_ATTS: dict[str, dict[str, FieldProperties]] = {
             'related_model': None,
             'related_field': None,
             'is_computed': False,
+        },
+        'display_name': {
+            'ttype': 'char',
+            'related_model': None,
+            'related_field': None,
+            'selection_values': [],
+            'is_computed': True,
         },
         'login': {
             'ttype': 'char',

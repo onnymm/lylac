@@ -9,3 +9,15 @@ class FIELD_NAME:
     USER_ID = 'user_id'
     SYNC = 'sync'
     ACTIVE = 'active'
+    DISPLAY_NAME = 'display_name'
+
+class FIELD_LABEL:
+    ID = 'ID'
+    NAME = 'Nombre'
+    CREATE_DATE = 'Fecha de creación'
+    WRITE_DATE = 'Fecha de modificación'
+    CREATE_UID = 'Creado por'
+    WRITE_UID = 'Modificado por'
+    SEQUENCE = 'Secuencia'
+    ACTIVE = 'Activo'
+    DISPLAY_NAME = 'Nombre visible'

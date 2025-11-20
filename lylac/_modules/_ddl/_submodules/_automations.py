@@ -1,4 +1,8 @@
-from ...._constants import MODEL_NAME
+from ...._constants import (
+    MODEL_NAME,
+    FIELD_LABEL,
+    FIELD_NAME,
+)
 from ...._core.modules import DDL_Core
 from ...._contexts import AutomationContext
 from ...._data import BASE_FIELDS_TEMPLATE
@@ -200,4 +204,36 @@ class _Automations():
             model_name,
             field_name,
             selection_values,
+        )
+
+    def initialize_display_name_field(
+        self,
+        ctx: AutomationContext.Individual[ModelRecordData.BaseModel_],
+    ) -> None:
+
+        # Obtención de la ID del modelo
+        model_id = ctx.data['id']
+        # Obtención del nombre de modelo del modelo
+        model_model_name = ctx.data['model']
+        # Creación del campo computado sin función
+        ctx.create(
+            MODEL_NAME.BASE_MODEL_FIELD,
+            {
+                'name': FIELD_NAME.DISPLAY_NAME,
+                'label': FIELD_LABEL.DISPLAY_NAME,
+                'ttype': 'char',
+                'model_id': model_id,
+                'state': 'base',
+                'is_computed': True,
+            },
+        )
+        # Registro de campo en la estructura
+        self._main._strc.register_field(
+            model_model_name,
+            FIELD_NAME.DISPLAY_NAME,
+            'char',
+            None,
+            None,
+            [],
+            True,
         )

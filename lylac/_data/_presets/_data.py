@@ -2,16 +2,20 @@ from ..._module_types import NewRecord
 from ..._constants import (
     MODEL_ID,
     MODEL_NAME,
+    FIELD_LABEL,
+    FIELD_NAME,
 )
 from ..._core import ENV_VARIABLES
-
 
 BASE_USERS_INITIAL_DATA: NewRecord.User = {
     'name': ENV_VARIABLES.INTERNAL_USER.NAME,
     'login': ENV_VARIABLES.INTERNAL_USER.LOGIN,
     'active': False,
 }
-INITIAL_DATA = [
+
+ModelData = tuple[str, list[dict]]
+
+INITIAL_DATA: list[ModelData] = [
     (
         MODEL_NAME.BASE_MODEL,
         [
@@ -49,8 +53,8 @@ INITIAL_DATA = [
         MODEL_NAME.BASE_MODEL_FIELD,
         [
             {
-                'name': 'id',
-                'label': 'ID',
+                'name': FIELD_NAME.ID,
+                'label': FIELD_LABEL.ID,
                 'ttype': 'integer',
                 'model_id': MODEL_ID.BASE_MODEL,
                 'nullable': False,
@@ -59,8 +63,8 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'name',
-                'label': 'Nombre',
+                'name': FIELD_NAME.NAME,
+                'label': FIELD_LABEL.NAME,
                 'ttype': 'char',
                 'model_id': MODEL_ID.BASE_MODEL,
                 'is_required': True,
@@ -68,8 +72,8 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'create_date',
-                'label': 'Fecha de creación',
+                'name': FIELD_NAME.CREATE_DATE,
+                'label': FIELD_LABEL.CREATE_DATE,
                 'ttype': 'datetime',
                 'model_id': MODEL_ID.BASE_MODEL,
                 'nullable': False,
@@ -77,8 +81,8 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'write_date',
-                'label': 'Fecha de modificación',
+                'name': FIELD_NAME.WRITE_DATE,
+                'label': FIELD_LABEL.WRITE_DATE,
                 'ttype': 'datetime',
                 'model_id': MODEL_ID.BASE_MODEL,
                 'nullable': False,
@@ -123,8 +127,8 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'id',
-                'label': 'ID',
+                'name': FIELD_NAME.ID,
+                'label': FIELD_LABEL.ID,
                 'ttype': 'integer',
                 'model_id': MODEL_ID.BASE_MODEL_FIELD,
                 'nullable': False,
@@ -133,8 +137,8 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'name',
-                'label': 'Nombre',
+                'name': FIELD_NAME.NAME,
+                'label': FIELD_LABEL.NAME,
                 'ttype': 'char',
                 'model_id': MODEL_ID.BASE_MODEL_FIELD,
                 'is_required': True,
@@ -142,8 +146,8 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'create_date',
-                'label': 'Fecha de creación',
+                'name': FIELD_NAME.CREATE_DATE,
+                'label': FIELD_LABEL.CREATE_DATE,
                 'ttype': 'datetime',
                 'model_id': MODEL_ID.BASE_MODEL_FIELD,
                 'nullable': False,
@@ -151,8 +155,8 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'write_date',
-                'label': 'Fecha de modificación',
+                'name': FIELD_NAME.WRITE_DATE,
+                'label': FIELD_LABEL.WRITE_DATE,
                 'ttype': 'datetime',
                 'model_id': MODEL_ID.BASE_MODEL_FIELD,
                 'nullable': False,
@@ -270,8 +274,8 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'id',
-                'label': 'ID',
+                'name': FIELD_NAME.ID,
+                'label': FIELD_LABEL.ID,
                 'ttype': 'integer',
                 'model_id': MODEL_ID.BASE_MODEL_FIELD_SELECTION,
                 'nullable': False,
@@ -280,8 +284,8 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'name',
-                'label': 'Nombre',
+                'name': FIELD_NAME.NAME,
+                'label': FIELD_LABEL.NAME,
                 'ttype': 'char',
                 'model_id': MODEL_ID.BASE_MODEL_FIELD_SELECTION,
                 'is_required': True,
@@ -289,8 +293,8 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'create_date',
-                'label': 'Fecha de creación',
+                'name': FIELD_NAME.CREATE_DATE,
+                'label': FIELD_LABEL.CREATE_DATE,
                 'ttype': 'datetime',
                 'model_id': MODEL_ID.BASE_MODEL_FIELD_SELECTION,
                 'nullable': False,
@@ -298,8 +302,8 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'write_date',
-                'label': 'Fecha de modificación',
+                'name': FIELD_NAME.WRITE_DATE,
+                'label': FIELD_LABEL.WRITE_DATE,
                 'ttype': 'datetime',
                 'model_id': MODEL_ID.BASE_MODEL_FIELD_SELECTION,
                 'nullable': False,
@@ -325,8 +329,8 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'id',
-                'label': 'ID',
+                'name': FIELD_NAME.ID,
+                'label': FIELD_LABEL.ID,
                 'ttype': 'integer',
                 'model_id': MODEL_ID.BASE_USERS,
                 'nullable': False,
@@ -335,8 +339,8 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'name',
-                'label': 'Nombre',
+                'name': FIELD_NAME.NAME,
+                'label': FIELD_LABEL.NAME,
                 'ttype': 'char',
                 'model_id': MODEL_ID.BASE_USERS,
                 'is_required': True,
@@ -344,8 +348,8 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'create_date',
-                'label': 'Fecha de creación',
+                'name': FIELD_NAME.CREATE_DATE,
+                'label': FIELD_LABEL.CREATE_DATE,
                 'ttype': 'datetime',
                 'model_id': MODEL_ID.BASE_USERS,
                 'nullable': False,
@@ -353,8 +357,8 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'write_date',
-                'label': 'Fecha de modificación',
+                'name': FIELD_NAME.WRITE_DATE,
+                'label': FIELD_LABEL.WRITE_DATE,
                 'ttype': 'datetime',
                 'model_id': MODEL_ID.BASE_USERS,
                 'nullable': False,
@@ -381,8 +385,8 @@ INITIAL_DATA = [
                 'state': 'base',
             },
             {
-                'name': 'active',
-                'label': 'Activo',
+                'name': FIELD_NAME.ACTIVE,
+                'label': FIELD_LABEL.ACTIVE,
                 'ttype': 'boolean',
                 'model_id': MODEL_ID.BASE_USERS,
                 'nullable': False,
@@ -839,6 +843,70 @@ INITIAL_DATA = [
                 'state': 'base',
                 'nullable': False,
                 'default_value': False,
+            },
+            {
+                'name': FIELD_NAME.DISPLAY_NAME,
+                'label': FIELD_LABEL.DISPLAY_NAME,
+                'ttype': 'char',
+                'model_id': MODEL_ID.BASE_MODEL,
+                'state': 'base',
+                'is_computed': True,
+            },
+            {
+                'name': FIELD_NAME.DISPLAY_NAME,
+                'label': FIELD_LABEL.DISPLAY_NAME,
+                'ttype': 'char',
+                'model_id': MODEL_ID.BASE_MODEL_FIELD,
+                'state': 'base',
+                'is_computed': True,
+            },
+            {
+                'name': FIELD_NAME.DISPLAY_NAME,
+                'label': FIELD_LABEL.DISPLAY_NAME,
+                'ttype': 'char',
+                'model_id': MODEL_ID.BASE_MODEL_FIELD_SELECTION,
+                'state': 'base',
+                'is_computed': True,
+            },
+            {
+                'name': FIELD_NAME.DISPLAY_NAME,
+                'label': FIELD_LABEL.DISPLAY_NAME,
+                'ttype': 'char',
+                'model_id': MODEL_ID.BASE_USERS,
+                'state': 'base',
+                'is_computed': True,
+            },
+            {
+                'name': FIELD_NAME.DISPLAY_NAME,
+                'label': FIELD_LABEL.DISPLAY_NAME,
+                'ttype': 'char',
+                'model_id': MODEL_ID.BASE_MODEL_ACCESS,
+                'state': 'base',
+                'is_computed': True,
+            },
+            {
+                'name': FIELD_NAME.DISPLAY_NAME,
+                'label': FIELD_LABEL.DISPLAY_NAME,
+                'ttype': 'char',
+                'model_id': MODEL_ID.BASE_MODEL_ACCESS_GROUPS,
+                'state': 'base',
+                'is_computed': True,
+            },
+            {
+                'name': FIELD_NAME.DISPLAY_NAME,
+                'label': FIELD_LABEL.DISPLAY_NAME,
+                'ttype': 'char',
+                'model_id': MODEL_ID.BASE_USERS_ROLE,
+                'state': 'base',
+                'is_computed': True,
+            },
+            {
+                'name': FIELD_NAME.DISPLAY_NAME,
+                'label': FIELD_LABEL.DISPLAY_NAME,
+                'ttype': 'char',
+                'model_id': MODEL_ID.BASE_USERS_SESSION,
+                'state': 'base',
+                'is_computed': True,
             },
         ]
     ),

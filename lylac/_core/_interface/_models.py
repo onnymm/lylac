@@ -5,6 +5,12 @@ from ..._module_types import ModelName
 
 class Models_Interface():
 
+    def get_model_name(
+        self,
+        model_model: type[DeclarativeBase],
+    ) -> ModelName:
+        ...
+
     def get_table_model(
         self,
         model_name: ModelName,

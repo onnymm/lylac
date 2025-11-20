@@ -21,6 +21,16 @@ class Models(Models_Core):
         # Referencia al módulo de estructura interna
         self._strc = instance._strc
 
+    def get_model_name(
+        self,
+        model_model: type[DeclarativeBase],
+    ) -> ModelName:
+
+        # Obtención del nombre del modelo
+        model_name: ModelName = model_model.__tablename__.replace('_', '.')
+
+        return model_name
+
     def get_table_model(
         self,
         model_name: ModelName,

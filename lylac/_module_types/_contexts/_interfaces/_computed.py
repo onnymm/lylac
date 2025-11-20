@@ -1,14 +1,53 @@
-from typing import Any
+from typing import (
+    Any,
+    Callable,
+)
+from sqlalchemy import func
+from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.sql.elements import BinaryExpression
+from ...._module_types import (
+    CriteriaStructure,
+    AggFunctionName,
+    ModelName,
+    TType,
+)
+from ...._constants import FIELD_NAME
 from ..._base_categories import (
     CriteriaStructure,
     ModelName,
     AggFunctionName,
 )
 from ._select import _SelectContextCore
-from sqlalchemy.orm.attributes import InstrumentedAttribute
-from sqlalchemy.sql.elements import BinaryExpression
+
 
 class _ComputeContextCore():
+
+    aggregation_callbacks_map: dict[AggFunctionName, Callable] = {
+        'sum': func.sum,
+        'count': func.count,
+    }
+    """
+    Funciones de agregación.
+    """
+
+    FIELD_DIVISION = '.'
+    """
+    Símbolo de división de campos para obtención de atributos referenciados.
+    """
+    ID_ALIAS = f'_{FIELD_NAME.ID}'
+    """
+    Nombre de alias de ID.
+    """
+
+    _zero_value: dict[TType, Any] = {
+        'integer': 0,
+        'float': 0.0,
+        'duration': '00:00:00',
+        'time': '00:00:00',
+    }
+    """
+    Valor de 0 por defecto en diferentes tipos de dato.
+    """
 
     def __init__(
         self,
