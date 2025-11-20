@@ -824,6 +824,13 @@ INITIAL_DATA = [
         MODEL_NAME.BASE_MODEL_FIELD,
         [
             {
+                'name': 'profile_picture',
+                'label': 'Foto de perfil',
+                'ttype': 'file',
+                'model_id': MODEL_ID.BASE_USERS,
+                'state': 'base',
+            },
+            {
                 'name': 'is_computed',
                 'label': 'Computado',
                 'ttype': 'boolean',
