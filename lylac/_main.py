@@ -4,7 +4,11 @@ from typing import (
     Union,
 )
 import pandas as pd
-from ._constants import FIELD_NAME, MODEL_NAME
+from ._constants import (
+    FIELD_NAME,
+    FIELD_LABEL,
+    MODEL_NAME,
+)
 from ._contexts import AutomationContext
 from ._contexts._actions import ActionCallback
 from ._core.main import _Lylac_Core
@@ -45,6 +49,7 @@ from ._modules import (
     Validations,
     Where,
 )
+from .errors import IlegalComputedFieldRegistration
 
 class Lylac(_Lylac_Core, Generic[_M]):
 
@@ -141,6 +146,26 @@ class Lylac(_Lylac_Core, Generic[_M]):
 
         return True
 
+    def assign_display_name(
+        self,
+        model_name: Union[ModelName, _M],
+    ) -> None:
+
+        def decorator(field_computation_callback):
+
+            # Registro de la función
+            self._compute.register_computed_field(
+                model_name,
+                'char',
+                FIELD_NAME.DISPLAY_NAME,
+                FIELD_LABEL.DISPLAY_NAME,
+                field_computation_callback,
+            )
+
+            return field_computation_callback
+
+        return decorator
+
     def register_computed_field(
         self,
         model_name: Union[ModelName, _M],
@@ -148,6 +173,11 @@ class Lylac(_Lylac_Core, Generic[_M]):
         label: str,
         ttype: TType,
     ) -> None:
+
+        if field_name == FIELD_NAME.DISPLAY_NAME:
+            raise IlegalComputedFieldRegistration(
+                f'Usa el método {self.assign_display_name.__name__} para registrar una función para nombre visible.'
+            )
 
         def decorator(field_computation_callback):
 

@@ -13,6 +13,11 @@ class Compute_Interface():
     ) -> None:
         ...
 
+    def initialize_default_computed_fields(
+        self,
+    ) -> None:
+        ...
+
     def register_computed_field(
         self,
         model_name: ModelName,

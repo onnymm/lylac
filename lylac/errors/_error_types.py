@@ -12,3 +12,6 @@ class URLFormatError(Exception):
 
 class ExpiredSessionToken(Exception):
     ...
+
+class IlegalComputedFieldRegistration(Exception):
+    ...
