@@ -410,18 +410,18 @@ class Select_(Select_Core):
         # Inicialización de la instancia de cómputo de campo
         compute_ctx = ComputeContext(related_model_model, select_ctx, self._main)
 
-        # Obtención de campo de nombre visible
-        field_instance = compute_ctx[FIELD_NAME.DISPLAY_NAME].label(f'{field_computed_name}/name')
-
-        # Se añaden los datos obtenidos
-        select_ctx.add_field_instance(field_instance)
-
         # Se añade el JOIN
         self._add_join(
             current_id_field_instance,
             related_model_model,
             select_ctx,
         )
+
+        # Obtención de campo de nombre visible
+        field_instance = compute_ctx[FIELD_NAME.DISPLAY_NAME].label(f'{field_computed_name}/name')
+
+        # Se añaden los datos obtenidos
+        select_ctx.add_field_instance(field_instance)
 
     def _add_display_name_field(
         self,
