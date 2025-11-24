@@ -91,6 +91,8 @@ class Lylac(_Lylac_Core, Generic[_M]):
         self._automations.create_preset_automations()
         # Inicialización de estructura de modelos de la instancia
         self._ddl._m_reset.initialize_from_data()
+        # Inicialización de funciones predeterminadas de campos computados
+        self._compute.initialize_default_computed_fields()
         # Inicialización de los datos de validaciones
         self._validations.initialize()
 

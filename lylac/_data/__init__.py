@@ -5,6 +5,7 @@ from ._default import (
 from ._presets import (
     BASE_FIELDS_TEMPLATE,
     BASE_USERS_INITIAL_DATA,
+    COMPUTED_FIELD,
     FIELDS_ATTS,
     INITIAL_DATA,
     PRESET_AUTOMATIONS,

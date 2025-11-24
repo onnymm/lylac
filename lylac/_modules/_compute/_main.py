@@ -3,12 +3,13 @@ from ..._constants import (
     FIELD_NAME,
 )
 from ..._core.main import _Lylac_Core
+from ..._core.modules import Compute_Core
+from ..._data import COMPUTED_FIELD
 from ..._module_types import (
     ComputedFieldCallback,
     ModelName,
     TType,
 )
-from ..._core.modules import Compute_Core
 from ._submodules import _Automations
 
 class Compute(Compute_Core):
@@ -36,6 +37,14 @@ class Compute(Compute_Core):
         models = self._main._strc.get_model_names()
         # Inicialización del núcleo de campos computados
         self.hub = { model: {} for model in models }
+
+    def initialize_default_computed_fields(self):
+
+        # Se realiza el registro de las funciones de cálculo
+        self.hub[MODEL_NAME.BASE_MODEL][FIELD_NAME.DISPLAY_NAME] = COMPUTED_FIELD.BASE_MODEL.display_name
+        self.hub[MODEL_NAME.BASE_MODEL_FIELD][FIELD_NAME.DISPLAY_NAME] = COMPUTED_FIELD.BASE_MODEL_FIELD.display_name
+        self.hub[MODEL_NAME.BASE_MODEL_FIELD_SELECTION][FIELD_NAME.DISPLAY_NAME] = COMPUTED_FIELD.BASE_MODEL_FIELD_SELECTION.display_name
+        self.hub[MODEL_NAME.BASE_MODEL_ACCESS_GROUPS][FIELD_NAME.DISPLAY_NAME] = COMPUTED_FIELD.BASE_MODEL_ACCESS_GROUPS.display_name
 
     def register_computed_field(
         self,
@@ -90,12 +99,12 @@ class Compute(Compute_Core):
             selection_values = (
                 self._main.search_read(
                     self._main._ROOT_USER,
-                    'base.model.field.selection',
+                    MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
                     [('field_id', '=', created_field_id)],
-                    ['name'],
+                    [FIELD_NAME.NAME],
                     output_format= 'dataframe',
                 )
-                ['name']
+                [FIELD_NAME.NAME]
                 .to_list()
             )
 

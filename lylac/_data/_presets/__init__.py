@@ -6,3 +6,4 @@ from ._data import (
 from ._fields import BASE_FIELDS_TEMPLATE
 from ._fields_atts import FIELDS_ATTS
 from ._validations import VALIDATIONS_DATA
+from ._computed_fields import COMPUTED_FIELD
