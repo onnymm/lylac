@@ -2,7 +2,16 @@ from typing import (
     Any,
     Callable,
 )
-from sqlalchemy import func
+from sqlalchemy import (
+    Boolean,
+    Integer,
+    Date,
+    DateTime,
+    String,
+    Interval,
+    Time,
+    func,
+)
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.elements import BinaryExpression
 from ...._module_types import (
@@ -14,8 +23,9 @@ from ...._module_types import (
 from ...._constants import FIELD_NAME
 from ..._base_categories import (
     CriteriaStructure,
-    ModelName,
     AggFunctionName,
+    ModelName,
+    ToCast,
 )
 from ._select import _SelectContextCore
 
@@ -48,6 +58,16 @@ class _ComputeContextCore():
     """
     Valor de 0 por defecto en diferentes tipos de dato.
     """
+
+    _to_cast_ttype = {
+        'boolean': Boolean,
+        'char': String,
+        'date': Date,
+        'datetime': DateTime,
+        'duration': Interval,
+        'integer': Integer,
+        'time': Time,
+    }
 
     def __init__(
         self,
@@ -82,5 +102,20 @@ class _ComputeContextCore():
         self,
         *args,
         sep: str = '',
+    ) -> InstrumentedAttribute[str]:
+        ...
+
+    def cast(
+        self,
+        field: InstrumentedAttribute[Any],
+        ttype: ToCast,
+    ) -> InstrumentedAttribute[Any]:
+        ...
+
+    def replace(
+        self,
+        field: InstrumentedAttribute[str],
+        i: str,
+        o: str,
     ) -> InstrumentedAttribute[str]:
         ...

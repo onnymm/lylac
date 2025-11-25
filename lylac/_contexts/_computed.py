@@ -8,6 +8,7 @@ from sqlalchemy import (
     case,
     literal,
     select,
+    cast as cast_,
     func,
 )
 from sqlalchemy.orm import aliased
@@ -29,6 +30,7 @@ from .._module_types import (
     AggFunctionName,
     ComputedFieldCallback,
     ModelName,
+    ToCast,
 )
 
 class ComputeContext(_ComputeContextCore):
@@ -148,6 +150,29 @@ class ComputeContext(_ComputeContextCore):
         )
 
         return field_instance
+
+    def cast(
+        self,
+        field: InstrumentedAttribute[Any],
+        ttype: ToCast,
+    ) -> InstrumentedAttribute[Any]:
+
+        # Obtención del tipo a castear
+        cast_to = self._to_cast_ttype[ttype]
+
+        return cast_(field, cast_to)
+
+    def replace(
+        self,
+        field: InstrumentedAttribute[str],
+        i: str,
+        o: str,
+    ) -> InstrumentedAttribute[str]:
+
+        # Reemplazo de texto
+        replaced = func.replace(field, i, o)
+
+        return replaced
 
     def _get_related_field(
         self,

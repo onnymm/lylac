@@ -188,3 +188,10 @@ Los valores disponibles son:
 - `'create'`: Creación
 - `'update'`: Actualización
 """
+
+ToCast = Literal['integer', 'char', 'boolean', 'date', 'datetime', 'time', 'duration']
+"""
+### Tipos de dato disponibles para casteo
+Tipos de dato que pueden usarse para convertir el tipo de dato de un campo en
+otro que se desee usar.
+"""
