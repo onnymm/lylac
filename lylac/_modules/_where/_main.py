@@ -62,14 +62,14 @@ class Where(Where_Core):
         # Asignación de la instancia propietaria
         self._main = instance
 
-        # Referencia al módulo de modelos
+        # Asignación de módulo de modelos
         self._models = instance._models
 
     @overload
     def add_query(
         self,
         stmt: Select[_T],
-        table_model: type[DeclarativeBase],
+        model_model: type[DeclarativeBase],
         search_criteria: CriteriaStructure,
     ) -> Select[_T]:
         ...
@@ -78,7 +78,7 @@ class Where(Where_Core):
     def add_query(
         self,
         stmt: Update[_T],
-        table_model: type[DeclarativeBase],
+        model_model: type[DeclarativeBase],
         search_criteria: CriteriaStructure,
     ) -> Update[_T]:
         ...
@@ -86,7 +86,7 @@ class Where(Where_Core):
     def add_query(
         self,
         stmt: Select[_T] | Update[_T],
-        table_model: type[DeclarativeBase],
+        model_model: type[DeclarativeBase],
         search_criteria: CriteriaStructure,
     ):
 
@@ -94,7 +94,7 @@ class Where(Where_Core):
         if len(search_criteria) > 0:
 
             # Creación del query where
-            query = self.build_where(table_model, search_criteria)
+            query = self.build_where(model_model, search_criteria)
 
             # Conversión del query SQL
             stmt = stmt.where(query)
@@ -215,7 +215,7 @@ class Where(Where_Core):
 
     def _create_individual_query(
         self,
-        table: type[DeclarativeBase],
+        model_model: type[DeclarativeBase],
         fragment: TripletStructure
     ) -> BinaryExpression:
 
@@ -223,7 +223,7 @@ class Where(Where_Core):
         ( field_instance, op, value ) = fragment
 
         # Obtención de la instancia del campo a usar
-        field_instance = self._models.get_table_field(table, field_instance)
+        field_instance = self._models.get_table_field(model_model, field_instance)
 
         # Retorno de la evaluación
         return self._comparison_operation[op](field_instance, value)

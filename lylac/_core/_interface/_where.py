@@ -16,7 +16,7 @@ class Where_Interface():
     def add_query(
         self,
         stmt: Select[_T],
-        table_model: type[DeclarativeBase],
+        model_model: type[DeclarativeBase],
         search_criteria: CriteriaStructure,
     ) -> Select[_T]:
         ...
@@ -25,14 +25,14 @@ class Where_Interface():
     def add_query(
         self,
         stmt: Update[_T],
-        table_model: type[DeclarativeBase],
+        model_model: type[DeclarativeBase],
         search_criteria: CriteriaStructure,
     ) -> Update[_T]:
         ...
 
     def build_where(
         self,
-        table: type[DeclarativeBase],
-        search_criteria: CriteriaStructure
+        model_model: type[DeclarativeBase],
+        search_criteria: CriteriaStructure,
     ) -> BinaryExpression:
         ...
