@@ -11,3 +11,5 @@ class MESSAGES:
         WRONG_PASSWORD = 'Contraseña incorrecta.'
     class TRANSACTION:
         FIELDS_OVERFLOW = 'Solo se puede referenciar un campo a partir del campo relacional. Si se requiere acceder a más tablas, crea un campo computado en ellas para ser usado aquí.'
+    class INVALID_STRUCTURE:
+        SEARCH_CRITERIA = 'Estructura de criterio de búsqueda inválida.'

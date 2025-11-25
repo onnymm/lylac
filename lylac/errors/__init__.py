@@ -4,5 +4,6 @@ from ._error_types import (
     IlegalComputedFieldRegistration,
     InitializationError,
     InvalidPasswordError,
+    MalformedCriteriaError,
     URLFormatError,
 )

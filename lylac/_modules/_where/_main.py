@@ -10,9 +10,14 @@ from sqlalchemy import (
     or_,
 )
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.sql.elements import BinaryExpression
+from sqlalchemy.sql.elements import (
+    BinaryExpression,
+    BooleanClauseList,
+)
 from ..._core.modules import Where_Core
 from ..._core.main import _Lylac_Core
+from ..._constants import MESSAGES
+from ...errors import MalformedCriteriaError
 from ..._module_types import (
     _T,
     CriteriaStructure,
@@ -99,76 +104,114 @@ class Where(Where_Core):
 
     def build_where(
         self,
-        table: type[DeclarativeBase],
-        search_criteria: CriteriaStructure
+        model_model: type[DeclarativeBase],
+        search_criteria: CriteriaStructure,
     ) -> BinaryExpression:
 
-        # Si el criterio de búsqueda sólo contiene una tripleta 
+        # Se crea una copia del criterio de búsqueda
+        search_criteria = search_criteria.copy()
+        # Si el criterio de búsqueda solo contiene una tripleta...
         if len(search_criteria) == 1:
             # Destructuración de la tripleta
             [ triplet ] = search_criteria
-            # Creación de query de condición individual
-            return self._create_individual_query(table, triplet)
+            # Procesamiento de la tripleta
+            expression = self._create_individual_query(model_model, triplet)
 
-        # Iteración
-        for i in range( len(search_criteria) ):
-            # Creación de condiciones individuales para facilitar su lectura
-            istriplet_1 = self._is_triplet(search_criteria[i])
-            istriplet_2 = self._is_triplet(search_criteria[i + 1])
-            istriplet_3 = self._is_triplet(search_criteria[i + 2])
+            return expression
 
-            # Si sólo el primer valor es un operador lógico y los siguientes dos  son tripletas
-            if not istriplet_1 and istriplet_2 and istriplet_3:
-                # Destructuración de los valores
-                ( op, condition_1, condition_2) = search_criteria[i: i + 3]
+        # Si el criterio de búsqueda tiene 2 elementos de longitud...
+        elif len(search_criteria) == 2:
+            # Se lanza un error de estructura de búsqueda mal formada
+            raise MalformedCriteriaError(MESSAGES.INVALID_STRUCTURE.SEARCH_CRITERIA)
 
-                # Retorno de la unión de las dos condiciones
-                return self._merge_queries(
-                    op,
-                    self._create_individual_query(table, condition_1),
-                    self._create_individual_query(table, condition_2)
-                )
+        # Si el criterio de búsqueda contiene más de un elemento...
+        else:
+            # Procesamiento de todas las tripletas
+            search_criteria = self._evaluate_triplets(model_model, search_criteria)
+            # Obtención de la expresión final
+            expression = self._merge_expressions(search_criteria)
 
-            # Si uno de los dos siguientes valores no es tripleta se tiene que generar una
-            #   condición compleja, en dos diferentes escenarios:
-            else:
-                # Obtención del operador lógico
-                op = search_criteria[i]
+            return expression
 
-                # Si el primero de los dos siguientes valores es tripleta
-                if istriplet_2:
-                    # Unión de condiciones
-                    return self._merge_queries(
-                        op,
-                        # Se convierte el primer siguiente valor en query SQL
-                        self._create_individual_query(table, search_criteria[i + 1]),
-                        # Se ejecuta esta función recursivamente para la evaluación del resto
-                        #   de los valores del criterio de búsqueda
-                        self.build_where(table, search_criteria[i + 2:])
-                    )
-
-                # Si el segundo de los dos siguientes valores es tripleta
-                else:
-                    # Unión de dos condiciones
-                    return self._merge_queries(
-                        op,
-                        # Se ejecuta esta función recursivamente para la evaluación del
-                        #   criterio de búsqueda a partir del siguiente primer valor hasta
-                        #   el penúltimo valor del criterio de búsqueda
-                        self.build_where(table, search_criteria[i + 1: -1]),
-                        # Se convierte el último valor del criterio de búsqueda en query SQL
-                        self._create_individual_query(table, search_criteria[-1])
-                    )
-
-    def _merge_queries(
+    def _evaluate_triplets(
         self,
-        op: LogicOperator,
-        condition_1: BinaryExpression,
-        condition_2: BinaryExpression
+        model_model: type[DeclarativeBase],
+        search_criteria: CriteriaStructure,
+    ) -> list[LogicOperator, BinaryExpression]:
+
+        # Se recorren todas las posiciones de la lista
+        for index in range(len(search_criteria)):
+            # Obtención del elemento en posición i
+            item = search_criteria[index]
+            # Evaluación de si el elemento es tripleta
+            is_triplet = self._is_triplet(item)
+            # Si el elemento es tripleta...
+            if is_triplet:
+                # Creación de expresión binaria
+                expression = self._create_individual_query(model_model, item)
+                # Reasignación del elemento en la posición i
+                search_criteria[index] = expression
+
+        return search_criteria
+
+    def _merge_expressions(
+        self,
+        expressions: list[BinaryExpression, LogicOperator],
     ) -> BinaryExpression:
 
-        # Retorno de la unión de los dos queries
-        return self._logic_operation[op](condition_1, condition_2)
+        # Ciclo indefinido hasta que se resuelva la condición
+        while len(expressions) > 2:
+            # Indicador de combinación de expresiones encontrada
+            found_combination = False
+            # Se recorre cada posición de la lista de expresiones y operadores
+            for index in range( len(expressions) - 2 ):
+                # Destructuración de los elementos adyacentes
+                [ item_a, item_b, item_c ] = expressions[index:index + 3]
+                # Evaluación de si los elementos forman una expresión combinada
+                is_combined_expression = self._is_combined_expression(item_a, item_b, item_c)
+                # Si los elementos forman una expressión combinada...
+                if is_combined_expression:
+                    # Reasignación de variables
+                    ( operator, expression_1, expression_2 ) = (item_a, item_b, item_c)
+                    # Se unen las expresiones
+                    expression_result = self._logic_operation[operator](expression_1, expression_2)
+                    # Reasignación de la expresión resultante
+                    expressions = expressions[:index] + [expression_result] + expressions[index + 3:]
+                    # Se cambia el indicador de combinación encontrada a verdadero
+                    found_combination = True
+                    # Se termina el ciclo
+                    break
+
+            # Si al terminar el ciclo no hubo combinación encontrada...
+            if not found_combination:
+                # Si el ciclo se termina y no se encontró una combinación de expresiones se lanza un error
+                raise MalformedCriteriaError(MESSAGES.INVALID_STRUCTURE.SEARCH_CRITERIA)
+
+        # Obtención de la expresión resultante
+        [ resolution ] = expressions
+
+        return resolution
+
+    def _is_triplet(
+        self, value: Any
+    ) -> bool:
+        """
+        ## Evaluación de posible tripleta de condición
+        Esta función evalúa si el valor provisto es una tupla o una lista de
+        3 valores que puede ser convertida a un query SQL.
+        """
+
+        # Evaluación de si el elemento es tupla
+        is_tuple = isinstance(value, tuple)
+        # Evaluación de si el elemento es lista
+        is_list = isinstance(value, list)
+        # Evaluación de si el elemento tiene longitud de 3
+        has_right_length = len(value) == 3
+
+        # Resolución de si el elemento es una tripleta
+        is_triplet = (is_tuple or is_list) and has_right_length
+
+        return is_triplet
 
     def _create_individual_query(
         self,
@@ -185,16 +228,36 @@ class Where(Where_Core):
         # Retorno de la evaluación
         return self._comparison_operation[op](field_instance, value)
 
-    def _is_triplet(
-        self, value: Any
+    def _is_combined_expression(
+        self,
+        item_a: LogicOperator | BinaryExpression,
+        item_b: LogicOperator | BinaryExpression,
+        item_c: LogicOperator | BinaryExpression,
     ) -> bool:
-        """
-        ## Evaluación de posible tripleta de condición
-        Esta función evalúa si el valor provisto es una tupla o una lista de
-        3 valores que puede ser convertida a un query SQL.
-        """
-        return (
-                isinstance(value, tuple) or isinstance(value, list)
-            and 
-                len(value) == 3
-        )
+
+        # Evaluación de si el primer elemento es un operador lógico
+        is_a_logic_operator = item_a in ['&', '|']
+        # Evaluación de si el segundo elemento es una expresión binaria
+        is_b_binary_expression = self._is_expression(item_b)
+        # Evaluación de si el tercer elemento es una expresión binaria
+        is_c_binary_expression = self._is_expression(item_c)
+
+        # Resolución de evaluación
+        resolution = is_a_logic_operator and is_b_binary_expression and is_c_binary_expression
+
+        return resolution
+
+    def _is_expression(
+        self,
+        item: BinaryExpression | BooleanClauseList,
+    ) -> bool:
+        
+        # Evaluación de si el elemento es una cláusula booleana
+        is_boolean_clause = isinstance(item, BooleanClauseList)
+        # Evaluación de si el elemento es una expresión binaria
+        is_binary_expression = isinstance(item, BinaryExpression)
+
+        # Resolución
+        resolution = is_boolean_clause or is_binary_expression
+
+        return resolution
