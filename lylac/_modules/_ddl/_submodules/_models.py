@@ -31,13 +31,13 @@ from ...._module_types import (
     ModelRecordData,
     ModelTemplate as ModelTemplate, # Uso en compilación de código de archivos
     ModelName,
-    TType,
+    TTypeName,
 )
 from .._module_types import ColumnGenerator
 
 class _Models(_Models_Interface):
     _ddl: DDL_Core
-    build_column: dict[TType, ColumnGenerator]
+    build_column: dict[TTypeName, ColumnGenerator]
     """
     ### Construcción de columna
     Este mapa de métodos construye una columna tipada para un modelo de SQLALchemy.

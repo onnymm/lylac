@@ -13,7 +13,7 @@ from ..._module_types import (
     TTypesMapping,
     DynamicModelField,
     ModelName,
-    TType,
+    TTypeName,
 )
 from sqlalchemy import (
     case,
@@ -291,7 +291,7 @@ class Select_(Select_Core):
         field_name: str,
         model_name: ModelName,
         model_model: type[DeclarativeBase],
-        ttype: TType,
+        ttype: TTypeName,
         select_ctx: SelectContext,
         label: str,
     ) -> None:

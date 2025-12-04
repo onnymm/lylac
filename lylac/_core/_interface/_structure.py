@@ -1,6 +1,7 @@
+from typing import Optional
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from ..._module_types import (
-    TType,
+    TTypeName,
     ModelName,
 )
 
@@ -22,9 +23,9 @@ class Structure_Interface():
         self,
         model_name: ModelName,
         field_name: str,
-        ttype: TType,
-        related_model: str | None,
-        related_field: str | None,
+        ttype: TTypeName,
+        related_model: Optional[str],
+        related_field: Optional[str],
         selection_values: list[str] = [],
         is_computed: bool = False
     ) -> None:
@@ -100,7 +101,7 @@ class Structure_Interface():
         self,
         model_name: ModelName,
         field_name: str,
-    ) -> TType:
+    ) -> TTypeName:
         ...
 
     def is_computed_field(
@@ -119,7 +120,7 @@ class Structure_Interface():
     def get_ttype_fields(
         self,
         model_name: ModelName,
-        ttype: TType,
+        ttype: TTypeName,
     ) -> list[str]:
         ...
 

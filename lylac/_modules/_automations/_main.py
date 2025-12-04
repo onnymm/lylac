@@ -2,17 +2,17 @@ from ..._constants import (
     FIELD_NAME,
     ROOT_ID,
 )
+from ..._contexts import AutomationCallback
 from ..._core.modules import Automations_Core
 from ..._core.main import _Lylac_Core
-from ..._contexts import AutomationCallback
 from ..._data import PRESET_AUTOMATIONS
 from ..._module_types import (
     AutomationModel,
     CriteriaStructure,
-    AutomationMethod,
-    CreateOrUpdateTransaction,
+    AutomationMethodName,
     ModelName,
-    ModificationTransaction,
+    UpsertTransactionName,
+    WriteTransactionName,
 )
 from ._module_types import (
     AutomationsHub,
@@ -47,11 +47,11 @@ class Automations(Automations_Core):
     def register_automation(
         self,
         model_name: ModelName,
-        transaction: ModificationTransaction,
+        transaction: WriteTransactionName,
         callback: AutomationCallback,
         fields: list[str] = [FIELD_NAME.ID,],
         criteria: CriteriaStructure = [],
-        method: AutomationMethod = 'record'
+        method: AutomationMethodName = 'record'
     ) -> None:
 
         # Creación de la automatización programada
@@ -79,7 +79,7 @@ class Automations(Automations_Core):
     def run_after_transaction(
         self,
         model_name: ModelName,
-        transaction: CreateOrUpdateTransaction,
+        transaction: UpsertTransactionName,
         record_ids: list[int],
         user_id: int,
     ) -> None:

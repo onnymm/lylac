@@ -1,10 +1,10 @@
 from sqlalchemy import (
+    and_,
     delete,
     distinct,
     select,
     update,
     func,
-    and_
 )
 from sqlalchemy.orm import (
     Session,
@@ -19,7 +19,7 @@ from ..._core.modules import Compiler_Core
 from ..._module_types import (
     RecordData,
     ModelName,
-    Transaction,
+    TransactionName,
 )
 
 class Compiler(Compiler_Core):
@@ -209,7 +209,7 @@ class Compiler(Compiler_Core):
         self,
         user_id: int,
         model_name: ModelName,
-        transaction: Transaction,
+        transaction: TransactionName,
     ) -> bool:
 
         # Obtención de los modelos a usar

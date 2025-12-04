@@ -1,10 +1,10 @@
 from ..._constants import MESSAGES
+from ..._core.main import _Lylac_Core
+from ..._core.modules import Access_Core
 from ..._module_types import (
     ModelName,
-    Transaction,
+    TransactionName,
 )
-from ..._core.modules import Access_Core
-from ..._core.main import _Lylac_Core
 
 class Access(Access_Core):
 
@@ -32,7 +32,7 @@ class Access(Access_Core):
         self,
         user_id: int,
         model_name: ModelName,
-        transaction: Transaction,
+        transaction: TransactionName,
     ) -> bool:
 
         # Si el módulo no está activo no se realiza ninguna validación

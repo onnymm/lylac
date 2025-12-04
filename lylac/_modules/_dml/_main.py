@@ -7,6 +7,7 @@ from ..._module_types import (
     CriteriaStructure,
     ModelTemplate,
     RecordData,
+    ItemOrList,
     ModelName,
 )
 
@@ -87,7 +88,7 @@ class DMLManager(DML_Core):
     def delete(
         self,
         model_name: ModelName,
-        record_ids: int | list[int]
+        record_ids: ItemOrList[int]
     ) -> bool:
 
         # Obtención de la instancia de la tabla

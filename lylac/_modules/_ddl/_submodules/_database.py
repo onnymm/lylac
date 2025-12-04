@@ -1,11 +1,11 @@
 from sqlalchemy import text
 from ...._constants import ROOT_ID
-from ...._module_types import (
-    FieldDefinition,
-    TType,
-)
 from ...._core.modules import DDL_Core
 from ...._core.submods.ddl import _Database_Interface
+from ...._module_types import (
+    FieldDefinition,
+    TTypeName,
+)
 
 class _Database(_Database_Interface):
     """
@@ -15,7 +15,7 @@ class _Database(_Database_Interface):
     """
     _ddl: DDL_Core
     # Mapeo de nombres a tipos de dato en SQL
-    _name_to_type: dict[TType, str] = {
+    _name_to_type: dict[TTypeName, str] = {
         'integer': 'INTEGER',
         'char': 'VARCHAR(255)',
         'float': 'FLOAT',

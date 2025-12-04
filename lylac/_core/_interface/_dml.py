@@ -1,6 +1,7 @@
 from ..._module_types import (
     CriteriaStructure,
     RecordData,
+    ItemOrList,
     ModelName,
 )
 
@@ -24,6 +25,6 @@ class DML_Interface():
     def delete(
         self,
         model_name: ModelName,
-        record_ids: int | list[int]
+        record_ids: ItemOrList[int]
     ) -> bool:
         ...

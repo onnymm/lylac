@@ -5,11 +5,11 @@ import numpy as np
 from pandas._typing import AstypeArg
 from ...._core.modules import Output_Core
 from ...._core.submods.output import _DataTypes_Interface
-from ...._module_types import TType
+from ...._module_types import TTypeName
 
 class _DataTypes(_DataTypes_Interface):
     _output: Output_Core
-    recover_ttype: dict[TType, Callable[[pd.DataFrame, str], pd.DataFrame]]
+    recover_ttype: dict[TTypeName, Callable[[pd.DataFrame, str], pd.DataFrame]]
 
     def __init__(
         self,
@@ -28,7 +28,7 @@ class _DataTypes(_DataTypes_Interface):
         self,
     ) -> None:
 
-        self.recover_ttype: dict[TType, Callable[[pd.DataFrame, str], pd.DataFrame]] = {
+        self.recover_ttype: dict[TTypeName, Callable[[pd.DataFrame, str], pd.DataFrame]] = {
             'integer': lambda df, field: self._recover_numeric(df, field, 'int'),
             'char': lambda df, field: self._bypass_value(df, field),
             'float': lambda df, field: self._recover_numeric(df, field, 'float'),

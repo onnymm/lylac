@@ -4,10 +4,10 @@ from typing import (
 )
 from ._base_categories import (
     RecordIDs,
-    TType,
+    TTypeName,
 )
 
-TTypesMapping = list[tuple[str, TType]]
+TTypesMapping = list[tuple[str, TTypeName]]
 """
 Mapeo de nombres de campo y su respectivo tipo de dato
 """

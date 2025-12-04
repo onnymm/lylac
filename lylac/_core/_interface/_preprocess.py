@@ -2,6 +2,7 @@ from typing import Callable
 from ..._module_types import (
     _T,
     RecordData,
+    ItemOrList,
     ModelName,
 )
 
@@ -15,7 +16,7 @@ class Preprocess_Interface():
 
     def convert_to_list(
         self,
-        data: _T | list[_T],
+        data: ItemOrList[_T],
     ) -> list[_T]:
         ...
 

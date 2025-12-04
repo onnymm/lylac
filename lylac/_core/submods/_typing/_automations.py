@@ -5,7 +5,7 @@ from typing import (
 from pydantic import BaseModel
 from ...._module_types import (
     CriteriaStructure,
-    ModificationTransaction,
+    WriteTransactionName,
 )
 from ...._contexts import AutomationCallback
 
@@ -89,7 +89,7 @@ class ProgrammedAutomation(BaseModel):
     """
 
 # Desencadenantes de automatización divididos por tipo de transacción
-TransactionProgAutoms = dict[ModificationTransaction, list[ProgrammedAutomation]]
+TransactionProgAutoms = dict[WriteTransactionName, list[ProgrammedAutomation]]
 """
 Diccionario que segmenta las automatizaciones por tipo de transacción en la
 base de datos.

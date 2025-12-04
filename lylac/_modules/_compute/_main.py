@@ -1,6 +1,6 @@
 from ..._constants import (
-    MODEL_NAME,
     FIELD_NAME,
+    MODEL_NAME,
 )
 from ..._core.main import _Lylac_Core
 from ..._core.modules import Compute_Core
@@ -8,7 +8,7 @@ from ..._data import COMPUTED_FIELD
 from ..._module_types import (
     ComputedFieldCallback,
     ModelName,
-    TType,
+    TTypeName,
 )
 from ._submodules import _Automations
 
@@ -49,7 +49,7 @@ class Compute(Compute_Core):
     def register_computed_field(
         self,
         model_name: ModelName,
-        ttype: TType,
+        ttype: TTypeName,
         field_name: str,
         field_label: str,
         compute_field_callback: ComputedFieldCallback,

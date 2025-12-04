@@ -1,6 +1,6 @@
 from ..._module_types import (
     ModelName,
-    TType,
+    TTypeName,
 )
 from ..._module_types._contexts import ComputedFieldCallback
 
@@ -21,7 +21,7 @@ class Compute_Interface():
     def register_computed_field(
         self,
         model_name: ModelName,
-        ttype: TType,
+        ttype: TTypeName,
         field_name: str,
         field_label: str,
         compute_field_callback: ComputedFieldCallback,

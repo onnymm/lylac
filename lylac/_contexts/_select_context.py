@@ -1,11 +1,11 @@
 from typing import Any
-from sqlalchemy.orm.decl_api import DeclarativeBase
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.orm.decl_api import DeclarativeBase
 from sqlalchemy.sql.elements import BinaryExpression
 from .._module_types import (
     _SelectContextCore,
     TTypesMapping,
-    TType,
+    TTypeName,
 )
 
 class SelectContext(_SelectContextCore):
@@ -32,7 +32,7 @@ class SelectContext(_SelectContextCore):
     def add_ttype_mapping(
         self,
         field_name: str,
-        ttype: TType,
+        ttype: TTypeName,
     ) -> None:
 
         # Se añaden el nombre y el tipo del campo

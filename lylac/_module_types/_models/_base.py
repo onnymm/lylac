@@ -1,13 +1,13 @@
 from pydantic import BaseModel
 from .._base_categories import (
     CriteriaStructure,
-    AutomationMethod,
-    ModificationTransaction,
-    Submodule,
+    AutomationMethodName,
+    SubmoduleName,
+    WriteTransactionName,
 )
 
 class _HasSubmodule(BaseModel):
-    submodule: Submodule
+    submodule: SubmoduleName
     """
     #### Nombre de submódulo de Lylac
     Tipo de dato usado para apuntar hacia algún submódulo de la librería.
@@ -40,7 +40,7 @@ class _HasModelName(BaseModel):
     """
 
 class _HasTransaction(BaseModel):
-    transaction: ModificationTransaction
+    transaction: WriteTransactionName
     """
     #### Transación de base de datos
     Tipo de dato usado para especificación de transacción en la base de datos. Se
@@ -104,7 +104,7 @@ class _HasFields(BaseModel):
     """
 
 class _HasAutomationMethod(BaseModel):
-    method: AutomationMethod
+    method: AutomationMethodName
     """
     #### Método de automatización
     Tipo de dato usado para especificar el método de automatización que una

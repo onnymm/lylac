@@ -1,7 +1,7 @@
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.decl_api import DeclarativeBase
 
-class FieldsGetter_Spec():
+class FieldsGetter_Interface():
     _available_model: type[DeclarativeBase]
 
     def __getitem__(

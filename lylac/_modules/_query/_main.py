@@ -1,3 +1,4 @@
+from typing import Optional
 from sqlalchemy import (
     Select,
     asc,
@@ -5,9 +6,12 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from ..._constants import FIELD_NAME
-from ..._core.modules import Query_Core
 from ..._core.main import _Lylac_Core
-from ..._module_types import _T
+from ..._core.modules import Query_Core
+from ..._module_types import (
+    _T,
+    ItemOrList,
+)
 
 class Query(Query_Core):
 
@@ -26,8 +30,8 @@ class Query(Query_Core):
         self,
         stmt: Select[_T],
         model_model: type[DeclarativeBase],
-        sortby: str | list[str],
-        ascending: bool | list[bool],
+        sortby: ItemOrList[str],
+        ascending: ItemOrList[bool],
     ) -> Select[_T]:
 
         # Ordenamiento de los datos
@@ -67,8 +71,8 @@ class Query(Query_Core):
     def build_segmentation(
         self,
         stmt: Select[_T],
-        offset: int | None = None,
-        limit: int | None = None,
+        offset: Optional[int] = None,
+        limit: Optional[int] = None,
     ) -> Select[_T]:
 
         # Segmentación de inicio y fin en caso de haberlos

@@ -1,8 +1,8 @@
 from typing import Any
-from sqlalchemy.orm.decl_api import DeclarativeBase
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.orm.decl_api import DeclarativeBase
 from sqlalchemy.sql.elements import BinaryExpression
-from ..._base_categories import TType
+from ..._base_categories import TTypeName
 
 class _SelectContextCore():
 
@@ -20,7 +20,7 @@ class _SelectContextCore():
     def add_ttype_mapping(
         self,
         field_name: str,
-        ttype: TType,
+        ttype: TTypeName,
     ) -> None:
         ...
 

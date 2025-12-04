@@ -1,9 +1,6 @@
-from typing import Callable
-import pandas as pd
-from sqlalchemy import select, and_
 from ...._module_types import (
-    TType,
     ModelName,
+    TTypeName,
 )
 
 class _RawORM_Interface():
@@ -12,5 +9,5 @@ class _RawORM_Interface():
         self,
         model_name: ModelName,
         fields: list[str],
-    ) -> dict[str, TType]:
+    ) -> dict[str, TTypeName]:
         ...

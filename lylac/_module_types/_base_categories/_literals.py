@@ -3,7 +3,7 @@ from typing import (
     Union,
 )
 
-Submodule = Literal[
+SubmoduleName = Literal[
     '_actions',
     '_automations',
     '_ddl',
@@ -23,7 +23,7 @@ Valores disponibles:
 """
 
 # Nombre de tipo dato en columnas base de datos
-TType = Literal[
+TTypeName = Literal[
     'integer',
     'char',
     'float',
@@ -76,7 +76,7 @@ automatización o validación.
 """
 
 # Método de ejecución de automatización
-AutomationMethod = Literal['record', 'list']
+AutomationMethodName = Literal['record', 'list']
 """
 #### Método de automatización
 Tipo de dato usado para especificar el método de automatización que una
@@ -86,7 +86,7 @@ función de automatización va a utilizar.
 """
 
 # Tipo de transacción de creación o actualización de datos
-CreateOrUpdateTransaction = Literal['create', 'update']
+UpsertTransactionName = Literal['create', 'update']
 """
 #### Transacción de creación o actualización en base de datos
 Tipo de dato usado para especificación de transacciones de creación o
@@ -96,7 +96,7 @@ modificación en la base de datos.
 """
 
 # Tipo de transacción de modificación de datos
-ModificationTransaction = Union[CreateOrUpdateTransaction, Literal['delete']]
+WriteTransactionName = Union[UpsertTransactionName, Literal['delete']]
 """
 #### Transación de modificación en base de datos
 Tipo de dato usado para especificación de transacción de modificación en la
@@ -107,7 +107,7 @@ base de datos.
 """
 
 # Tipo de transacción de datos
-Transaction = Union[ModificationTransaction | Literal['read']]
+TransactionName = Union[WriteTransactionName | Literal['read']]
 """
 #### Transación en base de datos
 Tipo de dato usado para especificación de transacción en la base de datos.

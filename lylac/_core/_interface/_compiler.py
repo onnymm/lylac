@@ -1,7 +1,7 @@
 from ..._module_types import (
     RecordData,
     ModelName,
-    Transaction,
+    TransactionName,
 )
 
 class Compiler_Interface():
@@ -62,7 +62,7 @@ class Compiler_Interface():
         self,
         user_id: int,
         model_name: ModelName,
-        transaction: Transaction,
+        transaction: TransactionName,
     ) -> bool:
         ...
 

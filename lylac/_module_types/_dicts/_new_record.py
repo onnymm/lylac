@@ -4,7 +4,7 @@ from typing import (
 )
 from .._base_categories import (
     ModelName,
-    TType,
+    TTypeName,
 )
 
 class NewRecord():
@@ -100,7 +100,7 @@ class NewRecord():
         #### Etiqueta
         Etiqueta del registro.
         """
-        ttype: TType
+        ttype: TTypeName
         """
         #### Tipo de dato en campo de modelo en la base de datos
         Tipo de dato válido en un campo de un modelo de la base de datos.

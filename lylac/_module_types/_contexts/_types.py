@@ -4,7 +4,7 @@ from typing import (
 )
 from sqlalchemy.orm import InstrumentedAttribute
 from ._interfaces import _ComputeContextCore
-from .._base_categories import TType
+from .._base_categories import TTypeName
 from .._interface import ModelField
 
 ComputedFieldCallback = Callable[[_ComputeContextCore], InstrumentedAttribute]
@@ -29,7 +29,7 @@ Uso:
 >>> )
 """
 
-FieldComputation = tuple[str, TType, ComputedFieldCallback]
+FieldComputation = tuple[str, TTypeName, ComputedFieldCallback]
 """
 #### Declaración de un campo computado
 Estructura para ser utilizada en la creación y tipado de un campo computado.

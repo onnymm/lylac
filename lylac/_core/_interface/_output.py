@@ -1,7 +1,13 @@
-from typing import Any
+from typing import (
+    Any,
+    Optional,
+)
 import pandas as pd
 from sqlalchemy.engine.cursor import CursorResult
-from ..._module_types import OutputOptions, TType
+from ..._module_types import (
+    OutputOptions,
+    TTypeName,
+)
 
 class Output_Interface():
 
@@ -14,9 +20,9 @@ class Output_Interface():
     def build_output(
         self,
         response: pd.DataFrame,
-        ttypes: list[tuple[str, TType]],
+        ttypes: list[tuple[str, TTypeName]],
         specified_output: OutputOptions,
-        default_output: OutputOptions | None = None,
+        default_output: Optional[OutputOptions] = None,
         only_ids_in_relations: bool = False,
     ) -> pd.DataFrame | list[dict[str, Any]]:
         ...

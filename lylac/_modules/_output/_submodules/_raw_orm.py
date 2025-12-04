@@ -1,9 +1,8 @@
-from typing import Callable
 import pandas as pd
 from sqlalchemy import select, and_
 from ...._module_types import (
-    TType,
     ModelName,
+    TTypeName,
 )
 from ...._core.modules import Output_Core
 from ...._core.submods.output import _RawORM_Interface
@@ -28,7 +27,7 @@ class _RawORM(_RawORM_Interface):
         self,
         model_name: ModelName,
         fields: list[str],
-    ) -> dict[str, TType]:
+    ) -> dict[str, TTypeName]:
 
         # Obtención de la ID del modelo
         model_id = self._get_model_id(model_name)

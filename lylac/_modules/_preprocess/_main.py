@@ -1,10 +1,11 @@
 import base64
 from typing import Callable
-from ..._core.modules import Preprocess_Core
 from ..._core.main import _Lylac_Core
+from ..._core.modules import Preprocess_Core
 from ..._module_types import (
     _T,
     RecordData,
+    ItemOrList,
     ModelName,
 )
 
@@ -28,7 +29,7 @@ class Preprocess(Preprocess_Core):
 
     def convert_to_list(
         self,
-        data: _T | list[_T],
+        data: ItemOrList[_T],
     ) -> list[_T]:
 
         # Si el elemento entrante no es una lista de datos...

@@ -2,7 +2,7 @@ from typing import Optional
 from pydantic import BaseModel
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from .._base import RecordValue
-from .._base_categories import TType
+from .._base_categories import TTypeName
 
 class FieldDefinition(BaseModel):
     """
@@ -44,7 +44,7 @@ class FieldDefinition(BaseModel):
     """
     Etiqueta de la tabla.
     """
-    ttype: TType
+    ttype: TTypeName
     """
     Tipo de dato del campo.
     """

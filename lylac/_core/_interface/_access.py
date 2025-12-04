@@ -1,7 +1,7 @@
 from ..._constants import MESSAGES
 from ..._module_types import (
     ModelName,
-    Transaction,
+    TransactionName,
 )
 
 class Access_Interface():
@@ -15,6 +15,6 @@ class Access_Interface():
         self,
         user_id: int,
         model_name: ModelName,
-        transaction: Transaction,
+        transaction: TransactionName,
     ) -> bool:
         ...

@@ -1,10 +1,11 @@
+from typing import Optional
 from sqlalchemy.orm.decl_api import DeclarativeBase
-from ..._core.modules import Structure_Core
 from ..._core.main import _Lylac_Core
+from ..._core.modules import Structure_Core
 from ..._data import FIELDS_ATTS
 from ..._module_types import (
-    TType,
     ModelName,
+    TTypeName,
 )
 from ._submodules import (
     _Automations,
@@ -59,9 +60,9 @@ class Structure(Structure_Core):
         self,
         model_name: ModelName,
         field_name: str,
-        ttype: TType,
-        related_model: str | None,
-        related_field: str | None,
+        ttype: TTypeName,
+        related_model: Optional[str],
+        related_field: Optional[str],
         selection_values: list[str] = [],
         is_computed: bool = False
     ) -> None:
@@ -191,7 +192,7 @@ class Structure(Structure_Core):
         self,
         model_name: ModelName,
         field_name: str,
-    ) -> TType:
+    ) -> TTypeName:
 
         # Obtención del tipo de dato del campo
         ttype = self.models[model_name]['fields'][field_name]['ttype']
@@ -225,7 +226,7 @@ class Structure(Structure_Core):
     def get_ttype_fields(
         self,
         model_name: ModelName,
-        ttype: TType,
+        ttype: TTypeName,
     ) -> list[str]:
 
         # Obtención de los campos del modelo

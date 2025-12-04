@@ -1,10 +1,10 @@
 from typing import TypedDict
 from .._base_categories._literals import (
-    AutomationMethod,
+    AutomationMethodName,
     ExecutionMethod,
     ModelName,
-    ModificationTransaction,
-    Submodule,
+    SubmoduleName,
+    WriteTransactionName,
 )
 from .._base_categories._filter import CriteriaStructure
 
@@ -29,7 +29,7 @@ class AutomationData(TypedDict):
     >>>     'method': 'record',
     >>> }
     """
-    submodule: Submodule
+    submodule: SubmoduleName
     """
     #### Nombre de submódulo de Lylac
     Tipo de dato usado para apuntar hacia algún submódulo de la librería.
@@ -59,7 +59,7 @@ class AutomationData(TypedDict):
     También se puede utilizar un nombre personalizado si es que el modelo ya existe
     en la base de datos.
     """
-    transaction: ModificationTransaction
+    transaction: WriteTransactionName
     """
     #### Transación de base de datos
     Tipo de dato usado para especificación de transacción en la base de datos. Se
@@ -117,7 +117,7 @@ class AutomationData(TypedDict):
     #### Lista de campos
     Lista de campos correspondientes al modelo especificado.
     """
-    method: AutomationMethod
+    method: AutomationMethodName
     """
     #### Método de automatización
     Tipo de dato usado para especificar el método de automatización que una
@@ -145,7 +145,7 @@ class ValidationData(TypedDict):
     >>>     'message': 'El valor {value} no cumple con el formato esperado.'
     >>> }
     """
-    submodule: Submodule
+    submodule: SubmoduleName
     """
     #### Nombre de submódulo de Lylac
     Tipo de dato usado para apuntar hacia algún submódulo de la librería.
@@ -175,7 +175,7 @@ class ValidationData(TypedDict):
     También se puede utilizar un nombre personalizado si es que el modelo ya existe
     en la base de datos.
     """
-    transaction: ModificationTransaction
+    transaction: WriteTransactionName
     """
     #### Transación de base de datos
     Tipo de dato usado para especificación de transacción en la base de datos. Se

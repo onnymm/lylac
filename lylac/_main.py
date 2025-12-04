@@ -20,10 +20,10 @@ from ._module_types import (
     DynamicModelField,
     ExecutionMethod,
     ModelName,
-    ModificationTransaction,
     OutputOptions,
     RecordValue,
-    TType,
+    TTypeName,
+    WriteTransactionName,
 )
 from ._modules import (
     Access,
@@ -173,7 +173,7 @@ class Lylac(_Lylac_Core, Generic[_M]):
         model_name: Union[ModelName, _M],
         field_name: str,
         label: str,
-        ttype: TType,
+        ttype: TTypeName,
     ) -> None:
 
         if field_name == FIELD_NAME.DISPLAY_NAME:
@@ -220,7 +220,7 @@ class Lylac(_Lylac_Core, Generic[_M]):
     def register_automation(
         self,
         model_name: Union[ModelName, _M],
-        transation: ModificationTransaction,
+        transation: WriteTransactionName,
         fields: list[str] = [FIELD_NAME.ID],
         execute_if: CriteriaStructure = [],
         method: ExecutionMethod = 'record',

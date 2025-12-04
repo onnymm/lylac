@@ -1,5 +1,8 @@
 from sqlalchemy.engine.cursor import CursorResult
-from sqlalchemy.sql.selectable import Select, TypedReturnsRows
+from sqlalchemy.sql.selectable import (
+    Select,
+    TypedReturnsRows,
+)
 from ..._module_types import _T
 
 class Connection_Interface():

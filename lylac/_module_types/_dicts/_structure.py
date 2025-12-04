@@ -2,7 +2,7 @@ from typing import TypedDict
 from sqlalchemy.orm.decl_api import DeclarativeBase
 from .._base_categories import (
     ModelName,
-    TType,
+    TTypeName,
 )
 
 class FieldProperties(TypedDict):
@@ -14,7 +14,7 @@ class FieldProperties(TypedDict):
     >>>     'relation': 'base.users',
     >>> }
     """
-    ttype: TType
+    ttype: TTypeName
     """
     #### Tipo de dato en campo de modelo en la base de datos
     Tipo de dato válido en un campo de un modelo de la base de datos.

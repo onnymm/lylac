@@ -2,13 +2,13 @@ from ..._constants import (
     MODEL_NAME,
     ROOT_ID,
 )
-from ..._core.modules import Validations_Core
 from ..._core.main import _Lylac_Core
+from ..._core.modules import Validations_Core
 from ..._module_types import (
     CriteriaStructure,
     RecordData,
     ModelName,
-    ModificationTransaction,
+    WriteTransactionName,
 )
 from ._module_types import (
     ErrorToShow,
@@ -334,7 +334,7 @@ class Validations(Validations_Core):
     def _get_method_validations(
         self,
         model_name: ModelName,
-        transaction: ModificationTransaction,
+        transaction: WriteTransactionName,
     ):
 
         # Obtención de validaciones genéricas

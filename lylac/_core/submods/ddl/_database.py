@@ -1,8 +1,4 @@
-from sqlalchemy import text
-from ...._module_types import (
-    FieldDefinition,
-    TType,
-)
+from ...._module_types import FieldDefinition
 
 class _Database_Interface():
 

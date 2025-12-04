@@ -1,8 +1,8 @@
 from typing import TypedDict, Literal
 from .._base_categories import (
     ModelName,
-    TType,
     State,
+    TTypeName,
 )
 
 class BaseRecordData(TypedDict):
@@ -50,7 +50,7 @@ class _HasModelID(TypedDict):
     """
 
 class _HasTType(TypedDict):
-    ttype: TType
+    ttype: TTypeName
 
 class _HasActive(TypedDict):
     active: bool

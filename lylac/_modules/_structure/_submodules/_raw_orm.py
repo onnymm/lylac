@@ -8,7 +8,7 @@ from ...._constants import (
 )
 from ...._core.modules import Structure_Core
 from ...._core.submods.structure import _RawORM_Interface
-from ...._module_types import TType
+from ...._module_types import TTypeName
 
 class _RawORM(_RawORM_Interface):
     _strc: Structure_Core
@@ -26,7 +26,7 @@ class _RawORM(_RawORM_Interface):
     def get_model_fields(
         self,
         model_name,
-    ) -> list[Tuple[int, str, TType, None | str, None | str]]:
+    ) -> list[Tuple[int, str, TTypeName, None | str, None | str]]:
 
         # Obtención de modelos base
         BaseModel = self._main._models.get_model_model(MODEL_NAME.BASE_MODEL)

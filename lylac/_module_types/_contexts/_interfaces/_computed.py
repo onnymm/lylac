@@ -18,7 +18,7 @@ from ...._module_types import (
     CriteriaStructure,
     AggFunctionName,
     ModelName,
-    TType,
+    TTypeName,
 )
 from ...._constants import FIELD_NAME
 from ..._base_categories import (
@@ -49,7 +49,7 @@ class _ComputeContextCore():
     Nombre de alias de ID.
     """
 
-    _zero_value: dict[TType, Any] = {
+    _zero_value: dict[TTypeName, Any] = {
         'integer': 0,
         'float': 0.0,
         'duration': '00:00:00',

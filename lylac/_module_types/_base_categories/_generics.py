@@ -38,3 +38,23 @@ _C = TypeVar('_C')
 Tipo de dato usado para declarar un valor base para ser usado como criterio de
 clasificación de grupos de datos.
 """
+
+_I = TypeVar('_I')
+"""
+#### Tipo de dato genérico
+Tipo de dato usado para declarar un valor del contenido de un iterable.
+"""
+
+ItemOrList = _I | list[_I]
+"""
+### Elemento o lista de elementos
+Tipado que permite declarar que el tipo de dato es un elemento individual de
+tipo `_T` o una lista de elementos del tipo `_T`.
+
+Ejemplos:
+>>> ItemOrList[int]
+>>> # int | list[int]
+>>> 
+>>> ItemOrList[DataOnCreate]
+>>> # DataOnCreate | list[DataOnCreate]
+"""

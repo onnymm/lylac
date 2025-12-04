@@ -1,11 +1,10 @@
 from ..._constants import FIELD_NAME
-# from ..._contexts import AutomationCallback
 from ..._module_types import (
     CriteriaStructure,
-    AutomationMethod,
-    CreateOrUpdateTransaction,
+    AutomationMethodName,
     ModelName,
-    ModificationTransaction,
+    UpsertTransactionName,
+    WriteTransactionName,
 )
 
 class Automations_Interface():
@@ -13,11 +12,11 @@ class Automations_Interface():
     def register_automation(
         self,
         model_name: ModelName,
-        transaction: ModificationTransaction,
+        transaction: WriteTransactionName,
         callback, # TODO resolver tipado
         fields: list[str] = [FIELD_NAME.ID,],
         criteria: CriteriaStructure = [],
-        method: AutomationMethod = 'record'
+        method: AutomationMethodName = 'record'
     ) -> None:
         ...
 
@@ -30,7 +29,7 @@ class Automations_Interface():
     def run_after_transaction(
         self,
         model_name: ModelName,
-        transaction: CreateOrUpdateTransaction,
+        transaction: UpsertTransactionName,
         record_ids: list[int],
         user_id: int,
     ) -> None:
