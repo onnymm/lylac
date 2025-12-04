@@ -315,15 +315,7 @@ class ComputeContext(_ComputeContextCore):
         # Si el campo a usar en el cálculo es computado...
         if value_field_instance_is_computed:
             # Se crea un subquery para obtener el campo computado resultante
-            ( computation_stmt, _ ) = self._main._select.build(
-                related_model_name,
-                [
-                    # Se pide el campo que relaciona a la tabla padre
-                    related_field_name,
-                    # Se pide el campo de valor a usar en función agregada
-                    value_field_name,
-                ],
-            )
+            ( computation_stmt, _ ) = self._main._select.build(related_model_name)
             # Se convierte el query de cómputo a subquery
             computation_stmt = computation_stmt.subquery()
             # Obtención de la instancia del campo que relaciona a la tabla padre

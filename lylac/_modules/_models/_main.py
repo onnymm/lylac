@@ -1,5 +1,8 @@
 from typing import Any
-from sqlalchemy import inspect
+from sqlalchemy import (
+    Subquery,
+    inspect,
+)
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.properties import ColumnProperty
@@ -31,7 +34,7 @@ class Models(Models_Core):
 
         return model_name
 
-    def get_table_model(
+    def get_model_model(
         self,
         model_name: ModelName,
     ) -> type[DeclarativeBase]:
@@ -47,16 +50,21 @@ class Models(Models_Core):
         # Retorno de la instancia del campo de ID
         return getattr(model_model, FIELD_NAME.ID)
 
-    def get_table_field(
+    def get_model_field(
         self,
-        model_model: type[DeclarativeBase],
+        model_model: type[DeclarativeBase] | Subquery,
         field: str,
     ) -> InstrumentedAttribute:
 
-        # Obtención del campo, atributo de la instancia de la tabla
-        return getattr(model_model, field)
+        if isinstance(model_model, Subquery):
+            target = model_model.c
+        else:
+            target = model_model
 
-    def get_table_fields(
+        # Obtención del campo, atributo de la instancia de la tabla
+        return getattr(target, field)
+
+    def get_model_fields(
         self,
         model_model: type[DeclarativeBase],
         fields: list[str] = [],
@@ -78,7 +86,7 @@ class Models(Models_Core):
             fields = instance_fields
 
         if include_id:
-            # Remoción del campo de 'ID en caso de ser solicitado, ara evitar campos duplicados en el retorno de la información
+            # Remoción del campo de 'ID en caso de ser solicitado, para evitar campos duplicados en el retorno de la información
             try:
                 fields.remove(FIELD_NAME.ID)
             except ValueError:

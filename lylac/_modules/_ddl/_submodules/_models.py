@@ -147,7 +147,7 @@ class _Models(_Models_Interface):
         # Creación de los parámetros para ser usados en las automatizaciones
         field_atts = FieldDefinition(
             field_name= params['name'],
-            table_model= self._main._models.get_table_model(model_name),
+            table_model= self._main._models.get_model_model(model_name),
             label= params['label'],
             ttype= params['ttype'],
             nullable= params['nullable'],

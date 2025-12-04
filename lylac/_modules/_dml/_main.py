@@ -67,7 +67,7 @@ class DMLManager(DML_Core):
     ) -> bool:
 
         # Obtención de la instancia de la tabla
-        model_model = self._models.get_table_model(model_name)
+        model_model = self._models.get_model_model(model_name)
         # Creación del query base
         stmt = update(model_model)
         # Creación del segmento WHERE
@@ -91,7 +91,7 @@ class DMLManager(DML_Core):
     ) -> bool:
 
         # Obtención de la instancia de la tabla
-        model_model = self._models.get_table_model(model_name)
+        model_model = self._models.get_model_model(model_name)
         # Obtención de la columna de ID de la tabla
         c_model_model__id = self._index[model_model][FIELD_NAME.ID]
         # Creación de la condición de búsqueda

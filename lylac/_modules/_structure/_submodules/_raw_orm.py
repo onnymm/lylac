@@ -29,8 +29,8 @@ class _RawORM(_RawORM_Interface):
     ) -> list[Tuple[int, str, TType, None | str, None | str]]:
 
         # Obtención de modelos base
-        BaseModel = self._main._models.get_table_model(MODEL_NAME.BASE_MODEL)
-        BaseModelField = self._main._models.get_table_model(MODEL_NAME.BASE_MODEL_FIELD)
+        BaseModel = self._main._models.get_model_model(MODEL_NAME.BASE_MODEL)
+        BaseModelField = self._main._models.get_model_model(MODEL_NAME.BASE_MODEL_FIELD)
 
         # Creación de alias de modelos
         FieldModel = aliased(BaseModel)

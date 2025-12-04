@@ -26,7 +26,7 @@ class Index(Index_Core):
 
         # Obtención de modelo de SQLAlchemy si es que fue provisto solo el nombre
         if isinstance(model, str):
-            model_model = self._main._models.get_table_model(model)
+            model_model = self._main._models.get_model_model(model)
         # Reasignación de variable en caso de que haya sido provisto el modelo
         else:
             model_model = model

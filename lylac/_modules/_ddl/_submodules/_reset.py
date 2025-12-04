@@ -125,7 +125,7 @@ class _Reset(_Reset_Interface):
             # Obtención del nombre del modelo al que el campo pertenece
             model_name = self._main.get_value(ROOT_ID, MODEL_NAME.BASE_MODEL, record['model_id'], 'model')
             # Obtención del modelo SQLAlchemy de la instancia
-            model_model = self._main._models.get_table_model(model_name)
+            model_model = self._main._models.get_model_model(model_name)
             # Creación del objeto de atributos de campo
             field_atts = self._ddl._m_model.build_field_atts(record)
             # Si el campo no es one2many...

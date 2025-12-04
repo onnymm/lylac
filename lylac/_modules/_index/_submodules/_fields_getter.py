@@ -20,7 +20,7 @@ class _FieldsGetter(_FieldsGetter_Interface):
     ) -> InstrumentedAttribute:
 
         # Obtención de instancia del campo solicitado
-        field_instance = self._models.get_table_field(
+        field_instance = self._models.get_model_field(
             self._available_model,
             field_name,
         )

@@ -223,7 +223,7 @@ class Where(Where_Core):
         ( field_instance, op, value ) = fragment
 
         # Obtención de la instancia del campo a usar
-        field_instance = self._models.get_table_field(model_model, field_instance)
+        field_instance = self._models.get_model_field(model_model, field_instance)
 
         # Retorno de la evaluación
         return self._comparison_operation[op](field_instance, value)

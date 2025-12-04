@@ -75,7 +75,7 @@ class DQLManager(DQL_Core):
     ) -> pd.DataFrame | list[dict[str, RecordValue]]:
 
         # Obtención de la instancia de la tabla
-        model_model = self._models.get_table_model(model_name)
+        model_model = self._models.get_model_model(model_name)
         # Creación del query base
         ( stmt, ttypes ) = self._select.build(model_name, fields)
         # Creación del segmento WHERE
@@ -116,7 +116,7 @@ class DQLManager(DQL_Core):
     ) -> pd.DataFrame | dict[str, RecordValue]:
 
         # Obtención de la instancia de la tabla
-        model_model = self._models.get_table_model(model_name)
+        model_model = self._models.get_model_model(model_name)
         # Creación del query base
         ( stmt, ttypes ) = self._select.build(model_name, fields)
         # Creación del segmento WHERE en caso de haberlo
@@ -153,7 +153,7 @@ class DQLManager(DQL_Core):
     ) -> int:
 
         # Obtenciónde la instancia de la tabla
-        model_model = self._models.get_table_model(model_name)
+        model_model = self._models.get_model_model(model_name)
         # Creación del query base
         stmt = (
             select( func.count() )

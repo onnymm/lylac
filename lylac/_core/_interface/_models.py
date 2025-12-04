@@ -11,7 +11,7 @@ class Models_Interface():
     ) -> ModelName:
         ...
 
-    def get_table_model(
+    def get_model_model(
         self,
         model_name: ModelName,
     ) -> type[DeclarativeBase]:
@@ -23,14 +23,14 @@ class Models_Interface():
     ) -> InstrumentedAttribute[int]:
         ...
 
-    def get_table_field(
+    def get_model_field(
         self,
         model_model: type[DeclarativeBase],
         field: str,
     ) -> InstrumentedAttribute:
         ...
 
-    def get_table_fields(
+    def get_model_fields(
         self,
         model_model: type[DeclarativeBase],
         fields: list[str] = [],
