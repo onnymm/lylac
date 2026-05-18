@@ -2,6 +2,7 @@ from sqlalchemy.engine import Connection
 from .._resources import DataMap
 from .._resources import ModelDataIndex
 from .._typing.definitions import _InternalModelSchema
+from ..settings import CONFIG
 
 def build_initial_data(conn: Connection) -> DataMap:
 
@@ -610,8 +611,8 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 1,
             'sequence': 1,
             'data': {
-                'login': 'iacele',
-                'name': 'iaCele',
+                'login': CONFIG.ROOT_USER_LOGIN,
+                'name': CONFIG.ROOT_USER_NAME,
             },
         },
         {
@@ -619,8 +620,8 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 1,
             'sequence': 2,
             'data': {
-                'login': 'onnymm',
-                'name': 'Onnymm',
+                'login': CONFIG.ADMIN_USER_LOGIN,
+                'name': CONFIG.ADMIN_USER_NAME,
             },
         },
     ]
