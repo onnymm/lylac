@@ -1,0 +1,12 @@
+class ERROR_LABEL:
+    MALFORMED_FIELD_DECLARATION = 'Formato inválido en declaración de campo.'
+    MALFORMED_SEARCH_CRITERIA = 'Estructura de criterio de búsqueda mal formada.'
+    MANUAL_AUTOMATION = 'No puedes ejecutar manualmente funciones registradas como automatizaciones.'
+    MANUAL_VALIDATION = 'No puedes ejecutar manualmente funciones registradas como validationes.'
+    MANUAL_ACTION = 'No puedes ejecutar manualmente funciones registradas como validaciones.'
+    MANUAL_SERVER_TASK = 'No puedes ejecutar manualmente funciones registradas como tareas de servidor.'
+    INCORRECT_PASSWORD = 'La contraseña no es correcta.'
+    EXPIRED_SESSION = 'La sesión expiró.'
+    INVALID_SESSION_UUID = 'Datos de autenticación inválidos.'
+    USER_NOT_ACTIVE = 'El usuario está desactivado.'
+    USER_NOT_FOUND = 'El usuario no existe.'

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lylac"
+version = "0.1.0"
+authors = [
+    {name = "Pável Hernández Reza", email = "phr2807@gmail.com" }]
+description = "A programmable ORM framework built for extensible business platforms."
+readme = "README.md"
+license = "MIT"
+dependencies = [
+    "bcrypt==3.2.2",
+    "dotenvironment==1.1.1",
+    "passlib==1.7.4",
+    "psycopg2==2.9.11",
+    "SQLAlchemy==2.0.48",
+]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
