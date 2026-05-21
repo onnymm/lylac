@@ -16,6 +16,7 @@ from ._constants import ERROR_LABEL
 from ._constants import INITIAL_PACKAGES
 from ._contexts import ActionContext as _ActionContext
 from ._contexts import AutomationContext as _AutomationContext
+from ._contexts import ComputeContext as _ComputeContext
 from ._contexts import ExecutionContext as _ExecutionContext
 from ._contexts import ValidationContext as _ValidationContext
 from ._contexts import ServerTaskContext as _ServerTaskContext
@@ -43,6 +44,7 @@ from ._resources import ModelDataIndex
 from ._resources import ModelsBearer
 from ._services import ConnectionService
 from ._typing.callables import ExecutableTransactionCallback
+from ._typing.callables import ComputeFieldFn as _ComputeFieldFn
 from ._typing.generics import ItemOrList
 from ._typing.generics import ModelName
 from ._typing.generics import _Record
@@ -69,11 +71,17 @@ class Lylac(Generic[_M]):
     type ServerTaskContext = _ServerTaskContext[_M]
     type TransactionContext = _TransactionContext[ModelName[_M]]
     type ExecutionContext = _ExecutionContext[_M]
+    type ComputeContext = _ComputeContext[_M]
+    type ComputeFieldFn = _ComputeFieldFn[_M]
 
     def __init__(
         self,
         build_models_fn: ExecutableTransactionCallback = lambda _: None,
+        populate_models_fn: ExecutableTransactionCallback = lambda _: None,
     ) -> None:
+
+        # Asignación de valores
+        self._populate_models_fn = populate_models_fn
 
         # Inicialización de instancia de servicio de conexión a la base de datos
         self._connection = ConnectionService()
@@ -122,13 +130,12 @@ class Lylac(Generic[_M]):
 
     def populate_if_first_initialization(
         self,
-        populate_models_fn: ExecutableTransactionCallback = lambda _: None,
     ) -> None:
 
         # Si es la primera inicialización en base de datos...
         if self._is_first_initialization:
             # Ejecución de la función provista para poblar los modelos
-            self._execute_as_root(populate_models_fn)
+            self._execute_as_root(self._populate_models_fn)
 
         # Se establece el bypass en Falso
         self._crud.PERMISSIONS_BYPASS = False
