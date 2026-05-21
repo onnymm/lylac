@@ -62,6 +62,8 @@ from ._typing.type_parameters import _T
 from .security import verify_password
 from sqlalchemy.exc import ProgrammingError
 
+from hashlib import sha256
+
 class Lylac(Generic[_M]):
     _is_first_initialization: bool
     # Interfaz para acceso al tipado de automatización sin tener que colocar literal de modelos
@@ -187,12 +189,18 @@ class Lylac(Generic[_M]):
             # Creación de UUID de sesión
             session_uuid = uuid4().__str__()
 
+            # Hasheo de la UUID de sesión
+            hashed_session_uuid = (
+                sha256( session_uuid.encode() )
+                .hexdigest()
+            )
+
             # Creación de sesión de usuario
             self._crud.create(
                 execution_ctx,
                 'base.user.session',
                 {
-                    'name': session_uuid,
+                    'name': hashed_session_uuid,
                     'user_id': user_id,
                     'validity_time': timedelta(days= 30),
                 },
@@ -521,11 +529,17 @@ class Lylac(Generic[_M]):
             # Inicialización de contexto de ejecución
             execution_ctx = self._create_execution_context(None, DATA_RESOURCE.ROOT_USER, conn)
 
+            # Hasheo de la UUID de sesión
+            hashed_session_uuid = (
+                sha256( session_uuid.encode() )
+                .hexdigest()
+            )
+
             # Búsqueda y lectura de la sesión
             found: _Records[_found_session] = self._crud.search_read(
                 execution_ctx,
                 'base.user.session',
-                [('name', '=', session_uuid)],
+                [('name', '=', hashed_session_uuid)],
                 [
                     ('is_active_session', 'boolean', lambda ctx: ctx['expires_at'] > datetime.now()),
                     ('user_id.id', 'uid'),
