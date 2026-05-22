@@ -1,13 +1,13 @@
 from typing import TypedDict
 from .definitions import TType
-from .definitions import nullable
+from .definitions import Nullable
 
 class _DefaultFields(TypedDict):
-    name: nullable[TType.Char]
+    name: Nullable[TType.Char]
     create_date: TType.Datetime
     update_date: TType.Datetime
-    create_uid: nullable[TType.Many2One]
-    update_uid: nullable[TType.Many2One]
+    create_uid: Nullable[TType.Many2One]
+    update_uid: Nullable[TType.Many2One]
     display_name: TType.Char
     sequence: TType.Integer
 
