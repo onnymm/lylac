@@ -1,3 +1,4 @@
+from typing import Callable
 from typing import Generic
 from typing import TYPE_CHECKING
 from .._constants import FIELD_NAME
@@ -196,9 +197,12 @@ class AutomationsEngine(Generic[_M]):
         # Si no existen automatizaciones...
         if model_automations is None:
             # Inicialización de función vacía
-            def execute_on_delete(record_ids: list[int]):
+            def execute_on_delete():
                 ...
             return execute_on_delete
+
+        # Inicialización de lista de automatizaciones a ejecutar
+        automations_to_execute: list[Callable[[], None]] = []
 
         # Obtención de los campos a leer
         for ( automation_name, automation_properties ) in model_automations.items():
@@ -214,13 +218,10 @@ class AutomationsEngine(Generic[_M]):
             # Lectura de los datos
             records_data = self._crud.search_read(execution_ctx, model_name, condition, automation_properties.fields)
 
-        # Inicialización de función para ejecutar tras la eliminación de registros
-        def execute_on_delete(record_ids: list[int]):
-
-            # Si no hay IDs de registros...
-            if not record_ids:
-                # Se termina la ejecución
-                return
+            # Si no existen resultados...
+            if not records_data:
+                # Se continúa con la siguiente automatización
+                continue
 
             # Se obtienen los registros eliminados
             deleted_data = [record for record in records_data if record[FIELD_NAME.ID] in record_ids]
@@ -233,8 +234,19 @@ class AutomationsEngine(Generic[_M]):
                 self._ddl,
             )
 
-            # Ejecución de la función de automatización
-            automation_properties.callback(automation_ctx)
+            # Inicialización de automatización a ejecutar
+            automation_post_execute: lambda : automation_properties.callback(automation_ctx)
+
+            # Se añade la automatización a la lista de automatizaciones por ejecutar
+            automations_to_execute.append(automation_post_execute)
+
+        # Inicialización de función para ejecutar tras la eliminación de registros
+        def execute_on_delete():
+
+            # Iteración por cada automatización a ejecutar
+            for automation in automations_to_execute:
+                # Ejecución de la automatización
+                automation()
 
         return execute_on_delete
 

@@ -54,7 +54,7 @@ ValidationCallback = Callable[['ValidationContext[_M, _R]'], None]
 
 ActionCallback = Callable[['ActionContext[_M]'], None]
 
-CaptureIDsAfterDeletionFn = Callable[[list[int]], None]
+CaptureIDsAfterDeletionFn = Callable[[], None]
 
 ServerTaskCallback = Callable[['ServerTaskContext[_M]'], None]
 

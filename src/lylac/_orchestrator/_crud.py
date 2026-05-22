@@ -438,14 +438,14 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
         )
 
         # Eliminación de registros
-        deleted_ids = self._dml.delete(
+        self._dml.delete(
             execution_ctx,
             model_name,
             record_ids,
         )
 
         # Ejecución de automatizaciones
-        execute_automations_on_delete(deleted_ids)
+        execute_automations_on_delete()
 
         return True
 
