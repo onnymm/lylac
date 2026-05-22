@@ -1,33 +1,33 @@
 from typing import TypedDict
-from .definitions import ttype
+from .definitions import TType
 from .definitions import nullable
 
 class _DefaultFields(TypedDict):
-    name: nullable[ttype.char]
-    create_date: ttype.datetime
-    update_date: ttype.datetime
-    create_uid: nullable[ttype.many2one]
-    update_uid: nullable[ttype.many2one]
-    display_name: ttype.char
-    sequence: ttype.integer
+    name: nullable[TType.Char]
+    create_date: TType.Datetime
+    update_date: TType.Datetime
+    create_uid: nullable[TType.Many2One]
+    update_uid: nullable[TType.Many2One]
+    display_name: TType.Char
+    sequence: TType.Integer
 
 class _BasicRecord(TypedDict):
-    id: ttype.integer
+    id: TType.Integer
 
 class RecordShape(TypedDict):
     ...
 
 class UserSession(RecordShape):
-    login: ttype.char
-    active: ttype.boolean
-    password: ttype.char
+    login: TType.Char
+    active: TType.Boolean
+    password: TType.Char
 
 class _base_users__fields(RecordShape):
-    login: ttype.char
-    active: ttype.boolean
-    password: ttype.char
+    login: TType.Char
+    active: TType.Boolean
+    password: TType.Char
 
 class _found_session(RecordShape):
-    is_active_session: ttype.boolean
-    user_is_active: ttype.boolean
-    uid: ttype.integer
+    is_active_session: TType.Boolean
+    user_is_active: TType.Boolean
+    uid: TType.Integer
