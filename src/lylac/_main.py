@@ -51,10 +51,8 @@ from ._typing.generics import _Record
 from ._typing.generics import _Records
 from ._typing.models import _base_users__fields
 from ._typing.models import _found_session
-from ._typing.structures import RecordData
-from ._typing.structures import RecordData
-from ._typing.structures import RecordData
 from ._typing.structures import CriteriaStructure
+from ._typing.structures import RecordData
 from ._typing.structures import FieldReadDeclaration
 from ._typing.type_parameters import _M
 from ._typing.type_parameters import _R
@@ -354,6 +352,8 @@ class Lylac(Generic[_M]):
         model_name: ModelName[_M],
         record_ids: ItemOrList[int],
         fields: list[FieldReadDeclaration] = [],
+        sortby: Optional[ItemOrList[str]] = None,
+        ascending: Optional[ItemOrList[bool]] = None,
     ) -> list[_Record]:
 
         # Definición de la transacción
@@ -364,6 +364,8 @@ class Lylac(Generic[_M]):
                 model_name,
                 record_ids,
                 fields,
+                sortby,
+                ascending,
             )
 
             return closure_data
@@ -380,7 +382,7 @@ class Lylac(Generic[_M]):
         record_ids: ItemOrList[int],
         fields: list[FieldReadDeclaration] = [],
         sortby: Optional[ItemOrList[str]] = None,
-        ascending: Optional[ItemOrList[bool]] = None
+        ascending: Optional[ItemOrList[bool]] = None,
     ):
 
         # Definición de la transacción
