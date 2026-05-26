@@ -82,35 +82,6 @@ class DatabaseMetadata(Generic[_M]):
         # Ejecución de la función de construcción de mapa de metadatos
         self.build(conn)
 
-    def build_m2m(
-        self,
-        conn: Connection,
-    ) -> None:
-
-        # Obtención del modelo de campos de modelos
-        base_model_field = Metadata.BaseModelField
-        # Obtención de un alias del modelo de modelos
-        base_model = aliased(Metadata.BaseModel)
-        # Obtención de un alias del modelo de modelos para modelos relacionados
-        related_model = aliased(Metadata.BaseModel)
-
-        # Construcción de query
-        stmt = (
-            select(
-                base_model_field.name,
-                base_model.model,
-                related_model.name,
-            )
-            .where(
-                base_model_field.ttype == 'many2many',
-            )
-        )
-
-        # Ejecución del query
-        data: list[tuple[str, str, str]] = self._transaction.search_read(stmt, conn)
-
-        # Iteración en los datos
-
     def build(
         self,
         conn: Connection,
