@@ -21,6 +21,7 @@ from .._typing.literals import CRUDPermission
 from .._typing.literals import CRUDPermissionColumnName
 from .._typing.structures import CriteriaStructure
 from .._typing.structures import RecordData
+from .._typing.structures import ExpandArg
 from .._typing.structures import FieldReadDeclaration
 from .._typing.type_parameters import _M
 from .._utils import to_list
@@ -247,6 +248,7 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
         limit: Optional[int] = None,
         sortby: Optional[ItemOrList[str]] = None,
         ascending: Optional[ItemOrList[bool]] = None,
+        expand: Optional[ExpandArg] = None,
     ) -> list[_Record]:
 
         # Revisión de permisos
@@ -275,7 +277,15 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
             ascending,
         )
 
-        return data
+        # Resolución de registros expandidos
+        expanded_data = self.expand_read(
+            execution_ctx,
+            model_name,
+            data,
+            expand,
+        )
+
+        return expanded_data
 
     def search_count(
         self,
@@ -308,6 +318,87 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
 
         return count
 
+    def expand_read(
+        self,
+        execution_ctx: Contract_ExecutionContext[_M],
+        model_name: ModelName[_M],
+        data: list[_Record],
+        expand: Optional[ExpandArg],
+    ):
+
+        # Si no existe argumento de expansión...
+        if expand is None or expand == []:
+            # Se termina la ejecución
+            return data
+
+        # Se asegura una lista de datos
+        expand = to_list(expand)
+
+        # Obtención del parámetro de expansión correspondiente
+        expand_i = expand.pop(0)
+
+        # Obtención de las propiedades de campos del modelo
+        fields_properties = execution_ctx.database_metadata.get_relation_fields_properties(model_name)
+        # Iteración por cada campo
+        for field_property in fields_properties:
+            # Obtención del nombre del campo
+            field_name = field_property.name
+            # Obtención del nombre del modelo
+            related_model_name = field_property.related_model_name
+
+            # Inicialización de conjunto de IDs
+            record_ids_to_read = set()
+
+            # Iteración por cada registro de los datos
+            for record in data:
+                # Obtención de los IDs a leer
+                record_ids: list[int] = record[field_name]
+                # Conversión a conjunto
+                record_ids: set[int] = set(record_ids)
+                # Se añaden al conjunto de registros a leer
+                record_ids_to_read |= record_ids
+
+            # Evaluación de campos a leer
+            fields_to_read = (
+                []
+                if expand_i == True
+                else expand_i
+            )
+
+            # Lectura de datos
+            related_records = self.read(
+                execution_ctx,
+                related_model_name,
+                list(record_ids_to_read),
+                fields_to_read,
+                expand= expand,
+            )
+
+            # Mapeo de registros
+            related_records_map: dict[int, _Record] = {
+                record_i[FIELD_NAME.ID]: record_i
+                for record_i
+                in related_records
+            }
+
+            # Se despachan los registros a cada lista de datos
+            for record in data:
+                # Inicialización de lista de registros
+                resolved_records: list[_Record] = []
+                # Obtención de lista de IDs
+                record_ids: list[int] = record[field_name]
+                # Iteración por cada ID de registro
+                for record_id in record_ids:
+                    # Obtención de los datos del registro
+                    resolved_record = related_records_map[record_id]
+                    # Se añade éste a la lista
+                    resolved_records.append(resolved_record)
+
+                # Asignación de registros resueltos
+                record[field_name] = resolved_records
+
+        return data
+
     def read(
         self,
         execution_ctx: Contract_ExecutionContext[_M],
@@ -315,7 +406,8 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
         record_ids: ItemOrList[int],
         fields: list[FieldReadDeclaration] = [],
         sortby: Optional[ItemOrList[str]] = None,
-        ascending: Optional[ItemOrList[bool]] = None
+        ascending: Optional[ItemOrList[bool]] = None,
+        expand: Optional[ExpandArg] = None,
     ) -> list[_Record]:
 
         # Revisión de permisos
@@ -346,7 +438,15 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
             ascending,
         )
 
-        return data
+        # Resolución de registros expandidos
+        expanded_data = self.expand_read(
+            execution_ctx,
+            model_name,
+            data,
+            expand,
+        )
+
+        return expanded_data
 
     def update(
         self,

@@ -362,3 +362,17 @@ Los operadores de comparación disponibles son:
 """
 
 RawFieldProperties = tuple[str, TTypeName, bool, ModelName[_M], str]
+
+_ExpandAll = Literal[True]
+
+_CommonFields = Literal[
+    'id',
+    'name',
+    'create_date',
+    'update_date',
+    'create_uid',
+    'update_uid',
+    'display_name',
+]
+
+ExpandArg = ItemOrList[_ExpandAll | list[_CommonFields]]
