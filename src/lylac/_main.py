@@ -53,6 +53,7 @@ from ._typing.models import _base_users__fields
 from ._typing.models import _found_session
 from ._typing.structures import CriteriaStructure
 from ._typing.structures import RecordData
+from ._typing.structures import ExpandArg
 from ._typing.structures import FieldReadDeclaration
 from ._typing.type_parameters import _M
 from ._typing.type_parameters import _R
@@ -354,6 +355,7 @@ class Lylac(Generic[_M]):
         fields: list[FieldReadDeclaration] = [],
         sortby: Optional[ItemOrList[str]] = None,
         ascending: Optional[ItemOrList[bool]] = None,
+        expand: Optional[ExpandArg] = None,
     ) -> list[_Record]:
 
         # Definición de la transacción
@@ -366,35 +368,7 @@ class Lylac(Generic[_M]):
                 fields,
                 sortby,
                 ascending,
-            )
-
-            return closure_data
-
-        # Ejecución de la transacción
-        data = self.execute_transaction(session_uuid, transaction)
-
-        return data
-
-    def search_read(
-        self,
-        session_uuid: str,
-        model_name: ModelName[_M],
-        record_ids: ItemOrList[int],
-        fields: list[FieldReadDeclaration] = [],
-        sortby: Optional[ItemOrList[str]] = None,
-        ascending: Optional[ItemOrList[bool]] = None,
-    ):
-
-        # Definición de la transacción
-        def transaction(execution_ctx: _ExecutionContext[_M]) -> list[_Record]:
-            # Obtención de los datos
-            closure_data = self._crud.read(
-                execution_ctx,
-                model_name,
-                record_ids,
-                fields,
-                sortby,
-                ascending,
+                expand,
             )
 
             return closure_data
@@ -414,6 +388,7 @@ class Lylac(Generic[_M]):
         limit: Optional[int] = None,
         sortby: Optional[ItemOrList[str]] = None,
         ascending: Optional[ItemOrList[bool]] = None,
+        expand: Optional[ExpandArg] = None,
     ) -> list[_Record]:
 
         # Definición de la transacción
@@ -428,6 +403,7 @@ class Lylac(Generic[_M]):
                 limit,
                 sortby,
                 ascending,
+                expand,
             )
 
             return closure_data
