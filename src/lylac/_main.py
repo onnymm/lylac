@@ -299,6 +299,28 @@ class Lylac(Generic[_M]):
 
         return result
 
+    def me(
+        self,
+        session_uuid: str,
+    ) -> _Record:
+
+        # Definición de la transacción
+        def transaction(execution_ctx: _ExecutionContext[_M]) -> list[_Record]:
+            # Obtención de los datos
+            [ closure_user_data ] = self._crud.read(
+                execution_ctx,
+                'base.users',
+                execution_ctx.uid,
+                expand= [True, True],
+            )
+
+            return closure_user_data
+
+        # Ejecución de la transacción
+        user_data = self.execute_transaction(session_uuid, transaction)
+
+        return user_data
+
     def create(
         self,
         session_uuid: str,
