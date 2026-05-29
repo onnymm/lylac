@@ -15,6 +15,7 @@ from .literals import ComparisonOperator
 from .literals import TTypeName
 from .literals import LogicOperator
 from .type_parameters import _M
+from .type_parameters import _T
 
 if TYPE_CHECKING:
     from .callables import ComputeFieldFn
@@ -64,7 +65,16 @@ ComputeContextHub = dict[ModelName[_M], dict[str, 'ComputeFieldFn[_M]']]
 
 FieldComputation = tuple[str, 'TTypeName', 'ComputeFieldFn']
 
-FieldReadDeclaration = Union[str, 'AliasedField', FieldComputation]
+_ExpansionSpec = list[Union[str, 'FrameReadField']] | Literal[True]
+_ArrayExpansion = tuple[str, _ExpansionSpec]
+_FieldName = str
+_FieldAlias = str
+_Aliased = tuple[_T, _FieldAlias]
+_NestedExpansion = Union[_ArrayExpansion, _Aliased[_ArrayExpansion]]
+
+FrameReadField = Union[_FieldName, _Aliased[_FieldName], FieldComputation]
+
+FieldReadDeclaration = Union[FrameReadField, _NestedExpansion]
 
 RecordIDs = ItemOrList[int]
 """

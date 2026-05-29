@@ -15,7 +15,7 @@ from .._typing.generics import ItemOrList
 from .._typing.generics import ModelName
 from .._typing.generics import _Record
 from .._typing.structures import CriteriaStructure
-from .._typing.structures import FieldReadDeclaration
+from .._typing.structures import FrameReadField
 from .._typing.type_parameters import _M
 from .._utils import to_list
 
@@ -106,7 +106,7 @@ class DQL(Generic[_M]):
         execution_ctx: Contract_ExecutionContext[_M],
         model_name: ModelName[_M],
         record_ids: list[int],
-        fields: list[FieldReadDeclaration] = [],
+        fields: list[FrameReadField] = [],
         sortby: Optional[ItemOrList[str]] = None,
         ascending: Optional[ItemOrList[bool]] = None,
     ) -> list[_Record]:
@@ -172,7 +172,7 @@ class DQL(Generic[_M]):
         execution_ctx: Contract_ExecutionContext[_M],
         model_name: ModelName[_M],
         search_criteria: CriteriaStructure = [],
-        fields: list[FieldReadDeclaration] = [],
+        fields: list[FrameReadField] = [],
         offset: Optional[int] = None,
         limit: Optional[int] = None,
         sortby: Optional[ItemOrList[str]] = None,
@@ -358,8 +358,8 @@ class DQL(Generic[_M]):
         self,
         execution_ctx: Contract_ExecutionContext[_M],
         model_name: ModelName[_M],
-        fields: list[FieldReadDeclaration] = [],
-    ) -> list[FieldReadDeclaration]:
+        fields: list[FrameReadField] = [],
+    ) -> list[FrameReadField]:
 
         # Si no fue provista una lista de campos...
         if not fields:

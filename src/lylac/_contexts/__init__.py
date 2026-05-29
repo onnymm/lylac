@@ -2,6 +2,7 @@ from ._action import ActionContext
 from ._automation import AutomationContext
 from ._compute import ComputeContext
 from ._execution import ExecutionContext
+from ._expansion import ExpansionContext
 from ._frame import (
     FrameContext,
     RelativeFrameContext,

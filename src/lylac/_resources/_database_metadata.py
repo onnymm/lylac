@@ -43,6 +43,25 @@ class DatabaseMetadata(Generic[_M]):
 
         return field_names
 
+    def get_relation_fields_properties(
+        self,
+        model_name: ModelName[_M],
+    ) -> list[FieldProperties]:
+
+        # Inicialización de lista de nombres de campos a retornar
+        relation_fields_properties: list[FieldProperties] = []
+
+        # Obtención de propiedades de campos en valores de diccionario
+        field_properties = self._hub[model_name].values()
+        # Iteración por cada instancia de propiedades de modelo
+        for field_property in field_properties:
+            # Si el tipo de dato del campo es one2many o many2many
+            if field_property.ttype in ['one2many', 'many2many']:
+                # Se añade éste a la lista a retornar
+                relation_fields_properties.append(field_property)
+
+        return relation_fields_properties
+
     def field_properties(
         self,
         model_name: ModelName[_M],

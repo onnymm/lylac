@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 from .._constants import FIELD_NAME
 from .._constants import MODEL_NAME
+from .._contexts import ExpansionContext
 from .._contexts import RelationOperationsContext
 from .._contracts import _Contract_CRUD
 from .._contracts.contexts import Contract_ExecutionContext
@@ -256,6 +257,9 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
             'read',
         )
 
+        # Inicialización de contexto de expansión
+        expansion_ctx = ExpansionContext(execution_ctx, self)
+
         # Obtención de criterio de búsqueda con alcance del usuario
         scoped_search_criteria = self._get_record_rules(
             execution_ctx,
@@ -264,18 +268,27 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
             search_criteria,
         )
 
+        # Normalización de campos
+        normalized_fields = expansion_ctx.intercept(fields)
+
         data = self._dql.search_read(
             execution_ctx,
             model_name,
             scoped_search_criteria,
-            fields,
+            normalized_fields,
             offset,
             limit,
             sortby,
             ascending,
         )
 
-        return data
+        # Expansión de datos en caso de haberse especificado
+        expanded_data = expansion_ctx.resolve(
+            model_name,
+            data,
+        )
+
+        return expanded_data
 
     def search_count(
         self,
@@ -325,6 +338,9 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
             'read',
         )
 
+        # Inicialización de contexto de expansión
+        expansion_ctx = ExpansionContext(execution_ctx, self)
+
         # Se asegura una lista de datos
         record_ids = self._input_processing.to_list(record_ids)
 
@@ -336,17 +352,26 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
             record_ids,
         )
 
+        # Normalización de campos
+        normalized_fields = expansion_ctx.intercept(fields)
+
         # Obtención de los datos
         data = self._dql.read(
             execution_ctx,
             model_name,
             record_ids,
-            fields,
+            normalized_fields,
             sortby,
             ascending,
         )
 
-        return data
+        # Expansión de datos en caso de haberse especificado
+        expanded_data = expansion_ctx.resolve(
+            model_name,
+            data,
+        )
+
+        return expanded_data
 
     def update(
         self,
