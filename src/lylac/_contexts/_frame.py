@@ -416,7 +416,7 @@ class FrameContext(Generic[_M], Contract_FrameContext[_M]):
             # Obtención de instancia de campo X desde el subquery
             subquery_id_field_instance = self.get_physical_field_instance(stmt, FIELD_NAME.X)
             # Obtención de instancia de campo Y desde el subquery
-            m2m_subquery_field_instance = self.get_physical_field_instance(stmt, field_name)
+            m2m_subquery_field_instance = self.get_physical_field_instance(stmt, field_name).label(field_label)
 
             # Se agrega el OUTERJOIN
             self.add_outerjoin(
