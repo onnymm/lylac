@@ -4,6 +4,7 @@ from ._data_map import DataMap
 from ._database_metadata import DatabaseMetadata
 from ._engine_slot import Slot
 from ._error_detail import ErrorDetail
+from ._field_expansion_specs import FieldExpansionSpecs
 from ._field_properties import FieldProperties
 from ._field_target import FieldTarget
 from ._input_data import InputData
