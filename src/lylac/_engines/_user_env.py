@@ -1,9 +1,9 @@
 from typing import Generic
 from typing import TYPE_CHECKING
 from .._constants import ERROR_LABEL
-from .._errors import VariableResolverExecutionError
 from .._typing.callables import LazyResolver
 from .._typing.type_parameters import _M
+from ..errors import VariableResolverExecutionError
 
 if TYPE_CHECKING:
     from .._contexts import ExecutionContext

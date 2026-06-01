@@ -32,11 +32,6 @@ from ._engines import ComputeEngine
 from ._engines import ServerTasksEngine
 from ._engines import UserEnvEngine
 from ._engines import ValidationEngine
-from ._errors import ExpiredSessionError
-from ._errors import IncorrectPasswordError
-from ._errors import InvalidSessionUUIDError
-from ._errors import UserNotActiveError
-from ._errors import UserNotFoundError
 from ._operations import DDL
 from ._orchestrator import CRUD
 from ._resources import DatabaseMetadata
@@ -57,6 +52,11 @@ from ._typing.structures import FieldReadDeclaration
 from ._typing.type_parameters import _M
 from ._typing.type_parameters import _R
 from ._typing.type_parameters import _T
+from .errors import ExpiredSessionError
+from .errors import IncorrectPasswordError
+from .errors import InvalidSessionUUIDError
+from .errors import UserNotActiveError
+from .errors import UserNotFoundError
 from .security import verify_password
 from sqlalchemy.exc import ProgrammingError
 

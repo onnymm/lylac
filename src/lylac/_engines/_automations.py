@@ -6,7 +6,6 @@ from .._constants import ERROR_LABEL
 from .._contexts import AutomationContext
 from .._contracts import _Contract_CRUD
 from .._data._preset_automations import DEFAULT_ON_CREATE_AUTOMATIONS
-from .._errors import AutomationExecutionError
 from .._resources import AutomationProperties
 from .._resources import Slot
 from .._resources import DatabaseMetadata
@@ -20,6 +19,7 @@ from .._typing.structures import CriteriaStructure
 from .._typing.structures import FieldReadDeclaration
 from .._typing.type_parameters import _M
 from .._contracts.contexts import Contract_ExecutionContext
+from ..errors import AutomationExecutionError
 
 if TYPE_CHECKING:
     from .._operations import DDL

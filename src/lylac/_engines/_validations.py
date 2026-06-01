@@ -5,7 +5,6 @@ from .._contexts import ValidationContext as ValidationContext
 from .._contracts import _Contract_CRUD
 from .._contracts.contexts import Contract_ExecutionContext
 from .._data import PRESET_VALIDATIONS
-from .._errors import ValidationExecutionError
 from .._resources import DatabaseMetadata
 from .._resources import ErrorDetail
 from .._resources import InputParser
@@ -18,6 +17,7 @@ from .._typing.literals import TTypeName
 from .._typing.literals import DMLTransaction
 from .._typing.structures import RecordData
 from .._typing.type_parameters import _M
+from ..errors import ValidationExecutionError
 
 class TRANSACTION_NAME:
     CREATE = 'create'
