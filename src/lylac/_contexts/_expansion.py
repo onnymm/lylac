@@ -79,8 +79,6 @@ class ExpansionContext:
             # Se añade un reemplazo que ya no incluye referencia de expansión
             normalized_references.append((reference, field_alias))
 
-        print(self.related_fields)
-
         return normalized_references
 
     def resolve(
