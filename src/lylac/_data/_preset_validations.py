@@ -70,11 +70,11 @@ def _confirm_valid_selection_values(ctx: 'ValidationContext') -> None:
             # Si el campo está en el registro...
             if field_name in record:
                 # Si el valor no está dentro de los valores permitidos
-                if selection_fields[field_name] is not None and record[field_name] not in selection_fields[field_name]:
+                if record[field_name] is not None and record[field_name] not in selection_fields[field_name]:
                     # Se captura el registro con el campo inválido
                     ctx.catch(record, field_name)
 
-def _valid_model_name(ctx: 'ValidationContext'[_M, _InternalModelSchema.base_model]) -> None:
+def _valid_model_name(ctx: 'ValidationContext[_M, _InternalModelSchema.base_model]') -> None:
 
     # Patrón de estructura válido
     valid_pattern = r'^[a-z\d\.]*$'
@@ -90,7 +90,7 @@ def _valid_model_name(ctx: 'ValidationContext'[_M, _InternalModelSchema.base_mod
             # Se captura el registro
             ctx.catch(record)
 
-def _coherent_label_and_name_in_new_model(ctx: 'ValidationContext'[_M, _InternalModelSchema.base_model]) -> None:
+def _coherent_label_and_name_in_new_model(ctx: 'ValidationContext[_M, _InternalModelSchema.base_model]') -> None:
 
     # Iteración por cada registro
     for record in ctx.records:
@@ -104,7 +104,7 @@ def _coherent_label_and_name_in_new_model(ctx: 'ValidationContext'[_M, _Internal
             # Se captura el registro
             ctx.catch(record)
 
-def _forbid_duplicated_fields_in_same_model(ctx: 'ValidationContext'[_M, _InternalModelSchema.base_model_field]) -> None:
+def _forbid_duplicated_fields_in_same_model(ctx: 'ValidationContext[_M, _InternalModelSchema.base_model_field]') -> None:
 
     # Búsqueda de registros duplicados
     duplicated_records = ctx.find_duplicated_composite_keys(ctx.records, ['model_id', 'name'])
