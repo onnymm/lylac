@@ -278,7 +278,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                             'default_value': False,
                         },
                         {
-                            'name': 'global',
+                            'name': 'global_',
                             'label': 'Global',
                             'ttype': 'boolean',
                             'default_value': False,
