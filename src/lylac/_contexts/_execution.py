@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Callable
 from typing import Generic
 from typing import TYPE_CHECKING
 from sqlalchemy.engine import Connection
@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 from .._contexts.engines import BaseContext
 
 class ExecutionContext(Generic[_M], BaseContext[_M]):
+    _to_execute_after_commit: list[Callable[[ExecutionContext], None]]
 
     def __init__(
         self,
@@ -49,6 +50,9 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
         self.actions = actions
         self._execution_ctx = self
         self._env = user_env
+
+        # Inicialización de lista de funciones a ejecutar después del commit
+        self._to_execute_after_commit = []
 
     @property
     def uid(
@@ -88,3 +92,29 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
         else:
             # Se usa ésta como valor de ID de usuario
             return uid
+
+    def run_after_commit(
+        self,
+        fn: Callable[[ExecutionContext[_M]], None],
+    ) -> None:
+
+        # Se añade la función para ejecutarse tras el commit
+        self._to_execute_after_commit.append(fn)
+
+    def on_commit(
+        self,
+    ) -> None:
+
+        # Iteración por cada función a ejecutar
+        for fn in self._to_execute_after_commit:
+            # Se intenta ejecutar la función
+            try:
+                # Ejecución
+                fn(self)
+            # Si la ejecución falla...
+            except Exception as e:
+                # Notificación del error
+                print(e)
+
+        # Se eliminan las funciones suscritas
+        self._to_execute_after_commit.clear()

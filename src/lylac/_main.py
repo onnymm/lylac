@@ -252,6 +252,11 @@ class Lylac(Generic[_M]):
             # Ejecución de la función
             closure_result = callback(execution_ctx)
 
+            # Se hace commit en la base de datos
+            execution_ctx.conn.commit()
+            # Se ejecutan las funciones suscritas tras el commit
+            execution_ctx.on_commit()
+
             return closure_result
 
         # Ejecución de la función de transacción
@@ -259,7 +264,7 @@ class Lylac(Generic[_M]):
 
         return result
 
-    def execute(
+    def execute__(
         self,
         session_uuid: str,
         execution_callback: Callable[[_TransactionContext[_M]], None]
