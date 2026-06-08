@@ -45,6 +45,13 @@ class ModelsBearer(Generic[_M]):
 
         self._index[model_name] = model_model
 
+    def discard_model(
+        self,
+        model_name: ModelName[_M],
+    ) -> None:
+
+        del self._index[model_name]
+
     def get_m2m_model(
         self,
         model_name: ModelName[_M],

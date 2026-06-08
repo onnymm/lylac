@@ -5,7 +5,9 @@ from .._constants import FIELD_NAME
 from .._constants import ERROR_LABEL
 from .._contexts import AutomationContext
 from .._contracts import _Contract_CRUD
-from .._data._preset_automations import DEFAULT_ON_CREATE_AUTOMATIONS
+from .._data import DEFAULT_ON_CREATE_AUTOMATIONS
+from .._data import DEFAULT_ON_UPDATE_AUTOMATIONS
+from .._data import DEFAULT_ON_DELETE_AUTOMATIONS
 from .._resources import AutomationProperties
 from .._resources import Slot
 from .._resources import DatabaseMetadata
@@ -40,9 +42,9 @@ class AutomationsEngine(Generic[_M]):
         self._hub = Slot[_M, AutomationProperties[_M]]()
 
         # Inicialización de automatizaciones predeterminadas
-        self._default_on_create_automations: EngineHub[_M, AutomationProperties[_M]] = DEFAULT_ON_CREATE_AUTOMATIONS
-        self._default_on_update_automations: EngineHub[_M, AutomationProperties[_M]] = {}
-        self._default_on_delete_automations: EngineHub[_M, AutomationProperties[_M]] = {}
+        self._default_on_create_automations: EngineHub[_M, AutomationProperties[_M]] = DEFAULT_ON_CREATE_AUTOMATIONS.copy()
+        self._default_on_update_automations: EngineHub[_M, AutomationProperties[_M]] = DEFAULT_ON_UPDATE_AUTOMATIONS.copy()
+        self._default_on_delete_automations: EngineHub[_M, AutomationProperties[_M]] = DEFAULT_ON_DELETE_AUTOMATIONS.copy()
 
     def build_hub(
         self,
@@ -194,6 +196,7 @@ class AutomationsEngine(Generic[_M]):
 
         # Obtención de diccionario de automatizaciones del modelo
         model_automations = self._hub.delete.get(model_name)
+
         # Si no existen automatizaciones...
         if model_automations is None:
             # Inicialización de función vacía
@@ -235,7 +238,7 @@ class AutomationsEngine(Generic[_M]):
             )
 
             # Inicialización de automatización a ejecutar
-            automation_post_execute: lambda : automation_properties.callback(automation_ctx)
+            automation_post_execute = lambda : automation_properties.callback(automation_ctx)
 
             # Se añade la automatización a la lista de automatizaciones por ejecutar
             automations_to_execute.append(automation_post_execute)

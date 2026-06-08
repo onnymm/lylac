@@ -13,6 +13,7 @@ from sqlalchemy.orm import class_mapper
 from .._constants import FACTORY_FIELDS
 from .._constants import FACTORY_MODELS
 from .._constants import FIELD_NAME
+from .._contexts import ExecutionContext
 from .._core import Feature
 from .._core import Metadata
 from .._core import ModelTemplate
@@ -153,7 +154,7 @@ class DDL(Generic[_M]):
         has_sequence: bool = False,
         is_archivable: bool = False,
         has_label: bool = False,
-    ) -> ModelClass:
+    ) -> None:
 
         # Obtención del modelo
         model_model = self.create_model_class(
@@ -168,6 +169,21 @@ class DDL(Generic[_M]):
         self._models_bearer.add_model(model_name, model_model)
 
         return model_model
+
+    def delete_model_table(
+        self,
+        execution_ctx: ExecutionContext[_M],
+        model_name: ModelName[_M],
+    ) -> None:
+
+        # Obtención de la clase del modelo
+        model_model = self._models_bearer._index[model_name]
+        # Remoción del modelo de los metadatos de Base
+        model_model.__table__.drop(execution_ctx.conn)
+        # Suscripción para eliminación del modelo en el portador de modelos
+        execution_ctx.run_after_commit(
+            lambda _: self._models_bearer.discard_model(model_name)
+        )
 
     def rebuild_from_existing_database(
         self,

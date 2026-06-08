@@ -152,6 +152,21 @@ def _base_model__create_model_table_in_database(ctx: AutomationContext) -> None:
         # Actualización de los metadatos de la instancia
         ctx._execution_ctx.database_metadata.update(ctx._execution_ctx.conn)
 
+def _base_model__delete_model_table_in_database(ctx: AutomationContext) -> None:
+
+    # Iteración por cada registro de modelo creado
+    for record in ctx.records:
+        # Obtención del nombre del modelo
+        model_name = record['model']
+        # Se elimina el modelo de los metadatos de Base
+        ctx._ddl.delete_model_table(
+            ctx._execution_ctx,
+            model_name,
+        )
+
+    # Actualización de los metadatos de la instancia
+    ctx._execution_ctx.database_metadata.update(ctx._execution_ctx.conn)
+
 def _base_model_field__create_m2m_relation(ctx: AutomationContext) -> None:
 
     # Iteración por cada registro de campo creado
@@ -424,6 +439,23 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
             ),
             execute_only_when= [],
         ),
+    },
+
+}
+
+DEFAULT_ON_UPDATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[InitialModels]] = {}
+
+DEFAULT_ON_DELETE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[InitialModels]] = {
+
+    'base.model': {
+
+        '_base_model__delete_model_table_in_database': AutomationProperties(
+            callback= _base_model__delete_model_table_in_database,
+            model_name= 'base.model',
+            fields= ('model',),
+            execute_only_when= [],
+        ),
+
     },
 
 }
