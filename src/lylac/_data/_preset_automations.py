@@ -36,18 +36,19 @@ def _base_model__create_model_table_in_database(ctx: AutomationContext) -> None:
     for record in ctx.records:
         # Obtención de la ID de modelo
         model_id = record['id']
-        # Obtención del nombre de modelo
-        model_name = record['name']
-        # Obtención del modelo del modelo
-        model_model_name = record['model']
         # Obtención de valor de si el modelo tiene secuencia
         has_sequence = record['has_sequence']
         # Obtención de valor de si el modelo permite archivar
         is_archivable = record['is_archivable']
         # Obtención de valor de si el modelo contiene leyenda
         has_label = record['has_label']
-        # Creación de la clase del modelo
-        ctx._ddl.create_model_table(ctx._execution_ctx.conn, model_name, model_model_name, has_sequence, is_archivable, has_label)
+
+        # Creación del modelo
+        ctx.action(
+            'base.model',
+            'create_model',
+            model_id,
+        )
 
         # Inicialización de datos de campos a crear
         fields_to_create = [

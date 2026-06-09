@@ -1,9 +1,11 @@
 from typing import Generic
 from typing import Literal
+from typing import TYPE_CHECKING
 from .._constants import ERROR_LABEL
 from .._contexts import ActionContext as _ActionContext
 from .._contracts.contexts import Contract_ExecutionContext
 from .._contracts import _Contract_CRUD
+from .._data import PRESET_ACTIONS
 from .._resources import ActionProperties
 from .._resources import DatabaseMetadata
 from .._typing.callables import ActionCallback
@@ -13,15 +15,20 @@ from .._typing.generics import ModelName
 from .._typing.type_parameters import _M
 from ..errors import ActionExecutionError
 
+if TYPE_CHECKING:
+    from .._operations import DDL
+
 class ActionEngine(Generic[_M]):
 
     def __init__(
         self,
+        ddl: DDL[_M],
         crud: _Contract_CRUD[_M],
     ) -> None:
 
         # Asignación de valores
         self._crud = crud
+        self._ddl = ddl
         # Inicialización de centro de acciones
         self._hub: EngineHub[_M, ActionProperties[_M]] = {}
 
@@ -34,6 +41,13 @@ class ActionEngine(Generic[_M]):
         for model_name in database_metadata.model_names:
             # Inicialización de diccionario de acciones
             self._hub[model_name] = {}
+
+        # Iteración por cada modelo que contiene acciones predeterminadas
+        for model_name in PRESET_ACTIONS:
+            # Iteración por cada acción
+            for ( action_name, action_properties ) in PRESET_ACTIONS[model_name].items():
+                # Registro en el centro de acciones
+                self._hub[model_name][action_name] = action_properties
 
     def register(
         self,
@@ -79,7 +93,7 @@ class ActionEngine(Generic[_M]):
         )
 
         # Inicialización de contexto de automatización
-        ctx = _ActionContext[_M](execution_ctx, self._crud, record)
+        ctx = _ActionContext[_M](execution_ctx, self._crud, record, self._ddl)
 
         # Ejecución de la acción
         callback(ctx)

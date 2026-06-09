@@ -642,7 +642,7 @@ class Lylac(Generic[_M]):
     ) -> None:
 
         # Inicialización de motor de acciones
-        self._actions = ActionEngine[_M](self._crud)
+        self._actions = ActionEngine[_M](self._ddl, self._crud)
         # Inicialización de motor de automatizaciones
         self._automations = AutomationsEngine[_M](self._ddl, self._crud)
         # inicialización de motor de cómputo de campos
