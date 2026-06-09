@@ -179,6 +179,19 @@ class BaseContext(Generic[_M], Contract_BaseContext[_M]):
 
         return result
 
+    def task(
+        self,
+        name: str,
+    ) -> Literal[True]:
+
+        # Ejecución de tarea de servidor
+        result = self._execution_ctx.server_tasks.execute(
+            self._execution_ctx,
+            name,
+        )
+
+        return result
+
     def get_resource_id(
         self,
         ref: str,

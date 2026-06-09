@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from .._engines import ActionEngine
     from .._engines import AutomationsEngine
     from .._engines import ComputeEngine
+    from .._engines import ServerTasksEngine
     from .._engines import ValidationEngine
     from .._orchestrator import CRUD
 from .._contexts.engines import BaseContext
@@ -31,6 +32,7 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
         automations: 'AutomationsEngine[_M]',
         validations: 'ValidationEngine[_M]',
         actions: 'ActionEngine[_M]',
+        server_tasks: 'ServerTasksEngine[_M]',
         user_env_engine: UserEnv[_M],
     ) -> None:
 
@@ -48,6 +50,7 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
         self.automations = automations
         self.validations = validations
         self.actions = actions
+        self.server_tasks = server_tasks
         self._execution_ctx = self
         self._env = user_env
 

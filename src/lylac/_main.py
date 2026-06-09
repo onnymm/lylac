@@ -691,6 +691,7 @@ class Lylac(Generic[_M]):
             self._automations,
             self._validations,
             self._actions,
+            self._server_tasks,
             self._user_env,
         )
 

@@ -181,3 +181,9 @@ class DATA_RESOURCE:
         BASE_MODEL_DATA_PROCESS = 'base_model.base_model_data_process'
         BASE_MODEL_DATA_PROCESS_STEP = 'base_model.base_model_data_process_step'
         BASE_MODEL_DATA_PROCESS_STEP_RECORD = 'base_model.base_model_data_process_step_record'
+
+class PRESET:
+
+    class SERVER_TASK:
+
+        UPDATE_INSTANCE_METADATA = 'update_instance_metadata'

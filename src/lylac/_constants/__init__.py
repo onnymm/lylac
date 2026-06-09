@@ -7,6 +7,7 @@ from ._names import (
     FACTORY_MODELS,
     INITIAL_PACKAGES,
     PACKAGE,
+    PRESET,
     RELATION_ACTIONS,
     RELATION_ACTION_NAME,
 )
