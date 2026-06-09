@@ -53,6 +53,7 @@ class ActionEngine(Generic[_M]):
         self,
         model_name: ModelName[_M],
         name: str,
+        fields: list[str] = [],
     ) -> FunctionDecorator[ActionCallback[_M]]:
 
         # Inicialización de decorador para obtener la función a registrar
@@ -63,6 +64,7 @@ class ActionEngine(Generic[_M]):
                 model_name,
                 name,
                 callback,
+                fields,
             )
 
             # Inicialización de función de reemplazo para arrojar error cuando se intente ejecutar manualmente
@@ -84,12 +86,15 @@ class ActionEngine(Generic[_M]):
         automation_properties = self._hub[model_name][name]
         # Obtención de la función
         callback = automation_properties.callback
+        # Obtención de los campos a leer
+        fields_to_read = list(automation_properties.fields)
 
         # Lectura del registro
         [ record ] = self._crud.read(
             execution_ctx,
             model_name,
             record_id,
+            fields_to_read,
         )
 
         # Inicialización de contexto de automatización
@@ -111,6 +116,7 @@ class ActionEngine(Generic[_M]):
         model_name: ModelName[_M],
         name: str,
         callback: ActionCallback[_M],
+        fields: list[str],
     ) -> None:
 
         # Inicialización de instancia de propiedades de acción
@@ -118,6 +124,7 @@ class ActionEngine(Generic[_M]):
             model_name,
             name,
             callback,
+            tuple(fields),
         )
 
         # Registro de las propiedades

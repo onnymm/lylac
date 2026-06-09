@@ -9,3 +9,4 @@ class ActionProperties(Generic[_M]):
     model_name: ModelName[_M]
     name: str
     callback: ActionCallback[_M]
+    fields: tuple[str] = tuple()

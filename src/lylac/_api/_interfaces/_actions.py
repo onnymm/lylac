@@ -20,11 +20,13 @@ class _Interface_Actions(Generic[_M]):
         self,
         model_name: ModelName[_M],
         name: str,
+        fields: list[str] = [],
     ) -> FunctionDecorator[ActionCallback[_M]]:
 
         decorator = self._core.register(
             model_name,
             name,
+            fields,
         )
 
         return decorator
