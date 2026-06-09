@@ -2,12 +2,11 @@ from typing import TYPE_CHECKING
 from .._constants import DATA_RESOURCE
 from .._constants import FACTORY_FIELDS
 from .._resources import AutomationProperties
-from .._typing.generics import ModelName
-from .._typing.literals import OnDeleteOption
-from .._typing.literals import InitialModels
-from .._typing.literals import TTypeName
 from .._typing.generics import EngineHub
-from .._typing.type_parameters import _M
+from .._typing.generics import ModelName
+from .._typing.literals import InitialModels
+
+from .._constants import PRESET
 
 if TYPE_CHECKING:
     from .._contexts import AutomationContext
@@ -157,12 +156,11 @@ def _base_model__delete_model_table_in_database(ctx: AutomationContext) -> None:
 
     # Iteración por cada registro de modelo creado
     for record in ctx.records:
-        # Obtención del nombre del modelo
-        model_name = record['model']
-        # Se elimina el modelo de los metadatos de Base
-        ctx._ddl.delete_model_table(
-            ctx._execution_ctx,
-            model_name,
+        # Eliminación del modelo
+        ctx.action(
+            'base.model',
+            'delete',
+            record['id'],
         )
 
     # Actualización de los metadatos de la instancia
@@ -193,17 +191,21 @@ def _base_model_field__create_field_column(ctx: AutomationContext) -> None:
     # Iteración por cada registro de campo creado
     for record in ctx.records:
 
-        # Creación de la columna en la tabla y la instancia en el modelo
+        # Creación de la columna en la tabla
         ctx.action(
             'base.model.field',
-            'create_field_column_and_register_on_model',
+            'create_column',
+            record['id'],
+        )
+        # Registro de la instancia en el modelo
+        ctx.action(
+            'base.model.field',
+            'register_on_model',
             record['id'],
         )
 
-def _base_model_field__update_instance_metadata(ctx: AutomationContext) -> None:
-
     # Actualización de los metadatos de la instancia
-    ctx._execution_ctx.database_metadata.update(ctx._execution_ctx.conn)
+    ctx.task(PRESET.SERVER_TASK.UPDATE_INSTANCE_METADATA)
 
 def _base_model__register_model_data(ctx: AutomationContext) -> None:
 
@@ -351,12 +353,6 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
                         ('ttype', 'not in', ['one2many', 'many2many']),
                     ('is_computed', '=', False),
             ],
-        ),
-
-        '_base_model_field__update_instance_metadata': AutomationProperties(
-            callback= _base_model_field__update_instance_metadata,
-            model_name= 'base.model.field',
-            execute_only_when= [],
         ),
 
         '_base_model_field__create_m2m_relation': AutomationProperties(
