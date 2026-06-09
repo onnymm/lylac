@@ -6,3 +6,4 @@ from ._preset_automations import DEFAULT_ON_CREATE_AUTOMATIONS
 from ._preset_automations import DEFAULT_ON_UPDATE_AUTOMATIONS
 from ._preset_automations import DEFAULT_ON_DELETE_AUTOMATIONS
 from ._preset_validations import PRESET_VALIDATIONS
+from ._preset_server_tasks import PRESET_SERVER_TASKS

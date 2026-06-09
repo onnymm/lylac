@@ -4,6 +4,7 @@ from .._constants import ERROR_LABEL
 from .._contexts import ServerTaskContext as _ServerTaskContext
 from .._contracts import _Contract_CRUD
 from .._contracts.contexts import Contract_ExecutionContext
+from .._data import PRESET_SERVER_TASKS
 from .._resources import ServerTaskProperties
 from .._typing.callables import ServerTaskCallback
 from .._typing.callables import ActionCallback
@@ -21,7 +22,7 @@ class ServerTasksEngine(Generic[_M]):
         # Asignación de valores
         self._crud = crud
         # Inicialización de centro de acciones
-        self._hub: dict[str, ServerTaskProperties[_M]] = {}
+        self._hub: dict[str, ServerTaskProperties[_M]] = PRESET_SERVER_TASKS.copy()
 
     def register(
         self,
