@@ -1,8 +1,7 @@
 from typing import Generic
 from typing import Literal
 from typing import Optional
-from ..._contracts import _Contract_CRUD
-from ..._contracts.contexts import Contract_ExecutionContext
+from typing import TYPE_CHECKING
 from ..._contracts.contexts.engines import Contract_BaseContext
 from ..._resources import ModelDataIndex
 from ..._typing.generics import ItemOrList
@@ -14,10 +13,14 @@ from ..._typing.structures import RecordData
 from ..._typing.structures import FieldReadDeclaration
 from ..._typing.type_parameters import _M
 
+if TYPE_CHECKING:
+    from ..._contexts import ExecutionContext
+    from ..._orchestrator import CRUD
+
 class BaseContext(Generic[_M], Contract_BaseContext[_M]):
+    _crud: CRUD[_M]
+    _execution_ctx: ExecutionContext[_M]
     _model_data_index: ModelDataIndex
-    _execution_ctx: Contract_ExecutionContext[_M]
-    _crud: _Contract_CRUD[_M]
 
     @property
     def uid(
@@ -155,6 +158,23 @@ class BaseContext(Generic[_M], Contract_BaseContext[_M]):
             self._execution_ctx,
             model_name,
             record_ids,
+        )
+
+        return result
+
+    def action(
+        self,
+        model_name: ModelName[_M],
+        name: str,
+        record_id: int,
+    ) -> Literal[True]:
+
+        # Ejecución de acción
+        result = self._execution_ctx.actions.execute(
+            self._execution_ctx,
+            model_name,
+            name,
+            record_id,
         )
 
         return result
