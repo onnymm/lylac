@@ -177,30 +177,25 @@ PRESET_ACTIONS: EngineHub[_M, ActionProperties[_M]] = {
     'base.model': {
         'create_model': ActionProperties(
             'base.model',
-            'create_model',
             _base_model__create_table_on_database,
         ),
         'create_model_only': ActionProperties(
             'base.model',
-            'create_model_only',
             _base_model__create_model,
             ('name', 'model', 'has_sequence', 'is_archivable', 'has_label'),
         ),
         'delete': ActionProperties(
             'base.model',
-            'delete',
             _base_model__drop_table,
             ('name',),
         ),
         'delete_model': ActionProperties(
             'base.model',
-            'delete_model',
             _base_model__delete_model,
             ('model',),
         ),
         'restore': ActionProperties(
             'base.model',
-            'restore',
             _base_model__restore,
             ('id',),
         )
@@ -210,19 +205,16 @@ PRESET_ACTIONS: EngineHub[_M, ActionProperties[_M]] = {
 
         'create_column': ActionProperties(
             'base.model.field',
-            'create_column',
             _base_model_field__create_column,
             ('name', 'ttype', 'model_id.name', 'related_model_id.name', 'default_value', 'on_delete'),
         ),
         'register_on_model': ActionProperties(
             'base.model.field',
-            'register_on_model',
             _base_model_field__register_on_model,
             ('name', 'ttype', 'model_id.model', 'related_model_id.name', 'nullable', 'unique', 'default_value', 'on_delete'),
         ),
         'drop_column': ActionProperties(
             'base.model.field',
-            'drop_column',
             _drop_column,
             ('name', 'model_id.name'),
         ),

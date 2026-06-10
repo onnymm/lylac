@@ -122,7 +122,6 @@ class ActionEngine(Generic[_M]):
         # Inicialización de instancia de propiedades de acción
         action_properties = ActionProperties(
             model_name,
-            name,
             callback,
             tuple(fields),
         )

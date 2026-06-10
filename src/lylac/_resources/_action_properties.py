@@ -7,6 +7,5 @@ from .._typing.type_parameters import _M
 @dataclass(slots= True)
 class ActionProperties(Generic[_M]):
     model_name: ModelName[_M]
-    name: str
     callback: ActionCallback[_M]
     fields: tuple[str] = tuple()
