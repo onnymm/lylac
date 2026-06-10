@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 from .._constants import DATA_RESOURCE
 from .._constants import FACTORY_FIELDS
+from .._constants import PRESET
 from .._resources import AutomationProperties
 from .._typing.generics import EngineHub
 from .._typing.generics import ModelName
@@ -45,7 +46,7 @@ def _base_model__create_model_table_in_database(ctx: AutomationContext) -> None:
         # Creación del modelo
         ctx.action(
             'base.model',
-            'create_model',
+            PRESET.AUTOMATION.BASE_MODEL__CREATE_TABLE_ON_DATABASE,
             model_id,
         )
 
@@ -159,7 +160,7 @@ def _base_model__drop_table(ctx: AutomationContext) -> None:
         # Eliminación del modelo
         ctx.action(
             'base.model',
-            'delete',
+            PRESET.AUTOMATION.BASE_MODEL__DROP_TABLE,
             record['id'],
         )
 
@@ -194,13 +195,13 @@ def _base_model_field__create_field_column(ctx: AutomationContext) -> None:
         # Creación de la columna en la tabla
         ctx.action(
             'base.model.field',
-            'create_column',
+            PRESET.AUTOMATION.BASE_MODEL_FIELD__CREATE_COLUMN,
             record['id'],
         )
         # Registro de la instancia en el modelo
         ctx.action(
             'base.model.field',
-            'register_on_model',
+            PRESET.AUTOMATION.BASE_MODEL_FIELD__REGISTER_ON_MODEL,
             record['id'],
         )
 
@@ -230,13 +231,13 @@ def _base_model_field__restore_models_structure(ctx: AutomationContext) -> None:
         # Eliminación del modelo únicamente de los metadatos de SQLAlchemy
         ctx.action(
             'base.model',
-            'delete_model',
+            PRESET.AUTOMATION.BASE_MODEL__DELETE_MODEL,
             model_id,
         )
         # Restauración del modelo con los campos restantes
         ctx.action(
             'base.model',
-            'restore',
+            PRESET.AUTOMATION.BASE_MODEL__RESTORE,
             model_id,
         )
 

@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 from .._constants import FACTORY_FIELDS
+from .._constants import PRESET
 from .._resources import ActionProperties
 from .._typing.generics import EngineHub
 from .._typing.generics import ModelName
@@ -144,7 +145,7 @@ def _base_model__restore(ctx: ActionContext):
     # Creación del modelo SQLAlchemy
     ctx.action(
         'base.model',
-        'create_model_only',
+        PRESET.AUTOMATION.BASE_MODEL__CREATE_MODEL,
         ctx.data['id'],
     )
 
@@ -168,33 +169,33 @@ def _base_model__restore(ctx: ActionContext):
         # Registro de la instancia del campo en el modelo
         ctx.action(
             'base.model.field',
-            'register_on_model',
+            PRESET.AUTOMATION.BASE_MODEL_FIELD__REGISTER_ON_MODEL,
             field_id,
         )
 
 PRESET_ACTIONS: EngineHub[_M, ActionProperties[_M]] = {
 
     'base.model': {
-        'create_model': ActionProperties(
+        PRESET.AUTOMATION.BASE_MODEL__CREATE_TABLE_ON_DATABASE: ActionProperties(
             'base.model',
             _base_model__create_table_on_database,
         ),
-        'create_model_only': ActionProperties(
+        PRESET.AUTOMATION.BASE_MODEL__CREATE_MODEL: ActionProperties(
             'base.model',
             _base_model__create_model,
             ('name', 'model', 'has_sequence', 'is_archivable', 'has_label'),
         ),
-        'delete': ActionProperties(
+        PRESET.AUTOMATION.BASE_MODEL__DROP_TABLE: ActionProperties(
             'base.model',
             _base_model__drop_table,
             ('name',),
         ),
-        'delete_model': ActionProperties(
+        PRESET.AUTOMATION.BASE_MODEL__DELETE_MODEL: ActionProperties(
             'base.model',
             _base_model__delete_model,
             ('model',),
         ),
-        'restore': ActionProperties(
+        PRESET.AUTOMATION.BASE_MODEL__RESTORE: ActionProperties(
             'base.model',
             _base_model__restore,
             ('id',),
@@ -203,17 +204,17 @@ PRESET_ACTIONS: EngineHub[_M, ActionProperties[_M]] = {
 
     'base.model.field': {
 
-        'create_column': ActionProperties(
+        PRESET.AUTOMATION.BASE_MODEL_FIELD__CREATE_COLUMN: ActionProperties(
             'base.model.field',
             _base_model_field__create_column,
             ('name', 'ttype', 'model_id.name', 'related_model_id.name', 'default_value', 'on_delete'),
         ),
-        'register_on_model': ActionProperties(
+        PRESET.AUTOMATION.BASE_MODEL_FIELD__REGISTER_ON_MODEL: ActionProperties(
             'base.model.field',
             _base_model_field__register_on_model,
             ('name', 'ttype', 'model_id.model', 'related_model_id.name', 'nullable', 'unique', 'default_value', 'on_delete'),
         ),
-        'drop_column': ActionProperties(
+        PRESET.AUTOMATION.BASE_MODEL_FIELD__DROP_COLUMN: ActionProperties(
             'base.model.field',
             _drop_column,
             ('name', 'model_id.name'),

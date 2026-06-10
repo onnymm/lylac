@@ -187,3 +187,15 @@ class PRESET:
     class SERVER_TASK:
 
         UPDATE_INSTANCE_METADATA = 'update_instance_metadata'
+
+    class AUTOMATION:
+
+        BASE_MODEL__CREATE_TABLE_ON_DATABASE = 'create_table_on_database'
+        BASE_MODEL__CREATE_MODEL = 'create_model'
+        BASE_MODEL__DROP_TABLE = 'drop_table'
+        BASE_MODEL__DELETE_MODEL = 'delete_model'
+        BASE_MODEL__RESTORE = 'restore'
+
+        BASE_MODEL_FIELD__CREATE_COLUMN = 'create_column'
+        BASE_MODEL_FIELD__REGISTER_ON_MODEL = 'register_on_model'
+        BASE_MODEL_FIELD__DROP_COLUMN = 'drop_column'
