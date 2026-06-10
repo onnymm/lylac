@@ -176,30 +176,36 @@ def _base_model__restore(ctx: ActionContext):
 PRESET_ACTIONS: EngineHub[_M, ActionProperties[_M]] = {
 
     'base.model': {
+
         PRESET.AUTOMATION.BASE_MODEL__CREATE_TABLE_ON_DATABASE: ActionProperties(
             'base.model',
             _base_model__create_table_on_database,
         ),
+
         PRESET.AUTOMATION.BASE_MODEL__CREATE_MODEL: ActionProperties(
             'base.model',
             _base_model__create_model,
             ('name', 'model', 'has_sequence', 'is_archivable', 'has_label'),
         ),
+
         PRESET.AUTOMATION.BASE_MODEL__DROP_TABLE: ActionProperties(
             'base.model',
             _base_model__drop_table,
             ('name',),
         ),
+
         PRESET.AUTOMATION.BASE_MODEL__DELETE_MODEL: ActionProperties(
             'base.model',
             _base_model__delete_model,
             ('model',),
         ),
+
         PRESET.AUTOMATION.BASE_MODEL__RESTORE: ActionProperties(
             'base.model',
             _base_model__restore,
             ('id',),
-        )
+        ),
+
     },
 
     'base.model.field': {
@@ -209,16 +215,19 @@ PRESET_ACTIONS: EngineHub[_M, ActionProperties[_M]] = {
             _base_model_field__create_column,
             ('name', 'ttype', 'model_id.name', 'related_model_id.name', 'default_value', 'on_delete'),
         ),
+
         PRESET.AUTOMATION.BASE_MODEL_FIELD__REGISTER_ON_MODEL: ActionProperties(
             'base.model.field',
             _base_model_field__register_on_model,
             ('name', 'ttype', 'model_id.model', 'related_model_id.name', 'nullable', 'unique', 'default_value', 'on_delete'),
         ),
+
         PRESET.AUTOMATION.BASE_MODEL_FIELD__DROP_COLUMN: ActionProperties(
             'base.model.field',
             _drop_column,
             ('name', 'model_id.name'),
         ),
+
     },
 
 }

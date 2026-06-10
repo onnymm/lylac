@@ -416,15 +416,18 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
     },
 
     'base.users.role': {
+
         _base_users_role__register_model_data.__name__: AutomationProperties(
             callback= _base_users_role__register_model_data,
             model_name= 'base.users.role',
             fields= ('name',),
             execute_only_when= [],
         ),
+
     },
 
     'base.rules': {
+
         _base_rules__register_model_data.__name__: AutomationProperties(
             callback= _base_rules__register_model_data,
             model_name= 'base.rules',
@@ -434,6 +437,7 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
             ),
             execute_only_when= [],
         ),
+
     },
 
 }
