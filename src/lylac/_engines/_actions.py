@@ -3,8 +3,6 @@ from typing import Literal
 from typing import TYPE_CHECKING
 from .._constants import ERROR_LABEL
 from .._contexts import ActionContext as _ActionContext
-from .._contracts.contexts import Contract_ExecutionContext
-from .._contracts import _Contract_CRUD
 from .._data import PRESET_ACTIONS
 from .._resources import ActionProperties
 from .._resources import DatabaseMetadata
@@ -16,14 +14,16 @@ from .._typing.type_parameters import _M
 from ..errors import ActionExecutionError
 
 if TYPE_CHECKING:
+    from .._contexts import ExecutionContext
     from .._operations import DDL
+    from .._orchestrator import CRUD
 
 class ActionEngine(Generic[_M]):
 
     def __init__(
         self,
         ddl: DDL[_M],
-        crud: _Contract_CRUD[_M],
+        crud: CRUD[_M],
     ) -> None:
 
         # Asignación de valores
@@ -76,7 +76,7 @@ class ActionEngine(Generic[_M]):
 
     def execute(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         name: str,
         record_id: int,

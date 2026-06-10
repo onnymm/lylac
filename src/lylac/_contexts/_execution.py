@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 from .._contexts.engines import BaseContext
 
 class ExecutionContext(Generic[_M], BaseContext[_M]):
-    _to_execute_after_commit: list[Callable[[ExecutionContext], None]]
+    _to_execute_after_commit: list[Callable[[ExecutionContext[_M]], None]]
 
     def __init__(
         self,

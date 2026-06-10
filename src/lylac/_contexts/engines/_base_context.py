@@ -2,7 +2,6 @@ from typing import Generic
 from typing import Literal
 from typing import Optional
 from typing import TYPE_CHECKING
-from ..._contracts.contexts.engines import Contract_BaseContext
 from ..._resources import ModelDataIndex
 from ..._typing.generics import ItemOrList
 from ..._typing.generics import MaybeNone
@@ -17,7 +16,7 @@ if TYPE_CHECKING:
     from ..._contexts import ExecutionContext
     from ..._orchestrator import CRUD
 
-class BaseContext(Generic[_M], Contract_BaseContext[_M]):
+class BaseContext(Generic[_M]):
     _crud: CRUD[_M]
     _execution_ctx: ExecutionContext[_M]
     _model_data_index: ModelDataIndex

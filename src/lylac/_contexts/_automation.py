@@ -1,7 +1,5 @@
 from typing import Generic
 from typing import TYPE_CHECKING
-from .._contracts import _Contract_CRUD
-from .._contracts.contexts import Contract_ExecutionContext
 from .._resources import ModelDataIndex
 from .._typing.generics import ModelName
 from .._typing.type_parameters import _M
@@ -10,6 +8,8 @@ from .engines import BaseContext
 
 if TYPE_CHECKING:
     from .._operations import DDL
+    from .._orchestrator import CRUD
+    from .._contexts import ExecutionContext
 
 class AutomationContext(Generic[_M, _R], BaseContext[_M]):
     records: list[_R]
@@ -17,8 +17,8 @@ class AutomationContext(Generic[_M, _R], BaseContext[_M]):
     def __init__(
         self,
         records: list[_R],
-        execution_ctx: Contract_ExecutionContext[_M],
-        crud: _Contract_CRUD[_M],
+        execution_ctx: ExecutionContext[_M],
+        crud: CRUD[_M],
         ddl: DDL[_M]
     ) -> None:
 

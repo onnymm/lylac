@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 from .._constants import FIELD_NAME
 from .._constants import ERROR_LABEL
 from .._contexts import AutomationContext
-from .._contracts import _Contract_CRUD
 from .._data import DEFAULT_ON_CREATE_AUTOMATIONS
 from .._data import DEFAULT_ON_UPDATE_AUTOMATIONS
 from .._data import DEFAULT_ON_DELETE_AUTOMATIONS
@@ -20,11 +19,12 @@ from .._typing.literals import DMLTransaction
 from .._typing.structures import CriteriaStructure
 from .._typing.structures import FieldReadDeclaration
 from .._typing.type_parameters import _M
-from .._contracts.contexts import Contract_ExecutionContext
 from ..errors import AutomationExecutionError
 
 if TYPE_CHECKING:
+    from .._contexts import ExecutionContext
     from .._operations import DDL
+    from .._orchestrator import CRUD
 
 class AutomationsEngine(Generic[_M]):
     _hub: Slot[_M, AutomationProperties[_M]]
@@ -32,7 +32,7 @@ class AutomationsEngine(Generic[_M]):
     def __init__(
         self,
         ddl: 'DDL',
-        crud: _Contract_CRUD[_M],
+        crud: CRUD[_M],
     ) -> None:
 
         # Asignación de valores
@@ -101,7 +101,7 @@ class AutomationsEngine(Generic[_M]):
 
     def execute_on_create(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         record_ids: list[int],
     ) -> None:
@@ -145,7 +145,7 @@ class AutomationsEngine(Generic[_M]):
 
     def execute_on_update(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         record_ids: list[int],
     ) -> None:
@@ -189,7 +189,7 @@ class AutomationsEngine(Generic[_M]):
 
     def prepare_on_delete(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         record_ids: list[int],
     ) -> CaptureIDsAfterDeletionFn:

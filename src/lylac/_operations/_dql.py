@@ -1,5 +1,6 @@
 from typing import Generic
 from typing import Optional
+from typing import TYPE_CHECKING
 from sqlalchemy import asc
 from sqlalchemy import desc
 from sqlalchemy import select
@@ -8,7 +9,6 @@ from sqlalchemy.orm import InstrumentedAttribute
 from .._constants import FIELD_NAME
 from .._contexts import FrameContext
 from .._contexts import WhereContext
-from .._contracts.contexts import Contract_ExecutionContext
 from .._resources import InputProcessing
 from .._resources import OutputParser
 from .._typing.generics import ItemOrList
@@ -18,6 +18,9 @@ from .._typing.structures import CriteriaStructure
 from .._typing.structures import FrameReadField
 from .._typing.type_parameters import _M
 from .._utils import to_list
+
+if TYPE_CHECKING:
+    from .._contexts import ExecutionContext
 
 class DQL(Generic[_M]):
     _sorting_direction = {
@@ -34,7 +37,7 @@ class DQL(Generic[_M]):
 
     def search(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         search_criteria: CriteriaStructure = [],
         offset: Optional[int] = None,
@@ -103,7 +106,7 @@ class DQL(Generic[_M]):
 
     def read(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         record_ids: list[int],
         fields: list[FrameReadField] = [],
@@ -169,7 +172,7 @@ class DQL(Generic[_M]):
 
     def search_read(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         search_criteria: CriteriaStructure = [],
         fields: list[FrameReadField] = [],
@@ -255,7 +258,7 @@ class DQL(Generic[_M]):
 
     def search_count(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         search_criteria: CriteriaStructure = [],
     ) -> int:
@@ -356,7 +359,7 @@ class DQL(Generic[_M]):
 
     def _normalize_fields(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         fields: list[FrameReadField] = [],
     ) -> list[FrameReadField]:
@@ -376,7 +379,7 @@ class DQL(Generic[_M]):
 
     def _create_frame_context(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
     ) -> FrameContext[_M]:
 

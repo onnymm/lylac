@@ -1,21 +1,24 @@
 from typing import Generic
 from typing import Sequence
+from typing import TYPE_CHECKING
 from sqlalchemy import insert
 from sqlalchemy import update
 from sqlalchemy import delete
 from .._constants import FIELD_NAME
-from .._contracts.contexts import Contract_ExecutionContext
-from .._contracts.contexts import Contract_RelationOperationsContext
 from .._typing.generics import ModelName
 from .._typing.structures import RecordData
 from .._typing.type_parameters import _M
+
+if TYPE_CHECKING:
+    from .._contexts import ExecutionContext
+    from .._contexts import RelationOperationsContext
 
 class DML(Generic[_M]):
 
     def create(
         self,
-        rel_op_ctx: Contract_RelationOperationsContext[_M],
-        execution_ctx: Contract_ExecutionContext[_M],
+        rel_op_ctx: RelationOperationsContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         data: list[RecordData],
     ) -> list[int]:
@@ -55,8 +58,8 @@ class DML(Generic[_M]):
 
     def update(
         self,
-        rel_op_ctx: Contract_RelationOperationsContext[_M],
-        execution_ctx: Contract_ExecutionContext[_M],
+        rel_op_ctx: RelationOperationsContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         record_ids: list[int],
         data: RecordData,
@@ -93,7 +96,7 @@ class DML(Generic[_M]):
 
     def delete(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         record_ids: list[int],
     ) -> list[int]:

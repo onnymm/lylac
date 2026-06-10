@@ -1,9 +1,8 @@
 from typing import Generic
 from typing import Literal
+from typing import TYPE_CHECKING
 from .._constants import ERROR_LABEL
 from .._contexts import ServerTaskContext as _ServerTaskContext
-from .._contracts import _Contract_CRUD
-from .._contracts.contexts import Contract_ExecutionContext
 from .._data import PRESET_SERVER_TASKS
 from .._resources import ServerTaskProperties
 from .._typing.callables import ServerTaskCallback
@@ -12,11 +11,15 @@ from .._typing.generics import FunctionDecorator
 from .._typing.type_parameters import _M
 from ..errors import SeverTaskExecutionError
 
+if TYPE_CHECKING:
+    from .._contexts import ExecutionContext
+    from .._orchestrator import CRUD
+
 class ServerTasksEngine(Generic[_M]):
 
     def __init__(
         self,
-        crud: _Contract_CRUD[_M],
+        crud: CRUD[_M],
     ) -> None:
 
         # Asignación de valores
@@ -44,7 +47,7 @@ class ServerTasksEngine(Generic[_M]):
 
     def execute(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         name: str,
     ) -> Literal[True]:
 

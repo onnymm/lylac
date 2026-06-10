@@ -1,9 +1,8 @@
 from typing import Callable
 from typing import Generic
+from typing import TYPE_CHECKING
 from .._constants import ERROR_LABEL
 from .._contexts import ValidationContext as ValidationContext
-from .._contracts import _Contract_CRUD
-from .._contracts.contexts import Contract_ExecutionContext
 from .._data import PRESET_VALIDATIONS
 from .._resources import DatabaseMetadata
 from .._resources import ErrorDetail
@@ -18,6 +17,10 @@ from .._typing.literals import DMLTransaction
 from .._typing.structures import RecordData
 from .._typing.type_parameters import _M
 from ..errors import ValidationExecutionError
+
+if TYPE_CHECKING:
+    from .._contexts import ExecutionContext
+    from .._orchestrator import CRUD
 
 class TRANSACTION_NAME:
     CREATE = 'create'
@@ -35,7 +38,7 @@ class ValidationEngine(Generic[_M]):
 
     def __init__(
         self,
-        crud: _Contract_CRUD[_M],
+        crud: CRUD[_M],
     ) -> None:
 
         # Asignación de valores
@@ -86,7 +89,7 @@ class ValidationEngine(Generic[_M]):
     def validate(
         self,
         on: DMLTransaction,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         records: list[RecordData],
     ) -> None:
@@ -201,7 +204,7 @@ class ValidationEngine(Generic[_M]):
 
     def _get_ttypes(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
     ) -> dict[str, TTypeName]:
 

@@ -3,6 +3,7 @@ from typing import Callable
 from typing import Generic
 from typing import Literal
 from typing import TypedDict
+from typing import TYPE_CHECKING
 from sqlalchemy import and_
 from sqlalchemy import delete
 from sqlalchemy import insert
@@ -11,9 +12,6 @@ from sqlalchemy.orm import aliased
 from .._constants import FIELD_NAME
 from .._constants import RELATION_ACTIONS
 from .._constants import RELATION_ACTION_NAME
-from .._contracts import _Contract_CRUD
-from .._contracts.contexts import Contract_RelationOperationsContext
-from .._contracts.contexts import Contract_ExecutionContext
 from .._core import Metadata
 from .._resources import ModelsBearer
 from .._typing.callables import CaptureCreatedRecordID
@@ -30,6 +28,10 @@ from .._typing.structures import RecordIDs
 from .._typing.type_parameters import _M
 from .._utils import to_list
 
+if TYPE_CHECKING:
+    from .._contexts import ExecutionContext
+    from .._orchestrator import CRUD
+
 class _FieldMetadata(TypedDict, Generic[_M]):
     name: str
     related_field: str
@@ -39,11 +41,11 @@ class _FieldMetadata(TypedDict, Generic[_M]):
 
 class _BaseRelation_CRUD(Generic[_M]):
     _model_name: ModelName[_M]
-    _commands_map: dict[RelationActionName, Callable[[Contract_ExecutionContext[_M], Any], CaptureRecordID[_M]]]
+    _commands_map: dict[RelationActionName, Callable[[ExecutionContext[_M], Any], CaptureRecordID[_M]]]
 
     def capture_commands_for_field(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         relation_commands: RelationCommands,
         capture_id_functions: list[CaptureRecordID],
     ) -> None:
@@ -61,7 +63,7 @@ class _BaseRelation_CRUD(Generic[_M]):
 
     def _build_update(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         update_data: ItemOrList[tuple[RecordIDs, RecordData]],
     ) -> CaptureRecordID[_M]:
 
@@ -70,7 +72,7 @@ class _BaseRelation_CRUD(Generic[_M]):
 
         def update_records(created_or_updated_id: int) -> CRUD_Operation[_M]:
             # Inicialización de función de operación de relación
-            def crud_operation(crud: _Contract_CRUD[_M]) -> None:
+            def crud_operation(crud: CRUD[_M]) -> None:
                 # Iteración por cada tupla de datos
                 for ( record_ids, records_data ) in update_data:
                     # Modificación
@@ -87,7 +89,7 @@ class _BaseRelation_CRUD(Generic[_M]):
 
     def _build_delete(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         record_ids: RecordIDs,
     ) -> CaptureRecordID[_M]:
 
@@ -108,31 +110,31 @@ class _BaseRelation_CRUD(Generic[_M]):
 
     def _build_create(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         records_data: ItemOrList[RecordData],
     ) -> CaptureRecordID[_M]:
         ...
     def _build_add(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         record_ids: RecordIDs,
     ) -> CaptureRecordID[_M]:
         ...
     def _build_unlink(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         record_ids: RecordIDs,
     ) -> CaptureRecordID[_M]:
         ...
     def _build_replace(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         record_ids: RecordIDs,
     ) -> CaptureRecordID[_M]:
         ...
     def _build_clear(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         _: Literal[True] = True,
     ) -> CaptureRecordID[_M]:
         ...
@@ -168,7 +170,7 @@ class _Many2One_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
 
     def _build_create(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         records_data: ItemOrList[RecordData],
     ) -> CaptureRecordID[_M]:
 
@@ -194,7 +196,7 @@ class _Many2One_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
 
     def _build_add(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         record_ids: RecordIDs,
     ) -> CaptureRecordID[_M]:
 
@@ -203,7 +205,7 @@ class _Many2One_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
 
         def add_records(created_or_updated_id: int) -> CRUD_Operation[_M]:
             # Inicialización de función de operación de relación
-            def crud_operation(crud: _Contract_CRUD[_M]):
+            def crud_operation(crud: CRUD[_M]):
                 # Iteración por cada ID de registro
                 for record_id in record_ids:
                     # Modificación del campo
@@ -220,7 +222,7 @@ class _Many2One_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
 
     def _build_unlink(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         record_ids: RecordIDs,
     ) -> CaptureRecordID[_M]:
 
@@ -242,7 +244,7 @@ class _Many2One_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
 
     def _build_replace(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         record_ids: RecordIDs,
     ) -> CaptureRecordID[_M]:
 
@@ -251,7 +253,7 @@ class _Many2One_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
 
         def replace_records(created_or_updated_id: int) -> CRUD_Operation[_M]:
             # Inicialización de función de operación de relación
-            def crud_operation(crud: _Contract_CRUD[_M]) -> None:
+            def crud_operation(crud: CRUD[_M]) -> None:
                 # Búsqueda de IDs a reemplazar
                 old_record_ids = crud.search(
                     execution_ctx,
@@ -279,13 +281,13 @@ class _Many2One_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
 
     def _build_clear(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         _: Literal[True] = True,
     ) -> CaptureRecordID[_M]:
 
         def clear_records(created_or_updated_id: int) -> CRUD_Operation[_M]:
             # Inicialización de función de operación de relación
-            def crud_operation(crud: _Contract_CRUD[_M]) -> None:
+            def crud_operation(crud: CRUD[_M]) -> None:
                 # Búsqueda de IDs a limpiar
                 records_to_clear = crud.search(
                     execution_ctx,
@@ -321,7 +323,7 @@ class _Many2Many_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
 
     def _build_create(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         records_data: ItemOrList[RecordData],
     ) -> CaptureRecordID[_M]:
 
@@ -333,7 +335,7 @@ class _Many2Many_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
                 records_data,
             )
             # Creación de función envuelta para captura de IDs creadas
-            def wrapped_create_records(crud: _Contract_CRUD[_M]):
+            def wrapped_create_records(crud: CRUD[_M]):
                 # Ejecución de la operación y captura de IDs de registros creados
                 created_ids = crud_operation(crud)
                 # Creación de las relaciones en el modelo de relación
@@ -345,7 +347,7 @@ class _Many2Many_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
 
     def _build_add(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         record_ids: RecordIDs,
     ) -> CaptureRecordID[_M]:
 
@@ -366,7 +368,7 @@ class _Many2Many_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
 
     def _build_unlink(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         record_ids: RecordIDs,
     ) -> CaptureRecordID[_M]:
 
@@ -387,7 +389,7 @@ class _Many2Many_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
 
     def _build_replace(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         record_ids: RecordIDs,
     ) -> CaptureRecordID[_M]:
 
@@ -396,7 +398,7 @@ class _Many2Many_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
 
         def replace_records(created_or_updated_id: int) -> CRUD_Operation[_M]:
             # Inicialización de función de operación de relación
-            def crud_operation(_: _Contract_CRUD[_M]) -> None:
+            def crud_operation(_: CRUD[_M]) -> None:
                 # Eliminación de relaciones existentes
                 self._clear_relations(created_or_updated_id, execution_ctx)
                 # Creación de relaciones
@@ -412,7 +414,7 @@ class _Many2Many_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
 
     def _build_clear(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         _: Literal[True] = True,
     ) -> CaptureRecordID[_M]:
 
@@ -431,7 +433,7 @@ class _Many2Many_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
         self,
         x: int,
         y: list[int],
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
     ) -> None:
 
         # Creación de diccionario de datos
@@ -456,7 +458,7 @@ class _Many2Many_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
         self,
         x: int,
         y: list[int],
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
     ) -> None:
 
         # Creación del query
@@ -476,7 +478,7 @@ class _Many2Many_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
     def _clear_relations(
         self,
         x: int,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
     ) -> None:
 
         # Creación de query
@@ -490,11 +492,11 @@ class _Many2Many_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
         # Ejecución del query
         execution_ctx.conn.execute(stmt)
 
-class RelationOperationsContext(Generic[_M], Contract_RelationOperationsContext[_M]):
+class RelationOperationsContext(Generic[_M]):
 
     def __init__(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         models_bearer: ModelsBearer[_M],
     ) -> None:
@@ -593,7 +595,7 @@ class RelationOperationsContext(Generic[_M], Contract_RelationOperationsContext[
 
     def run_relation_operations(
         self,
-        crud: _Contract_CRUD[_M],
+        crud: CRUD[_M],
     ) -> None:
 
         # Iteración por cada función a ejecutar

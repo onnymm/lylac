@@ -1,5 +1,6 @@
 from typing import Callable
 from typing import Generic
+from typing import TYPE_CHECKING
 from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList
@@ -7,8 +8,6 @@ from sqlalchemy import and_
 from sqlalchemy import not_
 from sqlalchemy import or_
 from .._constants import ERROR_LABEL
-from .._contracts.contexts import Contract_FrameContext
-from .._contracts.contexts import Contract_WhereContext
 from .._typing.structures import CriteriaStructure
 from .._typing.structures import TripletStructure
 from .._typing.structures import ComparisonOperator
@@ -16,7 +15,10 @@ from .._typing.structures import LogicOperator
 from .._typing.structures import RecordValue
 from .._typing.type_parameters import _M
 
-class WhereContext(Generic[_M], Contract_WhereContext[_M]):
+if TYPE_CHECKING:
+    from .._contexts import FrameContext
+
+class WhereContext(Generic[_M]):
     _comparison_expression: dict[ComparisonOperator, Callable[[InstrumentedAttribute, RecordValue], BinaryExpression]] = {
         '=': lambda field_instance, value: field_instance == value,
         '!=': lambda field, value: field != value,
@@ -38,7 +40,7 @@ class WhereContext(Generic[_M], Contract_WhereContext[_M]):
 
     def __init__(
         self,
-        frame_ctx: Contract_FrameContext[_M],
+        frame_ctx: FrameContext[_M],
     ) -> None:
 
         # Asignación de instancia de contexto de frame

@@ -1,14 +1,13 @@
 from typing import Generic
 from typing import Literal
 from typing import Optional
+from typing import TYPE_CHECKING
 from sqlalchemy import select
 from sqlalchemy import func
 from .._constants import FIELD_NAME
 from .._constants import MODEL_NAME
 from .._contexts import ExpansionContext
 from .._contexts import RelationOperationsContext
-from .._contracts import _Contract_CRUD
-from .._contracts.contexts import Contract_ExecutionContext
 from .._operations import DQL
 from .._operations import DML
 from .._resources import InputProcessing
@@ -27,7 +26,10 @@ from .._utils import parse_record_rule
 from ..errors import PermissionDeniedError
 from ..errors import RecordRulesPermissionError
 
-class CRUD(Generic[_M], _Contract_CRUD[_M]):
+if TYPE_CHECKING:
+    from .._contexts import ExecutionContext
+
+class CRUD(Generic[_M]):
     PERMISSIONS_BYPASS: bool = True
     _adapter: dict[CRUDPermission, CRUDPermissionColumnName] = {
         'create': 'perm_create',
@@ -38,7 +40,7 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
 
     def _check_access(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         permission: CRUDPermission = None,
     ) -> None:
@@ -159,7 +161,7 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
 
     def create(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         data: ItemOrList[RecordData],
     ) -> list[int]:
@@ -205,7 +207,7 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
 
     def search(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         search_criteria: CriteriaStructure = [],
         offset: Optional[int] = None,
@@ -240,7 +242,7 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
 
     def search_read(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         search_criteria: CriteriaStructure = [],
         fields: list[FieldReadDeclaration] = [],
@@ -292,7 +294,7 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
 
     def search_count(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         search_criteria: CriteriaStructure = [],
     ) -> int:
@@ -323,7 +325,7 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
 
     def read(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         record_ids: ItemOrList[int],
         fields: list[FieldReadDeclaration] = [],
@@ -375,7 +377,7 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
 
     def update(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         record_ids: ItemOrList[int],
         data: RecordData,
@@ -432,7 +434,7 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
 
     def delete(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         record_ids: ItemOrList[int],
     ) -> Literal[True]:
@@ -476,7 +478,7 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
 
     def _evalute_allowed_ids(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         permission: CRUDPermission,
         model_name: ModelName[_M],
         declared_record_ids: list[int],
@@ -507,7 +509,7 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
 
     def _get_record_rules(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         permission: CRUDPermission,
         model_name: ModelName[_M],
         search_criteria: CriteriaStructure = [],
@@ -660,7 +662,7 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
     def _add_create_and_update_uid(
         self,
         data: list[dict],
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
     ) -> list[dict]:
 
         # Iteración por cada registro en los datos
@@ -674,7 +676,7 @@ class CRUD(Generic[_M], _Contract_CRUD[_M]):
     def _add_update_uid(
         self,
         data: RecordData,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
     ) -> RecordData:
 
         # Se coloca la ID de usuario del contexto de ejecución

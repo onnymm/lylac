@@ -1,7 +1,11 @@
+from datetime import datetime
 from typing import Any
 from typing import Generic
+from typing import Literal
 from typing import Iterable
 from typing import Optional
+from typing import overload
+from typing import TYPE_CHECKING
 from sqlalchemy import types
 from sqlalchemy import and_
 from sqlalchemy import asc
@@ -19,9 +23,6 @@ from sqlalchemy.sql.type_api import TypeEngine
 from .._constants import FIELD_NAME
 from .._constants import FIELD_SUFFIX
 from .._constants import RELATION_PATH_SEPARATOR
-from .._contracts.contexts import Contract_ComputeContext
-from .._contracts.contexts import Contract_FrameContext
-from .._contracts.engines import Contract_ComputationEngine
 from .._typing.callables import AggFunc
 from .._typing.callables import ComputeFieldFn
 from .._typing.structures import CriteriaStructure
@@ -29,7 +30,11 @@ from .._typing.type_parameters import _M
 from .._typing.literals import AggFuncName
 from .._typing.literals import TTypeName
 
-class ComputeContext(Generic[_M], Contract_ComputeContext[_M]):
+if TYPE_CHECKING:
+    from .._contexts import FrameContext
+    from .._engines import ComputeEngine
+
+class ComputeContext(Generic[_M]):
     _zero_value = {
         'integer': 0,
         'duration': '00:00',
@@ -63,10 +68,53 @@ class ComputeContext(Generic[_M], Contract_ComputeContext[_M]):
     Diccionario de casteos disponibles.
     """
 
+    @overload
+    def __getitem__(
+        self,
+        field_name: Literal['id'],
+    ) -> InstrumentedAttribute[int]:
+        ...
+    @overload
+    def __getitem__(
+        self,
+        field_name: Literal['name'],
+    ) -> InstrumentedAttribute[str]:
+        ...
+    @overload
+    def __getitem__(
+        self,
+        field_name: Literal['create_date'],
+    ) -> InstrumentedAttribute[datetime]:
+        ...
+    @overload
+    def __getitem__(
+        self,
+        field_name: Literal['update_date'],
+    ) -> InstrumentedAttribute[datetime]:
+        ...
+    @overload
+    def __getitem__(
+        self,
+        field_name: Literal['create_uid'],
+    ) -> InstrumentedAttribute[int]:
+        ...
+    @overload
+    def __getitem__(
+        self,
+        field_name: Literal['update_uid'],
+    ) -> InstrumentedAttribute[int]:
+        ...
+    @overload
+    def __getitem__(
+        self,
+        field_name: Literal['display_name'],
+    ) -> InstrumentedAttribute[str]:
+        ...
+
     def __init__(
         self,
-        frame_ctx: Contract_FrameContext[_M],
-        engine: Contract_ComputationEngine[_M],
+        frame_ctx: FrameContext[_M],
+        engine: ComputeEngine[_M],
     ) -> None:
 
         # Asignación de contexto de frame

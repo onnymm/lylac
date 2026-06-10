@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from .._contexts import ValidationContext
     from .._contexts import ServerTaskContext
     from .._contexts import TransactionContext
-    from .._contracts import _Contract_CRUD
+    from .._orchestrator import CRUD
     from .._resources import ModelColumnBasicAtts
 
 ExecutionCallback = Callable[[Connection], _T]
@@ -42,7 +42,7 @@ from typing import TYPE_CHECKING
 
 AutomationCallback = Callable[['AutomationContext[_M, _R]'], None]
 
-CRUD_Operation = Callable[['_Contract_CRUD[_M]'], Any]
+CRUD_Operation = Callable[['CRUD[_M]'], Any]
 
 CaptureRecordID = Callable[[int], 'CRUD_Operation[_M]']
 

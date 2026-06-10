@@ -1,8 +1,5 @@
 from typing import Generic
 from typing import TYPE_CHECKING
-from .._contracts import _Contract_CRUD
-from .._contracts.engines import Contract_ComputationEngine
-from .._contracts.contexts import Contract_ExecutionContext
 from .._data import DEFAULT_COMPUTATION_CALLBACKS
 from .._resources import DatabaseMetadata
 from .._typing.generics import ModelName
@@ -11,10 +8,12 @@ from .._typing.structures import ComputeContextHub
 from .._typing.type_parameters import _M
 
 if TYPE_CHECKING:
+    from .._contexts import ExecutionContext
+    from .._orchestrator import CRUD
     from .._typing.callables import CaptureComputeCallback
     from .._typing.callables import ComputeFieldFn
 
-class ComputeEngine(Generic[_M], Contract_ComputationEngine[_M]):
+class ComputeEngine(Generic[_M]):
     _presets: ComputeContextHub[_M] = DEFAULT_COMPUTATION_CALLBACKS
 
     def __init__(
@@ -55,8 +54,8 @@ class ComputeEngine(Generic[_M], Contract_ComputationEngine[_M]):
 
     def register_field(
         self,
-        crud: _Contract_CRUD[_M],
-        execution_ctx: Contract_ExecutionContext[_M],
+        crud: CRUD[_M],
+        execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         name: str,
         label: str,

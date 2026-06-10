@@ -1,15 +1,15 @@
 from typing import Generic
 from typing import TYPE_CHECKING
 from .._constants import FIELD_NAME
-from .._contracts import _Contract_CRUD
-from .._contracts.contexts import Contract_ExecutionContext
 from .._resources import ModelDataIndex
 from .._typing.type_parameters import _M
 from .._typing.type_parameters import _R
 from .engines import BaseContext
 
 if TYPE_CHECKING:
+    from .._contexts import ExecutionContext
     from .._operations import DDL
+    from .._orchestrator import CRUD
 
 class ActionContext(Generic[_M, _R], BaseContext[_M]):
     data: _R
@@ -17,8 +17,8 @@ class ActionContext(Generic[_M, _R], BaseContext[_M]):
 
     def __init__(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
-        crud: _Contract_CRUD[_M],
+        execution_ctx: ExecutionContext[_M],
+        crud: CRUD[_M],
         record: _R,
         ddl: DDL[_M],
     ) -> None:

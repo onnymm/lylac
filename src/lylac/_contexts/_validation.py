@@ -1,8 +1,7 @@
 from typing import Any
 from typing import Generic
+from typing import TYPE_CHECKING
 from .._contexts.engines import BaseContext
-from .._contracts import _Contract_CRUD
-from .._contracts.contexts import Contract_ExecutionContext
 from .._resources import ErrorDetail
 from .._resources import ModelDataIndex
 from .._typing.generics import ModelName
@@ -12,6 +11,10 @@ from .._typing.structures import TripletStructure
 from .._typing.type_parameters import _M
 from .._typing.type_parameters import _R
 
+if TYPE_CHECKING:
+    from .._contexts import ExecutionContext
+    from .._orchestrator import CRUD
+
 class ValidationContext(Generic[_M, _R], BaseContext[_M]):
     model_name: ModelName[_M]
     records: list[_R]
@@ -19,8 +22,8 @@ class ValidationContext(Generic[_M, _R], BaseContext[_M]):
 
     def __init__(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
-        crud: _Contract_CRUD[_M],
+        execution_ctx: ExecutionContext[_M],
+        crud: CRUD[_M],
         model_name: ModelName[_M],
         records: list[_R],
         errors: list[ErrorDetail],

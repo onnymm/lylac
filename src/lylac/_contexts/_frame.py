@@ -2,6 +2,7 @@ from typing import Any
 from typing import Generator
 from typing import Generic
 from typing import Optional
+from typing import TYPE_CHECKING
 from sqlalchemy import Subquery
 from sqlalchemy import select
 from sqlalchemy import func
@@ -15,8 +16,6 @@ from .._constants import FIELD_NAME
 from .._constants import FIELD_SUFFIX
 from .._constants import RELATION_PATH_SEPARATOR
 from .._constants import ROOT_PATH
-from .._contracts.contexts import Contract_FrameContext
-from .._contracts.engines import Contract_ComputationEngine
 from .._resources import DatabaseMetadata
 from .._resources import FieldProperties
 from .._resources import FieldTarget
@@ -30,14 +29,99 @@ from .._typing.type_parameters import _M
 from ._compute import ComputeContext
 from ._where import WhereContext
 
-class FrameContext(Generic[_M], Contract_FrameContext[_M]):
+if TYPE_CHECKING:
+    from .._engines import ComputeEngine
+
+class Interface_FrameContext(Generic[_M]):
+    model_name: ModelName[_M]
+    origin_model: ModelClass
+    @property
+    def outerjoins(
+        self,
+    ) -> tuple[OuterJoin]:
+        ...
+    def create_field_target(
+        self,
+        field_read_declaration: FieldReadDeclaration,
+        only_id_for_m2o: bool = False,
+    ) -> FieldTarget[_M]:
+        ...
+    def create_filter_context(
+        self,
+    ) -> 'WhereContext[_M]':
+        ...
+    def portal(
+        self,
+        model_name: ModelName[_M],
+    ) -> Interface_FrameContext[_M]:
+        ...
+    def spawn_relative(
+        self,
+        path: str,
+    ) -> Interface_FrameContext[_M]:
+        ...
+    def get_field_instances_from_target(
+        self,
+        field_target: FieldTarget[_M],
+    ) -> list[InstrumentedAttribute]:
+        ...
+    def get_field_instances(
+        self,
+        field_complete_name: str,
+        field_label: Optional[str] = None,
+    ) -> list[InstrumentedAttribute]:
+        ...
+    def get_physical_field_instance_from_current(
+        self,
+        field_name: str,
+    ) -> InstrumentedAttribute:
+        ...
+    def get_database_model_names(
+        self,
+    ) -> Generator[ModelName[_M], Any, None]:
+        ...
+    def get_field_properties(
+        self,
+        model_name: ModelName[_M],
+        field_name: str,
+    ) -> FieldProperties[_M]:
+        ...
+    def get_aliased_model_model(
+        self,
+        model_name: ModelName[_M],
+    ) -> ModelClass:
+        ...
+    def get_physical_field_instance(
+        self,
+        source: ModelClass | Subquery,
+        field_name: str,
+    ) -> InstrumentedAttribute:
+        ...
+    def is_reference_field(
+        self,
+        field_reference_or_name: str,
+    ) -> bool:
+        ...
+    def get_path_and_name(
+        self,
+        field_reference: str,
+    ) -> tuple[str, str]:
+        ...
+    def add_outerjoin(
+        self,
+        model: ModelClass,
+        on: BinaryExpression
+    ) -> None:
+        ...
+
+class FrameContext(Generic[_M], Interface_FrameContext[_M]):
 
     def __init__(
         self,
         model_name: ModelName[_M],
         conn: Connection,
         database_metadata: DatabaseMetadata[_M],
-        computation_engine: Contract_ComputationEngine[_M],
+        computation_engine: ComputeEngine[_M],
     ) -> None:
 
         # Inicialización de instancia de portador de modelos
@@ -85,7 +169,7 @@ class FrameContext(Generic[_M], Contract_FrameContext[_M]):
     def portal(
         self,
         model_name: ModelName[_M],
-    ) -> Contract_FrameContext[_M]:
+    ) -> Interface_FrameContext[_M]:
 
         # Creación de un contexto de portal de frame
         frame_ctx = FrameContext[_M](model_name, self._conn, self._database_metadata, self._computation_engine)
@@ -454,7 +538,7 @@ class FrameContext(Generic[_M], Contract_FrameContext[_M]):
     def spawn_relative(
         self,
         path: str,
-    ) -> Contract_FrameContext[_M]:
+    ) -> Interface_FrameContext[_M]:
 
         # Creación de instancia de frame relativo
         relative_frame_ctx = RelativeFrameContext(self, path)
@@ -638,11 +722,11 @@ class FrameContext(Generic[_M], Contract_FrameContext[_M]):
 
         return model_properties
 
-class RelativeFrameContext(Generic[_M], Contract_FrameContext[_M]):
+class RelativeFrameContext(Generic[_M], Interface_FrameContext[_M]):
 
     def __init__(
         self,
-        main_ctx: FrameContext[_M],
+        main_ctx: Interface_FrameContext[_M],
         relative_origin: str,
     ) -> None:
 
@@ -698,7 +782,7 @@ class RelativeFrameContext(Generic[_M], Contract_FrameContext[_M]):
     def portal(
         self,
         model_name: ModelName[_M],
-    ) -> Contract_FrameContext[_M]:
+    ) -> Interface_FrameContext[_M]:
 
         # Creación de un contexto de portal de frame
         frame_ctx = self._main_ctx.portal(model_name)
@@ -781,7 +865,7 @@ class RelativeFrameContext(Generic[_M], Contract_FrameContext[_M]):
     def spawn_relative(
         self,
         path: str,
-    ) -> Contract_FrameContext[_M]:
+    ) -> Interface_FrameContext[_M]:
         
         # Construcción de ruta completa
         complete_path = f'{self._relative_main}{RELATION_PATH_SEPARATOR}{path}'

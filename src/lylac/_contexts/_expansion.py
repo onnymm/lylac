@@ -1,5 +1,4 @@
 from typing import TYPE_CHECKING
-from .._contracts.contexts import Contract_ExecutionContext
 from .._resources import FieldExpansionSpecs
 from .._typing.generics import ModelName
 from .._typing.generics import _Record
@@ -8,13 +7,14 @@ from .._typing.structures import FieldReadDeclaration
 from .._typing.type_parameters import _M
 
 if TYPE_CHECKING:
+    from .._contexts import ExecutionContext
     from .._orchestrator import CRUD
 
 class ExpansionContext:
 
     def __init__(
         self,
-        execution_ctx: Contract_ExecutionContext[_M],
+        execution_ctx: ExecutionContext[_M],
         crud: CRUD,
     ) -> None:
 
