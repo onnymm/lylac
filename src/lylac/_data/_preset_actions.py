@@ -41,7 +41,7 @@ def _base_model__create_model(ctx: ActionContext):
     has_label = ctx.data['has_label']
 
     # Creación de la clase del modelo
-    ctx._ddl.create_model_class(
+    ctx._execution_ctx.models_bearer.create_model_class(
         table_name,
         model_name,
         has_sequence,

@@ -3,9 +3,11 @@ from typing import Any
 from typing import Generic
 from typing import Literal
 from typing import overload
-
 from sqlalchemy.orm import InstrumentedAttribute
+from .._core import Feature
 from .._core import Metadata
+from .._core import ModelTemplate
+from .._core.models import _Base
 from .._typing.aliases import ModelClass
 from .._typing.generics import ModelName
 from .._typing.generics import _ModelIndex
@@ -26,6 +28,42 @@ class ModelsBearer(Generic[_M]):
     }
 
     _m2m: dict[str, ModelClass] = {}
+
+    def create_model_class(
+        self,
+        model_table_name: str,
+        model_name: ModelName[_M],
+        has_sequence: bool = False,
+        is_archivable: bool = False,
+        has_label: bool = False,
+    ) -> ModelClass:
+
+        # Inicialización de lista de clases a heredar
+        classes_to_inherit = [_Base, ModelTemplate]
+        # Si el modelo tiene secuencia...
+        if has_sequence:
+            # Se añade la clase de secuencia
+            classes_to_inherit.append(Feature.HasSequence)
+        # Si el modelo permite archivar...
+        if is_archivable:
+            # Se añade la clase de secuencia
+            classes_to_inherit.append(Feature.Archivable)
+        # Si el modelo tiene secuencia...
+        if has_label:
+            # Se añade la clase de secuencia
+            classes_to_inherit.append(Feature.LabeledModel)
+
+        # Inicialización de clase de modelo
+        model_model = type(
+            model_table_name,
+            tuple(classes_to_inherit),
+            {'__tablename__': model_table_name},
+        )
+
+        # Se añade el modelo al portador de modelos
+        self.add_model(model_name, model_model)
+
+        return model_model
 
     def get_model(
         self,

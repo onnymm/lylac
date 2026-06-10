@@ -170,7 +170,7 @@ class DDL(Generic[_M]):
     ) -> None:
 
         # Obtención del modelo
-        model_model = self.create_model_class(
+        model_model = self._models_bearer.create_model_class(
             model_table_name,
             model_name,
             has_sequence,
@@ -242,7 +242,7 @@ class DDL(Generic[_M]):
         # Iteración por las propiedades obtenidas de cada registro de modelo encontrado
         for ( model_table_name, model_name, has_sequence, is_archivable, has_label ) in result:
             # Creación de la clase del modelo
-            model_model = self.create_model_class(
+            model_model = self._models_bearer.create_model_class(
                 model_table_name,
                 has_sequence,
                 is_archivable,
@@ -318,42 +318,6 @@ class DDL(Generic[_M]):
                     related_model_table_name,
                     on_delete,
                 )
-
-    def create_model_class(
-        self,
-        model_table_name: str,
-        model_name: ModelName[_M],
-        has_sequence: bool = False,
-        is_archivable: bool = False,
-        has_label: bool = False,
-    ) -> ModelClass:
-
-        # Inicialización de lista de clases a heredar
-        classes_to_inherit = [_Base, ModelTemplate]
-        # Si el modelo tiene secuencia...
-        if has_sequence:
-            # Se añade la clase de secuencia
-            classes_to_inherit.append(Feature.HasSequence)
-        # Si el modelo permite archivar...
-        if is_archivable:
-            # Se añade la clase de secuencia
-            classes_to_inherit.append(Feature.Archivable)
-        # Si el modelo tiene secuencia...
-        if has_label:
-            # Se añade la clase de secuencia
-            classes_to_inherit.append(Feature.LabeledModel)
-
-        # Inicialización de clase de modelo
-        model_model = type(
-            model_table_name,
-            tuple(classes_to_inherit),
-            {'__tablename__': model_table_name},
-        )
-
-        # Se añade el modelo al portador de modelos
-        self._models_bearer.add_model(model_name, model_model)
-
-        return model_model
 
     def create_m2m_relation_table(
         self,
