@@ -152,7 +152,7 @@ def _base_model__create_model_table_in_database(ctx: AutomationContext) -> None:
         # Actualización de los metadatos de la instancia
         ctx._execution_ctx.database_metadata.update(ctx._execution_ctx.conn)
 
-def _base_model__delete_model_table_in_database(ctx: AutomationContext) -> None:
+def _base_model__drop_table(ctx: AutomationContext) -> None:
 
     # Iteración por cada registro de modelo creado
     for record in ctx.records:
@@ -202,6 +202,42 @@ def _base_model_field__create_field_column(ctx: AutomationContext) -> None:
             'base.model.field',
             'register_on_model',
             record['id'],
+        )
+
+    # Actualización de los metadatos de la instancia
+    ctx.task(PRESET.SERVER_TASK.UPDATE_INSTANCE_METADATA)
+
+def _base_model_field__restore_models_structure(ctx: AutomationContext) -> None:
+
+    # Inicialización de conjunto de IDs de modelos
+    model_ids = set()
+
+    # Iteración por cada registro de campo creado
+    for record in ctx.records:
+        # Obtención de la ID de modelo a la que pertenecía el campo
+        model_id = record['model_id.id']
+        # Obtención del nombre del campo
+        field_name = record['name']
+        # Obtención del nombre de la tabla del modelo
+        table_name = record['model_id.name']
+        # Se añade la ID de modelo al conjunto
+        model_ids.add(model_id)
+
+        ctx._ddl.drop_column(ctx._execution_ctx.conn, table_name, field_name)
+
+    # Iteración por cada ID de modelo a restaurar
+    for model_id in model_ids:
+        # Eliminación del modelo únicamente de los metadatos de SQLAlchemy
+        ctx.action(
+            'base.model',
+            'delete_model',
+            model_id,
+        )
+        # Restauración del modelo con los campos restantes
+        ctx.action(
+            'base.model',
+            'restore',
+            model_id,
         )
 
     # Actualización de los metadatos de la instancia
@@ -411,13 +447,24 @@ DEFAULT_ON_DELETE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
 
     'base.model': {
 
-        '_base_model__delete_model_table_in_database': AutomationProperties(
-            callback= _base_model__delete_model_table_in_database,
+        '_base_model__drop_table': AutomationProperties(
+            callback= _base_model__drop_table,
             model_name= 'base.model',
             fields= ('model',),
             execute_only_when= [],
         ),
 
     },
+
+    'base.model.field': {
+
+        '_base_model_field__restore_models_structure': AutomationProperties(
+            callback= _base_model_field__restore_models_structure,
+            model_name= 'base.model.field',
+            fields= ('model_id.id', 'model_id.name', 'name'),
+            execute_only_when= [],
+        ),
+
+    }
 
 }

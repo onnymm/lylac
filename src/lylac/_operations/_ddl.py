@@ -146,6 +146,19 @@ class DDL(Generic[_M]):
 
         conn.execute(main_query)
 
+    def drop_column(
+        self,
+        conn: Connection,
+        table_name: str,
+        field_name: str,
+    ) -> None:
+
+        # Construcción de query de eliminación de columna de la tabla
+        query = text(f'ALTER TABLE {table_name} DROP COLUMN {field_name};')
+
+        # Ejecución del query
+        conn.execute(query)
+
     def create_model_table(
         self,
         conn: Connection,
@@ -159,16 +172,31 @@ class DDL(Generic[_M]):
         # Obtención del modelo
         model_model = self.create_model_class(
             model_table_name,
+            model_name,
             has_sequence,
             is_archivable,
             has_label,
         )
         # Creación de la tabla en la base de datos
         model_model.__table__.create(conn)
-        # Se añade el modelo al portador de modelos
-        self._models_bearer.add_model(model_name, model_model)
 
         return model_model
+
+    def delete_model_model(
+        self,
+        model_name: ModelName[_M],
+    ) -> None:
+
+        # Obtención de la clase del modelo
+        model_model = self._models_bearer._index[model_name]
+        # Se descarta el modelo de los metadatos de la base de datos
+        self._models_bearer.discard_model(model_name)
+        # Se obtiene el esquema del registro de Base
+        table_instance = self._base.metadata.tables[model_model.__tablename__]
+        # Se eliminan los metadatos del modelo en Base
+        self._base.metadata.remove(table_instance)
+        # Se elimina la clase
+        del model_model
 
     def delete_model_table(
         self,
@@ -180,10 +208,6 @@ class DDL(Generic[_M]):
         model_model = self._models_bearer._index[model_name]
         # Remoción del modelo de los metadatos de Base
         model_model.__table__.drop(execution_ctx.conn)
-        # Suscripción para eliminación del modelo en el portador de modelos
-        execution_ctx.run_after_commit(
-            lambda _: self._models_bearer.discard_model(model_name)
-        )
 
     def rebuild_from_existing_database(
         self,
@@ -298,6 +322,7 @@ class DDL(Generic[_M]):
     def create_model_class(
         self,
         model_table_name: str,
+        model_name: ModelName[_M],
         has_sequence: bool = False,
         is_archivable: bool = False,
         has_label: bool = False,
@@ -324,6 +349,9 @@ class DDL(Generic[_M]):
             tuple(classes_to_inherit),
             {'__tablename__': model_table_name},
         )
+
+        # Se añade el modelo al portador de modelos
+        self._models_bearer.add_model(model_name, model_model)
 
         return model_model
 
