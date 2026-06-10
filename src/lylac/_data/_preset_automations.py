@@ -7,23 +7,19 @@ from .._typing.generics import EngineHub
 from .._typing.generics import ModelName
 from .._typing.literals import InitialModels
 
-from .._constants import PRESET
-
 if TYPE_CHECKING:
     from .._contexts import AutomationContext
 
-def _base_model__register_model_on_automations(ctx: AutomationContext) -> None:
+def _base_model__register_model_on_engines(ctx: AutomationContext) -> None:
 
     # Iteración por cada registro de campo creado
     for record in ctx.records:
-
         # Obtención del nombre del modelo
         model_name = record['model']
-
         # Registro de modelo en automatizaciones y campos computados
         ctx.register_model(model_name)
 
-def _base_model__create_model_table_in_database(ctx: AutomationContext) -> None:
+def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> None:
 
     # Evaluación del tipo de campo en base a quién lo crea
     field_state = (
@@ -187,7 +183,7 @@ def _base_model_field__create_m2m_relation(ctx: AutomationContext) -> None:
             field_related_model_table_name,
         )
 
-def _base_model_field__create_field_column(ctx: AutomationContext) -> None:
+def _base_model_field__create_column_and_register_field(ctx: AutomationContext) -> None:
 
     # Iteración por cada registro de campo creado
     for record in ctx.records:
@@ -208,7 +204,7 @@ def _base_model_field__create_field_column(ctx: AutomationContext) -> None:
     # Actualización de los metadatos de la instancia
     ctx.task(PRESET.SERVER_TASK.UPDATE_INSTANCE_METADATA)
 
-def _base_model_field__restore_models_structure(ctx: AutomationContext) -> None:
+def _base_model_field__restore_parent_model_structure(ctx: AutomationContext) -> None:
 
     # Inicialización de conjunto de IDs de modelos
     model_ids = set()
@@ -341,21 +337,21 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
 
     'base.model': {
 
-        '_base_model__create_model_table_in_database': AutomationProperties(
-            callback= _base_model__create_model_table_in_database,
+        _base_model__create_model_and_table_in_database.__name__: AutomationProperties(
+            callback= _base_model__create_model_and_table_in_database,
             model_name= 'base.model',
             fields= ('name', 'model', 'has_sequence', 'is_archivable', 'has_label'),
             execute_only_when= [],
         ),
 
-        '_base_model__register_model_on_automations': AutomationProperties(
-            callback= _base_model__register_model_on_automations,
+        _base_model__register_model_on_engines.__name__: AutomationProperties(
+            callback= _base_model__register_model_on_engines,
             model_name= 'base.model',
             fields= ('model',),
             execute_only_when= [],
         ),
 
-        '_base_model__register_model_data': AutomationProperties(
+        _base_model__register_model_data.__name__: AutomationProperties(
             callback= _base_model__register_model_data,
             model_name= 'base.model',
             fields= (
@@ -369,8 +365,8 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
 
     'base.model.field': {
 
-        '_base_model_field__create_field_column': AutomationProperties(
-            callback= _base_model_field__create_field_column,
+        _base_model_field__create_column_and_register_field.__name__: AutomationProperties(
+            callback= _base_model_field__create_column_and_register_field,
             model_name= 'base.model.field',
             fields= (
                 'name',
@@ -392,7 +388,7 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
             ],
         ),
 
-        '_base_model_field__create_m2m_relation': AutomationProperties(
+        _base_model_field__create_m2m_relation.__name__: AutomationProperties(
             callback= _base_model_field__create_m2m_relation,
             model_name= 'base.model.field',
             fields= (
@@ -407,7 +403,7 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
 
     'base.user.groups': {
 
-        '_base_user_groups__register_model_data': AutomationProperties(
+        _base_user_groups__register_model_data.__name__: AutomationProperties(
             callback= _base_user_groups__register_model_data,
             model_name= 'base.user.groups',
             fields= (
@@ -420,7 +416,7 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
     },
 
     'base.users.role': {
-        '_base_users_role__register_model_data': AutomationProperties(
+        _base_users_role__register_model_data.__name__: AutomationProperties(
             callback= _base_users_role__register_model_data,
             model_name= 'base.users.role',
             fields= ('name',),
@@ -429,7 +425,7 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
     },
 
     'base.rules': {
-        '_base_rules__register_model_data': AutomationProperties(
+        _base_rules__register_model_data.__name__: AutomationProperties(
             callback= _base_rules__register_model_data,
             model_name= 'base.rules',
             fields= (
@@ -448,7 +444,7 @@ DEFAULT_ON_DELETE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
 
     'base.model': {
 
-        '_base_model__drop_table': AutomationProperties(
+        _base_model__drop_table.__name__: AutomationProperties(
             callback= _base_model__drop_table,
             model_name= 'base.model',
             fields= ('model',),
@@ -459,13 +455,13 @@ DEFAULT_ON_DELETE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
 
     'base.model.field': {
 
-        '_base_model_field__restore_models_structure': AutomationProperties(
-            callback= _base_model_field__restore_models_structure,
+        _base_model_field__restore_parent_model_structure.__name__: AutomationProperties(
+            callback= _base_model_field__restore_parent_model_structure,
             model_name= 'base.model.field',
             fields= ('model_id.id', 'model_id.name', 'name'),
             execute_only_when= [],
         ),
 
-    }
+    },
 
 }
