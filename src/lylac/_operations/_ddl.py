@@ -244,6 +244,7 @@ class DDL(Generic[_M]):
             # Creación de la clase del modelo
             model_model = self._models_bearer.create_model_class(
                 model_table_name,
+                model_name,
                 has_sequence,
                 is_archivable,
                 has_label,
