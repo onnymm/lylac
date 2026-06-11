@@ -24,6 +24,15 @@ class DatabaseMetadata(Generic[_M]):
         self._transaction = Transaction()
         # Inicialización de instancia de portador de modelos
         self._models_bearer = ModelsBearer[_M]()
+        # Se establece el valor de inicializado en falso
+        self._initialized = False
+
+    @property
+    def initialized(
+        self,
+    ) -> bool:
+
+        return self._initialized
 
     def get_field_names_from_model(
         self,
@@ -166,6 +175,9 @@ class DatabaseMetadata(Generic[_M]):
                     related_model_name,
                     related_field,
                 )
+
+        # Se establece el valor de inicializado en verdadero
+        self._initialized = True
 
     def _split_path_and_name(
         self,

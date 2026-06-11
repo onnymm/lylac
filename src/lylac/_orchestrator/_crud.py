@@ -722,6 +722,11 @@ class CRUD(Generic[_M]):
         created_ids: list[int],
     ) -> None:
 
+        # Si los metadatos de la base de datos aún no están inicializados...
+        if not execution_ctx.database_metadata.initialized:
+            # Se termina la ejecución
+            return
+
         # Lectura del registro del modelo
         [ model_record ] = self._dql.search_read(
             execution_ctx,
