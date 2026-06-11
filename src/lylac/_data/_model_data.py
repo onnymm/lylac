@@ -854,6 +854,7 @@ def build_initial_data(conn: Connection) -> DataMap:
                 'label': 'Inicio de sesión',
                 'ttype': 'char',
                 'model_id': model_data_index.encode('base_model.base_users'),
+                'is_required': True,
                 'unique': True,
                 'state': 'base',
             },
