@@ -383,12 +383,15 @@ class DQL(Generic[_M]):
         model_name: ModelName[_M],
     ) -> FrameContext[_M]:
 
+        execution_ctx.models_bearer
+
         # Inicialización de contexto de frame
         frame_ctx = FrameContext[_M](
             model_name,
             execution_ctx.conn,
             execution_ctx.database_metadata,
             execution_ctx.compute,
+            execution_ctx.models_bearer,
         )
 
         return frame_ctx

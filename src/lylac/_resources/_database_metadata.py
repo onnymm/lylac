@@ -11,7 +11,6 @@ from .._typing.generics import ModelName
 from .._typing.structures import RawFieldProperties
 from .._typing.type_parameters import _M
 from ._field_properties import FieldProperties
-from ._models_bearer import ModelsBearer
 
 class DatabaseMetadata(Generic[_M]):
     _hub: dict[ModelName[_M], dict[str, FieldProperties]]
@@ -22,8 +21,6 @@ class DatabaseMetadata(Generic[_M]):
 
         # Inicialización de instancia de transacciones
         self._transaction = Transaction()
-        # Inicialización de instancia de portador de modelos
-        self._models_bearer = ModelsBearer[_M]()
         # Se establece el valor de inicializado en falso
         self._initialized = False
 

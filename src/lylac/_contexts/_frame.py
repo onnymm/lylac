@@ -122,10 +122,11 @@ class FrameContext(Generic[_M], Interface_FrameContext[_M]):
         conn: Connection,
         database_metadata: DatabaseMetadata[_M],
         computation_engine: ComputeEngine[_M],
+        models_bearer: ModelsBearer[_M],
     ) -> None:
 
         # Inicialización de instancia de portador de modelos
-        self._models_bearer = ModelsBearer[_M]()
+        self._models_bearer = models_bearer
         self._computation_engine = computation_engine
 
         # Obtención de instancia de conexión
@@ -172,7 +173,7 @@ class FrameContext(Generic[_M], Interface_FrameContext[_M]):
     ) -> Interface_FrameContext[_M]:
 
         # Creación de un contexto de portal de frame
-        frame_ctx = FrameContext[_M](model_name, self._conn, self._database_metadata, self._computation_engine)
+        frame_ctx = FrameContext[_M](model_name, self._conn, self._database_metadata, self._computation_engine, self._models_bearer)
 
         return frame_ctx
 
@@ -726,7 +727,7 @@ class RelativeFrameContext(Generic[_M], Interface_FrameContext[_M]):
 
     def __init__(
         self,
-        main_ctx: Interface_FrameContext[_M],
+        main_ctx: FrameContext[_M],
         relative_origin: str,
     ) -> None:
 
