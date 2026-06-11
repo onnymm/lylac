@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lylac"
-version = "0.2.15"
+version = "0.2.16"
 authors = [
     {name = "Pável Hernández Reza", email = "phr2807@gmail.com" }]
 description = "A programmable ORM framework built for extensible business platforms."

@@ -41,3 +41,4 @@ class AutomationContext(Generic[_M, _R], BaseContext[_M]):
         self._execution_ctx.compute.add(model_name)
         self._execution_ctx.validations.add(model_name)
         self._execution_ctx.actions.add(model_name)
+        self._execution_ctx.policies.add(model_name)

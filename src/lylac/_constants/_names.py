@@ -125,6 +125,14 @@ FACTORY_FIELDS = [
 Campos predeterminados.
 """
 
+STATIC_FIELDS = [
+    FIELD_NAME.ID,
+    FIELD_NAME.CREATE_DATE,
+    FIELD_NAME.UPDATE_DATE,
+    FIELD_NAME.CREATE_UID,
+    FIELD_NAME.UPDATE_UID,
+]
+
 class RELATION_ACTION_NAME:
     """
     Nombres de comandos de acciones de relación.
@@ -173,6 +181,7 @@ class DATA_RESOURCE:
         BASE_USER_ACCESS = 'base_model.base_user_access'
         BASE_USER_SESSION = 'base_model.base_user_session'
         BASE_USER_GROUPS = 'base_model.base_user_groups'
+        BASE_USERS_UPDATE_PASSWORD = 'base_model.base_users_update_password'
         BASE_RULES = 'base_model.base_rules'
         BASE_MODEL = 'base_model.base_model'
         BASE_MODEL_FIELD = 'base_model.base_model_field'
@@ -181,6 +190,17 @@ class DATA_RESOURCE:
         BASE_MODEL_DATA_PROCESS = 'base_model.base_model_data_process'
         BASE_MODEL_DATA_PROCESS_STEP = 'base_model.base_model_data_process_step'
         BASE_MODEL_DATA_PROCESS_STEP_RECORD = 'base_model.base_model_data_process_step_record'
+
+class TRANSACTION_NAME:
+    CREATE = 'create'
+    UPDATE = 'update'
+    DELETE = 'delete'
+
+TRANSACTIONS = [
+    TRANSACTION_NAME.CREATE,
+    TRANSACTION_NAME.UPDATE,
+    TRANSACTION_NAME.DELETE,
+]
 
 class PRESET:
 

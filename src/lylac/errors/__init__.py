@@ -7,6 +7,7 @@ from ._authentication import InvalidSessionUUIDError
 from ._authentication import UserNotActiveError
 from ._authentication import UserNotFoundError
 from ._automations import AutomationExecutionError
+from ._policies import PolicyExecutionError
 from ._server_tasks import SeverTaskExecutionError
 from ._user_env import VariableResolverExecutionError
 from ._validations import ValidationExecutionError

@@ -184,6 +184,14 @@ class CRUD(Generic[_M]):
             data,
         )
 
+        # Verificación de políticas
+        execution_ctx.policies.verify_incoming_data(
+            'create',
+            execution_ctx,
+            model_name,
+            data,
+        )
+
         # Procesamiento de los datos
         processed_data = self._add_create_and_update_uid(data, execution_ctx)
 
@@ -416,6 +424,14 @@ class CRUD(Generic[_M]):
             [data],
         )
 
+        # Verificación de políticas
+        execution_ctx.policies.verify_incoming_data(
+            'update',
+            execution_ctx,
+            model_name,
+            [data],
+        )
+
         # Procesamiento de los datos
         processed_data = self._add_update_uid(data, execution_ctx)
 
@@ -460,6 +476,14 @@ class CRUD(Generic[_M]):
         self._evalute_allowed_ids(
             execution_ctx,
             'delete',
+            model_name,
+            record_ids,
+        )
+
+        # Verificación de políticas
+        execution_ctx.policies.verify_incoming_ids(
+            'update',
+            execution_ctx,
             model_name,
             record_ids,
         )

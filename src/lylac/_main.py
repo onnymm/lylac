@@ -29,6 +29,7 @@ from ._data import build_initial_data
 from ._engines import ActionEngine
 from ._engines import AutomationsEngine
 from ._engines import ComputeEngine
+from ._engines import PoliciesEngine
 from ._engines import ServerTasksEngine
 from ._engines import UserEnvEngine
 from ._engines import ValidationEngine
@@ -548,6 +549,8 @@ class Lylac(Generic[_M]):
         self._compute.expand_to_custom_models(self._metadata)
         # Construcción de centro de campos validaciones
         self._validations.build_hub(self._metadata)
+        # Construcción de centro de políticas
+        self._policies.build_hub(self._metadata)
 
     def _authenticate_user(
         self,
@@ -647,6 +650,8 @@ class Lylac(Generic[_M]):
         self._automations = AutomationsEngine[_M](self._ddl, self._crud)
         # inicialización de motor de cómputo de campos
         self._compute = ComputeEngine[_M]()
+        # Inicialización de motor de políticas
+        self._policies = PoliciesEngine[_M](self._crud)
         # Inicialización de motor de tareas de servidor
         self._server_tasks = ServerTasksEngine[_M](self._crud)
         # Inicialización de motor de validaciones
@@ -660,6 +665,7 @@ class Lylac(Generic[_M]):
             validations= self._validations,
             actions= self._actions,
             compute= self._compute,
+            policies= self._policies,
             server_tasks= self._server_tasks,
             user_env= self._user_env,
             main= self,
@@ -690,6 +696,7 @@ class Lylac(Generic[_M]):
             self._compute,
             self._automations,
             self._validations,
+            self._policies,
             self._actions,
             self._server_tasks,
             self._user_env,

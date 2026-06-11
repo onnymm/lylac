@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from .._contexts import AutomationContext
     from .._contexts import ComputeContext
     from .._contexts import ExecutionContext
+    from .._contexts import PoliciesContext
     from .._contexts import ValidationContext
     from .._contexts import ServerTaskContext
     from .._contexts import TransactionContext
@@ -61,3 +62,5 @@ ServerTaskCallback = Callable[['ServerTaskContext[_M]'], None]
 ExecutableTransactionCallback = Callable[['TransactionContext[_M]'], None]
 
 LazyResolver = Callable[['ExecutionContext[_M]'], Any]
+
+PolicyCallback = Callable[['PoliciesContext[_M]'], None]

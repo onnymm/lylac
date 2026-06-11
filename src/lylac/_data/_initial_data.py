@@ -76,6 +76,13 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                             'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USERS_ROLE),
                             'perm_read': True,
                         },
+                        {
+                            'name': 'base_users_update_password__user',
+                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USERS_UPDATE_PASSWORD),
+                            'perm_create': True,
+                            'perm_read': True,
+                            'perm_delete': True,
+                        },
                     ],
                 },
             },
@@ -286,8 +293,41 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                         },
                     ],
                 }
-            }
-        ]
+            },
+            # Creación de modelo de cambio de contraseña
+            {
+                'name': 'base_users_update_password',
+                'model': 'base.users.update.password',
+                'label': 'Cambio de contraseña de usuario',
+                'description': 'Asistente de cambio de contraseña',
+                'transient': True,
+                'field_ids': {
+                    'create': [
+                        {
+                            'name': 'current_password',
+                            'label': 'Contraseña actual',
+                            'ttype': 'char',
+                            'is_required': True,
+                            'nullable': False,
+                        },
+                        {
+                            'name': 'new_password',
+                            'label': 'Nueva contraseña',
+                            'ttype': 'char',
+                            'is_required': True,
+                            'nullable': False,
+                        },
+                        {
+                            'name': 'confirm_password',
+                            'label': 'Confirma nueva contraseña',
+                            'ttype': 'char',
+                            'is_required': True,
+                            'nullable': False,
+                        },
+                    ],
+                },
+            },
+        ],
     )
 
     ctx.create(

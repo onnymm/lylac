@@ -16,6 +16,7 @@ from ._model_properties import ModelProperties
 from ._models_bearer import ModelsBearer
 from ._outerjoin import OuterJoin
 from ._output_parser import OutputParser
+from ._policy_properties import PolicyProperties
 from ._server_task_properties import ServerTaskProperties
 from ._user_env import UserEnv
 from ._validation_properties import ValidationProperties

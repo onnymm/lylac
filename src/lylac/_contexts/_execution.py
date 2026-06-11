@@ -2,6 +2,7 @@ from typing import Callable
 from typing import Generic
 from typing import TYPE_CHECKING
 from sqlalchemy.engine import Connection
+from .._contexts.engines import BaseContext
 from .._resources import DatabaseMetadata
 from .._resources import ModelDataIndex
 from .._resources import ModelsBearer
@@ -12,10 +13,10 @@ if TYPE_CHECKING:
     from .._engines import ActionEngine
     from .._engines import AutomationsEngine
     from .._engines import ComputeEngine
+    from .._engines import PoliciesEngine
     from .._engines import ServerTasksEngine
     from .._engines import ValidationEngine
     from .._orchestrator import CRUD
-from .._contexts.engines import BaseContext
 
 class ExecutionContext(Generic[_M], BaseContext[_M]):
     _to_execute_after_commit: list[Callable[[ExecutionContext[_M]], None]]
@@ -31,6 +32,7 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
         compute: 'ComputeEngine[_M]',
         automations: 'AutomationsEngine[_M]',
         validations: 'ValidationEngine[_M]',
+        policies: 'PoliciesEngine[_M]',
         actions: 'ActionEngine[_M]',
         server_tasks: 'ServerTasksEngine[_M]',
         user_env_engine: UserEnv[_M],
@@ -49,6 +51,7 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
         self.compute = compute
         self.automations = automations
         self.validations = validations
+        self.policies = policies
         self.actions = actions
         self.server_tasks = server_tasks
         self._execution_ctx = self
