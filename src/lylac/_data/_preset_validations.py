@@ -8,17 +8,6 @@ from .._typing.type_parameters import _M
 if TYPE_CHECKING:
     from .._contexts import ValidationContext
 
-def _reject_static_fields(ctx: 'ValidationContext') -> None:
-
-    # Iteración por cada registro
-    for record in ctx.records:
-        # Iteración por los campos estáticos
-        for field_name in ['id', 'create_date', 'update_date', 'create_uid', 'update_uid']:
-            # Si existe el campo en los datos...
-            if field_name in record:
-                # Se captura el registro con el campo estático
-                ctx.catch(field_name, record)
-
 def _confirm_required_fields(ctx: 'ValidationContext') -> None:
 
     # Búsqueda de los campos requeridos del modelo
@@ -117,12 +106,6 @@ def _forbid_duplicated_fields_in_same_model(ctx: 'ValidationContext[_M, _Interna
             ctx.catch(record)
 
 PRESET_VALIDATIONS: list[ValidationProperties[_M]] = [
-
-        ValidationProperties(
-            ['create', 'update'],
-            _reject_static_fields,
-            'El campo {value} no puede ser declarado ni modificado manualmente.',
-        ),
 
         ValidationProperties(
             'create',

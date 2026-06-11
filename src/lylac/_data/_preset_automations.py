@@ -6,6 +6,32 @@ from .._resources import AutomationProperties
 from .._typing.generics import EngineHub
 from .._typing.generics import ModelName
 from .._typing.literals import InitialModels
+from ..security import hash_password
+from ..security import verify_password
+from sqlalchemy import update
+from .._contexts import ExecutionContext
+from .._typing.type_parameters import _M
+
+from .._core import Metadata
+
+def _change_password(
+    execution_context: ExecutionContext[_M],
+    user_id: int,
+    password: str,
+) -> None:
+
+    # Hasheo de la nueva contraseña
+    hashed_password = hash_password(password)
+
+    # Creación del query
+    stmt = (
+        update(Metadata.BaseUsers)
+        .where(Metadata.BaseUsers.id == user_id)
+        .values({'password': hashed_password})
+    )
+
+    # Ejecución del query
+    execution_context.conn.execute(stmt)
 
 if TYPE_CHECKING:
     from .._contexts import AutomationContext
@@ -333,6 +359,33 @@ def _base_rules__register_model_data(ctx: AutomationContext):
     # Creación de registros
     ctx.create('base.model.data', data_to_create)
 
+def _base_users_update_password__consume(ctx: AutomationContext):
+
+    # Este modelo solo debería recibir un solo registro
+    [ record ] = ctx.records
+
+    # Obtención de los datos
+    current_password = record['current_password']
+    new_password = record['new_password']
+    confirm_password = record['confirm_password']
+
+    # Obtención de los datos del usuario
+    user_id = ctx.uid
+    [ user_record ] = ctx.read('base.users', user_id, ['password'])
+    # Obtención de la contraseña almacenada en la base de datos
+    hashed_password = user_record['password']
+
+    # Validación de la contraseña antes de continuar
+    is_pwd_correct = verify_password(current_password, hashed_password)
+
+    # Validación de si la contraseña nueva es correcta
+    is_new_pwd_correct = new_password == confirm_password
+
+    # Si todo es correcto...
+    if is_pwd_correct and is_new_pwd_correct:
+        # Se almacena éste en la base de datos
+        _change_password(ctx._execution_ctx, user_id, new_password)
+
 DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[InitialModels]] = {
 
     'base.model': {
@@ -434,6 +487,21 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
             fields= (
                 'name',
                 ('model_table_name', 'char', lambda ctx: ctx['model_id.name']),
+            ),
+            execute_only_when= [],
+        ),
+
+    },
+
+    'base.users.update.password': {
+
+        _base_users_update_password__consume.__name__: AutomationProperties(
+            callback= _base_users_update_password__consume,
+            model_name= 'base.users.update.password',
+            fields= (
+                'current_password',
+                'new_password',
+                'confirm_password',
             ),
             execute_only_when= [],
         ),
