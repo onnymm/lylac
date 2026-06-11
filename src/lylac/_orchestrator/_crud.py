@@ -203,6 +203,13 @@ class CRUD(Generic[_M]):
         # Ejecución de operaciones de relación
         rel_op_ctx.run_relation_operations(self)
 
+        # Se eliminan los registros si el modelo es transitorio
+        self._destroy_if_transient(
+            execution_ctx,
+            model_name,
+            created_ids,
+        )
+
         return created_ids
 
     def search(
@@ -683,3 +690,30 @@ class CRUD(Generic[_M]):
         data[FIELD_NAME.UPDATE_UID] = execution_ctx.uid
 
         return data
+
+    def _destroy_if_transient(
+        self,
+        execution_ctx: ExecutionContext[_M],
+        model_name: ModelName[_M],
+        created_ids: list[int],
+    ) -> None:
+
+        # Lectura del registro del modelo
+        [ model_record ] = self._dql.search_read(
+            execution_ctx,
+            'base.model',
+            [('model', '=', model_name)],
+            ['transient'],
+        )
+
+        # Obtención del valor de transitorio
+        transient = model_record['transient']
+
+        # Si el modelo es transitorio...
+        if transient:
+            # Se eliminan los registros
+            self._dml.delete(
+                execution_ctx,
+                model_name,
+                created_ids,
+            )
