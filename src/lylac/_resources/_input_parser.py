@@ -49,8 +49,13 @@ class InputParser:
         for field_name in record:
             # Obtención del tipo de dato del campo
             ttype = self._field_ttypes[field_name]
-            # SI el tipo de dato es one2many o many2many
+            # Si el tipo de dato es one2many o many2many
             if ttype in ['one2many', 'many2many']:
+                # Se continúa con la siguiente iteración
+                continue
+
+            # Si el tipo de dato es many2one y es creación...
+            if ttype == 'many2one' and isinstance(record[field_name], dict):
                 # Se continúa con la siguiente iteración
                 continue
 

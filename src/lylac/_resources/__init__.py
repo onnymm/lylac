@@ -10,6 +10,7 @@ from ._field_target import FieldTarget
 from ._input_data import InputData
 from ._input_parser import InputParser
 from ._input_processing import InputProcessing
+from ._many2one_create import Many2OneCreate
 from ._model_column_basic_atts import ModelColumnBasicAtts
 from ._model_data_index import ModelDataIndex
 from ._model_properties import ModelProperties

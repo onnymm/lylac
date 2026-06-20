@@ -128,7 +128,7 @@ Las llaves y valores del diccionario son:
 - `'clear'`: Literal `True`.
 """
 
-RecordValue = Union[DMLCompatible, JSONLike, RelationCommands]
+RecordValue = Union[DMLCompatible, JSONLike, RelationCommands, 'RecordData']
 """
 ### Valor de registro
 Tipo de dato que se puede usar como valor para un campo de modelo en la base
@@ -174,6 +174,8 @@ mapeados como:
     - `'unlink'`: Escalar o lista de `int`.
     - `'delete'`: Escalar o lista de `int`.
     - `'clear'`: Literal `True`.
+- `RecordData` que representa un diccionario de datos para crear un registro de
+tipo Many2one que puede contener como valores cualquiera de los tipos anteriores.
 """
 
 RecordData = dict[str, RecordValue]

@@ -11,6 +11,7 @@ from .._contexts import RelationOperationsContext
 from .._operations import DQL
 from .._operations import DML
 from .._resources import InputProcessing
+from .._resources import Many2OneCreate
 from .._resources import ModelsBearer
 from .._typing.generics import ItemOrList
 from .._typing.generics import ModelName
@@ -158,6 +159,7 @@ class CRUD(Generic[_M]):
         self._dml = DML()
         self._dql = DQL()
         self._input_processing = InputProcessing()
+        self._m2o_create = Many2OneCreate(self)
 
     def create(
         self,
@@ -194,6 +196,13 @@ class CRUD(Generic[_M]):
 
         # Procesamiento de los datos
         processed_data = self._add_create_and_update_uid(data, execution_ctx)
+
+        # Creación de registros Many2One en caso existir
+        processed_data = self._m2o_create.resolve(
+            execution_ctx,
+            model_name,
+            processed_data,
+        )
 
         # Creación de contexto de operaciones de relación
         rel_op_ctx = RelationOperationsContext(execution_ctx, model_name, self._models_bearer)
@@ -434,6 +443,13 @@ class CRUD(Generic[_M]):
 
         # Procesamiento de los datos
         processed_data = self._add_update_uid(data, execution_ctx)
+
+        # Creación de registros Many2One en caso existir
+        [ processed_data ] = self._m2o_create.resolve(
+            execution_ctx,
+            model_name,
+            [processed_data],
+        )
 
         # Creación de contexto de operaciones de relación
         rel_op_ctx = RelationOperationsContext(execution_ctx, model_name, self._models_bearer)
