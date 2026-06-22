@@ -498,7 +498,7 @@ class CRUD(Generic[_M]):
 
         # Verificación de políticas
         execution_ctx.policies.verify_incoming_ids(
-            'update',
+            'delete',
             execution_ctx,
             model_name,
             record_ids,
