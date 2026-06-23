@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from hashlib import sha256
 from typing import Any
 from typing import Callable
 from typing import Generic
@@ -10,6 +11,7 @@ from uuid import uuid4
 from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.engine import Connection
+from sqlalchemy.exc import ProgrammingError
 from ._api import _MainAPI
 from ._constants import DATA_RESOURCE
 from ._constants import ERROR_LABEL
@@ -59,12 +61,8 @@ from .errors import InvalidSessionUUIDError
 from .errors import UserNotActiveError
 from .errors import UserNotFoundError
 from .security import verify_password
-from sqlalchemy.exc import ProgrammingError
-
-from hashlib import sha256
 
 class Lylac(Generic[_M]):
-    _is_first_initialization: bool
     # Interfaz para acceso al tipado de automatización sin tener que colocar literal de modelos
     type AutomationContext[T] = _AutomationContext[_M, T]
     type ValidationContext[T] = _ValidationContext[_M, T]
@@ -74,6 +72,8 @@ class Lylac(Generic[_M]):
     type ExecutionContext = _ExecutionContext[_M]
     type ComputeContext = _ComputeContext[_M]
     type ComputeFieldFn = _ComputeFieldFn[_M]
+
+    _is_first_initialization: bool
 
     def __init__(
         self,
@@ -215,29 +215,6 @@ class Lylac(Generic[_M]):
 
         return session_uuid
 
-    def me(
-        self,
-        session_uuid: str,
-        fields: list[FieldReadDeclaration] = [],
-    ) -> _Record:
-
-        # Definición de la transacción
-        def transaction(execution_ctx: _ExecutionContext[_M]) -> _Record:
-            # Obtención de los datos del usuario
-            [ closure_user_data ] = self._crud.read(
-                execution_ctx,
-                'base.users',
-                execution_ctx.uid,
-                fields,
-            )
-
-            return closure_user_data
-
-        # Obtención de los datos del usuario
-        user_data = self.execute_transaction(session_uuid, transaction)
-
-        return user_data
-
     def execute_transaction(
         self,
         session_uuid: str,
@@ -264,25 +241,6 @@ class Lylac(Generic[_M]):
         result = self._connection.execute_complex(wrapped_transaction)
 
         return result
-
-    def execute__(
-        self,
-        session_uuid: str,
-        execution_callback: Callable[[_TransactionContext[_M]], None]
-    ) -> None:
-
-        # Definición de la transacción
-        def transaction(execution_ctx: _ExecutionContext[_M]) -> None:
-            # Inicialización de contexto de transacción
-            transaction_ctx = _TransactionContext(execution_ctx, self._crud)
-            # Ejecución de la función provista
-            execution_callback(transaction_ctx)
-
-            # Se realiza commit
-            execution_ctx.conn.commit()
-
-        # Ejecución de la transacción
-        self.execute_transaction(session_uuid, transaction)
 
     def action(
         self,
@@ -384,35 +342,6 @@ class Lylac(Generic[_M]):
         sortby: Optional[ItemOrList[str]] = None,
         ascending: Optional[ItemOrList[bool]] = None,
     ) -> list[_Record]:
-
-        # Definición de la transacción
-        def transaction(execution_ctx: _ExecutionContext[_M]) -> list[_Record]:
-            # Obtención de los datos
-            closure_data = self._crud.read(
-                execution_ctx,
-                model_name,
-                record_ids,
-                fields,
-                sortby,
-                ascending,
-            )
-
-            return closure_data
-
-        # Ejecución de la transacción
-        data = self.execute_transaction(session_uuid, transaction)
-
-        return data
-
-    def search_read(
-        self,
-        session_uuid: str,
-        model_name: ModelName[_M],
-        record_ids: ItemOrList[int],
-        fields: list[FieldReadDeclaration] = [],
-        sortby: Optional[ItemOrList[str]] = None,
-        ascending: Optional[ItemOrList[bool]] = None,
-    ):
 
         # Definición de la transacción
         def transaction(execution_ctx: _ExecutionContext[_M]) -> list[_Record]:
