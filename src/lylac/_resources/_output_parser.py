@@ -1,3 +1,4 @@
+from datetime import timedelta
 from typing import Any
 from typing import Callable
 from typing import Sequence
@@ -8,6 +9,7 @@ from .._typing.interfaces import Many2One
 from .._typing.generics import MaybeNone
 from .._typing.generics import _Record
 from .._typing.literals import TTypeName
+from .._core import Duration
 
 if TYPE_CHECKING:
     from . import FieldTarget
@@ -128,11 +130,26 @@ class OutputParser:
         ) -> str | None:
 
             # Obtención del valor de la fila de registro
-            value: str | None = getattr(row, label)
+            value: timedelta | None = getattr(row, label)
 
             if value is None:
                 return value
             else:
+                return str(value)
+
+        def get_duration_value(
+            self,
+            label: str,
+            row: Row,
+        ) -> str | None:
+
+            # Obtención del valor de la fila de registro
+            value: timedelta | None = getattr(row, label)
+
+            if value is None:
+                return value
+            else:
+                value = Duration(seconds= value.total_seconds())
                 return str(value)
 
         def get_array_value(
