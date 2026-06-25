@@ -28,7 +28,7 @@ class Many2OneCreate(Generic[_M]):
             return data
 
         # Obtención de los nombres de los campos
-        field_properties = execution_ctx.database_metadata.get_fields_properties(model_name, 'many2one')
+        field_properties = execution_ctx.database_metadata.get_fields_properties_by_ttypes(model_name, ['many2one'])
 
         # Iteración por cada registro a crear
         for record in data:

@@ -90,7 +90,7 @@ class ExpansionContext:
         # Iteración por cada campo a expandir
         for field_to_expand in self.related_fields:
             # Obtención de propiedades de los campos del modelo
-            fields_properties = self._execution_ctx.database_metadata.get_relation_fields_properties(model_name)
+            fields_properties = self._execution_ctx.database_metadata.get_fields_properties_by_ttypes(model_name, ['one2many', 'many2many'])
             # Se convierten en mapa
             fields_properties = {
                 fields_properties_i.name: fields_properties_i
