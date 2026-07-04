@@ -80,6 +80,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
                 'ttype': 'integer',
                 'model_id': model_id,
                 'unique': True,
+                'readonly': True,
                 'state': field_state,
             },
             {
@@ -87,6 +88,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
                 'label': 'Nombre',
                 'ttype': 'char',
                 'model_id': model_id,
+                'readonly': True,
                 'state': field_state,
             },
             {
@@ -94,6 +96,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
                 'label': 'Fecha de creación',
                 'ttype': 'datetime',
                 'model_id': model_id,
+                'readonly': True,
                 'state': field_state,
             },
             {
@@ -101,6 +104,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
                 'label': 'Fecha de modificación',
                 'ttype': 'datetime',
                 'model_id': model_id,
+                'readonly': True,
                 'state': field_state,
             },
             {
@@ -129,6 +133,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
                 'ttype': 'char',
                 'model_id': model_id,
                 'state': field_state,
+                'readonly': True,
                 'is_computed': True
             },
         ]
