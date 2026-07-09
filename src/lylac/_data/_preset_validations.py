@@ -33,6 +33,56 @@ def _confirm_required_fields(ctx: 'ValidationContext') -> None:
                 # Se captura el registro con el campo faltante
                 ctx.catch(record, field_name)
 
+def _prevent_update_on_readonly_fields(ctx: 'ValidationContext') -> None:
+
+    # Búsqueda de los campos de solo lectura del modelo
+    found_data = ctx.search_read(
+        'base.model.field',
+        [
+            '&',
+                ('readonly', '=', True),
+                ('model_id.model', '=', ctx.model_name),
+        ],
+        ['name'],
+    )
+
+    # Construcción de lista de campos de solo lectura
+    readonly_fields = [record['name'] for record in found_data]
+
+    # Iteración por cada registro
+    for record in ctx.records:
+        # Iteración por cada campo de solo lectura
+        for field_name in readonly_fields:
+            # Si el campo está en los datos...
+            if field_name in record:
+                # Se captura el registro con el campo de solo lectura
+                ctx.catch(record, field_name)
+
+def _throw_error_on_create_or_update_computed_fields(ctx: 'ValidationContext') -> None:
+
+    # Búsqueda de los campos computados
+    found_data = ctx.search_read(
+        'base.model.field',
+        [
+            '&',
+                ('is_computed', '=', True),
+                ('model_id.model', '=', ctx.model_name),
+        ],
+        ['name'],
+    )
+
+    # Construcción de lista de campos computados
+    computed_fields = [record['name'] for record in found_data]
+
+    # Iteración por cada registro
+    for record in ctx.records:
+        # Iteración por cada campo computado
+        for field_name in computed_fields:
+            # Si el campo está en los datos...
+            if field_name in record:
+                # Se captura el registro con el campo computado
+                ctx.catch(record, field_name)
+
 def _confirm_valid_selection_values(ctx: 'ValidationContext') -> None:
 
     # Busqueda de los campos de tipo selection
@@ -110,13 +160,13 @@ PRESET_VALIDATIONS: list[ValidationProperties[_M]] = [
         ValidationProperties(
             'create',
             _confirm_required_fields,
-            'El campo {value} es requerido',
+            'El campo [{value}] es requerido',
         ),
 
         ValidationProperties(
             ['create', 'update'],
             _confirm_valid_selection_values,
-            'El valor de selección en el campo {value} es inválido.',
+            'El valor de selección en el campo [{value}] es inválido.',
         ),
 
         ValidationProperties(
@@ -138,6 +188,18 @@ PRESET_VALIDATIONS: list[ValidationProperties[_M]] = [
             _forbid_duplicated_fields_in_same_model,
             'No puede haber nombres de campo repetidos en el mismo modelo.',
             'base.model.field',
+        ),
+
+        ValidationProperties(
+            'update',
+            _prevent_update_on_readonly_fields,
+            'El campo [{value}] es de solo lectura y no puede ser modificado.',
+        ),
+
+        ValidationProperties(
+            ['create', 'update'],
+            _throw_error_on_create_or_update_computed_fields,
+            'El campo [{value}] es computado y no se le puede asignar un valor explícito diferente al calculado.',
         ),
 
     ]
