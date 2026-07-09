@@ -1,20 +1,16 @@
-from datetime import datetime
-from datetime import timedelta
-from hashlib import sha256
 from typing import Any
 from typing import Callable
 from typing import Generic
 from typing import Literal
 from typing import Optional
 from typing import Union
-from uuid import uuid4
 from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.engine import Connection
 from sqlalchemy.exc import ProgrammingError
 from ._api import _MainAPI
 from ._constants import DATA_RESOURCE
-from ._constants import ERROR_LABEL
+from ._constants import MONITOR
 from ._constants import INITIAL_PACKAGES
 from ._contexts import ActionContext as _ActionContext
 from ._contexts import AutomationContext as _AutomationContext
@@ -46,21 +42,14 @@ from ._typing.callables import ComputeFieldFn as _ComputeFieldFn
 from ._typing.generics import ItemOrList
 from ._typing.generics import ModelName
 from ._typing.generics import _Record
-from ._typing.generics import _Records
-from ._typing.models import _base_users__fields
-from ._typing.models import _found_session
 from ._typing.structures import CriteriaStructure
 from ._typing.structures import RecordData
 from ._typing.structures import FieldReadDeclaration
 from ._typing.type_parameters import _M
 from ._typing.type_parameters import _R
 from ._typing.type_parameters import _T
-from .errors import ExpiredSessionError
-from .errors import IncorrectPasswordError
-from .errors import InvalidSessionUUIDError
-from .errors import UserNotActiveError
-from .errors import UserNotFoundError
-from .security import verify_password
+from .security import build_authenticate_user_callback
+from .security import build_login_callback
 
 class Lylac(Generic[_M]):
     # Interfaz para acceso al tipado de automatización sin tener que colocar literal de modelos
@@ -72,13 +61,21 @@ class Lylac(Generic[_M]):
     type ExecutionContext = _ExecutionContext[_M]
     type ComputeContext = _ComputeContext[_M]
     type ComputeFieldFn = _ComputeFieldFn[_M]
-
+    # Atributos
+    api: _MainAPI[_M]
+    _crud: CRUD[_M]
+    _metadata: DatabaseMetadata
+    _models_bearer: ModelsBearer[_M]
+    _ddl: DDL[_M]
+    _transaction: Transaction
+    _connection: ConnectionService
     _is_first_initialization: bool
+    _populate_models_fn: ExecutableTransactionCallback[_M]
 
     def __init__(
         self,
-        build_models_fn: ExecutableTransactionCallback = lambda _: None,
-        populate_models_fn: ExecutableTransactionCallback = lambda _: None,
+        build_models_fn: ExecutableTransactionCallback[_M] = lambda _: None,
+        populate_models_fn: ExecutableTransactionCallback[_M] = lambda _: None,
     ) -> None:
 
         # Asignación de valores
@@ -93,9 +90,9 @@ class Lylac(Generic[_M]):
         # Inicialización de instancia de metadatos de la base de datos
         self._metadata = DatabaseMetadata()
         # Inicialización de orquestador CRUD
-        self._crud = CRUD(self._models_bearer)
+        self._crud = CRUD[_M](self._models_bearer)
         # Inicialización de instancia de operaciones DDL
-        self._ddl = DDL(self._models_bearer, self._metadata)
+        self._ddl = DDL[_M](self._models_bearer, self._metadata)
 
         # Se intenta inicializar la instancia con datos existentes
         try:
@@ -106,28 +103,9 @@ class Lylac(Generic[_M]):
             # Se indica que no es la primera inicialización en la base de datos
             self._is_first_initialization = False
 
-        except ProgrammingError as e:
-            # Se intenta inicializar la instancia construyendo la base de datos
-            try:
-                # Inicialización desde cero
-                self._build_database()
-                # Construccción de centros de motores
-                self._build_hubs()
-                # Se indica que es la primera inicialización en la base de datos
-                self._is_first_initialization = True
-                # Ejecución de construcción de datos internos
-                self._execute_as_root(build_database_structure)
-                # Ejecución de la función provista para la construcción personalizada de la base de datos
-                self._execute_as_root(build_models_fn)
-
-            # Si ocurre algún error...
-            except Exception as e:
-                # Se deshace la construcción de la base de datos
-                _Base.metadata.drop_all(self._connection._engine)
-                # Se arroja el error
-                raise
-
-            print('Se termina la inicialización correctamente')
+        except ProgrammingError:
+            # Se construye la estructura de la base de datos
+            self._build_database_structure(build_models_fn)
 
     def populate_if_first_initialization(
         self,
@@ -147,68 +125,8 @@ class Lylac(Generic[_M]):
         password: str,
     ) -> str:
 
-        # Definición de la transacción
-        def transaction(conn: Connection):
-            # Inicialización de contexto de ejecución
-            execution_ctx = self._create_execution_context(None, DATA_RESOURCE.ROOT_USER, conn)
-            # Se busca el usuario
-            found_users: _Records[_base_users__fields] = self._crud.search_read(
-                execution_ctx,
-                'base.users',
-                [('login', '=', username)],
-                ['login', 'active', 'password'],
-            )
-
-            # Si no se encontró usuario...
-            if not found_users:
-                # Se arroja error de usuario no encontrado
-                raise UserNotFoundError(ERROR_LABEL.USER_NOT_FOUND)
-
-            # Obtención de los datos del usuario
-            [ user_data ] = found_users
-
-            # Si el usuario no está activo...
-            if not user_data['active']:
-                # Se arroja error de usuario inactivo
-                raise UserNotActiveError(ERROR_LABEL.USER_NOT_ACTIVE)
-
-            # Obtención de la contraseña hasheada
-            hashed_password: str = user_data['password']
-            # Obtención de la ID del usuario
-            user_id = user_data['id']
-
-            # Verificación de la contraseña
-            is_pwd_correct = verify_password(password, hashed_password)
-
-            # Si la contraseña no es correcta...
-            if not is_pwd_correct:
-                # Se arroja error de contraseña incorrecta
-                raise IncorrectPasswordError(ERROR_LABEL.INCORRECT_PASSWORD)
-
-            # Creación de UUID de sesión
-            session_uuid = uuid4().__str__()
-
-            # Hasheo de la UUID de sesión
-            hashed_session_uuid = (
-                sha256( session_uuid.encode() )
-                .hexdigest()
-            )
-
-            # Creación de sesión de usuario
-            self._crud.create(
-                execution_ctx,
-                'base.user.session',
-                {
-                    'name': hashed_session_uuid,
-                    'user_id': user_id,
-                    'validity_time': timedelta(days= 30),
-                },
-            )
-
-            # Se realiza commit
-            conn.commit()
-
-            return session_uuid
+        # Construcción de la transacción de inicio de sesión
+        transaction = build_login_callback(self, username, password)
 
         # Ejecución de la función de transacción
         session_uuid = self._connection.execute_complex(transaction)
@@ -486,53 +404,8 @@ class Lylac(Generic[_M]):
         session_uuid: str,
     ) -> int:
 
-        # Definición de la transacción
-        def transaction(conn: Connection) -> int:
-            # Inicialización de contexto de ejecución
-            execution_ctx = self._create_execution_context(None, DATA_RESOURCE.ROOT_USER, conn)
-
-            # Hasheo de la UUID de sesión
-            hashed_session_uuid = (
-                sha256( session_uuid.encode() )
-                .hexdigest()
-            )
-
-            # Búsqueda y lectura de la sesión
-            found: _Records[_found_session] = self._crud.search_read(
-                execution_ctx,
-                'base.user.session',
-                [('name', '=', hashed_session_uuid)],
-                [
-                    ('is_active_session', 'boolean', lambda ctx: ctx['expires_at'] > datetime.now()),
-                    ('user_id.id', 'uid'),
-                    ('user_id.active', 'user_is_active'),
-                ],
-            )
-
-            # Si no fue encontrado ningún registro de sesión de usuario...
-            if not found:
-                # Se arroja error de UUID de sesión inválida
-                raise InvalidSessionUUIDError(ERROR_LABEL.INVALID_SESSION_UUID)
-
-            # Obtención del registro de sesión
-            [ session_record ] = found
-
-            # Obtención de datos de la sesión
-            is_active_session = session_record['is_active_session']
-            user_is_active = session_record['user_is_active']
-            uid = session_record['uid']
-
-            # Si la sesión ya no está activa...
-            if not is_active_session:
-                # Se arroja error de sesión expirada
-                raise ExpiredSessionError(ERROR_LABEL.EXPIRED_SESSION)
-
-            # Si el usuario no está activo...
-            if not user_is_active:
-                # Se arroja error de usuario desactivado
-                raise UserNotActiveError(ERROR_LABEL.USER_NOT_ACTIVE)
-
-            return uid
+        # Construcción de función de autenticación de usuario
+        transaction = build_authenticate_user_callback(self, session_uuid)
 
         # Obtención de la UID de usuario autenticado
         uid = self._connection.execute_complex(transaction)
@@ -549,6 +422,34 @@ class Lylac(Generic[_M]):
         self._connection.execute_complex(self._ddl.rebuild_from_existing_database)
         # Inicialización de motores
         self._initialize_engines()
+
+    def _build_database_structure(
+        self,
+        build_models_fn: ExecutableTransactionCallback[_M],
+    ) -> None:
+
+        # Se intenta inicializar la instancia construyendo la base de datos
+        try:
+            # Inicialización desde cero
+            self._build_database()
+            # Construccción de centros de motores
+            self._build_hubs()
+            # Se indica que es la primera inicialización en la base de datos
+            self._is_first_initialization = True
+            # Ejecución de construcción de datos internos
+            self._execute_as_root(build_database_structure)
+            # Ejecución de la función provista para la construcción personalizada de la base de datos
+            self._execute_as_root(build_models_fn)
+
+        # Si ocurre algún error...
+        except Exception:
+            # Se deshace la construcción de la base de datos
+            _Base.metadata.drop_all(self._connection._engine)
+            # Se arroja el error
+            raise
+
+        # Se indica que la inicialización se realizó correctamente
+        print(MONITOR.INITIALIZATION_FINISHED)
 
     def _build_database(
         self,
@@ -589,7 +490,7 @@ class Lylac(Generic[_M]):
         self._user_env = UserEnvEngine[_M](self._crud)
 
         # Inicialización de API de extensión
-        self.api = _MainAPI(
+        self.api = _MainAPI[_M](
             automations= self._automations,
             validations= self._validations,
             actions= self._actions,
@@ -609,7 +510,7 @@ class Lylac(Generic[_M]):
 
     def _create_execution_context(
         self,
-        session_uuid: str,
+        session_uuid: str | None,
         uid: int,
         conn: Connection,
     ) -> _ExecutionContext[_M]:

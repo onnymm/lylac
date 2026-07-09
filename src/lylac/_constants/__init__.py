@@ -1,4 +1,7 @@
-from ._labels import ERROR_LABEL
+from ._labels import (
+    ERROR_LABEL,
+    MONITOR,
+)
 from ._names import (
     DATA_RESOURCE,
     FIELD_NAME,

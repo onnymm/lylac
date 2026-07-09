@@ -11,3 +11,6 @@ class ERROR_LABEL:
     INVALID_SESSION_UUID = 'Datos de autenticación inválidos.'
     USER_NOT_ACTIVE = 'El usuario está desactivado.'
     USER_NOT_FOUND = 'El usuario no existe.'
+
+class MONITOR:
+    INITIALIZATION_FINISHED = 'La base de datos de inicializó correctamente.'
