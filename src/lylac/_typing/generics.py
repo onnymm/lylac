@@ -31,4 +31,4 @@ FunctionDecorator = Callable[[_F], _F]
 
 _Record = Union['_BasicRecord', _A]
 
-_Records = list[_Record[_A]]
+_Records = list[_A]
