@@ -438,6 +438,10 @@ def build_initial_data(conn: Connection) -> DataMap:
             'model_name': 'base.model.field',
         },
         {
+            'name': 'base_model_field.base_model_data_process_step_record__sequence',
+            'model_name': 'base.model.field',
+        },
+        {
             'name': 'base_model_field.base_model_data_process_step_record__data',
             'model_name': 'base.model.field',
         },
@@ -2067,9 +2071,24 @@ def build_initial_data(conn: Connection) -> DataMap:
             },
         },
         {
-            'name': 'base_model_field.base_model_data_process_step_record__data',
+            'name': 'base_model_field.base_model_data_process_step_record__sequence',
             'step_id': 3,
             'sequence': 930,
+            'data': {
+                'name': 'sequence',
+                'label': 'Secuencia',
+                'ttype': 'integer',
+                'model_id': model_data_index.encode('base_model.base_model_data_process_step_record'),
+                'is_required': True,
+                'nullable': False,
+                'readonly': True,
+                'state': 'base',
+            },
+        },
+        {
+            'name': 'base_model_field.base_model_data_process_step_record__data',
+            'step_id': 3,
+            'sequence': 940,
             'data': {
                 'name': 'data',
                 'label': 'Datos',
@@ -2084,7 +2103,7 @@ def build_initial_data(conn: Connection) -> DataMap:
         {
             'name': 'base_model_field.base_user_session__id',
             'step_id': 3,
-            'sequence': 940,
+            'sequence': 950,
             'data': {
                 'name': 'id',
                 'label': 'ID',
@@ -2098,7 +2117,7 @@ def build_initial_data(conn: Connection) -> DataMap:
         {
             'name': 'base_model_field.base_user_session__name',
             'step_id': 3,
-            'sequence': 950,
+            'sequence': 960,
             'data': {
                 'name': 'name',
                 'label': 'Nombre',
@@ -2111,7 +2130,7 @@ def build_initial_data(conn: Connection) -> DataMap:
         {
             'name': 'base_model_field.base_user_session__create_date',
             'step_id': 3,
-            'sequence': 960,
+            'sequence': 970,
             'data': {
                 'name': 'create_date',
                 'label': 'Fecha de creación',
@@ -2124,7 +2143,7 @@ def build_initial_data(conn: Connection) -> DataMap:
         {
             'name': 'base_model_field.base_user_session__update_date',
             'step_id': 3,
-            'sequence': 970,
+            'sequence': 980,
             'data': {
                 'name': 'update_date',
                 'label': 'Fecha de modificación',
@@ -2137,7 +2156,7 @@ def build_initial_data(conn: Connection) -> DataMap:
         {
             'name': 'base_model_field.base_user_session__create_uid',
             'step_id': 3,
-            'sequence': 980,
+            'sequence': 990,
             'data': {
                 'name': 'create_uid',
                 'label': 'Usuario de creación',
@@ -2152,7 +2171,7 @@ def build_initial_data(conn: Connection) -> DataMap:
         {
             'name': 'base_model_field.base_user_session__update_uid',
             'step_id': 3,
-            'sequence': 990,
+            'sequence': 1000,
             'data': {
                 'name': 'update_uid',
                 'label': 'Usuario de modificación',
@@ -2167,7 +2186,7 @@ def build_initial_data(conn: Connection) -> DataMap:
         {
             'name': 'base_model_field.base_user_session__display_name',
             'step_id': 3,
-            'sequence': 1000,
+            'sequence': 1010,
             'data': {
                 'name': 'display_name',
                 'label': 'Nombre a mostrar',
@@ -2181,7 +2200,7 @@ def build_initial_data(conn: Connection) -> DataMap:
         {
             'name': 'base_model_field.base_user_session__user_id',
             'step_id': 3,
-            'sequence': 1010,
+            'sequence': 1020,
             'data': {
                 'name': 'user_id',
                 'label': 'Usuario',
@@ -2196,7 +2215,7 @@ def build_initial_data(conn: Connection) -> DataMap:
         {
             'name': 'base_model_field.base_user_session__validity_time',
             'step_id': 3,
-            'sequence': 1020,
+            'sequence': 1030,
             'data': {
                 'name': 'validity_time',
                 'label': 'Tiempo de validez',
@@ -2209,7 +2228,7 @@ def build_initial_data(conn: Connection) -> DataMap:
         {
             'name': 'base_model_field.base_user_session__expires_at',
             'step_id': 3,
-            'sequence': 1030,
+            'sequence': 1040,
             'data': {
                 'name': 'expires_at',
                 'label': 'Expira el',
