@@ -6,6 +6,7 @@ class ERROR_LABEL:
     MANUAL_ACTION = 'No puedes ejecutar manualmente funciones registradas como validaciones.'
     MANUAL_POLICY = 'No puedes ejecutar manualmente funciones registradas como políticas.'
     MANUAL_SERVER_TASK = 'No puedes ejecutar manualmente funciones registradas como tareas de servidor.'
+    MODULE_ALREADY_LOADED = 'El módulo ya ha sido cargado.'
     INCORRECT_PASSWORD = 'La contraseña no es correcta.'
     EXPIRED_SESSION = 'La sesión expiró.'
     INVALID_SESSION_UUID = 'Datos de autenticación inválidos.'

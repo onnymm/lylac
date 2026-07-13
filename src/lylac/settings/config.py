@@ -13,3 +13,6 @@ class CREDENTIALS:
     PORT = env_.variable('PORT', int)
     USER = env_.variable('USER')
     PASSWORD = env_.variable('PASSWORD', quote)
+
+class DIRECTORY:
+    MODULES = 'modules'

@@ -20,6 +20,7 @@ from ._contexts import ValidationContext as _ValidationContext
 from ._contexts import ServerTaskContext as _ServerTaskContext
 from ._contexts import TransactionContext as _TransactionContext
 from ._core import Metadata
+from ._core import Modules
 from ._core import Transaction
 from ._core.models import _Base
 from ._data import build_database_structure
@@ -89,6 +90,8 @@ class Lylac(Generic[_M]):
         self._transaction = Transaction()
         # Inicialización de instancia de metadatos de la base de datos
         self._metadata = DatabaseMetadata()
+        # Inicialización de extensión de módulos
+        self.modules = Modules[_M](self)
         # Inicialización de orquestador CRUD
         self._crud = CRUD[_M](self._models_bearer)
         # Inicialización de instancia de operaciones DDL

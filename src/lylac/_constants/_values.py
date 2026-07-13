@@ -12,3 +12,6 @@ class FIELD_SUFFIX:
     NAME = '@@name'
     REF_ID = '@@ref_id'
     AGG = '@@agg'
+
+class ENCODE_REF:
+    ( START, END ) = ( '__#@#', '#@#__' )

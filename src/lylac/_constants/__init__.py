@@ -18,6 +18,7 @@ from ._names import (
     TRANSACTIONS,
 )
 from ._values import (
+    ENCODE_REF,
     FIELD_SUFFIX,
     RELATION_PATH_SEPARATOR,
     ROOT_PATH,
