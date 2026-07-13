@@ -278,6 +278,16 @@ def _base_model__register_model_data(ctx: AutomationContext) -> None:
 
     # Iteración por cada registro creado
     for record in ctx.records:
+        # Se comprueba que no exista el registro ya creado
+        count = ctx.search_count(
+            'base.model.data',
+            [('name', '=', record['name'])],
+        )
+        # Si hay existencia de registros...
+        if count:
+            # Se continua con el ciclo
+            continue
+
         # Creación de los datos de registro de modelo
         new_record = {
             'res_id': record['res_id'],
@@ -326,6 +336,15 @@ def _base_user_groups__register_model_data(ctx: AutomationContext) -> None:
         record_id = record['res_id']
         # Obtención del nombre del grupo
         name = record['name']
+        # Se comprueba que no exista el registro ya creado
+        count = ctx.search_count(
+            'base.model.data',
+            [('name', '=', f'base_user_groups.{name}')],
+        )
+        # Si hay existencia de registros...
+        if count:
+            # Se continua con el ciclo
+            continue
         # Creación de los datos de registro de modelo
         new_record = {
             'res_id': record_id,
@@ -351,6 +370,15 @@ def _base_rules__register_model_data(ctx: AutomationContext):
         name = record['name']
         # Obtención del nombre de tabla del modelo
         model_table_name = record['model_table_name']
+        # Se comprueba que no exista el registro ya creado
+        count = ctx.search_count(
+            'base.model.data',
+            [('name', '=', f'base_rules.{model_table_name}__{name}')],
+        )
+        # Si hay existencia de registros...
+        if count:
+            # Se continua con el ciclo
+            continue
 
         # Creación de los datos de registro de modelo
         new_record = {
