@@ -11,8 +11,8 @@ from .._typing.structures import FieldComputation
 from .._typing.structures import RecordData
 from .._typing.structures import RelationCommands
 from .._typing.type_parameters import _M
+from ..errors import ModuleAlreadyLoaded
 from ..settings import DIRECTORY
-from errors import ModuleAlreadyLoaded
 
 if TYPE_CHECKING:
     from .._contexts import TransactionContext
