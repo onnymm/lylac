@@ -4,6 +4,7 @@ from typing import Optional
 from typing import TYPE_CHECKING
 from sqlalchemy import select
 from sqlalchemy import func
+from .._constants import CRUD_METHOD_NAME
 from .._constants import FIELD_NAME
 from .._constants import MODEL_NAME
 from .._contexts import ExpansionContext
@@ -33,10 +34,10 @@ if TYPE_CHECKING:
 class CRUD(Generic[_M]):
     PERMISSIONS_BYPASS: bool = True
     _adapter: dict[CRUDPermission, CRUDPermissionColumnName] = {
-        'create': 'perm_create',
-        'read': 'perm_read',
-        'update': 'perm_update',
-        'delete': 'perm_delete',
+        CRUD_METHOD_NAME.CREATE: 'perm_create',
+        CRUD_METHOD_NAME.READ: 'perm_read',
+        CRUD_METHOD_NAME.UPDATE: 'perm_update',
+        CRUD_METHOD_NAME.DELETE: 'perm_delete',
     }
 
     def _check_access(
@@ -172,7 +173,7 @@ class CRUD(Generic[_M]):
         self._check_access(
             execution_ctx,
             model_name,
-            'create',
+            CRUD_METHOD_NAME.CREATE,
         )
 
         # Se asegura una lista de datos
@@ -180,7 +181,7 @@ class CRUD(Generic[_M]):
 
         # Validación de los datos
         execution_ctx.validations.validate(
-            'create',
+            CRUD_METHOD_NAME.CREATE,
             execution_ctx,
             model_name,
             data,
@@ -188,7 +189,7 @@ class CRUD(Generic[_M]):
 
         # Verificación de políticas
         execution_ctx.policies.verify_incoming_data(
-            'create',
+            CRUD_METHOD_NAME.CREATE,
             execution_ctx,
             model_name,
             data,
@@ -242,13 +243,13 @@ class CRUD(Generic[_M]):
         self._check_access(
             execution_ctx,
             model_name,
-            'read',
+            CRUD_METHOD_NAME.READ,
         )
 
         # Obtención de criterio de búsqueda con alcance del usuario
         scoped_search_criteria = self._get_record_rules(
             execution_ctx,
-            'read',
+            CRUD_METHOD_NAME.READ,
             model_name,
             search_criteria,
         )
@@ -280,7 +281,7 @@ class CRUD(Generic[_M]):
         self._check_access(
             execution_ctx,
             model_name,
-            'read',
+            CRUD_METHOD_NAME.READ,
         )
 
         # Inicialización de contexto de expansión
@@ -289,7 +290,7 @@ class CRUD(Generic[_M]):
         # Obtención de criterio de búsqueda con alcance del usuario
         scoped_search_criteria = self._get_record_rules(
             execution_ctx,
-            'read',
+            CRUD_METHOD_NAME.READ,
             model_name,
             search_criteria,
         )
@@ -327,13 +328,13 @@ class CRUD(Generic[_M]):
         self._check_access(
             execution_ctx,
             model_name,
-            'read',
+            CRUD_METHOD_NAME.READ,
         )
 
         # Obtención de criterio de búsqueda con alcance del usuario
         scoped_search_criteria = self._get_record_rules(
             execution_ctx,
-            'read',
+            CRUD_METHOD_NAME.READ,
             model_name,
             search_criteria,
         )
@@ -361,7 +362,7 @@ class CRUD(Generic[_M]):
         self._check_access(
             execution_ctx,
             model_name,
-            'read',
+            CRUD_METHOD_NAME.READ,
         )
 
         # Inicialización de contexto de expansión
@@ -373,7 +374,7 @@ class CRUD(Generic[_M]):
         # Evaluación de IDs permitidas
         self._evalute_allowed_ids(
             execution_ctx,
-            'read',
+            CRUD_METHOD_NAME.READ,
             model_name,
             record_ids,
         )
@@ -411,7 +412,7 @@ class CRUD(Generic[_M]):
         self._check_access(
             execution_ctx,
             model_name,
-            'update',
+            CRUD_METHOD_NAME.UPDATE,
         )
 
         # Se asegura una lista de datos
@@ -420,14 +421,14 @@ class CRUD(Generic[_M]):
         # Evaluación de IDs permitidas
         self._evalute_allowed_ids(
             execution_ctx,
-            'update',
+            CRUD_METHOD_NAME.UPDATE,
             model_name,
             record_ids,
         )
 
         # Validación de los datos
         execution_ctx.validations.validate(
-            'update',
+            CRUD_METHOD_NAME.UPDATE,
             execution_ctx,
             model_name,
             [data],
@@ -435,7 +436,7 @@ class CRUD(Generic[_M]):
 
         # Verificación de políticas
         execution_ctx.policies.verify_incoming_data(
-            'update',
+            CRUD_METHOD_NAME.UPDATE,
             execution_ctx,
             model_name,
             [data],
@@ -482,7 +483,7 @@ class CRUD(Generic[_M]):
         self._check_access(
             execution_ctx,
             model_name,
-            'delete',
+            CRUD_METHOD_NAME.DELETE,
         )
 
         # Se asegura una lista de datos
@@ -491,14 +492,14 @@ class CRUD(Generic[_M]):
         # Evaluación de IDs permitidas
         self._evalute_allowed_ids(
             execution_ctx,
-            'delete',
+            CRUD_METHOD_NAME.DELETE,
             model_name,
             record_ids,
         )
 
         # Verificación de políticas
         execution_ctx.policies.verify_incoming_ids(
-            'delete',
+            CRUD_METHOD_NAME.DELETE,
             execution_ctx,
             model_name,
             record_ids,
@@ -534,7 +535,7 @@ class CRUD(Generic[_M]):
         # Obtención de criterio de búsqueda con alcance del usuario
         scoped_search_criteria = self._get_record_rules(
             execution_ctx,
-            'read',
+            CRUD_METHOD_NAME.READ,
             model_name,
             [(FIELD_NAME.ID, 'in', declared_record_ids)]
         )

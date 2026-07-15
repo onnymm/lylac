@@ -1,5 +1,6 @@
 import re
 from typing import TYPE_CHECKING
+from .._constants import CRUD_METHOD_NAME
 from .._constants import MODEL_NAME
 from .._constants import TTYPE_NAME
 from .._resources import ValidationProperties
@@ -159,46 +160,46 @@ def _forbid_duplicated_fields_in_same_model(ctx: 'ValidationContext[_M, _Interna
 PRESET_VALIDATIONS: list[ValidationProperties[_M]] = [
 
         ValidationProperties(
-            'create',
+            CRUD_METHOD_NAME.CREATE,
             _confirm_required_fields,
             'El campo [{value}] es requerido',
         ),
 
         ValidationProperties(
-            ['create', 'update'],
+            [CRUD_METHOD_NAME.CREATE, CRUD_METHOD_NAME.UPDATE],
             _confirm_valid_selection_values,
             'El valor de selección en el campo [{value}] es inválido.',
         ),
 
         ValidationProperties(
-            'create',
+            CRUD_METHOD_NAME.CREATE,
             _valid_model_name,
             'El nombre de modelo solo puede contener minúsculas, dígitos y puntos.',
             'base.model',
         ),
 
         ValidationProperties(
-            'create',
+            CRUD_METHOD_NAME.CREATE,
             _coherent_label_and_name_in_new_model,
             'El nombre de tabla de modelo debe ser igual que el nombre de modelo sustituyendo puntos por guiones bajos.',
             'base.model',
         ),
 
         ValidationProperties(
-            'create',
+            CRUD_METHOD_NAME.CREATE,
             _forbid_duplicated_fields_in_same_model,
             'No puede haber nombres de campo repetidos en el mismo modelo.',
             'base.model.field',
         ),
 
         ValidationProperties(
-            'update',
+            CRUD_METHOD_NAME.UPDATE,
             _prevent_update_on_readonly_fields,
             'El campo [{value}] es de solo lectura y no puede ser modificado.',
         ),
 
         ValidationProperties(
-            ['create', 'update'],
+            [CRUD_METHOD_NAME.CREATE, CRUD_METHOD_NAME.UPDATE],
             _throw_error_on_create_or_update_computed_fields,
             'El campo [{value}] es computado y no se le puede asignar un valor explícito diferente al calculado.',
         ),

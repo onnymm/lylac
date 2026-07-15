@@ -9,6 +9,7 @@ from sqlalchemy import update
 from .._constants import ENCODE_REF
 from .._constants import ERROR_LABEL
 from .._constants import MODEL_NAME
+from .._constants import RELATION_ACTION_NAME
 from .._constants import TTYPE_NAME
 from .._core import Metadata
 from .._core import Transaction
@@ -110,7 +111,7 @@ class ModulesManager(Generic[_M]):
             process: RecordData = {
                 'name': name,
                 'step_ids': {
-                    'create': step_ids,
+                    RELATION_ACTION_NAME.CREATE: step_ids,
                 },
             }
             # Se añaden las referencias de registros referenciados
@@ -118,42 +119,42 @@ class ModulesManager(Generic[_M]):
                 'model_name': MODEL_NAME.BASE_MODEL,
                 'sequence': 1,
                 'record_data_ids': {
-                    'create': record_data_ids[MODEL_NAME.BASE_MODEL],
+                    RELATION_ACTION_NAME.CREATE: record_data_ids[MODEL_NAME.BASE_MODEL],
                 },
             })
             step_ids.append({
                 'model_name': MODEL_NAME.BASE_MODEL_FIELD,
                 'sequence': 2,
                 'record_data_ids': {
-                    'create': record_data_ids[MODEL_NAME.BASE_MODEL_FIELD],
+                    RELATION_ACTION_NAME.CREATE: record_data_ids[MODEL_NAME.BASE_MODEL_FIELD],
                 },
             })
             step_ids.append({
                 'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
                 'sequence': 3,
                 'record_data_ids': {
-                    'create': record_data_ids[MODEL_NAME.BASE_MODEL_FIELD_SELECTION],
+                    RELATION_ACTION_NAME.CREATE: record_data_ids[MODEL_NAME.BASE_MODEL_FIELD_SELECTION],
                 },
             })
             step_ids.append({
                 'model_name': MODEL_NAME.BASE_USER_GROUPS,
                 'sequence': 4,
                 'record_data_ids': {
-                    'create': record_data_ids[MODEL_NAME.BASE_USER_GROUPS],
+                    RELATION_ACTION_NAME.CREATE: record_data_ids[MODEL_NAME.BASE_USER_GROUPS],
                 },
             })
             step_ids.append({
                 'model_name': MODEL_NAME.BASE_USER_ACCESS,
                 'sequence': 5,
                 'record_data_ids': {
-                    'create': record_data_ids[MODEL_NAME.BASE_USER_ACCESS],
+                    RELATION_ACTION_NAME.CREATE: record_data_ids[MODEL_NAME.BASE_USER_ACCESS],
                 },
             })
             step_ids.append({
                 'model_name': MODEL_NAME.BASE_RULES,
                 'sequence': 6,
                 'record_data_ids': {
-                    'create': record_data_ids[MODEL_NAME.BASE_RULES],
+                    RELATION_ACTION_NAME.CREATE: record_data_ids[MODEL_NAME.BASE_RULES],
                 },
             })
 

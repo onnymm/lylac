@@ -1,4 +1,5 @@
 from typing import Generic
+from .._constants import CRUD_METHOD_NAME
 from .._typing.generics import EngineHub
 from .._typing.type_parameters import _M
 from .._typing.literals import DMLTransaction
@@ -25,11 +26,11 @@ class Slot(Generic[_M, _H]):
         name: DMLTransaction,
     ) -> EngineHub[_M, _H]:
 
-        if name == 'create':
+        if name == CRUD_METHOD_NAME.CREATE:
             return self.create
-        if name == 'update':
+        if name == CRUD_METHOD_NAME.UPDATE:
             return self.update
-        if name == 'delete':
+        if name == CRUD_METHOD_NAME.DELETE:
             return self.delete
 
         raise AssertionError('El acceso no existe.')

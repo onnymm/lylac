@@ -111,6 +111,12 @@ class TTYPE_NAME:
     MANY2MANY = 'many2many'
     JSON = 'json'
 
+class CRUD_METHOD_NAME:
+    CREATE = 'create'
+    READ = 'read'
+    UPDATE = 'update'
+    DELETE = 'delete'
+
 FACTORY_MODELS = [
     MODEL_NAME.BASE_USERS,
     MODEL_NAME.BASE_USER_SESSION,
@@ -208,15 +214,10 @@ class DATA_RESOURCE:
         BASE_MODEL_DATA_PROCESS_STEP = 'base_model.base_model_data_process_step'
         BASE_MODEL_DATA_PROCESS_STEP_RECORD = 'base_model.base_model_data_process_step_record'
 
-class TRANSACTION_NAME:
-    CREATE = 'create'
-    UPDATE = 'update'
-    DELETE = 'delete'
-
 TRANSACTIONS = [
-    TRANSACTION_NAME.CREATE,
-    TRANSACTION_NAME.UPDATE,
-    TRANSACTION_NAME.DELETE,
+    CRUD_METHOD_NAME.CREATE,
+    CRUD_METHOD_NAME.UPDATE,
+    CRUD_METHOD_NAME.DELETE,
 ]
 
 class PRESET:

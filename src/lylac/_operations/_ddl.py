@@ -29,12 +29,13 @@ from .._typing.literals import TTypeName
 from .._typing.type_parameters import _M
 from .._utils import build_many2many_relation_name
 from .._utils import get_table_name
+from ..settings import SETTINGS
 
 class DDL(Generic[_M]):
     _build_column_callback: dict[TTypeName, ColumnBuilder]
     _ttype_to_dbtype: dict[TTypeName, str] = {
         TTYPE_NAME.INTEGER: 'INTEGER',
-        TTYPE_NAME.CHAR: 'VARCHAR(255)',
+        TTYPE_NAME.CHAR: f'VARCHAR({SETTINGS.DATABASE.CHAR_FIELD_LENGHT})',
         TTYPE_NAME.FLOAT: 'FLOAT',
         TTYPE_NAME.BOOLEAN: 'BOOLEAN',
         TTYPE_NAME.DATE: 'DATE',
@@ -43,7 +44,7 @@ class DDL(Generic[_M]):
         TTYPE_NAME.DURATION: 'INTERVAL',
         TTYPE_NAME.FILE: 'BYTEA',
         TTYPE_NAME.TEXT: 'TEXT',
-        TTYPE_NAME.SELECTION: 'VARCHAR(255)',
+        TTYPE_NAME.SELECTION: f'VARCHAR({SETTINGS.DATABASE.SELECTION_FIELD_LENGHT})',
         TTYPE_NAME.MANY2ONE: 'INTEGER',
         TTYPE_NAME.JSON: 'JSONB',
     }
@@ -409,7 +410,7 @@ class DDL(Generic[_M]):
         # Construcción de mapa de funciones para creación de instancias de campo para modelos
         self._build_column_callback = {
             TTYPE_NAME.INTEGER: lambda definition, _, __: Column(types.Integer, **definition),
-            TTYPE_NAME.CHAR: lambda definition, _, __: Column(types.String(255), **definition),
+            TTYPE_NAME.CHAR: lambda definition, _, __: Column(types.String(SETTINGS.DATABASE.CHAR_FIELD_LENGHT), **definition),
             TTYPE_NAME.FLOAT: lambda definition, _, __: Column(types.Float, **definition),
             TTYPE_NAME.BOOLEAN: lambda definition, _, __: Column(types.Boolean, **definition),
             TTYPE_NAME.DATE: lambda definition, _, __: Column(types.Date, **definition),
@@ -418,7 +419,7 @@ class DDL(Generic[_M]):
             TTYPE_NAME.DURATION: lambda definition, _, __: Column(types.Interval, **definition),
             TTYPE_NAME.FILE: lambda definition, _, __: Column(types.LargeBinary, **definition),
             TTYPE_NAME.TEXT: lambda definition, _, __: Column(types.Text, **definition),
-            TTYPE_NAME.SELECTION: lambda definition, _, __: Column(types.String(255), **definition),
+            TTYPE_NAME.SELECTION: lambda definition, _, __: Column(types.String(SETTINGS.DATABASE.CHAR_FIELD_LENGHT), **definition),
             TTYPE_NAME.JSON: lambda definition, _, __: Column(types.JSON, **definition),
             TTYPE_NAME.MANY2ONE: lambda definition, related_model_name, on_delete: (
                 Column(

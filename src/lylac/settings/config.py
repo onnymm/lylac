@@ -1,5 +1,6 @@
 from urllib.parse import quote
 from .._core.env import env_
+from .._constants import DEFAULTS
 
 class CONFIG:
     ROOT_USER_NAME = env_.variable('ROOT_USER_NAME')
@@ -16,3 +17,12 @@ class CREDENTIALS:
 
 class DIRECTORY:
     MODULES = 'modules'
+
+class SETTINGS:
+    class DATABASE:
+        CHAR_FIELD_LENGHT = env_.variable('CHAR_FIELD_LENGHT', int, DEFAULTS.CHAR_FIELD_LENGHT)
+        SELECTION_FIELD_LENGHT = env_.variable('SELECTION_FIELD_LENGHT', int, DEFAULTS.SELECTION_FIELD_LENGHT)
+
+    class SECURITY:
+        DEFAULT_PASSWORD = env_.variable('DEFAULT_PASSWORD', str)
+        EXPIRATION_TOKEN_DAYS = env_.variable('EXPIRATION_TOKEN_DAYS', int, DEFAULTS.EXPIRATION_TOKEN_DAYS)

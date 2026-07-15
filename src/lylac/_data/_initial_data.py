@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 from .._constants import DATA_RESOURCE
+from .._constants import RELATION_ACTION_NAME
 from .._constants import TTYPE_NAME
 
 if TYPE_CHECKING:
@@ -16,7 +17,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                 'name': 'basic_permissions',
                 'label': 'Permisos básicos',
                 'access_ids': {
-                    'create': [
+                    RELATION_ACTION_NAME.CREATE: [
                         {
                             'name': 'base_users__user',
                             'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USERS),
@@ -92,7 +93,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                 'name': 'database_structure_admin',
                 'label': 'Administrador de la estructura de la base de datos',
                 'access_ids': {
-                    'create': [
+                    RELATION_ACTION_NAME.CREATE: [
                         {
                             'name': 'base_model__admin',
                             'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL),
@@ -157,7 +158,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                 'name': 'access_admin',
                 'label': 'Administrador de permisos de usuarios',
                 'access_ids': {
-                    'create': [
+                    RELATION_ACTION_NAME.CREATE: [
                         {
                             'name': 'base_user_access__admin',
                             'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_ACCESS),
@@ -198,7 +199,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                 'name': 'users_admin',
                 'label': 'Administrador de usuarios',
                 'access_ids': {
-                    'create': [
+                    RELATION_ACTION_NAME.CREATE: [
                         {
                             'name': 'base_users__admin',
                             'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USERS),
@@ -244,7 +245,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                 'is_archivable': True,
                 'has_label': True,
                 'field_ids': {
-                    'create': [
+                    RELATION_ACTION_NAME.CREATE: [
                         {
                             'name': 'domain',
                             'label': 'Dominio',
@@ -303,7 +304,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                 'description': 'Asistente de cambio de contraseña',
                 'transient': True,
                 'field_ids': {
-                    'create': [
+                    RELATION_ACTION_NAME.CREATE: [
                         {
                             'name': 'current_password',
                             'label': 'Contraseña actual',
@@ -341,7 +342,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                 'label': 'Permisos de acceso',
                 'description': 'Registros de permisos de acceso granulares.',
                 'field_ids': {
-                    'create': [
+                    RELATION_ACTION_NAME.CREATE: [
                         {
                             'name': 'model_id',
                             'label': 'Modelo',
@@ -395,7 +396,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                 'label': 'Roles de usuario',
                 'has_label': True,
                 'field_ids': {
-                    'create': {
+                    RELATION_ACTION_NAME.CREATE: {
                         'name': 'group_ids',
                         'label': 'Grupos',
                         'ttype': TTYPE_NAME.MANY2MANY,
@@ -411,7 +412,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
         ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_GROUPS),
         {
             'field_ids': {
-                'create': {
+                RELATION_ACTION_NAME.CREATE: {
                     'name': 'access_ids',
                     'label': 'Accesos',
                     'ttype': TTYPE_NAME.ONE2MANY,
@@ -453,7 +454,7 @@ def _create_user_roles(ctx: Lylac.TransactionContext):
         ctx.get_resource_id(DATA_RESOURCE.ROOT_USER),
         {
             'role_ids': {
-                'create': {
+                RELATION_ACTION_NAME.CREATE: {
                     'name': 'root_user',
                     'label': 'Superusuario',
                     'group_ids': {
@@ -475,7 +476,7 @@ def _create_user_roles(ctx: Lylac.TransactionContext):
         ctx.get_resource_id(DATA_RESOURCE.ADMIN_USER),
         {
             'role_ids': {
-                'create': {
+                RELATION_ACTION_NAME.CREATE: {
                     'name': 'database_admin',
                     'label': 'Administrador de la base de datos',
                     'group_ids': {

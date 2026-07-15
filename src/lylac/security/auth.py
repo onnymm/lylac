@@ -7,6 +7,7 @@ from typing import Callable
 from uuid import uuid4
 from sqlalchemy.engine import Connection
 from .._constants import DATA_RESOURCE
+from .._constants import DEFAULTS
 from .._constants import MODEL_NAME
 from .._constants import ERROR_LABEL
 from .._constants import TTYPE_NAME
@@ -19,6 +20,7 @@ from ..errors import ExpiredSessionError
 from ..errors import InvalidSessionUUIDError
 from ..errors import UserNotActiveError
 from ..errors import UserNotFoundError
+from ..settings import SETTINGS
 
 if TYPE_CHECKING:
     from .._main import Lylac
@@ -48,7 +50,7 @@ def hash_password(raw_pwd: str) -> str:
 def default_password() -> str:
 
     # Construcción de hash de contraseña genérica
-    pwd = hash_password('123456')
+    pwd = hash_password(SETTINGS.SECURITY.DEFAULT_PASSWORD)
 
     return pwd
 
@@ -122,7 +124,7 @@ def build_login_callback(
             {
                 'name': hashed_session_uuid,
                 'user_id': user_id,
-                'validity_time': timedelta(days= 30),
+                'validity_time': timedelta(days= DEFAULTS.EXPIRATION_TOKEN_DAYS),
             },
         )
 

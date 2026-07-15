@@ -1,6 +1,7 @@
 from typing import Callable
 from typing import Generic
 from typing import TYPE_CHECKING
+from .._constants import CRUD_METHOD_NAME
 from .._constants import ERROR_LABEL
 from .._constants import MODEL_NAME
 from .._contexts import ValidationContext as ValidationContext
@@ -25,9 +26,9 @@ if TYPE_CHECKING:
     from .._orchestrator import CRUD
 
 class TRANSACTION_NAME:
-    CREATE = 'create'
-    UPDATE = 'update'
-    DELETE = 'delete'
+    CREATE = CRUD_METHOD_NAME.CREATE
+    UPDATE = CRUD_METHOD_NAME.UPDATE
+    DELETE = CRUD_METHOD_NAME.DELETE
 
 TRANSACTIONS = [
     TRANSACTION_NAME.CREATE,

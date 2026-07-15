@@ -1,3 +1,4 @@
+from .._constants import CRUD_METHOD_NAME
 from .._constants import STATIC_FIELDS
 from .._contexts import PoliciesContext
 from .._resources import PolicyProperties
@@ -27,13 +28,13 @@ def _forbid_direct_password_input(ctx: PoliciesContext[_M, _R]):
 PRESET_POLICIES: list[PolicyProperties] = [
 
     PolicyProperties(
-        ['create', 'update'],
+        [CRUD_METHOD_NAME.CREATE, CRUD_METHOD_NAME.UPDATE],
         _reject_static_fields,
         'El campo {value} no puede ser declarado ni modificado manualmente.',
     ),
 
     PolicyProperties(
-        ['create', 'update'],
+        [CRUD_METHOD_NAME.CREATE, CRUD_METHOD_NAME.UPDATE],
         _forbid_direct_password_input,
         'El campo de contraseña no puede ser directamente modificado.',
         'base.users',

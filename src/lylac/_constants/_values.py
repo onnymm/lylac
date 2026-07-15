@@ -15,3 +15,8 @@ class FIELD_SUFFIX:
 
 class ENCODE_REF:
     ( START, END ) = ( '__#@#', '#@#__' )
+
+class DEFAULTS:
+    CHAR_FIELD_LENGHT = 255
+    SELECTION_FIELD_LENGHT = 255
+    EXPIRATION_TOKEN_DAYS = 30
