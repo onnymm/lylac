@@ -4,8 +4,10 @@ from sqlalchemy.engine import Connection
 from ..._constants import DATA_RESOURCE
 from ..._engines import ComputeEngine
 from ..._typing.generics import ModelName
+from ..._typing.callables import CaptureComputeCallback
 from ..._typing.literals import TTypeName
 from ..._typing.type_parameters import _M
+from ..._contexts import ComputeContext
 
 if TYPE_CHECKING:
     from ..._main import Lylac
@@ -33,7 +35,7 @@ class _Interface_Compute(Generic[_M]):
         # Definición de la transacción
         def transaction(conn: Connection):
             # Inicialización de contexto de ejecución
-            execution_ctx = self._main._create_execution_context(None, DATA_RESOURCE.ROOT_USER, conn)
+            execution_ctx = self._main._create_execution_context(DATA_RESOURCE.ROOT_USER, conn)
 
             # Registro de campo en la instancia
             closure_decorator = self._core.register_field(
@@ -48,6 +50,6 @@ class _Interface_Compute(Generic[_M]):
             return closure_decorator
 
         # Obtención de decorador comstruido
-        decorator = self._main._connection.execute_complex(transaction)
+        decorator = self._main._engine.execute_complex(transaction)
 
         return decorator

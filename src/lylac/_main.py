@@ -1,27 +1,22 @@
-from typing import Any
 from typing import Callable
 from typing import Generic
 from typing import Literal
 from typing import Optional
 from typing import Union
-from sqlalchemy import select
-from sqlalchemy import update
 from sqlalchemy.engine import Connection
 from sqlalchemy.exc import ProgrammingError
 from ._api import _MainAPI
 from ._constants import DATA_RESOURCE
+from ._constants import MODEL_NAME
 from ._constants import MONITOR
 from ._constants import INITIAL_PACKAGES
 from ._contexts import ActionContext as _ActionContext
 from ._contexts import AutomationContext as _AutomationContext
 from ._contexts import ComputeContext as _ComputeContext
-from ._contexts import ExecutionContext as _ExecutionContext
+from ._contexts import ExecutionContext as ExecutionContext
 from ._contexts import ValidationContext as _ValidationContext
 from ._contexts import ServerTaskContext as _ServerTaskContext
 from ._contexts import TransactionContext as _TransactionContext
-from ._core import Metadata
-from ._core import Modules
-from ._core import Transaction
 from ._core.models import _Base
 from ._data import build_database_structure
 from ._data import build_initial_data
@@ -32,12 +27,12 @@ from ._engines import PoliciesEngine
 from ._engines import ServerTasksEngine
 from ._engines import UserEnvEngine
 from ._engines import ValidationEngine
+from ._integrations import ModulesManager
 from ._operations import DDL
 from ._orchestrator import CRUD
 from ._resources import DatabaseMetadata
-from ._resources import ModelDataIndex
 from ._resources import ModelsBearer
-from ._services import ConnectionService
+from ._services import EngineService
 from ._typing.callables import ExecutableTransactionCallback
 from ._typing.callables import ComputeFieldFn as _ComputeFieldFn
 from ._typing.generics import ItemOrList
@@ -59,7 +54,7 @@ class Lylac(Generic[_M]):
     type ActionContext[T] = _ActionContext[_M, Union[T, _R]]
     type ServerTaskContext = _ServerTaskContext[_M]
     type TransactionContext = _TransactionContext[ModelName[_M]]
-    type ExecutionContext = _ExecutionContext[_M]
+    type ExecutionContext = ExecutionContext[_M]
     type ComputeContext = _ComputeContext[_M]
     type ComputeFieldFn = _ComputeFieldFn[_M]
     # Atributos
@@ -68,8 +63,7 @@ class Lylac(Generic[_M]):
     _metadata: DatabaseMetadata
     _models_bearer: ModelsBearer[_M]
     _ddl: DDL[_M]
-    _transaction: Transaction
-    _connection: ConnectionService
+    _engine: EngineService
     _is_first_initialization: bool
     _populate_models_fn: ExecutableTransactionCallback[_M]
 
@@ -83,28 +77,22 @@ class Lylac(Generic[_M]):
         self._populate_models_fn = populate_models_fn
 
         # Inicialización de instancia de servicio de conexión a la base de datos
-        self._connection = ConnectionService()
+        self._engine = EngineService()
         # inicialización de instancia de portador de modelos
         self._models_bearer = ModelsBearer[_M]()
-        # Inicialización de instancia de transacciones especiales
-        self._transaction = Transaction()
         # Inicialización de instancia de metadatos de la base de datos
-        self._metadata = DatabaseMetadata()
-        # Inicialización de extensión de módulos
-        self.modules = Modules[_M](self)
+        self._metadata = DatabaseMetadata[_M]()
         # Inicialización de orquestador CRUD
         self._crud = CRUD[_M](self._models_bearer)
         # Inicialización de instancia de operaciones DDL
         self._ddl = DDL[_M](self._models_bearer, self._metadata)
+        # Inicialización de extensión de módulos
+        self.modules = ModulesManager[_M](self)
 
         # Se intenta inicializar la instancia con datos existentes
         try:
             # Inicialización desde datos existentes de la base de datos
             self._load_from_built_database()
-            # Construccción de centros de motores
-            self._build_hubs()
-            # Se indica que no es la primera inicialización en la base de datos
-            self._is_first_initialization = False
 
         except ProgrammingError:
             # Se construye la estructura de la base de datos
@@ -132,14 +120,14 @@ class Lylac(Generic[_M]):
         transaction = build_login_callback(self, username, password)
 
         # Ejecución de la función de transacción
-        session_uuid = self._connection.execute_complex(transaction)
+        session_uuid = self._engine.execute_complex(transaction)
 
         return session_uuid
 
     def execute_transaction(
         self,
         session_uuid: str,
-        callback: Callable[[_ExecutionContext[_M]], _T],
+        callback: Callable[[ExecutionContext[_M]], _T],
     ) -> _T:
 
         # Autenticación del usuario
@@ -147,7 +135,7 @@ class Lylac(Generic[_M]):
 
         def wrapped_transaction(conn: Connection) -> _T:
             # Inicialización de contexto de ejecución
-            execution_ctx = self._create_execution_context(session_uuid, uid, conn)
+            execution_ctx = self._create_execution_context(uid, conn)
             # Ejecución de la función
             closure_result = callback(execution_ctx)
 
@@ -159,7 +147,7 @@ class Lylac(Generic[_M]):
             return closure_result
 
         # Ejecución de la función de transacción
-        result = self._connection.execute_complex(wrapped_transaction)
+        result = self._engine.execute_complex(wrapped_transaction)
 
         return result
 
@@ -172,7 +160,7 @@ class Lylac(Generic[_M]):
     ) -> Literal[True]:
 
         # Definición de la transacción
-        def transaction(execution_ctx: _ExecutionContext[_M]) -> Literal[True]:
+        def transaction(execution_ctx: ExecutionContext[_M]) -> Literal[True]:
             # Ejecución de la acción
             closure_result = self._actions.execute(
                 execution_ctx,
@@ -195,7 +183,7 @@ class Lylac(Generic[_M]):
     ) -> Literal[True]:
 
         # Definición de la transacción
-        def transaction(execution_ctx: _ExecutionContext[_M]) -> Literal[True]:
+        def transaction(execution_ctx: ExecutionContext[_M]) -> Literal[True]:
             # Ejecución de la tarea de servidor
             closure_result = self._server_tasks.execute(execution_ctx, name)
 
@@ -214,7 +202,7 @@ class Lylac(Generic[_M]):
     ) -> list[int]:
 
         # Definición de la transacción
-        def transaction(execution_ctx: _ExecutionContext[_M]) -> list[int]:
+        def transaction(execution_ctx: ExecutionContext[_M]) -> list[int]:
             # Creación de registros y obtención de las IDs creadas
             closure_created_ids = self._crud.create(execution_ctx, model_name, data)
             # Se guardan los cambios
@@ -237,7 +225,7 @@ class Lylac(Generic[_M]):
     ) -> list[int]:
 
         # Definición de la transacción
-        def transaction(execution_ctx: _ExecutionContext[_M]) -> list[int]:
+        def transaction(execution_ctx: ExecutionContext[_M]) -> list[int]:
             # Obtención de los datos
             closure_found_ids = self._crud.search(
                 execution_ctx,
@@ -265,7 +253,7 @@ class Lylac(Generic[_M]):
     ) -> list[_Record]:
 
         # Definición de la transacción
-        def transaction(execution_ctx: _ExecutionContext[_M]) -> list[_Record]:
+        def transaction(execution_ctx: ExecutionContext[_M]) -> list[_Record]:
             # Obtención de los datos
             closure_data = self._crud.read(
                 execution_ctx,
@@ -296,7 +284,7 @@ class Lylac(Generic[_M]):
     ) -> list[_Record]:
 
         # Definición de la transacción
-        def transaction(execution_ctx: _ExecutionContext[_M]) -> list[_Record]:
+        def transaction(execution_ctx: ExecutionContext[_M]) -> list[_Record]:
             # Obtención de los datos
             closure_data = self._crud.search_read(
                 execution_ctx,
@@ -324,7 +312,7 @@ class Lylac(Generic[_M]):
     ) -> int:
 
         # Definición de la transacción
-        def transaction(execution_ctx: _ExecutionContext[_M]) -> int:
+        def transaction(execution_ctx: ExecutionContext[_M]) -> int:
             # Obtención del conteo
             closure_count = self._crud.search_count(
                 execution_ctx,
@@ -348,7 +336,7 @@ class Lylac(Generic[_M]):
     ) -> Literal[True]:
 
         # Definición de la transacción
-        def transaction(execution_ctx: _ExecutionContext[_M]) -> Literal[True]:
+        def transaction(execution_ctx: ExecutionContext[_M]) -> Literal[True]:
             # Modificación de los registros
             closure_result = self._crud.update(
                 execution_ctx,
@@ -372,7 +360,7 @@ class Lylac(Generic[_M]):
     ) -> Literal[True]:
 
         # Definición de la transacción
-        def transaction(execution_ctx: _ExecutionContext[_M]) -> Literal[True]:
+        def transaction(execution_ctx: ExecutionContext[_M]) -> Literal[True]:
             # Eliminación de los registros
             closure_result = self._crud.delete(
                 execution_ctx,
@@ -386,6 +374,61 @@ class Lylac(Generic[_M]):
         result = self.execute_transaction(session_uuid, transaction)
 
         return result
+
+    def _authenticate_user(
+        self,
+        session_uuid: str,
+    ) -> int:
+
+        # Construcción de función de autenticación de usuario
+        transaction = build_authenticate_user_callback(self, session_uuid)
+        # Obtención de la UID de usuario autenticado
+        uid = self._engine.execute_complex(transaction)
+
+        return uid
+
+    def _load_from_built_database(
+        self,
+    ) -> None:
+
+        # Obtención de metadatos de la base de datos
+        self._get_metadata()
+        # Inicialización de instancia en base a base de datos existente
+        self._engine.execute_complex(self._ddl.rebuild_from_existing_database)
+        # Inicialización de motores
+        self._initialize_engines()
+        # Construccción de centros de motores
+        self._build_hubs()
+        # Se indica que no es la primera inicialización en la base de datos
+        self._is_first_initialization = False
+
+    def _build_database_structure(
+        self,
+        build_models_fn: ExecutableTransactionCallback[_M],
+    ) -> None:
+
+        # Se intenta inicializar la instancia construyendo la base de datos
+        try:
+            # Inicialización desde cero
+            self._build_database()
+            # Construccción de centros de motores
+            self._build_hubs()
+            # Ejecución de construcción de datos internos
+            self._execute_as_root(build_database_structure)
+            # Ejecución de la función provista para la construcción personalizada de la base de datos
+            self._execute_as_root(build_models_fn)
+            # Se indica que es la primera inicialización en la base de datos
+            self._is_first_initialization = True
+
+        # Si ocurre algún error...
+        except Exception:
+            # Se deshace la construcción de la base de datos
+            _Base.metadata.drop_all(self._engine._engine)
+            # Se arroja el error
+            raise
+
+        # Se indica que la inicialización se realizó correctamente
+        print(MONITOR.INITIALIZATION_FINISHED)
 
     def _build_hubs(
         self,
@@ -402,73 +445,20 @@ class Lylac(Generic[_M]):
         # Construcción de centro de políticas
         self._policies.build_hub(self._metadata)
 
-    def _authenticate_user(
-        self,
-        session_uuid: str,
-    ) -> int:
-
-        # Construcción de función de autenticación de usuario
-        transaction = build_authenticate_user_callback(self, session_uuid)
-
-        # Obtención de la UID de usuario autenticado
-        uid = self._connection.execute_complex(transaction)
-
-        return uid
-
-    def _load_from_built_database(
-        self,
-    ) -> None:
-
-        # Obtención de metadatos de la base de datos
-        self._get_metadata()
-        # Inicialización de instancia en base a base de datos existente
-        self._connection.execute_complex(self._ddl.rebuild_from_existing_database)
-        # Inicialización de motores
-        self._initialize_engines()
-
-    def _build_database_structure(
-        self,
-        build_models_fn: ExecutableTransactionCallback[_M],
-    ) -> None:
-
-        # Se intenta inicializar la instancia construyendo la base de datos
-        try:
-            # Inicialización desde cero
-            self._build_database()
-            # Construccción de centros de motores
-            self._build_hubs()
-            # Se indica que es la primera inicialización en la base de datos
-            self._is_first_initialization = True
-            # Ejecución de construcción de datos internos
-            self._execute_as_root(build_database_structure)
-            # Ejecución de la función provista para la construcción personalizada de la base de datos
-            self._execute_as_root(build_models_fn)
-
-        # Si ocurre algún error...
-        except Exception:
-            # Se deshace la construcción de la base de datos
-            _Base.metadata.drop_all(self._connection._engine)
-            # Se arroja el error
-            raise
-
-        # Se indica que la inicialización se realizó correctamente
-        print(MONITOR.INITIALIZATION_FINISHED)
-
     def _build_database(
         self,
     ) -> None:
 
         # Creación de las tablas y los campos base con ayuda de las utilidades de SQLAlchemy
-        _Base.metadata.create_all(self._connection._engine)
+        _Base.metadata.create_all(self._engine._engine)
         # Inicialización de motores
         self._initialize_engines()
-
         # Construcción de los datos base iniciales
         self._build_initial_base_data()
 
         # Instalación de paquetes iniciales
-        for package in INITIAL_PACKAGES:
-            self._install(package)
+        for package_name in INITIAL_PACKAGES:
+            self.modules.install(package_name)
 
         # Obtención de metadatos de la base de datos
         self._get_metadata()
@@ -509,18 +499,64 @@ class Lylac(Generic[_M]):
     ) -> None:
 
         # Ejecución de función de construcción de metadatos desde la base de datos
-        self._connection.execute_complex(self._metadata.build)
+        self._engine.execute_complex(self._metadata.build)
+
+    def _execute_as_root(
+        self,
+        execution_callback: Callable[[_TransactionContext[_M]], None],
+    ) -> None:
+
+        # Definición de la transacción
+        def transaction(conn: Connection) -> None:
+            # Inicialización de contexto de ejecución
+            execution_ctx = self._create_root_execution_context(conn)
+            # Inicialización de contexto de transacción
+            transaction_ctx = _TransactionContext(execution_ctx)
+            # Ejecución de la función provista
+            execution_callback(transaction_ctx)
+
+            # Se realiza commit
+            execution_ctx.conn.commit()
+
+        # Ejecución de la función de transacción
+        self._engine.execute_complex(transaction)
+
+    def _build_initial_base_data(
+        self,
+    ) -> None:
+
+        # Definición de la transacción
+        def transaction(ctx: _TransactionContext[_M]):
+            # Obtención de mapa de datos
+            data_map = build_initial_data(ctx.conn)
+
+            # Creación de datos
+            ctx.create(MODEL_NAME.BASE_MODEL_DATA, data_map.model_data)
+            ctx.create(MODEL_NAME.BASE_MODEL_DATA_PROCESS, data_map.process)
+            ctx.create(MODEL_NAME.BASE_MODEL_DATA_PROCESS_STEP, data_map.steps)
+            ctx.create(MODEL_NAME.BASE_MODEL_DATA_PROCESS_STEP_RECORD, data_map.total_records)
+
+        # Ejecución de la transacción
+        self._execute_as_root(transaction)
+
+    def _create_root_execution_context(
+        self,
+        conn: Connection,
+    ) -> ExecutionContext[_M]:
+
+        # Creación de un contexto de ejecución como usuario root
+        execution_ctx = self._create_execution_context(DATA_RESOURCE.ROOT_USER, conn)
+
+        return execution_ctx
 
     def _create_execution_context(
         self,
-        session_uuid: str | None,
         uid: int,
         conn: Connection,
-    ) -> _ExecutionContext[_M]:
+    ) -> ExecutionContext[_M]:
 
         # Creación de un contexto de ejecución
-        execution_ctx = _ExecutionContext[_M](
-            session_uuid= session_uuid,
+        execution_ctx = ExecutionContext[_M](
             crud= self._crud,
             uid= uid,
             conn= conn,
@@ -536,144 +572,3 @@ class Lylac(Generic[_M]):
         )
 
         return execution_ctx
-
-    def _execute_as_root(
-        self,
-        execution_callback: Callable[[_TransactionContext[_M]], None],
-    ) -> None:
-
-        # Definición de la transacción
-        def transaction(conn: Connection) -> None:
-            # Inicialización de contexto de ejecución
-            execution_ctx = self._create_execution_context(None, DATA_RESOURCE.ROOT_USER, conn)
-            # Inicialización de contexto de transacción
-            transaction_ctx = _TransactionContext(execution_ctx, self._crud)
-            # Ejecución de la función provista
-            execution_callback(transaction_ctx)
-
-            # Se realiza commit
-            execution_ctx.conn.commit()
-
-        # Ejecución de la función de transacción
-        self._connection.execute_complex(transaction)
-
-    def _install(
-        self,
-        process_name: str,
-    ) -> None:
-
-        # Función de transacción
-        def transaction(conn: Connection):
-
-            # Inicialización de contexto de ejecución
-            execution_ctx = self._create_execution_context(None, DATA_RESOURCE.ROOT_USER, conn)
-
-            # Inicialización de instancia de índice de datos de modelo
-            model_data_index = ModelDataIndex(conn)
-
-            # Query para encontrar proceso en base a su nombre
-            stmt_find_process_by_name = (
-                # Se selecciona únicamente la ID
-                select(Metadata.BaseModelDataProcess.id)
-                # Búsqueda por coincidencia exacta del nombre provisto
-                .where(Metadata.BaseModelDataProcess.name == process_name)
-            )
-            # Obtención de la ID del proceso a ejecutar
-            [ process_id ] = self._transaction.search(stmt_find_process_by_name, conn)
-
-            # Query para encontrar los pasos del proceso
-            stmt_find_process_steps = (
-                select(
-                    # Selección de ID y nombre del modelo relacionado
-                    Metadata.BaseModelDataProcessStep.id,
-                    Metadata.BaseModelDataProcessStep.model_name,
-                )
-                # Búsqueda por pasos que pertenezcan al proceso en cuestión
-                .where(Metadata.BaseModelDataProcessStep.process_id == process_id)
-            )
-
-            # Obtención de los datos de los pasos del proceso
-            steps_data: list[tuple[int, ModelName[_M]]] = self._transaction.search_read(stmt_find_process_steps, conn)
-
-            # Iteración por los datos de cada paso del proceso
-            for step_data in steps_data:
-                # Destructuración de ID y nombre de modelo desde los datos del paso del proceso
-                ( step_id, step_model ) = step_data
-
-                # Query para encontrar los registros que pertenecen al paso del proceso
-                stmt_find_step_records_ordered_by_sequence = (
-                    select(
-                        # Selección de nombre y datos en formato JSON parseados a diccionario
-                        Metadata.BaseModelDataProcessStepRecord.name,
-                        Metadata.BaseModelDataProcessStepRecord.data,
-                    )
-                    # Filtro por los registros que pertenecen al paso del proceso
-                    .where(Metadata.BaseModelDataProcessStepRecord.step_id == step_id)
-                    # Ordenamiento de forma ascendente
-                    .order_by(Metadata.BaseModelDataProcessStepRecord.sequence)
-                )
-
-                # Obtención de los datos de los registros
-                records_data = self._transaction.search_read(stmt_find_step_records_ordered_by_sequence, conn)
-
-                # Inicialización de lista de diccionarios de datos a crear en la base de datos
-                data_to_create: list[dict[str, Any]] = []
-                # Inicialización de lista de referencias a datos de modelo
-                model_data_refs: list[str] = []
-
-                # Iteración por cada registro de datos de registros
-                for record_data in records_data:
-                    # Destructuración de la referencia de datos y los datos
-                    ( model_data_ref_i, model_data_i ) = record_data
-
-                    # Se añaden la referencia y los datos a sus respectivas listas
-                    data_to_create.append(model_data_i)
-                    model_data_refs.append(model_data_ref_i)
-
-                # Procesamiento de datos a crear
-                processed_data_to_create = model_data_index.process(data_to_create)
-
-                # Creación de los registros dictados por el registro
-                created_ids = self._crud.create(execution_ctx, step_model, processed_data_to_create)
-
-                # Iteración por referencia de datos de modelo y registro creado
-                for (ref, record_id) in zip(model_data_refs, created_ids):
-
-                    # Query para actualizar los datos del registro de datos de modelo
-                    stmt_update_model_data_record = (
-                        update(Metadata.BaseModelData)
-                        .where(Metadata.BaseModelData.name == ref)
-                        .values(res_id = record_id)
-                    )
-                    # Ejecución de la actualización de los datos del registro de datos del modelo
-                    self._transaction.update(stmt_update_model_data_record, conn)
-
-            # Se guardan los cambios en la base de datos
-            conn.commit()
-
-        # Ejecución de la transacción construida
-        self._connection.execute_complex(transaction)
-
-    def _build_initial_base_data(
-        self,
-    ) -> None:
-
-        # Definición de la transacción
-        def transaction(conn: Connection):
-            # Inicialización de contexto de ejecución
-            execution_ctx = self._create_execution_context(None, DATA_RESOURCE.ROOT_USER, conn)
-
-            # Obtención de mapa de datos
-            data_map = build_initial_data(conn)
-
-            # Creación de datos
-            self._crud.create(execution_ctx, 'base.model.data', data_map.model_data)
-            self._crud.create(execution_ctx, 'base.model.data.process', data_map.process)
-            self._crud.create(execution_ctx, 'base.model.data.process.step', data_map.steps)
-            self._crud.create(execution_ctx, 'base.model.data.process.step.record', data_map.total_records)
-
-            # Se realiza commit
-            conn.commit()
-
-        # Ejecución de la transacción
-        self._connection.execute_complex(transaction)

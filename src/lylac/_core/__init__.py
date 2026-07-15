@@ -1,5 +1,4 @@
 from ._classes import Duration
 from .env import env_
 from .models import Metadata, ModelTemplate, Feature
-from .modules import Modules
 from ._transaction import Transaction

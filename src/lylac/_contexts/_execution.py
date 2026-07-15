@@ -23,7 +23,6 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
 
     def __init__(
         self,
-        session_uuid: str,
         crud: CRUD,
         uid: int | str,
         conn: Connection,
@@ -41,7 +40,6 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
         # Inicialización de entorno de usuario
         user_env = UserEnv(self, user_env_engine._resolvers)
 
-        self.session_uuid = session_uuid
         self._crud = crud
         self._model_data_index = ModelDataIndex(conn)
         self._uid = self.resolve_uid(uid)

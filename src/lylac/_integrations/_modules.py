@@ -1,11 +1,17 @@
 import io
 import json
+from typing import Any
 from typing import Generic
 from typing import TypedDict
 from typing import TYPE_CHECKING
+from sqlalchemy import select
+from sqlalchemy import update
 from .._constants import ENCODE_REF
 from .._constants import ERROR_LABEL
 from .._constants import MODEL_NAME
+from .._core import Metadata
+from .._core import Transaction
+from .._resources import ModelDataIndex
 from .._typing.generics import ModelName
 from .._typing.structures import FieldComputation
 from .._typing.structures import RecordData
@@ -15,6 +21,7 @@ from ..errors import ModuleAlreadyLoaded
 from ..settings import DIRECTORY
 
 if TYPE_CHECKING:
+    from .._contexts import ExecutionContext
     from .._contexts import TransactionContext
     from .._main import Lylac
 
@@ -54,7 +61,7 @@ RELATED_MODEL_ID__RES_NAME__FIELD_COMPUTATION: FieldComputation = (
     )
 )
 
-class Modules(Generic[_M]):
+class ModulesManager(Generic[_M]):
 
     def __init__(
         self,
@@ -63,6 +70,9 @@ class Modules(Generic[_M]):
 
         # Asignación de la instancia principal
         self._main = main
+
+        # Inicialización de instancia de transacciones especiales
+        self._transaction = Transaction()
 
     def export(
         self,
@@ -497,4 +507,95 @@ class Modules(Generic[_M]):
             )
 
         # Ejecución de la transacción
+        self._main._execute_as_root(transaction)
+
+    def install(
+        self,
+        process_name: str,
+    ) -> None:
+
+        # Función de transacción
+        def transaction(ctx: 'ExecutionContext[_M]'):
+
+            # Inicialización de instancia de índice de datos de modelo
+            model_data_index = ModelDataIndex(ctx.conn)
+
+            # Query para encontrar proceso en base a su nombre
+            stmt_find_process_by_name = (
+                # Se selecciona únicamente la ID
+                select(Metadata.BaseModelDataProcess.id)
+                # Búsqueda por coincidencia exacta del nombre provisto
+                .where(Metadata.BaseModelDataProcess.name == process_name)
+            )
+            # Obtención de la ID del proceso a ejecutar
+            [ process_id ] = self._transaction.search(stmt_find_process_by_name, ctx.conn)
+
+            # Query para encontrar los pasos del proceso
+            stmt_find_process_steps = (
+                select(
+                    # Selección de ID y nombre del modelo relacionado
+                    Metadata.BaseModelDataProcessStep.id,
+                    Metadata.BaseModelDataProcessStep.model_name,
+                )
+                # Búsqueda por pasos que pertenezcan al proceso en cuestión
+                .where(Metadata.BaseModelDataProcessStep.process_id == process_id)
+            )
+
+            # Obtención de los datos de los pasos del proceso
+            steps_data: list[tuple[int, ModelName[_M]]] = self._transaction.search_read(stmt_find_process_steps, ctx.conn)
+
+            # Iteración por los datos de cada paso del proceso
+            for step_data in steps_data:
+                # Destructuración de ID y nombre de modelo desde los datos del paso del proceso
+                ( step_id, step_model ) = step_data
+
+                # Query para encontrar los registros que pertenecen al paso del proceso
+                stmt_find_step_records_ordered_by_sequence = (
+                    select(
+                        # Selección de nombre y datos en formato JSON parseados a diccionario
+                        Metadata.BaseModelDataProcessStepRecord.name,
+                        Metadata.BaseModelDataProcessStepRecord.data,
+                    )
+                    # Filtro por los registros que pertenecen al paso del proceso
+                    .where(Metadata.BaseModelDataProcessStepRecord.step_id == step_id)
+                    # Ordenamiento de forma ascendente
+                    .order_by(Metadata.BaseModelDataProcessStepRecord.sequence)
+                )
+
+                # Obtención de los datos de los registros
+                records_data = self._transaction.search_read(stmt_find_step_records_ordered_by_sequence, ctx.conn)
+
+                # Inicialización de lista de diccionarios de datos a crear en la base de datos
+                data_to_create: list[dict[str, Any]] = []
+                # Inicialización de lista de referencias a datos de modelo
+                model_data_refs: list[str] = []
+
+                # Iteración por cada registro de datos de registros
+                for record_data in records_data:
+                    # Destructuración de la referencia de datos y los datos
+                    ( model_data_ref_i, model_data_i ) = record_data
+
+                    # Se añaden la referencia y los datos a sus respectivas listas
+                    data_to_create.append(model_data_i)
+                    model_data_refs.append(model_data_ref_i)
+
+                # Procesamiento de datos a crear
+                processed_data_to_create = model_data_index.process(data_to_create)
+
+                # Creación de los registros dictados por el registro
+                created_ids = ctx.create(step_model, processed_data_to_create)
+
+                # Iteración por referencia de datos de modelo y registro creado
+                for (ref, record_id) in zip(model_data_refs, created_ids):
+
+                    # Query para actualizar los datos del registro de datos de modelo
+                    stmt_update_model_data_record = (
+                        update(Metadata.BaseModelData)
+                        .where(Metadata.BaseModelData.name == ref)
+                        .values(res_id = record_id)
+                    )
+                    # Ejecución de la actualización de los datos del registro de datos del modelo
+                    self._transaction.update(stmt_update_model_data_record, ctx.conn)
+
+        # Ejecución de la transacción construida
         self._main._execute_as_root(transaction)

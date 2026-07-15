@@ -14,15 +14,12 @@ from .._constants import FACTORY_FIELDS
 from .._constants import FACTORY_MODELS
 from .._constants import FIELD_NAME
 from .._contexts import ExecutionContext
-from .._core import Feature
 from .._core import Metadata
-from .._core import ModelTemplate
 from .._core.models import _Base
 from .._resources import DatabaseMetadata
 from .._resources import ModelColumnBasicAtts
 from .._resources import ModelsBearer
-from .._services import ConnectionService
-from .._typing.aliases import ModelClass
+from .._services import EngineService
 from .._typing.callables import ColumnBuilder
 from .._typing.generics import ModelName
 from .._typing.interfaces import Many2ManyRelation
@@ -56,7 +53,7 @@ class DDL(Generic[_M]):
         database_metadata: DatabaseMetadata,
     ) -> None:
 
-        self._connection = ConnectionService()
+        self._connection = EngineService()
         self._models_bearer = models_bearer
         self._database_metadata = database_metadata
         self._base = _Base
