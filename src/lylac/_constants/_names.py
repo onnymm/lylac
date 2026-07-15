@@ -94,6 +94,23 @@ class MODEL_NAME:
     Registros de reglas de registro.
     """
 
+class TTYPE_NAME:
+    INTEGER = 'integer'
+    CHAR = 'char'
+    FLOAT = 'float'
+    BOOLEAN = 'boolean'
+    DATE = 'date'
+    DATETIME = 'datetime'
+    TIME = 'time'
+    DURATION = 'duration'
+    FILE = 'file'
+    TEXT = 'text'
+    SELECTION = 'selection'
+    MANY2ONE = 'many2one'
+    ONE2MANY = 'one2many'
+    MANY2MANY = 'many2many'
+    JSON = 'json'
+
 FACTORY_MODELS = [
     MODEL_NAME.BASE_USERS,
     MODEL_NAME.BASE_USER_SESSION,

@@ -4,6 +4,7 @@ from typing import Generic
 from typing import Literal
 from typing import overload
 from sqlalchemy.orm import InstrumentedAttribute
+from .._constants import MODEL_NAME
 from .._core import Feature
 from .._core import Metadata
 from .._core import ModelTemplate
@@ -16,15 +17,15 @@ from .._typing.type_parameters import _M
 
 class ModelsBearer(Generic[_M]):
     _index: _ModelIndex[_M] = {
-        'base.users': Metadata.BaseUsers,
-        'base.user.session': Metadata.BaseUserSession,
-        'base.model': Metadata.BaseModel,
-        'base.model.field': Metadata.BaseModelField,
-        'base.model.field.selection': Metadata.BaseModelFieldSelection,
-        'base.model.data': Metadata.BaseModelData,
-        'base.model.data.process': Metadata.BaseModelDataProcess,
-        'base.model.data.process.step': Metadata.BaseModelDataProcessStep,
-        'base.model.data.process.step.record': Metadata.BaseModelDataProcessStepRecord,
+        MODEL_NAME.BASE_USERS: Metadata.BaseUsers,
+        MODEL_NAME.BASE_USER_SESSION: Metadata.BaseUserSession,
+        MODEL_NAME.BASE_MODEL: Metadata.BaseModel,
+        MODEL_NAME.BASE_MODEL_FIELD: Metadata.BaseModelField,
+        MODEL_NAME.BASE_MODEL_FIELD_SELECTION: Metadata.BaseModelFieldSelection,
+        MODEL_NAME.BASE_MODEL_DATA: Metadata.BaseModelData,
+        MODEL_NAME.BASE_MODEL_DATA_PROCESS: Metadata.BaseModelDataProcess,
+        MODEL_NAME.BASE_MODEL_DATA_PROCESS_STEP: Metadata.BaseModelDataProcessStep,
+        MODEL_NAME.BASE_MODEL_DATA_PROCESS_STEP_RECORD: Metadata.BaseModelDataProcessStepRecord,
     }
 
     _m2m: dict[str, ModelClass] = {}

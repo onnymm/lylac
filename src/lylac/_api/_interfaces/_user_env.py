@@ -8,11 +8,11 @@ class _Interface_UserEnv(Generic[_M]):
 
     def __init__(
         self,
-        user_env: UserEnvEngine[_M],
+        engine: UserEnvEngine[_M],
     ) -> None:
 
         # Asignación de valores
-        self._user_env = user_env
+        self._engine = engine
 
     def register_value(
         self,
@@ -20,6 +20,6 @@ class _Interface_UserEnv(Generic[_M]):
     ) -> FunctionDecorator[LazyResolver[_M]]:
 
         # Construcción de decorador para registro de función
-        decorator = self._user_env.register(value_name)
+        decorator = self._engine.register(value_name)
 
         return decorator

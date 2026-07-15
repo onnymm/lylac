@@ -13,6 +13,7 @@ from sqlalchemy.orm import class_mapper
 from .._constants import FACTORY_FIELDS
 from .._constants import FACTORY_MODELS
 from .._constants import FIELD_NAME
+from .._constants import TTYPE_NAME
 from .._contexts import ExecutionContext
 from .._core import Metadata
 from .._core.models import _Base
@@ -32,19 +33,19 @@ from .._utils import get_table_name
 class DDL(Generic[_M]):
     _build_column_callback: dict[TTypeName, ColumnBuilder]
     _ttype_to_dbtype: dict[TTypeName, str] = {
-        'integer': 'INTEGER',
-        'char': 'VARCHAR(255)',
-        'float': 'FLOAT',
-        'boolean': 'BOOLEAN',
-        'date': 'DATE',
-        'datetime': 'TIMESTAMP',
-        'time': 'TIME',
-        'duration': 'INTERVAL',
-        'file': 'BYTEA',
-        'text': 'TEXT',
-        'selection': 'VARCHAR(255)',
-        'many2one': 'INTEGER',
-        'json': 'JSONB',
+        TTYPE_NAME.INTEGER: 'INTEGER',
+        TTYPE_NAME.CHAR: 'VARCHAR(255)',
+        TTYPE_NAME.FLOAT: 'FLOAT',
+        TTYPE_NAME.BOOLEAN: 'BOOLEAN',
+        TTYPE_NAME.DATE: 'DATE',
+        TTYPE_NAME.DATETIME: 'TIMESTAMP',
+        TTYPE_NAME.TIME: 'TIME',
+        TTYPE_NAME.DURATION: 'INTERVAL',
+        TTYPE_NAME.FILE: 'BYTEA',
+        TTYPE_NAME.TEXT: 'TEXT',
+        TTYPE_NAME.SELECTION: 'VARCHAR(255)',
+        TTYPE_NAME.MANY2ONE: 'INTEGER',
+        TTYPE_NAME.JSON: 'JSONB',
     }
 
     def __init__(
@@ -120,7 +121,7 @@ class DDL(Generic[_M]):
                 value = str(default_value)
             default_value_query = f'DEFAULT {value}'
 
-        if field_ttype != 'many2one':
+        if field_ttype != TTYPE_NAME.MANY2ONE:
             constraint = ''
         else:
             constraint = (
@@ -291,12 +292,12 @@ class DDL(Generic[_M]):
         for ( name, ttype, model_name, nullable, unique, default_value, related_model_table_name, on_delete ) in result:
 
             # Si el campo es de tipo de one2many o many2many...
-            if ttype == 'one2many':
+            if ttype == TTYPE_NAME.ONE2MANY:
                 # No se hace nada
                 continue
 
             # Si el campo es de tipo many2many...
-            elif ttype == 'many2many':
+            elif ttype == TTYPE_NAME.MANY2MANY:
                 # Creación de la clase de la relación many2many
                 self._create_m2m_model(
                     name,
@@ -407,19 +408,19 @@ class DDL(Generic[_M]):
 
         # Construcción de mapa de funciones para creación de instancias de campo para modelos
         self._build_column_callback = {
-            'integer': lambda definition, _, __: Column(types.Integer, **definition),
-            'char': lambda definition, _, __: Column(types.String(255), **definition),
-            'float': lambda definition, _, __: Column(types.Float, **definition),
-            'boolean': lambda definition, _, __: Column(types.Boolean, **definition),
-            'date': lambda definition, _, __: Column(types.Date, **definition),
-            'datetime': lambda definition, _, __: Column(types.DateTime, **definition),
-            'time': lambda definition, _, __: Column(types.Time, **definition),
-            'duration': lambda definition, _, __: Column(types.Interval, **definition),
-            'file': lambda definition, _, __: Column(types.LargeBinary, **definition),
-            'text': lambda definition, _, __: Column(types.Text, **definition),
-            'selection': lambda definition, _, __: Column(types.String(255), **definition),
-            'json': lambda definition, _, __: Column(types.JSON, **definition),
-            'many2one': lambda definition, related_model_name, on_delete: (
+            TTYPE_NAME.INTEGER: lambda definition, _, __: Column(types.Integer, **definition),
+            TTYPE_NAME.CHAR: lambda definition, _, __: Column(types.String(255), **definition),
+            TTYPE_NAME.FLOAT: lambda definition, _, __: Column(types.Float, **definition),
+            TTYPE_NAME.BOOLEAN: lambda definition, _, __: Column(types.Boolean, **definition),
+            TTYPE_NAME.DATE: lambda definition, _, __: Column(types.Date, **definition),
+            TTYPE_NAME.DATETIME: lambda definition, _, __: Column(types.DateTime, **definition),
+            TTYPE_NAME.TIME: lambda definition, _, __: Column(types.Time, **definition),
+            TTYPE_NAME.DURATION: lambda definition, _, __: Column(types.Interval, **definition),
+            TTYPE_NAME.FILE: lambda definition, _, __: Column(types.LargeBinary, **definition),
+            TTYPE_NAME.TEXT: lambda definition, _, __: Column(types.Text, **definition),
+            TTYPE_NAME.SELECTION: lambda definition, _, __: Column(types.String(255), **definition),
+            TTYPE_NAME.JSON: lambda definition, _, __: Column(types.JSON, **definition),
+            TTYPE_NAME.MANY2ONE: lambda definition, related_model_name, on_delete: (
                 Column(
                     types.Integer,
                     ForeignKey(

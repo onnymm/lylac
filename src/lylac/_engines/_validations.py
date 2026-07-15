@@ -2,6 +2,7 @@ from typing import Callable
 from typing import Generic
 from typing import TYPE_CHECKING
 from .._constants import ERROR_LABEL
+from .._constants import MODEL_NAME
 from .._contexts import ValidationContext as ValidationContext
 from .._data import PRESET_VALIDATIONS
 from .._resources import DatabaseMetadata
@@ -17,6 +18,7 @@ from .._typing.literals import DMLTransaction
 from .._typing.structures import RecordData
 from .._typing.type_parameters import _M
 from ..errors import ValidationExecutionError
+from ..errors import ValidationsFailedError
 
 if TYPE_CHECKING:
     from .._contexts import ExecutionContext
@@ -140,7 +142,7 @@ class ValidationEngine(Generic[_M]):
                 # Se imprime éste
                 print(error)
             # Se lanza error para detener la ejecución
-            raise AssertionError('Las validaciones no pasaron.')
+            raise ValidationsFailedError(ERROR_LABEL.INTEGRITY.VALIDATIONS_FAILED)
 
     def register(
         self,
@@ -198,7 +200,7 @@ class ValidationEngine(Generic[_M]):
         # Inicialización de función de reemplazo para arrojar error cuando se intente ejecutar manualmente
         def void_function(ctx: ValidationContext[_M]) -> None:
             # Se lanza error de ejecución
-            raise ValidationExecutionError(ERROR_LABEL.MANUAL_VALIDATION)
+            raise ValidationExecutionError(ERROR_LABEL.EXECUTION.VALIDATION)
 
         return void_function
 
@@ -211,7 +213,7 @@ class ValidationEngine(Generic[_M]):
         # Búsqueda y lectura de los campos del modelo
         found_results = self._crud.search_read(
             execution_ctx,
-            'base.model.field',
+            MODEL_NAME.BASE_MODEL_FIELD,
             [('model_id.model', '=', model_name)],
             ['name', 'ttype'],
         )

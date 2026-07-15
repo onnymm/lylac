@@ -1,6 +1,7 @@
 import re
 from typing import TYPE_CHECKING
-
+from .._constants import MODEL_NAME
+from .._constants import TTYPE_NAME
 from .._resources import ValidationProperties
 from .._typing.definitions import _InternalModelSchema
 from .._typing.type_parameters import _M
@@ -12,7 +13,7 @@ def _confirm_required_fields(ctx: 'ValidationContext') -> None:
 
     # Búsqueda de los campos requeridos del modelo
     found_data = ctx.search_read(
-        'base.model.field',
+        MODEL_NAME.BASE_MODEL_FIELD,
         [
             '&',
                 ('is_required', '=', True),
@@ -37,7 +38,7 @@ def _prevent_update_on_readonly_fields(ctx: 'ValidationContext') -> None:
 
     # Búsqueda de los campos de solo lectura del modelo
     found_data = ctx.search_read(
-        'base.model.field',
+        MODEL_NAME.BASE_MODEL_FIELD,
         [
             '&',
                 ('readonly', '=', True),
@@ -62,7 +63,7 @@ def _throw_error_on_create_or_update_computed_fields(ctx: 'ValidationContext') -
 
     # Búsqueda de los campos computados
     found_data = ctx.search_read(
-        'base.model.field',
+        MODEL_NAME.BASE_MODEL_FIELD,
         [
             '&',
                 ('is_computed', '=', True),
@@ -87,15 +88,15 @@ def _confirm_valid_selection_values(ctx: 'ValidationContext') -> None:
 
     # Busqueda de los campos de tipo selection
     found_data = ctx.search_read(
-        'base.model.field',
+        MODEL_NAME.BASE_MODEL_FIELD,
         [
             '&',
-                ('ttype', '=', 'selection'),
+                ('ttype', '=', TTYPE_NAME.SELECTION),
                 ('model_id.model', '=', ctx.model_name),
         ],
         [
             'name',
-            ('selection_values', 'json', lambda ctx: ctx.agg('selection_ids', 'name', 'array')),
+            ('selection_values', TTYPE_NAME.JSON, lambda ctx: ctx.agg('selection_ids', 'name', 'array')),
         ],
     )
 

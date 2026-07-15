@@ -7,7 +7,9 @@ from typing import Callable
 from uuid import uuid4
 from sqlalchemy.engine import Connection
 from .._constants import DATA_RESOURCE
+from .._constants import MODEL_NAME
 from .._constants import ERROR_LABEL
+from .._constants import TTYPE_NAME
 from .._typing.generics import _Records
 from .._typing.models import RecordShape
 from .._typing.definitions import TType
@@ -73,7 +75,7 @@ def build_login_callback(
         # Se busca el usuario
         found_users: _Records[_base_users] = main._crud.search_read(
             execution_ctx,
-            'base.users',
+            MODEL_NAME.BASE_USERS,
             [('login', '=', username)],
             ['login', 'active', 'password'],
         )
@@ -81,7 +83,7 @@ def build_login_callback(
         # Si no se encontró usuario...
         if not found_users:
             # Se arroja error de usuario no encontrado
-            raise UserNotFoundError(ERROR_LABEL.USER_NOT_FOUND)
+            raise UserNotFoundError(ERROR_LABEL.AUTHENTICATION.USER_NOT_FOUND)
 
         # Obtención de los datos del usuario
         [ user_data ] = found_users
@@ -89,7 +91,7 @@ def build_login_callback(
         # Si el usuario no está activo...
         if not user_data['active']:
             # Se arroja error de usuario inactivo
-            raise UserNotActiveError(ERROR_LABEL.USER_NOT_ACTIVE)
+            raise UserNotActiveError(ERROR_LABEL.AUTHENTICATION.USER_NOT_ACTIVE)
 
         # Obtención de la contraseña hasheada
         hashed_password: str = user_data['password']
@@ -102,7 +104,7 @@ def build_login_callback(
         # Si la contraseña no es correcta...
         if not is_pwd_correct:
             # Se arroja error de contraseña incorrecta
-            raise IncorrectPasswordError(ERROR_LABEL.INCORRECT_PASSWORD)
+            raise IncorrectPasswordError(ERROR_LABEL.AUTHENTICATION.INCORRECT_PASSWORD)
 
         # Creación de UUID de sesión
         session_uuid = uuid4().__str__()
@@ -116,7 +118,7 @@ def build_login_callback(
         # Creación de sesión de usuario
         main._crud.create(
             execution_ctx,
-            'base.user.session',
+            MODEL_NAME.BASE_USER_SESSION,
             {
                 'name': hashed_session_uuid,
                 'user_id': user_id,
@@ -150,10 +152,10 @@ def build_authenticate_user_callback(
         # Búsqueda y lectura de la sesión
         found: _Records[_found_session] = main._crud.search_read(
             execution_ctx,
-            'base.user.session',
+            MODEL_NAME.BASE_USER_SESSION,
             [('name', '=', hashed_session_uuid)],
             [
-                ('is_active_session', 'boolean', lambda ctx: ctx['expires_at'] > datetime.now()),
+                ('is_active_session', TTYPE_NAME.BOOLEAN, lambda ctx: ctx['expires_at'] > datetime.now()),
                 ('user_id.id', 'uid'),
                 ('user_id.active', 'user_is_active'),
             ],
@@ -162,7 +164,7 @@ def build_authenticate_user_callback(
         # Si no fue encontrado ningún registro de sesión de usuario...
         if not found:
             # Se arroja error de UUID de sesión inválida
-            raise InvalidSessionUUIDError(ERROR_LABEL.INVALID_SESSION_UUID)
+            raise InvalidSessionUUIDError(ERROR_LABEL.AUTHENTICATION.INVALID_SESSION_UUID)
 
         # Obtención del registro de sesión
         [ session_record ] = found
@@ -175,12 +177,12 @@ def build_authenticate_user_callback(
         # Si la sesión ya no está activa...
         if not is_active_session:
             # Se arroja error de sesión expirada
-            raise ExpiredSessionError(ERROR_LABEL.EXPIRED_SESSION)
+            raise ExpiredSessionError(ERROR_LABEL.AUTHENTICATION.EXPIRED_SESSION)
 
         # Si el usuario no está activo...
         if not user_is_active:
             # Se arroja error de usuario desactivado
-            raise UserNotActiveError(ERROR_LABEL.USER_NOT_ACTIVE)
+            raise UserNotActiveError(ERROR_LABEL.AUTHENTICATION.USER_NOT_ACTIVE)
 
         return uid
 

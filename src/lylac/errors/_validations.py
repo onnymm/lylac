@@ -1,2 +1,5 @@
-class ValidationExecutionError:
+class ValidationExecutionError(Exception):
+    ...
+
+class ValidationsFailedError(Exception):
     ...

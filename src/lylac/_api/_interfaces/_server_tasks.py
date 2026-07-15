@@ -5,21 +5,22 @@ from ..._typing.generics import FunctionDecorator
 from ..._typing.type_parameters import _M
 
 class _Interface_ServerTasks(Generic[_M]):
-    _core: ServerTasksEngine[_M]
+    _engine: ServerTasksEngine[_M]
 
     def __init__(
         self,
-        server_tasks: ServerTasksEngine[_M],
+        engine: ServerTasksEngine[_M],
     ) -> None:
 
         # Asignación de motor de tareas de servidor
-        self._core = server_tasks
+        self._engine = engine
 
     def register(
         self,
         name: str,
     ) -> FunctionDecorator[ServerTaskCallback[_M]]:
 
-        decorator = self._core.register(name)
+        # Obtención del decorador para registrar la función
+        decorator = self._engine.register(name)
 
         return decorator

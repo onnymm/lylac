@@ -12,6 +12,7 @@ from sqlalchemy.orm import aliased
 from .._constants import FIELD_NAME
 from .._constants import RELATION_ACTIONS
 from .._constants import RELATION_ACTION_NAME
+from .._constants import TTYPE_NAME
 from .._core import Metadata
 from .._resources import ModelsBearer
 from .._typing.callables import CaptureCreatedRecordID
@@ -527,7 +528,7 @@ class RelationOperationsContext(Generic[_M]):
             )
             .where(
                 model.model == model_name,
-                field.ttype.in_(['one2many', 'many2many'])
+                field.ttype.in_([TTYPE_NAME.ONE2MANY, TTYPE_NAME.MANY2MANY])
             )
             .outerjoin(
                 model,
@@ -552,13 +553,13 @@ class RelationOperationsContext(Generic[_M]):
         o2m_fields_metadata = {
             row['name']: row
             for row in fields_metadata
-            if row['ttype'] == 'one2many'
+            if row['ttype'] == TTYPE_NAME.ONE2MANY
         }
         # Obtención de los metadatos de los campos many2many
         m2m_fields_metadata = {
             row['name']: row
             for row in fields_metadata
-            if row['ttype'] == 'many2many'
+            if row['ttype'] == TTYPE_NAME.MANY2MANY
         }
 
         # Inicialización de mapa de operaciones CRUD en campos one2many

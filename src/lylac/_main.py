@@ -13,7 +13,7 @@ from ._constants import INITIAL_PACKAGES
 from ._contexts import ActionContext as _ActionContext
 from ._contexts import AutomationContext as _AutomationContext
 from ._contexts import ComputeContext as _ComputeContext
-from ._contexts import ExecutionContext as ExecutionContext
+from ._contexts import ExecutionContext as _ExecutionContext
 from ._contexts import ValidationContext as _ValidationContext
 from ._contexts import ServerTaskContext as _ServerTaskContext
 from ._contexts import TransactionContext as _TransactionContext
@@ -54,7 +54,7 @@ class Lylac(Generic[_M]):
     type ActionContext[T] = _ActionContext[_M, Union[T, _R]]
     type ServerTaskContext = _ServerTaskContext[_M]
     type TransactionContext = _TransactionContext[ModelName[_M]]
-    type ExecutionContext = ExecutionContext[_M]
+    type ExecutionContext = _ExecutionContext[_M]
     type ComputeContext = _ComputeContext[_M]
     type ComputeFieldFn = _ComputeFieldFn[_M]
     # Atributos
@@ -127,7 +127,7 @@ class Lylac(Generic[_M]):
     def execute_transaction(
         self,
         session_uuid: str,
-        callback: Callable[[ExecutionContext[_M]], _T],
+        callback: Callable[[_ExecutionContext[_M]], _T],
     ) -> _T:
 
         # Autenticación del usuario
@@ -160,7 +160,7 @@ class Lylac(Generic[_M]):
     ) -> Literal[True]:
 
         # Definición de la transacción
-        def transaction(execution_ctx: ExecutionContext[_M]) -> Literal[True]:
+        def transaction(execution_ctx: _ExecutionContext[_M]) -> Literal[True]:
             # Ejecución de la acción
             closure_result = self._actions.execute(
                 execution_ctx,
@@ -183,7 +183,7 @@ class Lylac(Generic[_M]):
     ) -> Literal[True]:
 
         # Definición de la transacción
-        def transaction(execution_ctx: ExecutionContext[_M]) -> Literal[True]:
+        def transaction(execution_ctx: _ExecutionContext[_M]) -> Literal[True]:
             # Ejecución de la tarea de servidor
             closure_result = self._server_tasks.execute(execution_ctx, name)
 
@@ -202,7 +202,7 @@ class Lylac(Generic[_M]):
     ) -> list[int]:
 
         # Definición de la transacción
-        def transaction(execution_ctx: ExecutionContext[_M]) -> list[int]:
+        def transaction(execution_ctx: _ExecutionContext[_M]) -> list[int]:
             # Creación de registros y obtención de las IDs creadas
             closure_created_ids = self._crud.create(execution_ctx, model_name, data)
             # Se guardan los cambios
@@ -225,7 +225,7 @@ class Lylac(Generic[_M]):
     ) -> list[int]:
 
         # Definición de la transacción
-        def transaction(execution_ctx: ExecutionContext[_M]) -> list[int]:
+        def transaction(execution_ctx: _ExecutionContext[_M]) -> list[int]:
             # Obtención de los datos
             closure_found_ids = self._crud.search(
                 execution_ctx,
@@ -253,7 +253,7 @@ class Lylac(Generic[_M]):
     ) -> list[_Record]:
 
         # Definición de la transacción
-        def transaction(execution_ctx: ExecutionContext[_M]) -> list[_Record]:
+        def transaction(execution_ctx: _ExecutionContext[_M]) -> list[_Record]:
             # Obtención de los datos
             closure_data = self._crud.read(
                 execution_ctx,
@@ -284,7 +284,7 @@ class Lylac(Generic[_M]):
     ) -> list[_Record]:
 
         # Definición de la transacción
-        def transaction(execution_ctx: ExecutionContext[_M]) -> list[_Record]:
+        def transaction(execution_ctx: _ExecutionContext[_M]) -> list[_Record]:
             # Obtención de los datos
             closure_data = self._crud.search_read(
                 execution_ctx,
@@ -312,7 +312,7 @@ class Lylac(Generic[_M]):
     ) -> int:
 
         # Definición de la transacción
-        def transaction(execution_ctx: ExecutionContext[_M]) -> int:
+        def transaction(execution_ctx: _ExecutionContext[_M]) -> int:
             # Obtención del conteo
             closure_count = self._crud.search_count(
                 execution_ctx,
@@ -336,7 +336,7 @@ class Lylac(Generic[_M]):
     ) -> Literal[True]:
 
         # Definición de la transacción
-        def transaction(execution_ctx: ExecutionContext[_M]) -> Literal[True]:
+        def transaction(execution_ctx: _ExecutionContext[_M]) -> Literal[True]:
             # Modificación de los registros
             closure_result = self._crud.update(
                 execution_ctx,
@@ -360,7 +360,7 @@ class Lylac(Generic[_M]):
     ) -> Literal[True]:
 
         # Definición de la transacción
-        def transaction(execution_ctx: ExecutionContext[_M]) -> Literal[True]:
+        def transaction(execution_ctx: _ExecutionContext[_M]) -> Literal[True]:
             # Eliminación de los registros
             closure_result = self._crud.delete(
                 execution_ctx,
@@ -542,7 +542,7 @@ class Lylac(Generic[_M]):
     def _create_root_execution_context(
         self,
         conn: Connection,
-    ) -> ExecutionContext[_M]:
+    ) -> _ExecutionContext[_M]:
 
         # Creación de un contexto de ejecución como usuario root
         execution_ctx = self._create_execution_context(DATA_RESOURCE.ROOT_USER, conn)
@@ -553,10 +553,10 @@ class Lylac(Generic[_M]):
         self,
         uid: int,
         conn: Connection,
-    ) -> ExecutionContext[_M]:
+    ) -> _ExecutionContext[_M]:
 
         # Creación de un contexto de ejecución
-        execution_ctx = ExecutionContext[_M](
+        execution_ctx = _ExecutionContext[_M](
             crud= self._crud,
             uid= uid,
             conn= conn,

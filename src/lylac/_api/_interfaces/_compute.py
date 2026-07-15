@@ -4,24 +4,22 @@ from sqlalchemy.engine import Connection
 from ..._constants import DATA_RESOURCE
 from ..._engines import ComputeEngine
 from ..._typing.generics import ModelName
-from ..._typing.callables import CaptureComputeCallback
 from ..._typing.literals import TTypeName
 from ..._typing.type_parameters import _M
-from ..._contexts import ComputeContext
 
 if TYPE_CHECKING:
     from ..._main import Lylac
 
 class _Interface_Compute(Generic[_M]):
-    _core: ComputeEngine[_M]
+    _engine: ComputeEngine[_M]
 
     def __init__(
         self,
-        computed: ComputeEngine[_M],
+        engine: ComputeEngine[_M],
         main: Lylac[_M],
     ) -> None:
 
-        self._core = computed
+        self._engine = engine
         self._main = main
 
     def register_field(
@@ -37,8 +35,8 @@ class _Interface_Compute(Generic[_M]):
             # Inicialización de contexto de ejecución
             execution_ctx = self._main._create_execution_context(DATA_RESOURCE.ROOT_USER, conn)
 
-            # Registro de campo en la instancia
-            closure_decorator = self._core.register_field(
+            # Obtención del decorador para registrar la función
+            closure_decorator = self._engine.register_field(
                 self._main._crud,
                 execution_ctx,
                 model_name,

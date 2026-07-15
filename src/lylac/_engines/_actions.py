@@ -2,7 +2,7 @@ from typing import Generic
 from typing import Literal
 from typing import TYPE_CHECKING
 from .._constants import ERROR_LABEL
-from .._contexts import ActionContext as _ActionContext
+from .._contexts import ActionContext
 from .._data import PRESET_ACTIONS
 from .._resources import ActionProperties
 from .._resources import DatabaseMetadata
@@ -98,7 +98,7 @@ class ActionEngine(Generic[_M]):
         )
 
         # Inicialización de contexto de automatización
-        ctx = _ActionContext[_M](execution_ctx, self._crud, record, self._ddl)
+        ctx = ActionContext[_M](execution_ctx, self._crud, record, self._ddl)
 
         # Ejecución de la acción
         callback(ctx)
@@ -136,6 +136,6 @@ class ActionEngine(Generic[_M]):
         # Inicialización de función de reemplazo para arrojar error cuando se intente ejecutar manualmente
         def void_function(ctx: ActionCallback[_M]) -> None:
             # Se lanza error de ejecución
-            raise ActionExecutionError(ERROR_LABEL.MANUAL_ACTION)
+            raise ActionExecutionError(ERROR_LABEL.EXECUTION.ACTION)
 
         return void_function

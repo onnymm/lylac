@@ -9,6 +9,8 @@ from ._authentication import UserNotFoundError
 from ._automations import AutomationExecutionError
 from ._modules import ModuleAlreadyLoaded
 from ._policies import PolicyExecutionError
+from ._policies import PolicyVerificationsFailedError
 from ._server_tasks import SeverTaskExecutionError
 from ._user_env import VariableResolverExecutionError
 from ._validations import ValidationExecutionError
+from ._validations import ValidationsFailedError

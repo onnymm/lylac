@@ -23,6 +23,7 @@ from sqlalchemy.sql.type_api import TypeEngine
 from .._constants import FIELD_NAME
 from .._constants import FIELD_SUFFIX
 from .._constants import RELATION_PATH_SEPARATOR
+from .._constants import TTYPE_NAME
 from .._typing.callables import AggFunc
 from .._typing.callables import ComputeFieldFn
 from .._typing.structures import CriteriaStructure
@@ -36,9 +37,9 @@ if TYPE_CHECKING:
 
 class ComputeContext(Generic[_M]):
     _zero_value = {
-        'integer': 0,
-        'duration': '00:00',
-        'float': 0.0,
+        TTYPE_NAME.INTEGER: 0,
+        TTYPE_NAME.DURATION: '00:00',
+        TTYPE_NAME.FLOAT: 0.0,
     }
     """
     Valores en cero especiales para algunos tipos de dato.
@@ -55,14 +56,14 @@ class ComputeContext(Generic[_M]):
     Diccionario de funciones de agregación.
     """
     _casteable: dict[TTypeName, type[TypeEngine]] = {
-        'integer': types.Integer,
-        'char': types.String,
-        'float': types.Float,
-        'boolean': types.Boolean,
-        'date': types.Date,
-        'datetime': types.DateTime,
-        'time': types.Time,
-        'duration': types.Interval,
+        TTYPE_NAME.INTEGER: types.Integer,
+        TTYPE_NAME.CHAR: types.String,
+        TTYPE_NAME.FLOAT: types.Float,
+        TTYPE_NAME.BOOLEAN: types.Boolean,
+        TTYPE_NAME.DATE: types.Date,
+        TTYPE_NAME.DATETIME: types.DateTime,
+        TTYPE_NAME.TIME: types.Time,
+        TTYPE_NAME.DURATION: types.Interval,
     }
     """
     Diccionario de casteos disponibles.
@@ -213,7 +214,7 @@ class ComputeContext(Generic[_M]):
         field_properties = current_frame_ctx.get_field_properties(current_frame_ctx.model_name, field_name)
 
         # Si el tipo de dato del campo es One2Many...
-        if field_properties.ttype == 'one2many':
+        if field_properties.ttype == TTYPE_NAME.ONE2MANY:
 
             # Obtención del nombre del modelo relacionado
             related_model_name = field_properties.related_model_name

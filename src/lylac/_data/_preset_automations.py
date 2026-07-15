@@ -1,16 +1,17 @@
 from typing import TYPE_CHECKING
+from sqlalchemy import update
 from .._constants import DATA_RESOURCE
 from .._constants import FACTORY_FIELDS
 from .._constants import PRESET
+from .._constants import TTYPE_NAME
+from .._contexts import ExecutionContext
 from .._resources import AutomationProperties
 from .._typing.generics import EngineHub
 from .._typing.generics import ModelName
 from .._typing.literals import InitialModels
+from .._typing.type_parameters import _M
 from ..security import hash_password
 from ..security import verify_password
-from sqlalchemy import update
-from .._contexts import ExecutionContext
-from .._typing.type_parameters import _M
 
 from .._core import Metadata
 
@@ -77,7 +78,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
             {
                 'name': 'id',
                 'label': 'ID',
-                'ttype': 'integer',
+                'ttype': TTYPE_NAME.INTEGER,
                 'model_id': model_id,
                 'unique': True,
                 'readonly': True,
@@ -86,7 +87,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
             {
                 'name': 'name',
                 'label': 'Nombre',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_id,
                 'readonly': True,
                 'state': field_state,
@@ -94,7 +95,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
             {
                 'name': 'create_date',
                 'label': 'Fecha de creación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_id,
                 'readonly': True,
                 'state': field_state,
@@ -102,7 +103,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
             {
                 'name': 'update_date',
                 'label': 'Fecha de modificación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_id,
                 'readonly': True,
                 'state': field_state,
@@ -110,7 +111,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
             {
                 'name': 'create_uid',
                 'label': 'Usuario de creación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_id,
                 'related_model_id': ctx.get_resource_id('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -120,7 +121,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
             {
                 'name': 'update_uid',
                 'label': 'Usuario de modificación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_id,
                 'related_model_id': ctx.get_resource_id('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -130,7 +131,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
             {
                 'name': 'display_name',
                 'label': 'Nombre a mostrar',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_id,
                 'state': field_state,
                 'readonly': True,
@@ -144,7 +145,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
             fields_to_create.append({
                 'name': 'sequence',
                 'label': 'Secuencia',
-                'ttype': 'integer',
+                'ttype': TTYPE_NAME.INTEGER,
                 'nullable': False,
                 'model_id': model_id,
                 'is_required': True,
@@ -155,7 +156,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
             fields_to_create.append({
                 'name': 'label',
                 'label': 'Leyenda',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'nullable': False,
                 'model_id': model_id,
                 'state': field_state,
@@ -165,7 +166,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
             fields_to_create.append({
                 'name': 'active',
                 'label': 'Activo',
-                'ttype': 'boolean',
+                'ttype': TTYPE_NAME.BOOLEAN,
                 'default_value': True,
                 'model_id': model_id,
                 'state': field_state,
@@ -442,7 +443,7 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
             model_name= 'base.model',
             fields= (
                 ('id', 'res_id'),
-                ('name', 'char', lambda ctx: ctx.concat('base_model.', ctx['name'])),
+                ('name', TTYPE_NAME.CHAR, lambda ctx: ctx.concat('base_model.', ctx['name'])),
             ),
             execute_only_when= [],
         ),
@@ -469,7 +470,7 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
                 '&',
                     '&',
                         ('name', 'not in', FACTORY_FIELDS),
-                        ('ttype', 'not in', ['one2many', 'many2many']),
+                        ('ttype', 'not in', [TTYPE_NAME.ONE2MANY, TTYPE_NAME.MANY2MANY]),
                     ('is_computed', '=', False),
             ],
         ),
@@ -482,7 +483,7 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
                 'model_id.model',
                 'related_model_id.name',
             ),
-            execute_only_when= [('ttype', '=', 'many2many')],
+            execute_only_when= [('ttype', '=', TTYPE_NAME.MANY2MANY)],
         ),
 
     },
@@ -519,7 +520,7 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
             model_name= 'base.rules',
             fields= (
                 'name',
-                ('model_table_name', 'char', lambda ctx: ctx['model_id.name']),
+                ('model_table_name', TTYPE_NAME.CHAR, lambda ctx: ctx['model_id.name']),
             ),
             execute_only_when= [],
         ),

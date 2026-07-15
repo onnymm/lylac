@@ -3,6 +3,7 @@ from datetime import datetime
 from datetime import time
 from typing import Any
 from typing import Callable
+from .._constants import TTYPE_NAME
 from .._typing.generics import _Record
 from .._typing.literals import TTypeName
 from .._typing.structures import RecordData
@@ -22,19 +23,19 @@ class InputParser:
 
         # Inicialización de adaptador
         self._adapter: dict[TTypeName, Callable[[Any], int | str | float | bool | date | time | datetime | JSONLike]] = {
-            'integer': self._functions.bypass,
-            'char': self._functions.bypass,
-            'boolean': self._functions.bypass,
-            'float': self._functions.bypass,
-            'selection': self._functions.bypass,
-            'date': self._functions.parse_date,
-            'time': self._functions.parse_time,
-            'datetime': self._functions.parse_datetime,
-            'duration': self._functions.bypass,
-            'many2one': self._functions.bypass,
-            'text': self._functions.bypass,
-            'file': self._functions.bypass,
-            'json': self._functions.bypass,
+            TTYPE_NAME.INTEGER: self._functions.bypass,
+            TTYPE_NAME.CHAR: self._functions.bypass,
+            TTYPE_NAME.BOOLEAN: self._functions.bypass,
+            TTYPE_NAME.FLOAT: self._functions.bypass,
+            TTYPE_NAME.SELECTION: self._functions.bypass,
+            TTYPE_NAME.DATE: self._functions.parse_date,
+            TTYPE_NAME.TIME: self._functions.parse_time,
+            TTYPE_NAME.DATETIME: self._functions.parse_datetime,
+            TTYPE_NAME.DURATION: self._functions.bypass,
+            TTYPE_NAME.MANY2ONE: self._functions.bypass,
+            TTYPE_NAME.TEXT: self._functions.bypass,
+            TTYPE_NAME.FILE: self._functions.bypass,
+            TTYPE_NAME.JSON: self._functions.bypass,
         }
 
     def parse(
@@ -50,12 +51,12 @@ class InputParser:
             # Obtención del tipo de dato del campo
             ttype = self._field_ttypes[field_name]
             # Si el tipo de dato es one2many o many2many
-            if ttype in ['one2many', 'many2many']:
+            if ttype in [TTYPE_NAME.ONE2MANY, TTYPE_NAME.MANY2MANY]:
                 # Se continúa con la siguiente iteración
                 continue
 
             # Si el tipo de dato es many2one y es creación...
-            if ttype == 'many2one' and isinstance(record[field_name], dict):
+            if ttype == TTYPE_NAME.MANY2ONE and isinstance(record[field_name], dict):
                 # Se continúa con la siguiente iteración
                 continue
 

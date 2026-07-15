@@ -2,6 +2,7 @@ from typing import Callable
 from typing import Generic
 from typing import TYPE_CHECKING
 from .._constants import ERROR_LABEL
+from .._constants import MODEL_NAME
 from .._constants import TRANSACTIONS
 from .._contexts import PoliciesContext
 from .._data import PRESET_POLICIES
@@ -20,6 +21,7 @@ from .._typing.structures import RecordData
 from .._typing.type_parameters import _M
 from .._typing.type_parameters import _R
 from ..errors import PolicyExecutionError
+from ..errors import PolicyVerificationsFailedError
 
 if TYPE_CHECKING:
     from .._contexts import ExecutionContext
@@ -218,7 +220,7 @@ class PoliciesEngine(Generic[_M, _R]):
                 # Se imprime éste
                 print(error)
             # Se lanza error para detener la ejecución
-            raise AssertionError('Las verificaciones no pasaron.')
+            raise PolicyVerificationsFailedError(ERROR_LABEL.INTEGRITY.POLICY_VERIFICATIONS_FAILED)
 
     def _build_void_function(
         self,
@@ -227,7 +229,7 @@ class PoliciesEngine(Generic[_M, _R]):
         # Inicialización de función de reemplazo para arrojar error cuando se intente ejecutar manualmente
         def void_function(ctx: PoliciesContext[_M]) -> None:
             # Se lanza error de ejecución
-            raise PolicyExecutionError(ERROR_LABEL.MANUAL_POLICY)
+            raise PolicyExecutionError(ERROR_LABEL.EXECUTION.POLICY)
 
         return void_function
 
@@ -240,7 +242,7 @@ class PoliciesEngine(Generic[_M, _R]):
         # Búsqueda y lectura de los campos del modelo
         found_results = self._crud.search_read(
             execution_ctx,
-            'base.model.field',
+            MODEL_NAME.BASE_MODEL_FIELD,
             [('model_id.model', '=', model_name)],
             ['name', 'ttype'],
         )

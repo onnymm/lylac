@@ -8,15 +8,15 @@ from ..._typing.structures import FieldReadDeclaration
 from ..._typing.type_parameters import _M
 
 class _Interface_Automations(Generic[_M]):
-    _core: AutomationsEngine[_M]
+    _engine: AutomationsEngine[_M]
 
     def __init__(
         self,
-        automations: AutomationsEngine[_M],
+        engine: AutomationsEngine[_M],
     ) -> None:
 
         # Asignación de motor de automatizaciones
-        self._core = automations
+        self._engine = engine
 
     def register(
         self,
@@ -27,7 +27,7 @@ class _Interface_Automations(Generic[_M]):
     ) -> None:
 
         # Obtención del decorador para registrar la función
-        decorator = self._core.register(
+        decorator = self._engine.register(
             on,
             model_name,
             fields,

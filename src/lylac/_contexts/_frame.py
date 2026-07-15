@@ -16,6 +16,7 @@ from .._constants import FIELD_NAME
 from .._constants import FIELD_SUFFIX
 from .._constants import RELATION_PATH_SEPARATOR
 from .._constants import ROOT_PATH
+from .._constants import TTYPE_NAME
 from .._resources import DatabaseMetadata
 from .._resources import FieldProperties
 from .._resources import FieldTarget
@@ -212,7 +213,7 @@ class FrameContext(Generic[_M], Interface_FrameContext[_M]):
 
         else:
             # Se arroja error de campo malformado
-            raise AssertionError(ERROR_LABEL.MALFORMED_FIELD_DECLARATION)
+            raise AssertionError(ERROR_LABEL.CONTEXT.MALFORMED_FIELD_DECLARATION)
 
         # Obtención de las propiedades del campo
         field_properties = self._database_metadata.field_properties(self.model_name, complete_name)
@@ -222,7 +223,7 @@ class FrameContext(Generic[_M], Interface_FrameContext[_M]):
         # Si se especificó el parámetro de solo ID para many2one...
         if only_id_for_m2o:
             # Si el campo es many2one:
-            if field_ttype == 'many2one':
+            if field_ttype == TTYPE_NAME.MANY2ONE:
                 # Se declara que se obtenga la ID del campo
                 complete_name = f'{complete_name}{RELATION_PATH_SEPARATOR}{FIELD_NAME.ID}'
 
@@ -335,7 +336,7 @@ class FrameContext(Generic[_M], Interface_FrameContext[_M]):
                 field_instances.append(field_instance)
 
         # Si el tipo de dato del campo es many2one...
-        elif field_properties.ttype == 'many2one':
+        elif field_properties.ttype == TTYPE_NAME.MANY2ONE:
 
             # Asignación de referencia de campo
             field_reference = field_complete_name
@@ -373,7 +374,7 @@ class FrameContext(Generic[_M], Interface_FrameContext[_M]):
             field_instances.append(name_field_instance)
 
         # Si el tipo de dato del campo es one2many...
-        elif field_properties.ttype == 'one2many':
+        elif field_properties.ttype == TTYPE_NAME.ONE2MANY:
 
             # Obtención del nombre del campo one2many
             field_name = field_properties.name
@@ -453,7 +454,7 @@ class FrameContext(Generic[_M], Interface_FrameContext[_M]):
             field_instances.append(o2m_subquery_field_instance)
 
         # Si el tipo de dato del campo es many2many...
-        elif field_properties.ttype == 'many2many':
+        elif field_properties.ttype == TTYPE_NAME.MANY2MANY:
 
             # Obtención del nombre del campo
             field_name = field_properties.name

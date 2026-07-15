@@ -5,6 +5,7 @@ from typing import Sequence
 from typing import TYPE_CHECKING
 from sqlalchemy.engine import Row
 from .._constants import FIELD_SUFFIX
+from .._constants import TTYPE_NAME
 from .._typing.interfaces import Many2One
 from .._typing.generics import MaybeNone
 from .._typing.generics import _Record
@@ -25,21 +26,21 @@ class OutputParser:
 
         # Inicialización de adatador
         self._adapter: dict[TTypeName, Callable[[str, Row], Any]] = {
-            'integer': self._functions.get_generic_value,
-            'char': self._functions.get_generic_value,
-            'boolean': self._functions.get_generic_value,
-            'float': self._functions.get_generic_value,
-            'selection': self._functions.get_generic_value,
-            'date': self._functions.get_generic_value,
-            'time': self._functions.get_generic_value,
-            'datetime': self._functions.get_datetime_value,
-            'duration': self._functions.get_duration_value,
-            'text': self._functions.get_generic_value,
-            'file': self._functions.get_generic_value,
-            'json': self._functions.get_generic_value,
-            'many2one': self._functions.get_m2o_value,
-            'one2many': self._functions.get_array_value,
-            'many2many': self._functions.get_array_value,
+            TTYPE_NAME.INTEGER: self._functions.get_generic_value,
+            TTYPE_NAME.CHAR: self._functions.get_generic_value,
+            TTYPE_NAME.BOOLEAN: self._functions.get_generic_value,
+            TTYPE_NAME.FLOAT: self._functions.get_generic_value,
+            TTYPE_NAME.SELECTION: self._functions.get_generic_value,
+            TTYPE_NAME.DATE: self._functions.get_generic_value,
+            TTYPE_NAME.TIME: self._functions.get_generic_value,
+            TTYPE_NAME.DATETIME: self._functions.get_datetime_value,
+            TTYPE_NAME.DURATION: self._functions.get_duration_value,
+            TTYPE_NAME.TEXT: self._functions.get_generic_value,
+            TTYPE_NAME.FILE: self._functions.get_generic_value,
+            TTYPE_NAME.JSON: self._functions.get_generic_value,
+            TTYPE_NAME.MANY2ONE: self._functions.get_m2o_value,
+            TTYPE_NAME.ONE2MANY: self._functions.get_array_value,
+            TTYPE_NAME.MANY2MANY: self._functions.get_array_value,
         }
 
     def ids_from_database(

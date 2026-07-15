@@ -9,6 +9,7 @@ from sqlalchemy import update
 from .._constants import ENCODE_REF
 from .._constants import ERROR_LABEL
 from .._constants import MODEL_NAME
+from .._constants import TTYPE_NAME
 from .._core import Metadata
 from .._core import Transaction
 from .._resources import ModelDataIndex
@@ -41,7 +42,7 @@ class _ModuleData(TypedDict):
 
 MODEL_ID__RES_NAME__FIELD_COMPUTATION: FieldComputation = (
     'model_id',
-    'char',
+    TTYPE_NAME.CHAR,
     lambda ctx: ctx.case(
         (
             ctx['model_id.id'] != None,
@@ -52,7 +53,7 @@ MODEL_ID__RES_NAME__FIELD_COMPUTATION: FieldComputation = (
 
 RELATED_MODEL_ID__RES_NAME__FIELD_COMPUTATION: FieldComputation = (
     'related_model_id',
-    'char',
+    TTYPE_NAME.CHAR,
     lambda ctx: ctx.case(
         (
             ctx['related_model_id.id'] != None,
@@ -260,7 +261,7 @@ class ModulesManager(Generic[_M]):
                         'label',
                         (
                             'field_id',
-                            'char',
+                            TTYPE_NAME.CHAR,
                             lambda ctx: ctx.case(
                                 (
                                     ctx['field_id.id'] != None,
@@ -320,7 +321,7 @@ class ModulesManager(Generic[_M]):
                         MODEL_ID__RES_NAME__FIELD_COMPUTATION,
                         (
                             'res_name',
-                            'char',
+                            TTYPE_NAME.CHAR,
                             lambda ctx: ctx.case(
                                 (
                                     ctx['model_id.id'] != None,
@@ -370,7 +371,7 @@ class ModulesManager(Generic[_M]):
                     ('group_id.name', 'group_name'),
                     (
                         'group_id',
-                        'char',
+                        TTYPE_NAME.CHAR,
                         lambda ctx: ctx.case(
                             (
                                 ctx['group_id.id'] != None,
@@ -492,7 +493,7 @@ class ModulesManager(Generic[_M]):
             # Si ya existen procesos instalados...
             if count:
                 # Se lanza error de módulo ya cargado
-                raise ModuleAlreadyLoaded(ERROR_LABEL.MODULE_ALREADY_LOADED)
+                raise ModuleAlreadyLoaded(ERROR_LABEL.MODULE.ALREADY_LOADED)
 
             # Creación de los datos de modelo
             ctx.create(

@@ -78,6 +78,6 @@ class ServerTasksEngine(Generic[_M]):
         # Inicialización de función de reemplazo para arrojar error cuando se intente ejecutar manualmente
         def void_function(ctx: ActionCallback[_M]) -> None:
             # Se lanza error de ejecución
-            raise SeverTaskExecutionError(ERROR_LABEL.MANUAL_SERVER_TASK)
+            raise SeverTaskExecutionError(ERROR_LABEL.EXECUTION.SERVER_TASK)
 
         return void_function

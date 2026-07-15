@@ -6,15 +6,15 @@ from ..._typing.generics import ModelName
 from ..._typing.type_parameters import _M
 
 class _Interface_Actions(Generic[_M]):
-    _core: ActionEngine[_M]
+    _engine: ActionEngine[_M]
 
     def __init__(
         self,
-        actions: ActionEngine[_M],
+        engine: ActionEngine[_M],
     ) -> None:
 
         # Asignación de motor de acciones
-        self._core = actions
+        self._engine = engine
 
     def register(
         self,
@@ -23,7 +23,8 @@ class _Interface_Actions(Generic[_M]):
         fields: list[str] = [],
     ) -> FunctionDecorator[ActionCallback[_M]]:
 
-        decorator = self._core.register(
+        # Obtención del decorador para registrar la función
+        decorator = self._engine.register(
             model_name,
             name,
             fields,

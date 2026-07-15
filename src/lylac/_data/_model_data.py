@@ -1,4 +1,5 @@
 from sqlalchemy.engine import Connection
+from .._constants import TTYPE_NAME
 from .._resources import DataMap
 from .._resources import ModelDataIndex
 from .._typing.definitions import _InternalModelSchema
@@ -750,7 +751,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'id',
                 'label': 'ID',
-                'ttype': 'integer',
+                'ttype': TTYPE_NAME.INTEGER,
                 'model_id': model_data_index.encode('base_model.base_users'),
                 'unique': True,
                 'readonly': True,
@@ -764,7 +765,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'name',
                 'label': 'Nombre',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_users'),
                 'readonly': True,
                 'state': 'base',
@@ -777,7 +778,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_date',
                 'label': 'Fecha de creación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_users'),
                 'readonly': True,
                 'state': 'base',
@@ -790,7 +791,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_date',
                 'label': 'Fecha de modificación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_users'),
                 'readonly': True,
                 'state': 'base',
@@ -803,7 +804,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_uid',
                 'label': 'Usuario de creación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_users'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -818,7 +819,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_uid',
                 'label': 'Usuario de modificación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_users'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -833,7 +834,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'display_name',
                 'label': 'Nombre a mostrar',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_users'),
                 'is_computed': True,
                 'readonly': True,
@@ -847,7 +848,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'active',
                 'label': 'Activo',
-                'ttype': 'boolean',
+                'ttype': TTYPE_NAME.BOOLEAN,
                 'model_id': model_data_index.encode('base_model.base_users'),
                 'default_value': True,
                 'nullable': False,
@@ -861,7 +862,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'login',
                 'label': 'Inicio de sesión',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_users'),
                 'is_required': True,
                 'unique': True,
@@ -875,7 +876,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'password',
                 'label': 'Contraseña',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_users'),
                 'readonly': True,
                 'state': 'base',
@@ -888,7 +889,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'profile_picture',
                 'label': 'Foto de perfil',
-                'ttype': 'file',
+                'ttype': TTYPE_NAME.FILE,
                 'model_id': model_data_index.encode('base_model.base_users'),
                 'state': 'base',
             },
@@ -900,7 +901,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'id',
                 'label': 'ID',
-                'ttype': 'integer',
+                'ttype': TTYPE_NAME.INTEGER,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'unique': True,
                 'readonly': True,
@@ -914,7 +915,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'name',
                 'label': 'Nombre',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'readonly': True,
                 'state': 'base',
@@ -927,7 +928,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_date',
                 'label': 'Fecha de creación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'readonly': True,
                 'state': 'base',
@@ -940,7 +941,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_date',
                 'label': 'Fecha de modificación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'readonly': True,
                 'state': 'base',
@@ -953,7 +954,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_uid',
                 'label': 'Usuario de creación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -968,7 +969,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_uid',
                 'label': 'Usuario de modificación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -983,7 +984,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'display_name',
                 'label': 'Nombre a mostrar',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'is_computed': True,
                 'readonly': True,
@@ -997,7 +998,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'state',
                 'label': 'Tipo de campo',
-                'ttype': 'selection',
+                'ttype': TTYPE_NAME.SELECTION,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'default_value': 'generic',
                 'readonly': True,
@@ -1011,7 +1012,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'label',
                 'label': 'Nombre visible',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'is_required': True,
                 'nullable': False,
@@ -1025,7 +1026,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'model',
                 'label': 'Referencia de modelo',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'unique': True,
                 'nullable': False,
@@ -1040,7 +1041,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'has_sequence',
                 'label': 'Tiene secuencia',
-                'ttype': 'boolean',
+                'ttype': TTYPE_NAME.BOOLEAN,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'readonly': True,
                 'default_value': False,
@@ -1054,7 +1055,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'is_archivable',
                 'label': 'Es archivable',
-                'ttype': 'boolean',
+                'ttype': TTYPE_NAME.BOOLEAN,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'readonly': True,
                 'default_value': False,
@@ -1068,7 +1069,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'has_label',
                 'label': 'Tiene leyenda',
-                'ttype': 'boolean',
+                'ttype': TTYPE_NAME.BOOLEAN,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'readonly': True,
                 'default_value': False,
@@ -1082,7 +1083,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'description',
                 'label': 'Descripción',
-                'ttype': 'text',
+                'ttype': TTYPE_NAME.TEXT,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'state': 'base',
             },
@@ -1094,7 +1095,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'field_ids',
                 'label': 'Campos',
-                'ttype': 'one2many',
+                'ttype': TTYPE_NAME.ONE2MANY,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'related_model_id': model_data_index.encode('base_model.base_model_field'),
                 'related_field': 'model_id',
@@ -1108,7 +1109,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'related_field_ids',
                 'label': 'Campos relacionados',
-                'ttype': 'one2many',
+                'ttype': TTYPE_NAME.ONE2MANY,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'related_model_id': model_data_index.encode('base_model.base_model_field'),
                 'related_field': 'related_model_id',
@@ -1122,7 +1123,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'transient',
                 'label': 'Es modelo transitorio',
-                'ttype': 'boolean',
+                'ttype': TTYPE_NAME.BOOLEAN,
                 'model_id': model_data_index.encode('base_model.base_model'),
                 'state': 'base',
             },
@@ -1134,7 +1135,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'id',
                 'label': 'ID',
-                'ttype': 'integer',
+                'ttype': TTYPE_NAME.INTEGER,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'unique': True,
                 'readonly': True,
@@ -1148,7 +1149,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'name',
                 'label': 'Nombre',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'readonly': True,
                 'state': 'base',
@@ -1161,7 +1162,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_date',
                 'label': 'Fecha de creación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'readonly': True,
                 'state': 'base',
@@ -1174,7 +1175,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_date',
                 'label': 'Fecha de modificación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'readonly': True,
                 'state': 'base',
@@ -1187,7 +1188,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_uid',
                 'label': 'Usuario de creación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -1202,7 +1203,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_uid',
                 'label': 'Usuario de modificación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -1217,7 +1218,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'display_name',
                 'label': 'Nombre a mostrar',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'is_computed': True,
                 'readonly': True,
@@ -1231,7 +1232,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'state',
                 'label': 'Tipo de campo',
-                'ttype': 'selection',
+                'ttype': TTYPE_NAME.SELECTION,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'default_value': 'generic',
                 'readonly': True,
@@ -1245,7 +1246,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'label',
                 'label': 'Nombre visible',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'is_required': True,
                 'nullable': False,
@@ -1260,7 +1261,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'model_id',
                 'label': 'Modelo',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'is_required': True,
                 'nullable': False,
@@ -1277,7 +1278,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'ttype',
                 'label': 'Tipo de dato',
-                'ttype': 'selection',
+                'ttype': TTYPE_NAME.SELECTION,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'is_required': True,
                 'nullable': False,
@@ -1292,7 +1293,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'nullable',
                 'label': 'Puede ser nulo',
-                'ttype': 'boolean',
+                'ttype': TTYPE_NAME.BOOLEAN,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'default_value': False,
                 'nullable': False,
@@ -1307,7 +1308,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'on_delete',
                 'label': 'Cuando se elimina el registro padre',
-                'ttype': 'selection',
+                'ttype': TTYPE_NAME.SELECTION,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'readonly': True,
                 'default_value': True,
@@ -1321,7 +1322,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'is_required',
                 'label': 'Es requerido',
-                'ttype': 'boolean',
+                'ttype': TTYPE_NAME.BOOLEAN,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'default_value': False,
                 'readonly': True,
@@ -1335,7 +1336,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'readonly',
                 'label': 'Solo lectura',
-                'ttype': 'boolean',
+                'ttype': TTYPE_NAME.BOOLEAN,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'default_value': False,
                 'readonly': True,
@@ -1349,7 +1350,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'default_value',
                 'label': 'Valor predeterminado',
-                'ttype': 'json',
+                'ttype': TTYPE_NAME.JSON,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'readonly': True,
                 'state': 'base',
@@ -1362,7 +1363,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'unique',
                 'label': 'Único',
-                'ttype': 'boolean',
+                'ttype': TTYPE_NAME.BOOLEAN,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'default_value': False,
                 'nullable': False,
@@ -1377,7 +1378,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'help_info',
                 'label': 'Información de ayuda',
-                'ttype': 'text',
+                'ttype': TTYPE_NAME.TEXT,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'state': 'base',
             }
@@ -1389,7 +1390,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'related_model_id',
                 'label': 'Modelo relacionado',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'related_model_id': model_data_index.encode('base_model.base_model'),
                 'state': 'base',
@@ -1404,7 +1405,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'related_field',
                 'label': 'Campo relacionado',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'readonly': True,
                 'state': 'base',
@@ -1417,7 +1418,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'is_computed',
                 'label': 'Es computado',
-                'ttype': 'boolean',
+                'ttype': TTYPE_NAME.BOOLEAN,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'readonly': True,
                 'default_value': False,
@@ -1431,7 +1432,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'selection_ids',
                 'label': 'Valores de selección',
-                'ttype': 'one2many',
+                'ttype': TTYPE_NAME.ONE2MANY,
                 'model_id': model_data_index.encode('base_model.base_model_field'),
                 'related_model_id': model_data_index.encode('base_model.base_model_field_selection'),
                 'related_field': 'field_id',
@@ -1445,7 +1446,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'id',
                 'label': 'ID',
-                'ttype': 'integer',
+                'ttype': TTYPE_NAME.INTEGER,
                 'model_id': model_data_index.encode('base_model.base_model_field_selection'),
                 'unique': True,
                 'readonly': True,
@@ -1459,7 +1460,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'name',
                 'label': 'Nombre',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_field_selection'),
                 'readonly': True,
                 'state': 'base',
@@ -1472,7 +1473,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_date',
                 'label': 'Fecha de creación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_model_field_selection'),
                 'readonly': True,
                 'state': 'base',
@@ -1485,7 +1486,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_date',
                 'label': 'Fecha de modificación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_model_field_selection'),
                 'readonly': True,
                 'state': 'base',
@@ -1498,7 +1499,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_uid',
                 'label': 'Usuario de creación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_field_selection'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -1513,7 +1514,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_uid',
                 'label': 'Usuario de modificación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_field_selection'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -1528,7 +1529,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'display_name',
                 'label': 'Nombre a mostrar',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_field_selection'),
                 'is_computed': True,
                 'readonly': True,
@@ -1542,7 +1543,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'label',
                 'label': 'Nombre visible',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_field_selection'),
                 'is_required': True,
                 'nullable': False,
@@ -1556,7 +1557,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'field_id',
                 'label': 'Campo',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_field_selection'),
                 'related_model_id': model_data_index.encode('base_model.base_model_field'),
                 'on_delete': 'cascade',
@@ -1572,7 +1573,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'id',
                 'label': 'ID',
-                'ttype': 'integer',
+                'ttype': TTYPE_NAME.INTEGER,
                 'model_id': model_data_index.encode('base_model.base_model_data'),
                 'unique': True,
                 'readonly': True,
@@ -1586,7 +1587,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'name',
                 'label': 'Nombre',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_data'),
                 'readonly': True,
                 'state': 'base',
@@ -1599,7 +1600,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_date',
                 'label': 'Fecha de creación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_model_data'),
                 'readonly': True,
                 'state': 'base',
@@ -1612,7 +1613,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_date',
                 'label': 'Fecha de modificación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_model_data'),
                 'readonly': True,
                 'state': 'base',
@@ -1625,7 +1626,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_uid',
                 'label': 'Usuario de creación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_data'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -1640,7 +1641,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_uid',
                 'label': 'Usuario de modificación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_data'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -1655,7 +1656,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'display_name',
                 'label': 'Nombre a mostrar',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_data'),
                 'is_computed': True,
                 'readonly': True,
@@ -1669,7 +1670,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'model_name',
                 'label': 'Nombre del modelo',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_data'),
                 'is_required': True,
                 'readonly': True,
@@ -1683,7 +1684,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'res_id',
                 'label': 'ID de recurso',
-                'ttype': 'integer',
+                'ttype': TTYPE_NAME.INTEGER,
                 'model_id': model_data_index.encode('base_model.base_model_data'),
                 'state': 'base',
             },
@@ -1695,7 +1696,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'id',
                 'label': 'ID',
-                'ttype': 'integer',
+                'ttype': TTYPE_NAME.INTEGER,
                 'model_id': model_data_index.encode('base_model.base_model_data_process'),
                 'unique': True,
                 'state': 'base',
@@ -1708,7 +1709,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'name',
                 'label': 'Nombre',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_data_process'),
                 'readonly': True,
                 'state': 'base',
@@ -1721,7 +1722,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_date',
                 'label': 'Fecha de creación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_model_data_process'),
                 'readonly': True,
                 'state': 'base',
@@ -1734,7 +1735,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_date',
                 'label': 'Fecha de modificación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_model_data_process'),
                 'readonly': True,
                 'state': 'base',
@@ -1747,7 +1748,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_uid',
                 'label': 'Usuario de creación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_data_process'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -1762,7 +1763,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_uid',
                 'label': 'Usuario de modificación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_data_process'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -1777,7 +1778,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'display_name',
                 'label': 'Nombre a mostrar',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_data_process'),
                 'is_computed': True,
                 'readonly': True,
@@ -1791,7 +1792,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'step_ids',
                 'label': 'Pasos de proceso',
-                'ttype': 'one2many',
+                'ttype': TTYPE_NAME.ONE2MANY,
                 'model_id': model_data_index.encode('base_model.base_model_data_process'),
                 'related_model_id': model_data_index.encode('base_model.base_model_data_process_step'),
                 'related_field': 'process_id',
@@ -1805,7 +1806,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'id',
                 'label': 'ID',
-                'ttype': 'integer',
+                'ttype': TTYPE_NAME.INTEGER,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step'),
                 'unique': True,
                 'readonly': True,
@@ -1819,7 +1820,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'name',
                 'label': 'Nombre',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step'),
                 'readonly': True,
                 'state': 'base',
@@ -1832,7 +1833,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_date',
                 'label': 'Fecha de creación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step'),
                 'readonly': True,
                 'state': 'base',
@@ -1845,7 +1846,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_date',
                 'label': 'Fecha de modificación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step'),
                 'readonly': True,
                 'state': 'base',
@@ -1858,7 +1859,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_uid',
                 'label': 'Usuario de creación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -1873,7 +1874,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_uid',
                 'label': 'Usuario de modificación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -1888,7 +1889,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'display_name',
                 'label': 'Nombre a mostrar',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step'),
                 'is_computed': True,
                 'readonly': True,
@@ -1902,7 +1903,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'sequence',
                 'label': 'Secuencia',
-                'ttype': 'integer',
+                'ttype': TTYPE_NAME.INTEGER,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step'),
                 'is_required': True,
                 'nullable': False,
@@ -1917,7 +1918,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'process_id',
                 'label': 'Proceso',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step'),
                 'related_model_id': model_data_index.encode('base_model.base_model_data_process'),
                 'on_delete': 'cascade',
@@ -1934,7 +1935,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'model_name',
                 'label': 'Modelo',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step'),
                 'is_required': True,
                 'nullable': False,
@@ -1949,7 +1950,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'record_data_ids',
                 'label': 'Registros',
-                'ttype': 'one2many',
+                'ttype': TTYPE_NAME.ONE2MANY,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step'),
                 'related_model_id': model_data_index.encode('base_model.base_model_data_process_step_record'),
                 'related_field': 'step_id',
@@ -1963,7 +1964,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'id',
                 'label': 'ID',
-                'ttype': 'integer',
+                'ttype': TTYPE_NAME.INTEGER,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step_record'),
                 'unique': True,
                 'readonly': True,
@@ -1977,7 +1978,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'name',
                 'label': 'Nombre',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step_record'),
                 'readonly': True,
                 'state': 'base',
@@ -1990,7 +1991,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_date',
                 'label': 'Fecha de creación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step_record'),
                 'readonly': True,
                 'state': 'base',
@@ -2003,7 +2004,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_date',
                 'label': 'Fecha de modificación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step_record'),
                 'readonly': True,
                 'state': 'base',
@@ -2016,7 +2017,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_uid',
                 'label': 'Usuario de creación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step_record'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -2031,7 +2032,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_uid',
                 'label': 'Usuario de modificación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step_record'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -2046,7 +2047,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'display_name',
                 'label': 'Nombre a mostrar',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step_record'),
                 'is_computed': True,
                 'readonly': True,
@@ -2060,7 +2061,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'step_id',
                 'label': 'Paso',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step_record'),
                 'is_required': True,
                 'nullable': False,
@@ -2077,7 +2078,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'sequence',
                 'label': 'Secuencia',
-                'ttype': 'integer',
+                'ttype': TTYPE_NAME.INTEGER,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step_record'),
                 'is_required': True,
                 'nullable': False,
@@ -2092,7 +2093,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'data',
                 'label': 'Datos',
-                'ttype': 'json',
+                'ttype': TTYPE_NAME.JSON,
                 'model_id': model_data_index.encode('base_model.base_model_data_process_step_record'),
                 'is_required': True,
                 'nullable': False,
@@ -2107,7 +2108,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'id',
                 'label': 'ID',
-                'ttype': 'integer',
+                'ttype': TTYPE_NAME.INTEGER,
                 'model_id': model_data_index.encode('base_model.base_user_session'),
                 'unique': True,
                 'readonly': True,
@@ -2121,7 +2122,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'name',
                 'label': 'Nombre',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_user_session'),
                 'readonly': True,
                 'state': 'base',
@@ -2134,7 +2135,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_date',
                 'label': 'Fecha de creación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_user_session'),
                 'readonly': True,
                 'state': 'base',
@@ -2147,7 +2148,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_date',
                 'label': 'Fecha de modificación',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_user_session'),
                 'readonly': True,
                 'state': 'base',
@@ -2160,7 +2161,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'create_uid',
                 'label': 'Usuario de creación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_user_session'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -2175,7 +2176,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'update_uid',
                 'label': 'Usuario de modificación',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_user_session'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'restrict',
@@ -2190,7 +2191,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'display_name',
                 'label': 'Nombre a mostrar',
-                'ttype': 'char',
+                'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_data_index.encode('base_model.base_user_session'),
                 'is_computed': True,
                 'readonly': True,
@@ -2204,7 +2205,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'user_id',
                 'label': 'Usuario',
-                'ttype': 'many2one',
+                'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_data_index.encode('base_model.base_user_session'),
                 'related_model_id': model_data_index.encode('base_model.base_users'),
                 'on_delete': 'cascade',
@@ -2219,7 +2220,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'validity_time',
                 'label': 'Tiempo de validez',
-                'ttype': 'duration',
+                'ttype': TTYPE_NAME.DURATION,
                 'model_id': model_data_index.encode('base_model.base_user_session'),
                 'readonly': True,
                 'state': 'base',
@@ -2232,7 +2233,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'data': {
                 'name': 'expires_at',
                 'label': 'Expira el',
-                'ttype': 'datetime',
+                'ttype': TTYPE_NAME.DATETIME,
                 'model_id': model_data_index.encode('base_model.base_user_session'),
                 'is_computed': True,
                 'readonly': True,
@@ -2297,7 +2298,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 4,
             'sequence': 30,
             'data': {
-                'name': 'integer',
+                'name': TTYPE_NAME.INTEGER,
                 'label': 'Entero',
                 'field_id': model_data_index.encode('base_model_field.base_model_field__ttype')
             }
@@ -2307,7 +2308,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 4,
             'sequence': 35,
             'data': {
-                'name': 'char',
+                'name': TTYPE_NAME.CHAR,
                 'label': 'Caracter',
                 'field_id': model_data_index.encode('base_model_field.base_model_field__ttype')
             }
@@ -2327,7 +2328,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 4,
             'sequence': 45,
             'data': {
-                'name': 'boolean',
+                'name': TTYPE_NAME.BOOLEAN,
                 'label': 'Booleano',
                 'field_id': model_data_index.encode('base_model_field.base_model_field__ttype')
             }
@@ -2337,7 +2338,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 4,
             'sequence': 50,
             'data': {
-                'name': 'date',
+                'name': TTYPE_NAME.DATE,
                 'label': 'Fecha',
                 'field_id': model_data_index.encode('base_model_field.base_model_field__ttype')
             }
@@ -2347,7 +2348,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 4,
             'sequence': 55,
             'data': {
-                'name': 'datetime',
+                'name': TTYPE_NAME.DATETIME,
                 'label': 'Fecha y hora',
                 'field_id': model_data_index.encode('base_model_field.base_model_field__ttype')
             }
@@ -2357,7 +2358,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 4,
             'sequence': 60,
             'data': {
-                'name': 'time',
+                'name': TTYPE_NAME.TIME,
                 'label': 'Hora',
                 'field_id': model_data_index.encode('base_model_field.base_model_field__ttype')
             }
@@ -2367,7 +2368,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 4,
             'sequence': 65,
             'data': {
-                'name': 'duration',
+                'name': TTYPE_NAME.DURATION,
                 'label': 'Duración',
                 'field_id': model_data_index.encode('base_model_field.base_model_field__ttype')
             }
@@ -2377,7 +2378,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 4,
             'sequence': 70,
             'data': {
-                'name': 'file',
+                'name': TTYPE_NAME.FILE,
                 'label': 'Binario',
                 'field_id': model_data_index.encode('base_model_field.base_model_field__ttype')
             }
@@ -2387,7 +2388,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 4,
             'sequence': 75,
             'data': {
-                'name': 'text',
+                'name': TTYPE_NAME.TEXT,
                 'label': 'Texto largo',
                 'field_id': model_data_index.encode('base_model_field.base_model_field__ttype')
             }
@@ -2397,7 +2398,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 4,
             'sequence': 80,
             'data': {
-                'name': 'selection',
+                'name': TTYPE_NAME.SELECTION,
                 'label': 'Selección',
                 'field_id': model_data_index.encode('base_model_field.base_model_field__ttype')
             }
@@ -2407,7 +2408,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 4,
             'sequence': 85,
             'data': {
-                'name': 'many2one',
+                'name': TTYPE_NAME.MANY2ONE,
                 'label': 'Muchos a uno',
                 'field_id': model_data_index.encode('base_model_field.base_model_field__ttype')
             }
@@ -2417,7 +2418,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 4,
             'sequence': 90,
             'data': {
-                'name': 'one2many',
+                'name': TTYPE_NAME.ONE2MANY,
                 'label': 'Uno a muchos',
                 'field_id': model_data_index.encode('base_model_field.base_model_field__ttype')
             }
@@ -2427,7 +2428,7 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 4,
             'sequence': 95,
             'data': {
-                'name': 'many2many',
+                'name': TTYPE_NAME.MANY2MANY,
                 'label': 'Muchos a muchos',
                 'field_id': model_data_index.encode('base_model_field.base_model_field__ttype')
             }
@@ -2437,8 +2438,8 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 4,
             'sequence': 100,
             'data': {
-                'name': 'json',
-                'label': 'JSON',
+                'name': TTYPE_NAME.JSON,
+                'label': TTYPE_NAME.JSON,
                 'field_id': model_data_index.encode('base_model_field.base_model_field__ttype')
             }
         },

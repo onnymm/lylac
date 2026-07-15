@@ -303,7 +303,7 @@ class AutomationsEngine(Generic[_M]):
         # Inicialización de función de reemplazo para arrojar error cuando se intente ejecutar manualmente
         def void_function(ctx: AutomationContext[_M]) -> None:
             # Se lanza error de ejecución
-            raise AutomationExecutionError(ERROR_LABEL.MANUAL_AUTOMATION)
+            raise AutomationExecutionError(ERROR_LABEL.EXECUTION.AUTOMATION)
 
         return void_function
 

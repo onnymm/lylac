@@ -1,5 +1,6 @@
 from typing import Generic
 from typing import TYPE_CHECKING
+from .._constants import MODEL_NAME
 from .._data import DEFAULT_COMPUTATION_CALLBACKS
 from .._resources import DatabaseMetadata
 from .._typing.generics import ModelName
@@ -22,15 +23,15 @@ class ComputeEngine(Generic[_M]):
 
         # Inicialización de centro de funciones de campos computados
         self.hub = {
-            'base.users': {},
-            'base.user.session': {},
-            'base.model': {},
-            'base.model.data': {},
-            'base.model.data.process': {},
-            'base.model.data.process.step': {},
-            'base.model.data.process.step.record': {},
-            'base.model.field': {},
-            'base.model.field.selection': {},
+            MODEL_NAME.BASE_USERS: {},
+            MODEL_NAME.BASE_USER_SESSION: {},
+            MODEL_NAME.BASE_MODEL: {},
+            MODEL_NAME.BASE_MODEL_FIELD: {},
+            MODEL_NAME.BASE_MODEL_FIELD_SELECTION: {},
+            MODEL_NAME.BASE_MODEL_DATA: {},
+            MODEL_NAME.BASE_MODEL_DATA_PROCESS: {},
+            MODEL_NAME.BASE_MODEL_DATA_PROCESS_STEP: {},
+            MODEL_NAME.BASE_MODEL_DATA_PROCESS_STEP_RECORD: {},
         }
 
         # Iteración por cada modelo y su diccionario de funciones predeterminadas
@@ -65,7 +66,7 @@ class ComputeEngine(Generic[_M]):
         # Búsqueda del campo
         found_results = crud.search_count(
             execution_ctx,
-            'base.model.field',
+            MODEL_NAME.BASE_MODEL_FIELD,
             [
                 '&',
                     ('name', '=', name),
@@ -76,7 +77,7 @@ class ComputeEngine(Generic[_M]):
         if not found_results:
             crud.create(
                 execution_ctx,
-                'base.model.field',
+                MODEL_NAME.BASE_MODEL_FIELD,
                 {
                     'name': name,
                     'label': label,

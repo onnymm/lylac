@@ -3,10 +3,8 @@ from ._automation import AutomationContext
 from ._compute import ComputeContext
 from ._execution import ExecutionContext
 from ._expansion import ExpansionContext
-from ._frame import (
-    FrameContext,
-    RelativeFrameContext,
-)
+from ._frame import FrameContext
+from ._frame import RelativeFrameContext
 from ._policies import PoliciesContext
 from ._relation_operations import RelationOperationsContext
 from ._server_tasks import ServerTaskContext

@@ -746,7 +746,7 @@ class CRUD(Generic[_M]):
         # Lectura del registro del modelo
         [ model_record ] = self._dql.search_read(
             execution_ctx,
-            'base.model',
+            MODEL_NAME.BASE_MODEL,
             [('model', '=', model_name)],
             ['transient'],
         )

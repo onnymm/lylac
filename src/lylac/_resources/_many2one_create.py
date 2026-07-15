@@ -1,5 +1,6 @@
 from typing import Generic
 from typing import TYPE_CHECKING
+from .._constants import TTYPE_NAME
 from .._typing.generics import ModelName
 from .._typing.structures import RecordData
 from .._typing.type_parameters import _M
@@ -28,7 +29,7 @@ class Many2OneCreate(Generic[_M]):
             return data
 
         # Obtención de los nombres de los campos
-        field_properties = execution_ctx.database_metadata.get_fields_properties_by_ttypes(model_name, ['many2one'])
+        field_properties = execution_ctx.database_metadata.get_fields_properties_by_ttypes(model_name, [TTYPE_NAME.MANY2ONE])
 
         # Iteración por cada registro a crear
         for record in data:

@@ -61,7 +61,7 @@ class WhereContext(Generic[_M]):
         # Si la longitud del criterio de búsqueda es un número par...
         elif (len(search_criteria) % 2) == 0:
             # Se lanza error de criterio de búsqueda mal construido
-            raise AssertionError(ERROR_LABEL.MALFORMED_SEARCH_CRITERIA)
+            raise AssertionError(ERROR_LABEL.CONTEXT.MALFORMED_SEARCH_CRITERIA)
 
         # Se asume que la cantidad de elementos es válida
         else:
@@ -123,7 +123,7 @@ class WhereContext(Generic[_M]):
                 # criterio de búsqueda porque no hay más uniones por procesar y tampoco se
                 # colapsó a un solo elemento
                 if not union_found:
-                    raise AssertionError(ERROR_LABEL.MALFORMED_SEARCH_CRITERIA)
+                    raise AssertionError(ERROR_LABEL.CONTEXT.MALFORMED_SEARCH_CRITERIA)
 
             # Obtención de expresión a usar em query
             [ expression ] = search_criteria

@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 from .._constants import FACTORY_FIELDS
 from .._constants import PRESET
+from .._constants import TTYPE_NAME
 from .._resources import ActionProperties
 from .._typing.generics import EngineHub
 from .._typing.generics import ModelName
@@ -155,7 +156,7 @@ def _base_model__restore(ctx: ActionContext):
             '&',
                 ('model_id', '=', ctx.data['id']),
                 ('name', 'not in', FACTORY_FIELDS),
-            ('ttype', 'not in', ['one2many', 'many2many']),
+            ('ttype', 'not in', [TTYPE_NAME.ONE2MANY, TTYPE_NAME.MANY2MANY]),
     ]
 
     # Obtención de registros de campos a crear en los modelos de SQLAlchemy

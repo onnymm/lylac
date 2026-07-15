@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 from .._constants import DATA_RESOURCE
+from .._constants import TTYPE_NAME
 
 if TYPE_CHECKING:
     from .._main import Lylac
@@ -247,14 +248,14 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                         {
                             'name': 'domain',
                             'label': 'Dominio',
-                            'ttype': 'text',
+                            'ttype': TTYPE_NAME.TEXT,
                             'is_required': True,
                             'nullable': False,
                         },
                         {
                             'name': 'model_id',
                             'label': 'Modelo',
-                            'ttype': 'many2one',
+                            'ttype': TTYPE_NAME.MANY2ONE,
                             'related_model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL),
                             'on_delete': 'cascade',
                             'is_required': True,
@@ -263,31 +264,31 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                         {
                             'name': 'perm_create',
                             'label': 'Permiso de creación',
-                            'ttype': 'boolean',
+                            'ttype': TTYPE_NAME.BOOLEAN,
                             'default_value': False,
                         },
                         {
                             'name': 'perm_read',
                             'label': 'Permiso de lectura',
-                            'ttype': 'boolean',
+                            'ttype': TTYPE_NAME.BOOLEAN,
                             'default_value': False,
                         },
                         {
                             'name': 'perm_update',
                             'label': 'Permiso de modificación',
-                            'ttype': 'boolean',
+                            'ttype': TTYPE_NAME.BOOLEAN,
                             'default_value': False,
                         },
                         {
                             'name': 'perm_delete',
                             'label': 'Permiso de eliminación',
-                            'ttype': 'boolean',
+                            'ttype': TTYPE_NAME.BOOLEAN,
                             'default_value': False,
                         },
                         {
                             'name': 'global_',
                             'label': 'Global',
-                            'ttype': 'boolean',
+                            'ttype': TTYPE_NAME.BOOLEAN,
                             'default_value': False,
                             'nullable': False,
                         },
@@ -306,21 +307,21 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                         {
                             'name': 'current_password',
                             'label': 'Contraseña actual',
-                            'ttype': 'char',
+                            'ttype': TTYPE_NAME.CHAR,
                             'is_required': True,
                             'nullable': False,
                         },
                         {
                             'name': 'new_password',
                             'label': 'Nueva contraseña',
-                            'ttype': 'char',
+                            'ttype': TTYPE_NAME.CHAR,
                             'is_required': True,
                             'nullable': False,
                         },
                         {
                             'name': 'confirm_password',
                             'label': 'Confirma nueva contraseña',
-                            'ttype': 'char',
+                            'ttype': TTYPE_NAME.CHAR,
                             'is_required': True,
                             'nullable': False,
                         },
@@ -344,7 +345,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                         {
                             'name': 'model_id',
                             'label': 'Modelo',
-                            'ttype': 'many2one',
+                            'ttype': TTYPE_NAME.MANY2ONE,
                             'related_model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL),
                             'on_delete': 'cascade',
                             'nullable': False,
@@ -354,31 +355,31 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                         {
                             'name': 'perm_create',
                             'label': 'Permiso de creación',
-                            'ttype': 'boolean',
+                            'ttype': TTYPE_NAME.BOOLEAN,
                             'default_value': False,
                         },
                         {
                             'name': 'perm_read',
                             'label': 'Permiso de lectura',
-                            'ttype': 'boolean',
+                            'ttype': TTYPE_NAME.BOOLEAN,
                             'default_value': False,
                         },
                         {
                             'name': 'perm_update',
                             'label': 'Permiso de modificación',
-                            'ttype': 'boolean',
+                            'ttype': TTYPE_NAME.BOOLEAN,
                             'default_value': False,
                         },
                         {
                             'name': 'perm_delete',
                             'label': 'Permiso de eliminación',
-                            'ttype': 'boolean',
+                            'ttype': TTYPE_NAME.BOOLEAN,
                             'default_value': False,
                         },
                         {
                             'name': 'group_id',
                             'label': 'Grupo',
-                            'ttype': 'many2one',
+                            'ttype': TTYPE_NAME.MANY2ONE,
                             'related_model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_GROUPS),
                             'on_delete': 'cascade',
                             'is_required': True,
@@ -397,7 +398,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                     'create': {
                         'name': 'group_ids',
                         'label': 'Grupos',
-                        'ttype': 'many2many',
+                        'ttype': TTYPE_NAME.MANY2MANY,
                         'related_model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_GROUPS),
                     },
                 },
@@ -413,7 +414,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                 'create': {
                     'name': 'access_ids',
                     'label': 'Accesos',
-                    'ttype': 'one2many',
+                    'ttype': TTYPE_NAME.ONE2MANY,
                     'related_model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_ACCESS),
                     'related_field': 'group_id',
                 },
@@ -428,7 +429,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
             {
                 'name': 'role_ids',
                 'label': 'Roles',
-                'ttype': 'many2many',
+                'ttype': TTYPE_NAME.MANY2MANY,
                 'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USERS),
                 'related_model_id': ctx.get_resource_id('base_model.base_users_role'),
             },
@@ -436,7 +437,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
             {
                 'name': 'rule_ids',
                 'label': 'Reglas de registro',
-                'ttype': 'many2many',
+                'ttype': TTYPE_NAME.MANY2MANY,
                 'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_GROUPS),
                 'related_model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_RULES)
             },

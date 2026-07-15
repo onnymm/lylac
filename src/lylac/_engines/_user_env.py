@@ -46,6 +46,6 @@ class UserEnvEngine(Generic[_M]):
         # Inicialización de función de reemplazo para arrojar error cuando se intente ejecutar manualmente
         def void_function(callback: ExecutionContext[_M]) -> None:
             # Se lanza error de ejecución
-            raise VariableResolverExecutionError(ERROR_LABEL.MANUAL_ACTION)
+            raise VariableResolverExecutionError(ERROR_LABEL.EXECUTION.ENV)
 
         return void_function

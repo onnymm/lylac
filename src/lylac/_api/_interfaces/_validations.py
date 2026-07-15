@@ -8,15 +8,15 @@ from ..._typing.literals import DMLTransaction
 from ..._typing.type_parameters import _M
 
 class _Interface_Validations(Generic[_M]):
-    _core: ValidationEngine[_M]
+    _engine: ValidationEngine[_M]
 
     def __init__(
         self,
-        validations: ValidationEngine[_M],
+        engine: ValidationEngine[_M],
     ) -> None:
 
         # Asignación de motor de validaciones
-        self._core = validations
+        self._engine = engine
 
     def register(
         self,
@@ -25,7 +25,8 @@ class _Interface_Validations(Generic[_M]):
         message: str,
     ) -> Callable[[ValidationCallback[_M]], ValidationCallback[_M]]:
 
-        decorator = self._core.register(
+        # Obtención del decorador para registrar la función
+        decorator = self._engine.register(
             on,
             model_name,
             message,

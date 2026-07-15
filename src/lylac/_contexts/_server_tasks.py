@@ -16,6 +16,7 @@ class ServerTaskContext(Generic[_M], BaseContext[_M]):
         crud: CRUD[_M],
     ) -> None:
 
+        # Asignación de valores
         self._execution_ctx = execution_ctx
         self._crud = crud
         self._model_data_index = ModelDataIndex(execution_ctx.conn)

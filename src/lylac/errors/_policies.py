@@ -1,2 +1,6 @@
 class PolicyExecutionError(Exception):
     ...
+
+class PolicyVerificationsFailedError(Exception):
+    ...
+

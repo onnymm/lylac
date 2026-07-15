@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from ..._engines import PoliciesEngine
 
 class _Interface_Policies(Generic[_M]):
-    _core: PoliciesEngine[_M]
+    _engine: PoliciesEngine[_M]
 
     def __init__(
         self,
@@ -19,7 +19,7 @@ class _Interface_Policies(Generic[_M]):
     ) -> None:
 
         # Asignación de motor de validaciones
-        self._core = engine
+        self._engine = engine
 
     def register(
         self,
@@ -28,7 +28,8 @@ class _Interface_Policies(Generic[_M]):
         message: str,
     ) -> Callable[[PolicyCallback[_M]], PolicyCallback[_M]]:
 
-        decorator = self._core.register(
+        # Obtención del decorador para registrar la función
+        decorator = self._engine.register(
             on,
             model_name,
             message,

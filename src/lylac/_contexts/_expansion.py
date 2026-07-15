@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+from .._constants import TTYPE_NAME
 from .._resources import FieldExpansionSpecs
 from .._typing.generics import ModelName
 from .._typing.generics import _Record
@@ -22,6 +23,7 @@ class ExpansionContext:
         self._crud = crud
         self._execution_ctx = execution_ctx
 
+        # Inicialización de lista de especificaciones de expansión de campos de relación
         self.related_fields: list[FieldExpansionSpecs] = []
 
     def intercept(
@@ -90,7 +92,7 @@ class ExpansionContext:
         # Iteración por cada campo a expandir
         for field_to_expand in self.related_fields:
             # Obtención de propiedades de los campos del modelo
-            fields_properties = self._execution_ctx.database_metadata.get_fields_properties_by_ttypes(model_name, ['one2many', 'many2many'])
+            fields_properties = self._execution_ctx.database_metadata.get_fields_properties_by_ttypes(model_name, [TTYPE_NAME.ONE2MANY, TTYPE_NAME.MANY2MANY])
             # Se convierten en mapa
             fields_properties = {
                 fields_properties_i.name: fields_properties_i
