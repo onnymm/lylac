@@ -207,7 +207,7 @@ class OutputParser:
             # Codificación a base64
             value = (
                 base64
-                .encode(value)
+                .b64encode(value)
                 .decode('ascii')
             )
 

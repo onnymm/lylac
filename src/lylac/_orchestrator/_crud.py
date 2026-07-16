@@ -446,7 +446,7 @@ class CRUD(Generic[_M]):
 
         # Procesamiento de los datos
         processed_data = self._add_update_uid(data, execution_ctx)
-        processed_data = self._prepare_file_values(model_name, [processed_data], execution_ctx)
+        [ processed_data ] = self._prepare_file_values(model_name, [processed_data], execution_ctx)
 
         # Creación de registros Many2One en caso existir
         [ processed_data ] = self._m2o_create.resolve(
