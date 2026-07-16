@@ -1,3 +1,4 @@
+import base64
 from typing import Generic
 from typing import Literal
 from typing import Optional
@@ -197,6 +198,7 @@ class CRUD(Generic[_M]):
 
         # Procesamiento de los datos
         processed_data = self._add_create_and_update_uid(data, execution_ctx)
+        processed_data = self._prepare_file_values(model_name, processed_data, execution_ctx)
 
         # Creación de registros Many2One en caso existir
         processed_data = self._m2o_create.resolve(
@@ -444,6 +446,7 @@ class CRUD(Generic[_M]):
 
         # Procesamiento de los datos
         processed_data = self._add_update_uid(data, execution_ctx)
+        processed_data = self._prepare_file_values(model_name, [processed_data], execution_ctx)
 
         # Creación de registros Many2One en caso existir
         [ processed_data ] = self._m2o_create.resolve(
@@ -718,6 +721,37 @@ class CRUD(Generic[_M]):
             # Se coloca la ID de usuario del contexto de ejecución
             record[FIELD_NAME.CREATE_UID] = execution_ctx.uid
             record[FIELD_NAME.UPDATE_UID] = execution_ctx.uid
+
+        return data
+
+    def _prepare_file_values(
+        self,
+        model_name: ModelName[_M],
+        data: list[dict],
+        execution_ctx: ExecutionContext[_M],
+    ) -> list[dict]:
+
+        # Obtención de las propiedades de los campos de tipo Archivo
+        file_field_properties = execution_ctx.database_metadata.get_fields_properties_by_ttypes(model_name, ['file'])
+        # Obtención de los nombres de los campos de tipo Archivo
+        file_fields = [field_properties.name for field_properties in file_field_properties]
+
+        # Iteración por cada registro en los datos
+        for record in data:
+            # Iteración por cada nombre de campo
+            for field_name in record:
+                # Si el nombre del campo es de tipo Archivo
+                if field_name in file_fields:
+                    # Obtención del valor del campo
+                    field_value: str | None = record[field_name]
+                    # Si el tipo de dato es None...
+                    if field_value == None:
+                        # Se continúa con la iteración
+                        continue
+                    # Conversión a bytes desde base64
+                    decoded_value = base64.b64decode(field_value)
+                    # Reasignación
+                    record[field_name] = decoded_value
 
         return data
 

@@ -1,3 +1,4 @@
+import base64
 from datetime import timedelta
 from typing import Any
 from typing import Callable
@@ -36,7 +37,7 @@ class OutputParser:
             TTYPE_NAME.DATETIME: self._functions.get_datetime_value,
             TTYPE_NAME.DURATION: self._functions.get_duration_value,
             TTYPE_NAME.TEXT: self._functions.get_generic_value,
-            TTYPE_NAME.FILE: self._functions.get_generic_value,
+            TTYPE_NAME.FILE: self._functions.get_file_value,
             TTYPE_NAME.JSON: self._functions.get_generic_value,
             TTYPE_NAME.MANY2ONE: self._functions.get_m2o_value,
             TTYPE_NAME.ONE2MANY: self._functions.get_array_value,
@@ -188,5 +189,26 @@ class OutputParser:
             name_value: str = getattr(row, name_label)
             # Construcción del valor completo
             value = [id_value, name_value]
+
+            return value
+
+        def get_file_value(
+            self,
+            label: str,
+            row: Row,
+        ) -> bytes | None:
+
+            # Obtención del valor de la fila de registro
+            value = getattr(row, label)
+
+            if value == None:
+                return value
+
+            # Codificación a base64
+            value = (
+                base64
+                .encode(value)
+                .decode('ascii')
+            )
 
             return value
