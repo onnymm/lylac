@@ -16,7 +16,7 @@ from ..security import verify_password
 from .._core import Metadata
 
 def _change_password(
-    execution_context: ExecutionContext[_M],
+    execution_ctx: ExecutionContext[_M],
     user_id: int,
     password: str,
 ) -> None:
@@ -32,7 +32,10 @@ def _change_password(
     )
 
     # Ejecución del query
-    execution_context.conn.execute(stmt)
+    execution_ctx.conn.execute(stmt)
+
+    # Notificación de tabla creada
+    execution_ctx.notify('password.changed', 'current_user')
 
 if TYPE_CHECKING:
     from .._contexts import AutomationContext

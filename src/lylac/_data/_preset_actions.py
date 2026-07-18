@@ -29,6 +29,9 @@ def _base_model__create_table_on_database(ctx: ActionContext):
     # Creación de la clase del modelo
     ctx._ddl.create_model_table(ctx._execution_ctx.conn, table_name, model_name, has_sequence, is_archivable, has_label)
 
+    # Notificación de tabla creada
+    ctx._execution_ctx.notify('model.created', 'current_user', {'model': model_name})
+
 def _base_model__create_model(ctx: ActionContext):
 
     # Obtención del nombre de modelo
@@ -63,6 +66,9 @@ def _base_model__drop_table(ctx: ActionContext):
     # Se elimina el modelo de los metadatos de Base
     ctx._ddl.delete_model_model(model_name)
 
+    # Notificación de tabla creada
+    ctx._execution_ctx.notify('model.deleted', 'current_user', {'model': model_name})
+
 def _base_model__delete_model(ctx: ActionContext):
 
     # Obttención del nombre del modelo
@@ -95,6 +101,9 @@ def _base_model_field__create_column(ctx: ActionContext):
         on_delete,
         ctx._execution_ctx.conn,
     )
+
+    # Notificación de tabla creada
+    ctx._execution_ctx.notify('field.created', 'current_user', {'model': field_name})
 
 def _base_model_field__register_on_model(ctx: ActionContext):
 
@@ -140,6 +149,9 @@ def _drop_column(ctx: ActionContext):
         table_name,
         field_name,
     )
+
+    # Notificación de tabla creada
+    ctx._execution_ctx.notify('field.deleted', 'current_user', {'model': field_name})
 
 def _base_model__restore(ctx: ActionContext):
 

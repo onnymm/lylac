@@ -141,7 +141,11 @@ class ValidationEngine(Generic[_M]):
             # Iteración por cada error
             for error in errors:
                 # Se imprime éste
-                print(error)
+                execution_ctx.notify(
+                    'validation.failed',
+                    'current_user',
+                    {'detail': error.message_to_show},
+                )
             # Se lanza error para detener la ejecución
             raise ValidationsFailedError(ERROR_LABEL.INTEGRITY.VALIDATIONS_FAILED)
 

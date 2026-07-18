@@ -32,7 +32,9 @@ from ._operations import DDL
 from ._orchestrator import CRUD
 from ._resources import DatabaseMetadata
 from ._resources import ModelsBearer
+from ._services import DefaultNotifier
 from ._services import EngineService
+from ._services import Notifier
 from ._typing.callables import ExecutableTransactionCallback
 from ._typing.callables import ComputeFieldFn as _ComputeFieldFn
 from ._typing.generics import ItemOrList
@@ -71,10 +73,12 @@ class Lylac(Generic[_M]):
         self,
         build_models_fn: ExecutableTransactionCallback[_M] = lambda _: None,
         populate_models_fn: ExecutableTransactionCallback[_M] = lambda _: None,
+        notifier_init: Callable[[_ExecutionContext[_M]], Notifier] = lambda ctx: DefaultNotifier(ctx.uid),
     ) -> None:
 
         # Asignación de valores
         self._populate_models_fn = populate_models_fn
+        self._notifier_init = notifier_init
 
         # Inicialización de instancia de servicio de conexión a la base de datos
         self._engine = EngineService()
@@ -139,10 +143,8 @@ class Lylac(Generic[_M]):
             # Ejecución de la función
             closure_result = callback(execution_ctx)
 
-            # Se hace commit en la base de datos
-            execution_ctx.conn.commit()
-            # Se ejecutan las funciones suscritas tras el commit
-            execution_ctx.on_commit()
+            # Se realiza commit
+            execution_ctx.commit()
 
             return closure_result
 
@@ -205,8 +207,8 @@ class Lylac(Generic[_M]):
         def transaction(execution_ctx: _ExecutionContext[_M]) -> list[int]:
             # Creación de registros y obtención de las IDs creadas
             closure_created_ids = self._crud.create(execution_ctx, model_name, data)
-            # Se guardan los cambios
-            execution_ctx.conn.commit()
+            # Se realiza commit
+            execution_ctx.commit()
 
             return closure_created_ids
 
@@ -516,7 +518,7 @@ class Lylac(Generic[_M]):
             execution_callback(transaction_ctx)
 
             # Se realiza commit
-            execution_ctx.conn.commit()
+            execution_ctx.commit()
 
         # Ejecución de la función de transacción
         self._engine.execute_complex(transaction)
@@ -569,6 +571,7 @@ class Lylac(Generic[_M]):
             actions= self._actions,
             server_tasks= self._server_tasks,
             user_env_engine= self._user_env,
+            notifier_init= self._notifier_init,
         )
 
         return execution_ctx

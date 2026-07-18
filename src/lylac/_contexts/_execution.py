@@ -9,6 +9,9 @@ from .._resources import ModelsBearer
 from .._resources import UserEnv
 from .._typing.type_parameters import _M
 
+from .._services import Notifier
+from .._services import NotificationTarget
+
 if TYPE_CHECKING:
     from .._engines import ActionEngine
     from .._engines import AutomationsEngine
@@ -35,6 +38,7 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
         actions: 'ActionEngine[_M]',
         server_tasks: 'ServerTasksEngine[_M]',
         user_env_engine: UserEnv[_M],
+        notifier_init: Callable[[ExecutionContext[_M]], Notifier],
     ) -> None:
 
         # Inicialización de entorno de usuario
@@ -57,6 +61,9 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
 
         # Inicialización de lista de funciones a ejecutar después del commit
         self._to_execute_after_commit = []
+
+        # Inicialización de notificador
+        self._notifier = notifier_init(self)
 
     @property
     def uid(
@@ -97,6 +104,17 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
             # Se usa ésta como valor de ID de usuario
             return uid
 
+    def notify(
+        self,
+        name: str,
+        target: int | NotificationTarget,
+        payload: dict[str] = {},
+        after_commit: bool = True,
+    ) -> None:
+
+        # Emisión de notificación
+        self._notifier.notify(name, target, payload, after_commit)
+
     def run_after_commit(
         self,
         fn: Callable[[ExecutionContext[_M]], None],
@@ -105,9 +123,12 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
         # Se añade la función para ejecutarse tras el commit
         self._to_execute_after_commit.append(fn)
 
-    def on_commit(
+    def commit(
         self,
     ) -> None:
+
+        # Se realiza commit en la base de datos
+        self.conn.commit()
 
         # Iteración por cada función a ejecutar
         for fn in self._to_execute_after_commit:
@@ -122,3 +143,5 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
 
         # Se eliminan las funciones suscritas
         self._to_execute_after_commit.clear()
+        # Envío de notificaciones registradas
+        self._notifier.flush()

@@ -218,7 +218,11 @@ class PoliciesEngine(Generic[_M, _R]):
             # Iteración por cada error
             for error in errors:
                 # Se imprime éste
-                print(error)
+                execution_ctx.notify(
+                    'verification.failed',
+                    'current_user',
+                    {'detail': error.message_to_show},
+                )
             # Se lanza error para detener la ejecución
             raise PolicyVerificationsFailedError(ERROR_LABEL.INTEGRITY.POLICY_VERIFICATIONS_FAILED)
 
