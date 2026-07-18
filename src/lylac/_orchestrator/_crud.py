@@ -731,6 +731,11 @@ class CRUD(Generic[_M]):
         execution_ctx: ExecutionContext[_M],
     ) -> list[dict]:
 
+        # Si el bypass de revisión de permisos está activado...
+        if self.PERMISSIONS_BYPASS:
+            # Se termina la ejecución
+            return data
+
         # Obtención de las propiedades de los campos de tipo Archivo
         file_field_properties = execution_ctx.database_metadata.get_fields_properties_by_ttypes(model_name, ['file'])
         # Obtención de los nombres de los campos de tipo Archivo
