@@ -7,10 +7,9 @@ from .._resources import DatabaseMetadata
 from .._resources import ModelDataIndex
 from .._resources import ModelsBearer
 from .._resources import UserEnv
-from .._typing.type_parameters import _M
-
 from .._services import Notifier
 from .._services import NotificationTarget
+from .._typing.type_parameters import _M
 
 if TYPE_CHECKING:
     from .._engines import ActionEngine
@@ -107,7 +106,7 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
     def notify(
         self,
         name: str,
-        target: int | NotificationTarget,
+        target: NotificationTarget,
         payload: dict[str] = {},
         after_commit: bool = True,
     ) -> None:

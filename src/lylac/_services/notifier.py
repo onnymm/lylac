@@ -3,13 +3,17 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Any
 from typing import Literal
+from typing import Union
+from .._typing.generics import ItemOrList
+from .._utils import to_list
 
-NotificationTarget = Literal['current_user']
+LiteralTarget = Literal['current_user']
+NotificationTarget = Union[LiteralTarget, ItemOrList[int]]
 
 @dataclass
 class Notification:
     name: str
-    target: int | NotificationTarget
+    target: LiteralTarget | list[int]
     payload: dict[str, Any]
 
 class Notifier(ABC):
@@ -20,10 +24,15 @@ class Notifier(ABC):
     def notify(
         self,
         name: str,
-        target: int | NotificationTarget,
+        target: Union[LiteralTarget, ItemOrList[int]],
         payload: dict[str, Any],
         after_commit: bool,
     ) -> None:
+
+        # Si el objetivo es una ID de usuario como escalar...
+        if isinstance(target, int):
+            # Se envuelve ésta en una lista
+            target = to_list(target)
 
         # Inicialización de objeto de notificación
         notification = Notification(name, target, payload)

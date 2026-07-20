@@ -1,8 +1,10 @@
+from typing import Any
 from typing import Generic
 from typing import Literal
 from typing import Optional
 from typing import TYPE_CHECKING
 from ..._resources import ModelDataIndex
+from ..._services import NotificationTarget
 from ..._typing.generics import ItemOrList
 from ..._typing.generics import MaybeNone
 from ..._typing.generics import ModelName
@@ -200,3 +202,13 @@ class BaseContext(Generic[_M]):
         resource_id = self._model_data_index.get_resource_id(ref)
 
         return resource_id
+
+    def notify(
+        self,
+        name: str,
+        target: NotificationTarget,
+        payload: dict[str, Any] = {}
+    ) -> None:
+
+        # Notificación usando el contexto de ejecución
+        self._execution_ctx.notify(name, target, payload)
