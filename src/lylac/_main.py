@@ -135,7 +135,7 @@ class Lylac(Generic[_M]):
     ) -> _T:
 
         # Autenticación del usuario
-        uid = self._authenticate_user(session_uuid)
+        uid = self.authenticate_user(session_uuid)
 
         def wrapped_transaction(conn: Connection) -> _T:
             # Inicialización de contexto de ejecución
@@ -377,7 +377,7 @@ class Lylac(Generic[_M]):
 
         return result
 
-    def _authenticate_user(
+    def authenticate_user(
         self,
         session_uuid: str,
     ) -> int:
