@@ -103,7 +103,7 @@ def _base_model_field__create_column(ctx: ActionContext):
     )
 
     # Notificación de tabla creada
-    ctx._execution_ctx.notify('field.created', 'current_user', {'model': field_name})
+    ctx._execution_ctx.notify('field.created', 'current_user', {})
 
 def _base_model_field__register_on_model(ctx: ActionContext):
 
@@ -151,7 +151,7 @@ def _drop_column(ctx: ActionContext):
     )
 
     # Notificación de tabla creada
-    ctx._execution_ctx.notify('field.deleted', 'current_user', {'model': field_name})
+    ctx._execution_ctx.notify('field.deleted', 'current_user')
 
 def _base_model__restore(ctx: ActionContext):
 
