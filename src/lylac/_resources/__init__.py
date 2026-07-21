@@ -15,6 +15,7 @@ from ._model_column_basic_atts import ModelColumnBasicAtts
 from ._model_data_index import ModelDataIndex
 from ._model_properties import ModelProperties
 from ._models_bearer import ModelsBearer
+from ._notification import Notification
 from ._outerjoin import OuterJoin
 from ._output_parser import OutputParser
 from ._policy_properties import PolicyProperties

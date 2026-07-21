@@ -205,10 +205,10 @@ class BaseContext(Generic[_M]):
 
     def notify(
         self,
-        name: str,
+        event: str,
         target: NotificationTarget,
         payload: dict[str, Any] = {}
     ) -> None:
 
         # Notificación usando el contexto de ejecución
-        self._execution_ctx.notify(name, target, payload)
+        self._execution_ctx._notify(event, target, payload)

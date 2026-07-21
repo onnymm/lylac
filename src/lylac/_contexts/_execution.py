@@ -103,17 +103,6 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
             # Se usa ésta como valor de ID de usuario
             return uid
 
-    def notify(
-        self,
-        name: str,
-        target: NotificationTarget,
-        payload: dict[str] = {},
-        after_commit: bool = True,
-    ) -> None:
-
-        # Emisión de notificación
-        self._notifier.notify(name, target, payload, after_commit)
-
     def run_after_commit(
         self,
         fn: Callable[[ExecutionContext[_M]], None],
@@ -144,3 +133,14 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
         self._to_execute_after_commit.clear()
         # Envío de notificaciones registradas
         self._notifier.flush()
+
+    def _notify(
+        self,
+        event: str,
+        target: NotificationTarget,
+        payload: dict[str] = {},
+        after_commit: bool = True,
+    ) -> None:
+
+        # Emisión de notificación
+        self._notifier.notify(event, target, payload, after_commit)
