@@ -123,3 +123,5 @@ RelationActionName = Literal[
 CRUDPermission = Literal['read'] | DMLTransaction
 
 CRUDPermissionColumnName = Literal['perm_create', 'perm_read', 'perm_update', 'perm_delete']
+
+LiteralTarget = Literal['current_user']

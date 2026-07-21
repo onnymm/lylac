@@ -34,9 +34,9 @@ from ._resources import DatabaseMetadata
 from ._resources import ModelsBearer
 from ._services import DefaultNotifier
 from ._services import EngineService
-from ._services import Notifier
 from ._typing.callables import ExecutableTransactionCallback
 from ._typing.callables import ComputeFieldFn as _ComputeFieldFn
+from ._typing.callables import NotifierInitializator
 from ._typing.generics import ItemOrList
 from ._typing.generics import ModelName
 from ._typing.generics import _Record
@@ -73,7 +73,7 @@ class Lylac(Generic[_M]):
         self,
         build_models_fn: ExecutableTransactionCallback[_M] = lambda _: None,
         populate_models_fn: ExecutableTransactionCallback[_M] = lambda _: None,
-        notifier_init: Callable[[_ExecutionContext[_M]], Notifier] = lambda ctx: DefaultNotifier(ctx.uid),
+        notifier_init: NotifierInitializator[_M] = lambda ctx: DefaultNotifier(ctx.uid),
     ) -> None:
 
         # Asignación de valores

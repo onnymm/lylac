@@ -5,6 +5,7 @@ from .._constants import FACTORY_FIELDS
 from .._constants import PRESET
 from .._constants import TTYPE_NAME
 from .._contexts import ExecutionContext
+from .._core import Metadata
 from .._resources import AutomationProperties
 from .._typing.generics import EngineHub
 from .._typing.generics import ModelName
@@ -12,8 +13,6 @@ from .._typing.literals import InitialModels
 from .._typing.type_parameters import _M
 from ..security import hash_password
 from ..security import verify_password
-
-from .._core import Metadata
 
 def _change_password(
     execution_ctx: ExecutionContext[_M],

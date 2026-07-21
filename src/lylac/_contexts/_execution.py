@@ -7,8 +7,8 @@ from .._resources import DatabaseMetadata
 from .._resources import ModelDataIndex
 from .._resources import ModelsBearer
 from .._resources import UserEnv
-from .._services import Notifier
-from .._services import NotificationTarget
+from .._typing.callables import NotifierInitializator
+from .._typing.structures import NotificationTarget
 from .._typing.type_parameters import _M
 
 if TYPE_CHECKING:
@@ -37,7 +37,7 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
         actions: 'ActionEngine[_M]',
         server_tasks: 'ServerTasksEngine[_M]',
         user_env_engine: UserEnv[_M],
-        notifier_init: Callable[[ExecutionContext[_M]], Notifier],
+        notifier_init: NotifierInitializator[_M],
     ) -> None:
 
         # Inicialización de entorno de usuario

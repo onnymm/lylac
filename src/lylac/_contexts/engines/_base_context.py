@@ -4,13 +4,13 @@ from typing import Literal
 from typing import Optional
 from typing import TYPE_CHECKING
 from ..._resources import ModelDataIndex
-from ..._services import NotificationTarget
 from ..._typing.generics import ItemOrList
 from ..._typing.generics import MaybeNone
 from ..._typing.generics import ModelName
 from ..._typing.generics import _Record
 from ..._typing.structures import CriteriaStructure
 from ..._typing.structures import RecordData
+from ..._typing.structures import NotificationTarget
 from ..._typing.structures import FieldReadDeclaration
 from ..._typing.type_parameters import _M
 

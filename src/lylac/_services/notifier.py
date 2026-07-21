@@ -2,13 +2,11 @@ from abc import ABC
 from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Any
-from typing import Literal
 from typing import Union
 from .._typing.generics import ItemOrList
+from .._typing.literals import LiteralTarget
+from .._typing.structures import NotificationTarget
 from .._utils import to_list
-
-LiteralTarget = Literal['current_user']
-NotificationTarget = Union[LiteralTarget, ItemOrList[int]]
 
 @dataclass
 class Notification:

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from .aliases import DMLCompatible
 from .aliases import JSONLikeScalar
 from .aliases import RecordValueDataType
+from .literals import LiteralTarget
 from .generics import Array
 from .generics import ItemOrList
 from .generics import MaybeNone
@@ -372,3 +373,5 @@ Los operadores de comparación disponibles son:
 """
 
 RawFieldProperties = tuple[str, TTypeName, bool, ModelName[_M], str]
+
+NotificationTarget = Union[LiteralTarget, ItemOrList[int]]

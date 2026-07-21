@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from .._contexts import TransactionContext
     from .._orchestrator import CRUD
     from .._resources import ModelColumnBasicAtts
+    from .._services import Notifier
 
 ExecutionCallback = Callable[[Connection], _T]
 
@@ -64,3 +65,5 @@ ExecutableTransactionCallback = Callable[['TransactionContext[_M]'], None]
 LazyResolver = Callable[['ExecutionContext[_M]'], Any]
 
 PolicyCallback = Callable[['PoliciesContext[_M]'], None]
+
+NotifierInitializator = Callable[['ExecutionContext[_M]'], 'Notifier']
