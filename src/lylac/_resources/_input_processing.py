@@ -28,6 +28,7 @@ class InputProcessing(Generic[_M]):
 
         # Inicialización de lista de funciones de procesamiento personalizadas
         self._on_creation_processing_callbacks = []
+        self._on_update_processing_callbacks = []
 
     def register_on_creation_processing(
         self,
