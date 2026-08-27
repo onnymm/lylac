@@ -1,8 +1,11 @@
 from typing import Generic
 from .._constants import FIELD_NAME
+from .._typing.generics import _Record
 from .._typing.generics import ItemOrList
+from .._typing.type_parameters import _A
 from .._typing.type_parameters import _M
 from .._typing.type_parameters import _T
+from .._typing.callables import ProcessingCallback
 
 class InputProcessing(Generic[_M]):
     _FIRST_FIELDS = [
@@ -16,6 +19,53 @@ class InputProcessing(Generic[_M]):
         FIELD_NAME.CREATE_UID,
         FIELD_NAME.UPDATE_UID,
     ]
+    _on_creation_processing_callbacks: list[ProcessingCallback[_A]]
+    _on_update_processing_callbacks: list[ProcessingCallback[_A]]
+
+    def __init__(
+        self,
+    ) -> None:
+
+        # Inicialización de lista de funciones de procesamiento personalizadas
+        self._on_creation_processing_callbacks = []
+
+    def register_on_creation_processing(
+        self,
+        processing_callbacks: list[ProcessingCallback[_A]],
+    ) -> None:
+
+        # Asignación de lista de funciones
+        self._on_creation_processing_callbacks = processing_callbacks
+
+    def register_on_update_processing(
+        self,
+        processing_callbacks: list[ProcessingCallback[_A]],
+    ) -> None:
+
+        # Asignación de lista de funciones
+        self._on_update_processing_callbacks = processing_callbacks
+
+    def process_on_creation(
+        self,
+        data: ItemOrList[_Record[_A]],
+    ) -> list[_Record[_A]]:
+
+        # Se asegura una lista de datos
+        data = self.to_list(data)
+        # Preprocesamiento a través de las funciones personalizadas
+        data = self.on_creation_custom_preprocessing(data)
+
+        return data
+
+    def process_on_update(
+        self,
+        record: _Record[_A],
+    ) -> _Record[_A]:
+
+        # Preprocesamiento a través de las funciones personalizadas
+        record = self.on_update_custom_preprocessing(record)
+
+        return record
 
     def to_list(
         self,
@@ -28,6 +78,34 @@ class InputProcessing(Generic[_M]):
             return content
         # Se retorna el contenido dentro de una lista
         return [content]
+
+    def on_creation_custom_preprocessing(
+        self,
+        data: list[_Record[_A]],
+    ) -> list[_Record[_A]]:
+
+        # Iteración por las funciones de procesamiento de entrada
+        for processing_callback in self._on_creation_processing_callbacks:
+            # Iteración por cada registro junto con índice para reasignación
+            for ( i, record ) in enumerate(data):
+                # Preprocesamiento del registro y captura del resultado por si ha sido copiado internamente
+                processed_record = processing_callback(record)
+                # Reasignación del registro
+                data[i] = processed_record
+
+        return data
+
+    def on_update_custom_preprocessing(
+        self,
+        record: _Record[_A],
+    ) -> _Record[_A]:
+
+        # Obtención de la lista de funciones de preprocesamientoa a usar
+        for processing_callback in self._on_update_processing_callbacks:
+            # Preprocesamiento del registro y captura del resultado por si ha sido copiado internamente
+            record = processing_callback(record)
+
+        return record
 
     def reorder_fields(
         self,

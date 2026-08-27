@@ -8,6 +8,7 @@ from ._names import FACTORY_FIELDS
 from ._names import FACTORY_MODELS
 from ._names import INITIAL_PACKAGES
 from ._names import PACKAGE
+from ._names import PERMISSION
 from ._names import PRESET
 from ._names import RELATION_ACTIONS
 from ._names import RELATION_ACTION_NAME

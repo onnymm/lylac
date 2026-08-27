@@ -8,6 +8,7 @@ from sqlalchemy import func
 from .._constants import CRUD_METHOD_NAME
 from .._constants import FIELD_NAME
 from .._constants import MODEL_NAME
+from .._constants import PERMISSION
 from .._contexts import ExpansionContext
 from .._contexts import RelationOperationsContext
 from .._operations import DQL
@@ -15,6 +16,7 @@ from .._operations import DML
 from .._resources import InputProcessing
 from .._resources import Many2OneCreate
 from .._resources import ModelsBearer
+from .._typing.callables import ProcessingCallback
 from .._typing.generics import ItemOrList
 from .._typing.generics import ModelName
 from .._typing.generics import _Record
@@ -23,6 +25,7 @@ from .._typing.literals import CRUDPermissionColumnName
 from .._typing.structures import CriteriaStructure
 from .._typing.structures import RecordData
 from .._typing.structures import FieldReadDeclaration
+from .._typing.type_parameters import _A
 from .._typing.type_parameters import _M
 from .._utils import to_list
 from .._utils import parse_record_rule
@@ -32,14 +35,16 @@ from ..errors import RecordRulesPermissionError
 if TYPE_CHECKING:
     from .._contexts import ExecutionContext
 
-class CRUD(Generic[_M]):
+class _Properties:
     PERMISSIONS_BYPASS: bool = True
     _adapter: dict[CRUDPermission, CRUDPermissionColumnName] = {
-        CRUD_METHOD_NAME.CREATE: 'perm_create',
-        CRUD_METHOD_NAME.READ: 'perm_read',
-        CRUD_METHOD_NAME.UPDATE: 'perm_update',
-        CRUD_METHOD_NAME.DELETE: 'perm_delete',
+        CRUD_METHOD_NAME.CREATE: PERMISSION.CREATE,
+        CRUD_METHOD_NAME.READ: PERMISSION.READ,
+        CRUD_METHOD_NAME.UPDATE: PERMISSION.UPDATE,
+        CRUD_METHOD_NAME.DELETE: PERMISSION.DELETE,
     }
+
+class CRUD(Generic[_M], _Properties):
 
     def _check_access(
         self,
@@ -163,6 +168,22 @@ class CRUD(Generic[_M]):
         self._input_processing = InputProcessing()
         self._m2o_create = Many2OneCreate(self)
 
+    def register_on_creation_processing(
+        self,
+        processing_callbacks: list[ProcessingCallback[_A]],
+    ) -> None:
+
+        # Asignación de lista de funciones de preprocesamiento en creación
+        self._input_processing.register_on_creation_processing(processing_callbacks)
+
+    def register_on_update_processing(
+        self,
+        processing_callbacks: list[ProcessingCallback[_A]],
+    ) -> None:
+
+        # Asignación de lista de funciones de preprocesamiento en modificación
+        self._input_processing.register_on_update_processing(processing_callbacks)
+
     def create(
         self,
         execution_ctx: ExecutionContext[_M],
@@ -178,7 +199,7 @@ class CRUD(Generic[_M]):
         )
 
         # Se asegura una lista de datos
-        data = self._input_processing.to_list(data)
+        data = self._input_processing.process_on_creation(data)
 
         # Validación de los datos
         execution_ctx.validations.validate(
@@ -419,6 +440,9 @@ class CRUD(Generic[_M]):
 
         # Se asegura una lista de datos
         record_ids = to_list(record_ids)
+
+        # Preprocesamiento de los datos de modificación
+        data = self._input_processing.process_on_creation(data)
 
         # Evaluación de IDs permitidas
         self._evalute_allowed_ids(

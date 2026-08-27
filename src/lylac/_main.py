@@ -493,6 +493,7 @@ class Lylac(Generic[_M]):
             policies= self._policies,
             server_tasks= self._server_tasks,
             user_env= self._user_env,
+            crud= self._crud,
             main= self,
         )
 

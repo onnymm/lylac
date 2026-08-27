@@ -156,6 +156,12 @@ STATIC_FIELDS = [
     FIELD_NAME.UPDATE_UID,
 ]
 
+class PERMISSION:
+    CREATE = 'perm_create'
+    READ = 'perm_read'
+    UPDATE = 'perm_update'
+    DELETE = 'perm_delete'
+
 class RELATION_ACTION_NAME:
     """
     Nombres de comandos de acciones de relación.

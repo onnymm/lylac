@@ -6,9 +6,11 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.orm import MappedColumn
 from .literals import OnDeleteOption
+from .type_parameters import _A
 from .type_parameters import _M
 from .type_parameters import _T
 from .type_parameters import _R
+from .generics import _Record
 
 if TYPE_CHECKING:
     from .._contexts import ActionContext
@@ -67,3 +69,5 @@ LazyResolver = Callable[['ExecutionContext[_M]'], Any]
 PolicyCallback = Callable[['PoliciesContext[_M]'], None]
 
 NotifierInitializator = Callable[['ExecutionContext[_M]'], 'Notifier']
+
+ProcessingCallback = Callable[[_Record[_A]], _Record[_A]]
