@@ -442,7 +442,7 @@ class CRUD(Generic[_M], _Properties):
         record_ids = to_list(record_ids)
 
         # Preprocesamiento de los datos de modificación
-        data = self._input_processing.process_on_creation(data)
+        data = self._input_processing.process_on_update(data)
 
         # Evaluación de IDs permitidas
         self._evalute_allowed_ids(
