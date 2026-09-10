@@ -175,21 +175,21 @@ PRESET_VALIDATIONS: list[ValidationProperties[_M]] = [
             CRUD_METHOD_NAME.CREATE,
             _valid_model_name,
             'El nombre de modelo solo puede contener minúsculas, dígitos y puntos.',
-            'base.model',
+            MODEL_NAME.BASE_MODEL,
         ),
 
         ValidationProperties(
             CRUD_METHOD_NAME.CREATE,
             _coherent_label_and_name_in_new_model,
             'El nombre de tabla de modelo debe ser igual que el nombre de modelo sustituyendo puntos por guiones bajos.',
-            'base.model',
+            MODEL_NAME.BASE_MODEL,
         ),
 
         ValidationProperties(
             CRUD_METHOD_NAME.CREATE,
             _forbid_duplicated_fields_in_same_model,
             'No puede haber nombres de campo repetidos en el mismo modelo.',
-            'base.model.field',
+            MODEL_NAME.BASE_MODEL_FIELD,
         ),
 
         ValidationProperties(

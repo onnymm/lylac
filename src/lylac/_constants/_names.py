@@ -61,6 +61,10 @@ class MODEL_NAME:
     """
     Roles de usuario.
     """
+    BASE_USERS_UPDATE_PASSWORD = 'base.users.update.password'
+    """
+    Asistente de cambio de contraseña.
+    """
     BASE_MODEL = 'base.model'
     """
     Modelos de la base de datos.
@@ -93,6 +97,22 @@ class MODEL_NAME:
     """
     Registros de reglas de registro.
     """
+
+class TABLE_NAME:
+    BASE_USERS = 'base_users'
+    BASE_USER_SESSION = 'base_user_session'
+    BASE_USER_ACCESS = 'base_user_access'
+    BASE_USER_GROUPS = 'base_user_groups'
+    BASE_USERS_ROLE = 'base_users_role'
+    BASE_USERS_UPDATE_PASSWORD = 'base_users_update_password'
+    BASE_MODEL = 'base_model'
+    BASE_MODEL_FIELD = 'base_model_field'
+    BASE_MODEL_FIELD_SELECTION = 'base_model_field_selection'
+    BASE_MODEL_DATA = 'base_model_data'
+    BASE_MODEL_DATA_PROCESS = 'base_model_data_process'
+    BASE_MODEL_DATA_PROCESS_STEP = 'base_model_data_process_step'
+    BASE_MODEL_DATA_PROCESS_STEP_RECORD = 'base_model_data_process_step_record'
+    BASE_RULES = 'base_rules'
 
 class TTYPE_NAME:
     INTEGER = 'integer'

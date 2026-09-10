@@ -13,6 +13,7 @@ from ._names import PRESET
 from ._names import RELATION_ACTIONS
 from ._names import RELATION_ACTION_NAME
 from ._names import STATIC_FIELDS
+from ._names import TABLE_NAME
 from ._names import TRANSACTIONS
 from ._names import TTYPE_NAME
 from ._values import DEFAULTS

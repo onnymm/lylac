@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import update
 from .._constants import DATA_RESOURCE
 from .._constants import FACTORY_FIELDS
+from .._constants import MODEL_NAME
 from .._constants import PRESET
 from .._constants import TTYPE_NAME
 from .._contexts import ExecutionContext
@@ -70,7 +71,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
 
         # Creación del modelo
         ctx.action(
-            'base.model',
+            MODEL_NAME.BASE_MODEL,
             PRESET.AUTOMATION.BASE_MODEL__CREATE_TABLE_ON_DATABASE,
             model_id,
         )
@@ -176,7 +177,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
 
         # Creación de los campos predeterminados que todo modelo debe tener
         ctx.create(
-            'base.model.field',
+            MODEL_NAME.BASE_MODEL_FIELD,
             fields_to_create
         )
 
@@ -189,7 +190,7 @@ def _base_model__drop_table(ctx: AutomationContext) -> None:
     for record in ctx.records:
         # Eliminación del modelo
         ctx.action(
-            'base.model',
+            MODEL_NAME.BASE_MODEL,
             PRESET.AUTOMATION.BASE_MODEL__DROP_TABLE,
             record['id'],
         )
@@ -224,13 +225,13 @@ def _base_model_field__create_column_and_register_field(ctx: AutomationContext) 
 
         # Creación de la columna en la tabla
         ctx.action(
-            'base.model.field',
+            MODEL_NAME.BASE_MODEL_FIELD,
             PRESET.AUTOMATION.BASE_MODEL_FIELD__CREATE_COLUMN,
             record['id'],
         )
         # Registro de la instancia en el modelo
         ctx.action(
-            'base.model.field',
+            MODEL_NAME.BASE_MODEL_FIELD,
             PRESET.AUTOMATION.BASE_MODEL_FIELD__REGISTER_ON_MODEL,
             record['id'],
         )
@@ -260,13 +261,13 @@ def _base_model_field__restore_parent_model_structure(ctx: AutomationContext) ->
     for model_id in model_ids:
         # Eliminación del modelo únicamente de los metadatos de SQLAlchemy
         ctx.action(
-            'base.model',
+            MODEL_NAME.BASE_MODEL,
             PRESET.AUTOMATION.BASE_MODEL__DELETE_MODEL,
             model_id,
         )
         # Restauración del modelo con los campos restantes
         ctx.action(
-            'base.model',
+            MODEL_NAME.BASE_MODEL,
             PRESET.AUTOMATION.BASE_MODEL__RESTORE,
             model_id,
         )
@@ -283,7 +284,7 @@ def _base_model__register_model_data(ctx: AutomationContext) -> None:
     for record in ctx.records:
         # Se comprueba que no exista el registro ya creado
         count = ctx.search_count(
-            'base.model.data',
+            MODEL_NAME.BASE_MODEL_DATA,
             [('name', '=', record['name'])],
         )
         # Si hay existencia de registros...
@@ -295,13 +296,13 @@ def _base_model__register_model_data(ctx: AutomationContext) -> None:
         new_record = {
             'res_id': record['res_id'],
             'name': record['name'],
-            'model_name': 'base.model',
+            'model_name': MODEL_NAME.BASE_MODEL,
         }
         # Se añade éste a la lista de registros a crear
         data_to_create.append(new_record)
 
     # Creación de registros
-    ctx.create('base.model.data', data_to_create)
+    ctx.create(MODEL_NAME.BASE_MODEL_DATA, data_to_create)
 
 def _base_users_role__register_model_data(ctx: AutomationContext) -> None:
 
@@ -319,14 +320,14 @@ def _base_users_role__register_model_data(ctx: AutomationContext) -> None:
         new_record = {
             'res_id': record_id,
             'name': f'base_users_role.{name}',
-            'model_name': 'base.users.role',
+            'model_name': MODEL_NAME.BASE_USERS_ROLE,
         }
 
         # Se añade éste a la lista de registros a crear
         data_to_create.append(new_record)
 
     # Creación de registros
-    ctx.create('base.model.data', data_to_create)
+    ctx.create(MODEL_NAME.BASE_MODEL_DATA, data_to_create)
 
 def _base_user_groups__register_model_data(ctx: AutomationContext) -> None:
 
@@ -341,7 +342,7 @@ def _base_user_groups__register_model_data(ctx: AutomationContext) -> None:
         name = record['name']
         # Se comprueba que no exista el registro ya creado
         count = ctx.search_count(
-            'base.model.data',
+            MODEL_NAME.BASE_MODEL_DATA,
             [('name', '=', f'base_user_groups.{name}')],
         )
         # Si hay existencia de registros...
@@ -352,13 +353,13 @@ def _base_user_groups__register_model_data(ctx: AutomationContext) -> None:
         new_record = {
             'res_id': record_id,
             'name': f'base_user_groups.{name}',
-            'model_name': 'base.user.groups',
+            'model_name': MODEL_NAME.BASE_USER_GROUPS,
         }
         # Se añade éste a la lista de registros a crear
         data_to_create.append(new_record)
 
     # Creación de registros
-    ctx.create('base.model.data', data_to_create)
+    ctx.create(MODEL_NAME.BASE_MODEL_DATA, data_to_create)
 
 def _base_rules__register_model_data(ctx: AutomationContext):
 
@@ -375,7 +376,7 @@ def _base_rules__register_model_data(ctx: AutomationContext):
         model_table_name = record['model_table_name']
         # Se comprueba que no exista el registro ya creado
         count = ctx.search_count(
-            'base.model.data',
+            MODEL_NAME.BASE_MODEL_DATA,
             [('name', '=', f'base_rules.{model_table_name}__{name}')],
         )
         # Si hay existencia de registros...
@@ -387,13 +388,13 @@ def _base_rules__register_model_data(ctx: AutomationContext):
         new_record = {
             'res_id': record_id,
             'name': f'base_rules.{model_table_name}__{name}',
-            'model_name': 'base.rules',
+            'model_name': MODEL_NAME.BASE_RULES,
         }
         # Se añade éste a la lista de registros a crear
         data_to_create.append(new_record)
 
     # Creación de registros
-    ctx.create('base.model.data', data_to_create)
+    ctx.create(MODEL_NAME.BASE_MODEL_DATA, data_to_create)
 
 def _base_users_update_password__consume(ctx: AutomationContext):
 
@@ -407,7 +408,7 @@ def _base_users_update_password__consume(ctx: AutomationContext):
 
     # Obtención de los datos del usuario
     user_id = ctx.uid
-    [ user_record ] = ctx.read('base.users', user_id, ['password'])
+    [ user_record ] = ctx.read(MODEL_NAME.BASE_USERS, user_id, ['password'])
     # Obtención de la contraseña almacenada en la base de datos
     hashed_password = user_record['password']
 
@@ -424,25 +425,25 @@ def _base_users_update_password__consume(ctx: AutomationContext):
 
 DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[InitialModels]] = {
 
-    'base.model': {
+    MODEL_NAME.BASE_MODEL: {
 
         _base_model__create_model_and_table_in_database.__name__: AutomationProperties(
             callback= _base_model__create_model_and_table_in_database,
-            model_name= 'base.model',
+            model_name= MODEL_NAME.BASE_MODEL,
             fields= ('name', 'model', 'has_sequence', 'is_archivable', 'has_label'),
             execute_only_when= [],
         ),
 
         _base_model__register_model_on_engines.__name__: AutomationProperties(
             callback= _base_model__register_model_on_engines,
-            model_name= 'base.model',
+            model_name= MODEL_NAME.BASE_MODEL,
             fields= ('model',),
             execute_only_when= [],
         ),
 
         _base_model__register_model_data.__name__: AutomationProperties(
             callback= _base_model__register_model_data,
-            model_name= 'base.model',
+            model_name= MODEL_NAME.BASE_MODEL,
             fields= (
                 ('id', 'res_id'),
                 ('name', TTYPE_NAME.CHAR, lambda ctx: ctx.concat('base_model.', ctx['name'])),
@@ -452,11 +453,11 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
 
     },
 
-    'base.model.field': {
+    MODEL_NAME.BASE_MODEL_FIELD: {
 
         _base_model_field__create_column_and_register_field.__name__: AutomationProperties(
             callback= _base_model_field__create_column_and_register_field,
-            model_name= 'base.model.field',
+            model_name= MODEL_NAME.BASE_MODEL_FIELD,
             fields= (
                 'name',
                 'ttype',
@@ -479,7 +480,7 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
 
         _base_model_field__create_m2m_relation.__name__: AutomationProperties(
             callback= _base_model_field__create_m2m_relation,
-            model_name= 'base.model.field',
+            model_name= MODEL_NAME.BASE_MODEL_FIELD,
             fields= (
                 'name',
                 'model_id.model',
@@ -490,11 +491,11 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
 
     },
 
-    'base.user.groups': {
+    MODEL_NAME.BASE_USER_GROUPS: {
 
         _base_user_groups__register_model_data.__name__: AutomationProperties(
             callback= _base_user_groups__register_model_data,
-            model_name= 'base.user.groups',
+            model_name= MODEL_NAME.BASE_USER_GROUPS,
             fields= (
                 'name',
                 ('id', 'res_id'),
@@ -504,22 +505,22 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
 
     },
 
-    'base.users.role': {
+    MODEL_NAME.BASE_USERS_ROLE: {
 
         _base_users_role__register_model_data.__name__: AutomationProperties(
             callback= _base_users_role__register_model_data,
-            model_name= 'base.users.role',
+            model_name= MODEL_NAME.BASE_USERS_ROLE,
             fields= ('name',),
             execute_only_when= [],
         ),
 
     },
 
-    'base.rules': {
+    MODEL_NAME.BASE_RULES: {
 
         _base_rules__register_model_data.__name__: AutomationProperties(
             callback= _base_rules__register_model_data,
-            model_name= 'base.rules',
+            model_name= MODEL_NAME.BASE_RULES,
             fields= (
                 'name',
                 ('model_table_name', TTYPE_NAME.CHAR, lambda ctx: ctx['model_id.name']),
@@ -529,11 +530,11 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
 
     },
 
-    'base.users.update.password': {
+    MODEL_NAME.BASE_USERS_UPDATE_PASSWORD: {
 
         _base_users_update_password__consume.__name__: AutomationProperties(
             callback= _base_users_update_password__consume,
-            model_name= 'base.users.update.password',
+            model_name= MODEL_NAME.BASE_USERS_UPDATE_PASSWORD,
             fields= (
                 'current_password',
                 'new_password',
@@ -550,22 +551,22 @@ DEFAULT_ON_UPDATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
 
 DEFAULT_ON_DELETE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[InitialModels]] = {
 
-    'base.model': {
+    MODEL_NAME.BASE_MODEL: {
 
         _base_model__drop_table.__name__: AutomationProperties(
             callback= _base_model__drop_table,
-            model_name= 'base.model',
+            model_name= MODEL_NAME.BASE_MODEL,
             fields= ('model',),
             execute_only_when= [],
         ),
 
     },
 
-    'base.model.field': {
+    MODEL_NAME.BASE_MODEL_FIELD: {
 
         _base_model_field__restore_parent_model_structure.__name__: AutomationProperties(
             callback= _base_model_field__restore_parent_model_structure,
-            model_name= 'base.model.field',
+            model_name= MODEL_NAME.BASE_MODEL_FIELD,
             fields= ('model_id.id', 'model_id.name', 'name'),
             execute_only_when= [],
         ),

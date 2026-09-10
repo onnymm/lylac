@@ -7,18 +7,8 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy import types
 from sqlalchemy import ForeignKey
 from ..security import default_password
+from .._constants import TABLE_NAME
 from .._typing.literals import TTypeName
-
-class TABLE_NAME:
-    BASE_MODEL_DATA = 'base_model_data'
-    BASE_MODEL_DATA_PROCESS = 'base_model_data_process'
-    BASE_MODEL_DATA_PROCESS_STEP = 'base_model_data_process_step'
-    BASE_MODEL_DATA_PROCESS_STEP_RECORD = 'base_model_data_process_step_record'
-    BASE_USERS = 'base_users'
-    BASE_USER_SESSION = 'base_user_session'
-    BASE_MODEL = 'base_model'
-    BASE_MODEL_FIELD = 'base_model_field'
-    BASE_MODEL_FIELD_SELECTION = 'base_model_field_selection'
 
 class Feature:
     class Archivable:

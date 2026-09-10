@@ -1,4 +1,5 @@
 from .._constants import CRUD_METHOD_NAME
+from .._constants import MODEL_NAME
 from .._constants import STATIC_FIELDS
 from .._contexts import PoliciesContext
 from .._resources import PolicyProperties
@@ -37,7 +38,7 @@ PRESET_POLICIES: list[PolicyProperties] = [
         [CRUD_METHOD_NAME.CREATE, CRUD_METHOD_NAME.UPDATE],
         _forbid_direct_password_input,
         'El campo de contraseña no puede ser directamente modificado.',
-        'base.users',
+        MODEL_NAME.BASE_USERS,
     ),
 
 ]

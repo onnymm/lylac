@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 from .._constants import DATA_RESOURCE
+from .._constants import MODEL_NAME
 from .._constants import RELATION_ACTION_NAME
 from .._constants import TTYPE_NAME
 
@@ -10,7 +11,7 @@ if TYPE_CHECKING:
 def _create_permission_groups(ctx: Lylac.TransactionContext):
 
     ctx.create(
-        'base.user.groups',
+        MODEL_NAME.BASE_USER_GROUPS,
         [
             # Permisos básicos
             {
@@ -216,7 +217,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                             'perm_update': True,
                             'perm_delete': True,
                         },
-                    ]
+                    ],
                 }
             },
         ],
@@ -226,12 +227,12 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
 def _build_models_structure(ctx: Lylac.TransactionContext):
 
     ctx.create(
-        'base.model',
+        MODEL_NAME.BASE_MODEL,
         [
             # Creación de modelo de grupos de acceso
             {
                 'name': 'base_user_groups',
-                'model': 'base.user.groups',
+                'model': MODEL_NAME.BASE_USER_GROUPS,
                 'label': 'Grupos de acceso',
                 'description': 'Registros de grupos de acceso.',
                 'has_label': True,
@@ -239,7 +240,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
             # Creación de modelo de reglas de registro
             {
                 'name': 'base_rules',
-                'model': 'base.rules',
+                'model': MODEL_NAME.BASE_RULES,
                 'label': 'Reglas de registro',
                 'description': 'Reglas de registro para definir dominios de transacciones.',
                 'is_archivable': True,
@@ -299,7 +300,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
             # Creación de modelo de cambio de contraseña
             {
                 'name': 'base_users_update_password',
-                'model': 'base.users.update.password',
+                'model': MODEL_NAME.BASE_USERS_UPDATE_PASSWORD,
                 'label': 'Cambio de contraseña de usuario',
                 'description': 'Asistente de cambio de contraseña',
                 'transient': True,
@@ -333,12 +334,12 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
     )
 
     ctx.create(
-        'base.model',
+        MODEL_NAME.BASE_MODEL,
         [
             # Creación de modelo de permisos de acceso
             {
                 'name': 'base_user_access',
-                'model': 'base.user.access',
+                'model': MODEL_NAME.BASE_USER_ACCESS,
                 'label': 'Permisos de acceso',
                 'description': 'Registros de permisos de acceso granulares.',
                 'field_ids': {
@@ -392,7 +393,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
             # Creación de modelo de sesiones de usuario
             {
                 'name': 'base_users_role',
-                'model': 'base.users.role',
+                'model': MODEL_NAME.BASE_USERS_ROLE,
                 'label': 'Roles de usuario',
                 'has_label': True,
                 'field_ids': {
@@ -408,7 +409,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
     )
 
     ctx.update(
-        'base.model',
+        MODEL_NAME.BASE_MODEL,
         ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_GROUPS),
         {
             'field_ids': {
@@ -424,7 +425,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
     )
 
     ctx.create(
-        'base.model.field',
+        MODEL_NAME.BASE_MODEL_FIELD,
         [
             # Creación de campo de roles del usuario en modelo de usuarios
             {
@@ -450,7 +451,7 @@ def _create_user_roles(ctx: Lylac.TransactionContext):
 
     # Creación de rol de super usuario
     ctx.update(
-        'base.users',
+        MODEL_NAME.BASE_USERS,
         ctx.get_resource_id(DATA_RESOURCE.ROOT_USER),
         {
             'role_ids': {
@@ -472,7 +473,7 @@ def _create_user_roles(ctx: Lylac.TransactionContext):
 
     # Creación de rol de administrador de la base de datos
     ctx.update(
-        'base.users',
+        MODEL_NAME.BASE_USERS,
         ctx.get_resource_id(DATA_RESOURCE.ADMIN_USER),
         {
             'role_ids': {
