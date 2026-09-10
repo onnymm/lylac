@@ -1,4 +1,6 @@
 from sqlalchemy.engine import Connection
+from .._constants import MODEL_NAME
+from .._constants import TABLE_NAME
 from .._constants import TTYPE_NAME
 from .._resources import DataMap
 from .._resources import ModelDataIndex
@@ -14,565 +16,565 @@ def build_initial_data(conn: Connection) -> DataMap:
         # Usuarios
         {
             'name': 'base_users.root_user',
-            'model_name': 'base.users',
+            'model_name': MODEL_NAME.BASE_USERS,
         },
         {
             'name': 'base_users.admin_user',
-            'model_name': 'base.users',
+            'model_name': MODEL_NAME.BASE_USERS,
         },
         # Modelos
         {
             'name': 'base_model.base_users',
-            'model_name': 'base.model',
+            'model_name': MODEL_NAME.BASE_MODEL,
         },
         {
             'name': 'base_model.base_model',
-            'model_name': 'base.model',
+            'model_name': MODEL_NAME.BASE_MODEL,
         },
         {
             'name': 'base_model.base_model_field',
-            'model_name': 'base.model',
+            'model_name': MODEL_NAME.BASE_MODEL,
         },
         {
             'name': 'base_model.base_model_field_selection',
-            'model_name': 'base.model',
+            'model_name': MODEL_NAME.BASE_MODEL,
         },
         {
             'name': 'base_model.base_model_data',
-            'model_name': 'base.model',
+            'model_name': MODEL_NAME.BASE_MODEL,
         },
         {
             'name': 'base_model.base_model_data_process',
-            'model_name': 'base.model',
+            'model_name': MODEL_NAME.BASE_MODEL,
         },
         {
             'name': 'base_model.base_model_data_process_step',
-            'model_name': 'base.model',
+            'model_name': MODEL_NAME.BASE_MODEL,
         },
         {
             'name': 'base_model.base_model_data_process_step_record',
-            'model_name': 'base.model',
+            'model_name': MODEL_NAME.BASE_MODEL,
         },
         {
             'name': 'base_model.base_user_session',
-            'model_name': 'base.model',
+            'model_name': MODEL_NAME.BASE_MODEL,
         },
         # Campos
         {
             'name': 'base_model_field.base_users__id',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_users__name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_users__create_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_users__update_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_users__create_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_users__update_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_users__display_name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_users__active',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_users__login',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_users__password',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_users__profile_picture',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__id',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__create_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__update_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__create_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__update_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__display_name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__state',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__label',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__model',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__has_sequence',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__is_archivable',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__has_label',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__description',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__field_ids',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__related_field_ids',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model__transient',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__id',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__create_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__update_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__create_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__update_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__display_name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__label',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__state',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__model_id',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__ttype',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__nullable',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__on_delete',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__is_required',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__readonly',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__default_value',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__unique',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__help_info',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__related_model_id',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__related_field',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__is_computed',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field__selection_ids',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field_selection__id',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field_selection__name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field_selection__create_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field_selection__update_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field_selection__create_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field_selection__update_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field_selection__display_name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field_selection__label',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_field_selection__field_id',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data__id',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data__name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data__create_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data__update_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data__create_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data__update_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data__display_name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data__model_name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data__res_id',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process__id',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process__name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process__create_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process__update_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process__create_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process__update_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process__display_name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process__step_ids',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step__id',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step__name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step__create_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step__update_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step__create_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step__update_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step__display_name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step__sequence',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step__process_id',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step__model_name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step__record_data_ids',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step_record__id',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step_record__name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step_record__create_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step_record__update_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step_record__create_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step_record__update_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step_record__display_name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step_record__step_id',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step_record__sequence',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_model_data_process_step_record__data',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_user_session__id',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_user_session__name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_user_session__create_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_user_session__update_date',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_user_session__create_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_user_session__update_uid',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_user_session__display_name',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_user_session__user_id',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_user_session__validity_time',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field.base_user_session__expires_at',
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
         },
         {
             'name': 'base_model_field_selection.base_model__state__base',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field_selection.base_model__state__generic',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field_selection.base_model__on_delete__set_null',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field_selection.base_model__on_delete__cascade',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field_selection.base_model__on_delete__restrict',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field.base_model_field__ttype__integer',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field.base_model_field__ttype__char',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field.base_model_field__ttype__float',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field.base_model_field__ttype__boolean',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field.base_model_field__ttype__date',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field.base_model_field__ttype__datetime',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field.base_model_field__ttype__time',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field.base_model_field__ttype__duration',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field.base_model_field__ttype__file',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field.base_model_field__ttype__text',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field.base_model_field__ttype__selection',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field.base_model_field__ttype__many2one',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field.base_model_field__ttype__one2many',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field.base_model_field__ttype__many2many',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field.base_model_field__ttype__json',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field_selection.base_model_field__state__base',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
         {
             'name': 'base_model_field_selection.base_model_field__state__generic',
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
         },
     ]
 
@@ -586,25 +588,25 @@ def build_initial_data(conn: Connection) -> DataMap:
     steps: list[_InternalModelSchema.base_model_data_step] = [
         # 1
         {
-            'model_name': 'base.users',
+            'model_name': MODEL_NAME.BASE_USERS,
             'process_id': 1,
             'sequence': 1,
         },
         # 2
         {
-            'model_name': 'base.model',
+            'model_name': MODEL_NAME.BASE_MODEL,
             'process_id': 2,
             'sequence': 1,
         },
         # 3
         {
-            'model_name': 'base.model.field',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD,
             'process_id': 2,
             'sequence': 2,
         },
         # 4
         {
-            'model_name': 'base.model.field.selection',
+            'model_name': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
             'process_id': 2,
             'sequence': 4,
         },
@@ -637,8 +639,8 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 2,
             'sequence': 1,
             'data': {
-                'name': 'base_users',
-                'model': 'base.users',
+                'name': TABLE_NAME.BASE_USERS,
+                'model': MODEL_NAME.BASE_USERS,
                 'label': 'Usuarios',
                 'description': 'Usuarios de la base de datos.',
                 'state': 'base',
@@ -649,8 +651,8 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 2,
             'sequence': 2,
             'data': {
-                'name': 'base_model',
-                'model': 'base.model',
+                'name': TABLE_NAME.BASE_MODEL,
+                'model': MODEL_NAME.BASE_MODEL,
                 'label': 'Modelos',
                 'description': 'Modelos de la base de datos.',
                 'state': 'base',
@@ -661,8 +663,8 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 2,
             'sequence': 3,
             'data': {
-                'name': 'base_model_field',
-                'model': 'base.model.field',
+                'name': TABLE_NAME.BASE_MODEL_FIELD,
+                'model': MODEL_NAME.BASE_MODEL_FIELD,
                 'label': 'Campos',
                 'description': 'Campos de modelos de la base de datos.',
                 'state': 'base',
@@ -673,8 +675,8 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 2,
             'sequence': 4,
             'data': {
-                'name': 'base_model_field_selection',
-                'model': 'base.model.field.selection',
+                'name': TABLE_NAME.BASE_MODEL_FIELD_SELECTION,
+                'model': MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
                 'label': 'Valores de selección',
                 'description': 'Valores de selección de campos de modelos de la base de datos.',
                 'state': 'base',
@@ -685,8 +687,8 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 2,
             'sequence': 5,
             'data': {
-                'name': 'base_model_data',
-                'model': 'base.model.data',
+                'name': TABLE_NAME.BASE_MODEL_DATA,
+                'model': MODEL_NAME.BASE_MODEL_DATA,
                 'label': 'Datos de modelos',
                 'description': 'Datos de modelos y registros de toda la base de datos.',
                 'state': 'base',
@@ -697,8 +699,8 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 2,
             'sequence': 6,
             'data': {
-                'name': 'base_model_data_process',
-                'model': 'base.model.data.process',
+                'name': TABLE_NAME.BASE_MODEL_DATA_PROCESS,
+                'model': MODEL_NAME.BASE_MODEL_DATA_PROCESS,
                 'label': 'Procesos de creación de datos de modelo',
                 'description': 'Procesos de creación de datos iniciales de modelos en la base de datos.',
                 'state': 'base',
@@ -709,8 +711,8 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 2,
             'sequence': 7,
             'data': {
-                'name': 'base_model_data_process_step',
-                'model': 'base.model.data.process.step',
+                'name': TABLE_NAME.BASE_MODEL_DATA_PROCESS_STEP,
+                'model': MODEL_NAME.BASE_MODEL_DATA_PROCESS_STEP,
                 'label': 'Pasos de procesos',
                 'description': 'Pasos de procesos de creación de datos de modelos.',
                 'has_sequence': True,
@@ -722,8 +724,8 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 2,
             'sequence': 8,
             'data': {
-                'name': 'base_model_data_process_step_record',
-                'model': 'base.model.data.process.step.record',
+                'name': TABLE_NAME.BASE_MODEL_DATA_PROCESS_STEP_RECORD,
+                'model': MODEL_NAME.BASE_MODEL_DATA_PROCESS_STEP_RECORD,
                 'label': 'Registros de datos de modelos',
                 'description': 'Registros de datos de modelos a crear en la base de datos.',
                 'state': 'base',
@@ -734,8 +736,8 @@ def build_initial_data(conn: Connection) -> DataMap:
             'step_id': 2,
             'sequence': 9,
             'data': {
-                'name': 'base_user_session',
-                'model': 'base.user.session',
+                'name': TABLE_NAME.BASE_USER_SESSION,
+                'model': MODEL_NAME.BASE_USER_SESSION,
                 'label': 'Registros de sesiones de usuario',
                 'description': 'Registros de sesiones de usuario activas y expiradas.',
                 'state': 'base',
