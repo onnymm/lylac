@@ -1,7 +1,7 @@
 from typing import Generic
 from typing import TYPE_CHECKING
 from sqlalchemy.engine import Connection
-from ..._constants import DATA_RESOURCE
+from ..._constants import REF
 from ..._engines import ComputeEngine
 from ..._typing.generics import ModelName
 from ..._typing.literals import TTypeName
@@ -33,7 +33,7 @@ class _Interface_Compute(Generic[_M]):
         # Definición de la transacción
         def transaction(conn: Connection):
             # Inicialización de contexto de ejecución
-            execution_ctx = self._main._create_execution_context(DATA_RESOURCE.ROOT_USER, conn)
+            execution_ctx = self._main._create_execution_context(REF.BASE_USERS.ROOT_USER, conn)
 
             # Obtención del decorador para registrar la función
             closure_decorator = self._engine.register_field(

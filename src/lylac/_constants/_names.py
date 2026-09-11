@@ -216,30 +216,6 @@ INITIAL_PACKAGES = [
     PACKAGE.INITIAL_STRUCTURE,
 ]
 
-class DATA_RESOURCE:
-    'Referencias comunes para obtención de sus respectivas IDs.'
-    ROOT_USER = 'base_users.root_user'
-    'Superusuario de la base de datos.'
-    ADMIN_USER = 'base_users.admin_user'
-    'Administrador de la base de datos.'
-
-    class MODEL:
-        'Referencias de modelos en la base de datos.'
-        BASE_USERS = 'base_model.base_users'
-        BASE_USERS_ROLE = 'base_model.base_users_role'
-        BASE_USER_ACCESS = 'base_model.base_user_access'
-        BASE_USER_SESSION = 'base_model.base_user_session'
-        BASE_USER_GROUPS = 'base_model.base_user_groups'
-        BASE_USERS_UPDATE_PASSWORD = 'base_model.base_users_update_password'
-        BASE_RULES = 'base_model.base_rules'
-        BASE_MODEL = 'base_model.base_model'
-        BASE_MODEL_FIELD = 'base_model.base_model_field'
-        BASE_MODEL_FIELD_SELECTION = 'base_model.base_model_field_selection'
-        BASE_MODEL_DATA = 'base_model.base_model_data'
-        BASE_MODEL_DATA_PROCESS = 'base_model.base_model_data_process'
-        BASE_MODEL_DATA_PROCESS_STEP = 'base_model.base_model_data_process_step'
-        BASE_MODEL_DATA_PROCESS_STEP_RECORD = 'base_model.base_model_data_process_step_record'
-
 TRANSACTIONS = [
     CRUD_METHOD_NAME.CREATE,
     CRUD_METHOD_NAME.UPDATE,

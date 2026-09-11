@@ -6,10 +6,10 @@ from typing import Union
 from sqlalchemy.engine import Connection
 from sqlalchemy.exc import ProgrammingError
 from ._api import _MainAPI
-from ._constants import DATA_RESOURCE
 from ._constants import MODEL_NAME
 from ._constants import MONITOR
 from ._constants import INITIAL_PACKAGES
+from ._constants import REF
 from ._contexts import ActionContext as _ActionContext
 from ._contexts import AutomationContext as _AutomationContext
 from ._contexts import ComputeContext as _ComputeContext
@@ -548,7 +548,7 @@ class Lylac(Generic[_M]):
     ) -> _ExecutionContext[_M]:
 
         # Creación de un contexto de ejecución como usuario root
-        execution_ctx = self._create_execution_context(DATA_RESOURCE.ROOT_USER, conn)
+        execution_ctx = self._create_execution_context(REF.BASE_USERS.ROOT_USER, conn)
 
         return execution_ctx
 

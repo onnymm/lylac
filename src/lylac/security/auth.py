@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING
 from typing import Callable
 from uuid import uuid4
 from sqlalchemy.engine import Connection
-from .._constants import DATA_RESOURCE
 from .._constants import DEFAULTS
 from .._constants import MODEL_NAME
 from .._constants import ERROR_LABEL
+from .._constants import REF
 from .._constants import TTYPE_NAME
 from .._typing.generics import _Records
 from .._typing.models import RecordShape
@@ -73,7 +73,7 @@ def build_login_callback(
     # Definición de la transacción
     def transaction(conn: Connection):
         # Inicialización de contexto de ejecución
-        execution_ctx = main._create_execution_context(DATA_RESOURCE.ROOT_USER, conn)
+        execution_ctx = main._create_execution_context(REF.BASE_USERS.ROOT_USER, conn)
         # Se busca el usuario
         found_users: _Records[_base_users] = main._crud.search_read(
             execution_ctx,
@@ -143,7 +143,7 @@ def build_authenticate_user_callback(
     # Definición de la transacción
     def transaction(conn: Connection) -> int:
         # Inicialización de contexto de ejecución
-        execution_ctx = main._create_execution_context(DATA_RESOURCE.ROOT_USER, conn)
+        execution_ctx = main._create_execution_context(REF.BASE_USERS.ROOT_USER, conn)
 
         # Hasheo de la UUID de sesión
         hashed_session_uuid = (

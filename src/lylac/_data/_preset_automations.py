@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING
 from sqlalchemy import update
-from .._constants import DATA_RESOURCE
 from .._constants import FACTORY_FIELDS
 from .._constants import MODEL_NAME
 from .._constants import PRESET
+from .._constants import REF
 from .._constants import TTYPE_NAME
 from .._contexts import ExecutionContext
 from .._core import Metadata
@@ -54,7 +54,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
     # Evaluación del tipo de campo en base a quién lo crea
     field_state = (
         'base'
-            if ctx.uid == ctx.get_resource_id(DATA_RESOURCE.ROOT_USER)
+            if ctx.uid == ctx.get_resource_id(REF.BASE_USERS.ROOT_USER)
             else 'generic'
     )
 
@@ -116,7 +116,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
                 'label': 'Usuario de creación',
                 'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_id,
-                'related_model_id': ctx.get_resource_id('base_model.base_users'),
+                'related_model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USERS),
                 'on_delete': 'restrict',
                 'readonly': True,
                 'state': field_state,
@@ -126,7 +126,7 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
                 'label': 'Usuario de modificación',
                 'ttype': TTYPE_NAME.MANY2ONE,
                 'model_id': model_id,
-                'related_model_id': ctx.get_resource_id('base_model.base_users'),
+                'related_model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USERS),
                 'on_delete': 'restrict',
                 'readonly': True,
                 'state': field_state,

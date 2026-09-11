@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
-from .._constants import DATA_RESOURCE
 from .._constants import MODEL_NAME
 from .._constants import RELATION_ACTION_NAME
+from .._constants import REF
 from .._constants import TTYPE_NAME
 
 if TYPE_CHECKING:
@@ -21,67 +21,67 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                     RELATION_ACTION_NAME.CREATE: [
                         {
                             'name': 'base_users__user',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USERS),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USERS),
                             'perm_read': True,
                         },
                         {
                             'name': 'base_model__user',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_MODEL),
                             'perm_read': True,
                         },
                         {
                             'name': 'base_model_field__user',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL_FIELD),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_MODEL_FIELD),
                             'perm_read': True,
                         },
                         {
                             'name': 'base_model_field_selection__user',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL_FIELD_SELECTION),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_MODEL_FIELD_SELECTION),
                             'perm_read': True,
                         },
                         {
                             'name': 'base_model_data__user',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL_DATA),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_MODEL_DATA),
                             'perm_read': True,
                         },
                         {
                             'name': 'base_model_data_process__user',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL_DATA_PROCESS),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_MODEL_DATA_PROCESS),
                             'perm_read': True,
                         },
                         {
                             'name': 'base_model_data_process_step__user',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL_DATA_PROCESS_STEP),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_MODEL_DATA_PROCESS_STEP),
                             'perm_read': True,
                         },
                         {
                             'name': 'base_model_data_process_step_record__user',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL_DATA_PROCESS_STEP_RECORD),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_MODEL_DATA_PROCESS_STEP_RECORD),
                             'perm_read': True,
                         },
                         {
                             'name': 'base_user_session__user',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_SESSION),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_SESSION),
                             'perm_read': True,
                         },
                         {
                             'name': 'base_user_access__user',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_ACCESS),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_ACCESS),
                             'perm_read': True,
                         },
                         {
                             'name': 'base_user_groups__user',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_GROUPS),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_GROUPS),
                             'perm_read': True,
                         },
                         {
                             'name': 'base_users_role__user',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USERS_ROLE),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USERS_ROLE),
                             'perm_read': True,
                         },
                         {
                             'name': 'base_users_update_password__user',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USERS_UPDATE_PASSWORD),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USERS_UPDATE_PASSWORD),
                             'perm_create': True,
                             'perm_read': True,
                             'perm_delete': True,
@@ -97,7 +97,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                     RELATION_ACTION_NAME.CREATE: [
                         {
                             'name': 'base_model__admin',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_MODEL),
                             'perm_create': True,
                             'perm_read': True,
                             'perm_update': True,
@@ -105,7 +105,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                         },
                         {
                             'name': 'base_model__admin',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL_FIELD),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_MODEL_FIELD),
                             'perm_create': True,
                             'perm_read': True,
                             'perm_update': True,
@@ -113,7 +113,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                         },
                         {
                             'name': 'base_model__admin',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL_FIELD_SELECTION),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_MODEL_FIELD_SELECTION),
                             'perm_create': True,
                             'perm_read': True,
                             'perm_update': True,
@@ -121,7 +121,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                         },
                         {
                             'name': 'base_model_data__admin',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL_DATA),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_MODEL_DATA),
                             'perm_create': True,
                             'perm_read': True,
                             'perm_update': True,
@@ -129,7 +129,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                         },
                         {
                             'name': 'base_model_data_process__admin',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL_DATA_PROCESS),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_MODEL_DATA_PROCESS),
                             'perm_create': True,
                             'perm_read': True,
                             'perm_update': True,
@@ -137,7 +137,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                         },
                         {
                             'name': 'base_model_data_process_step__admin',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL_DATA_PROCESS_STEP),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_MODEL_DATA_PROCESS_STEP),
                             'perm_create': True,
                             'perm_read': True,
                             'perm_update': True,
@@ -145,7 +145,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                         },
                         {
                             'name': 'base_model_data_process_step_record__admin',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL_DATA_PROCESS_STEP_RECORD),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_MODEL_DATA_PROCESS_STEP_RECORD),
                             'perm_create': True,
                             'perm_read': True,
                             'perm_update': True,
@@ -162,7 +162,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                     RELATION_ACTION_NAME.CREATE: [
                         {
                             'name': 'base_user_access__admin',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_ACCESS),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_ACCESS),
                             'perm_create': True,
                             'perm_read': True,
                             'perm_update': True,
@@ -170,7 +170,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                         },
                         {
                             'name': 'base_user_groups__admin',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_GROUPS),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_GROUPS),
                             'perm_create': True,
                             'perm_read': True,
                             'perm_update': True,
@@ -178,7 +178,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                         },
                         {
                             'name': 'base_users_role__admin',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USERS_ROLE),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USERS_ROLE),
                             'perm_create': True,
                             'perm_read': True,
                             'perm_update': True,
@@ -186,7 +186,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                         },
                         {
                             'name': 'base_rules__admin',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_RULES),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_RULES),
                             'perm_create': True,
                             'perm_read': True,
                             'perm_update': True,
@@ -203,7 +203,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                     RELATION_ACTION_NAME.CREATE: [
                         {
                             'name': 'base_users__admin',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USERS),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USERS),
                             'perm_create': True,
                             'perm_read': True,
                             'perm_update': True,
@@ -211,7 +211,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                         },
                         {
                             'name': 'base_users__admin',
-                            'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_SESSION),
+                            'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_SESSION),
                             'perm_create': True,
                             'perm_read': True,
                             'perm_update': True,
@@ -258,7 +258,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                             'name': 'model_id',
                             'label': 'Modelo',
                             'ttype': TTYPE_NAME.MANY2ONE,
-                            'related_model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL),
+                            'related_model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_MODEL),
                             'on_delete': 'cascade',
                             'is_required': True,
                             'nullable': False,
@@ -348,7 +348,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                             'name': 'model_id',
                             'label': 'Modelo',
                             'ttype': TTYPE_NAME.MANY2ONE,
-                            'related_model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_MODEL),
+                            'related_model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_MODEL),
                             'on_delete': 'cascade',
                             'nullable': False,
                             'is_required': True,
@@ -382,7 +382,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                             'name': 'group_id',
                             'label': 'Grupo',
                             'ttype': TTYPE_NAME.MANY2ONE,
-                            'related_model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_GROUPS),
+                            'related_model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_GROUPS),
                             'on_delete': 'cascade',
                             'is_required': True,
                             'nullable': False,
@@ -401,7 +401,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                         'name': 'group_ids',
                         'label': 'Grupos',
                         'ttype': TTYPE_NAME.MANY2MANY,
-                        'related_model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_GROUPS),
+                        'related_model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_GROUPS),
                     },
                 },
             },
@@ -410,14 +410,14 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
 
     ctx.update(
         MODEL_NAME.BASE_MODEL,
-        ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_GROUPS),
+        ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_GROUPS),
         {
             'field_ids': {
                 RELATION_ACTION_NAME.CREATE: {
                     'name': 'access_ids',
                     'label': 'Accesos',
                     'ttype': TTYPE_NAME.ONE2MANY,
-                    'related_model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_ACCESS),
+                    'related_model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_ACCESS),
                     'related_field': 'group_id',
                 },
             },
@@ -432,7 +432,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                 'name': 'role_ids',
                 'label': 'Roles',
                 'ttype': TTYPE_NAME.MANY2MANY,
-                'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USERS),
+                'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USERS),
                 'related_model_id': ctx.get_resource_id('base_model.base_users_role'),
             },
             # Creación de campo de reglas de registro en modelo de grupos de acceso
@@ -440,8 +440,8 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                 'name': 'rule_ids',
                 'label': 'Reglas de registro',
                 'ttype': TTYPE_NAME.MANY2MANY,
-                'model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_USER_GROUPS),
-                'related_model_id': ctx.get_resource_id(DATA_RESOURCE.MODEL.BASE_RULES)
+                'model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_GROUPS),
+                'related_model_id': ctx.get_resource_id(REF.BASE_MODEL.BASE_RULES)
             },
         ],
     )
@@ -452,7 +452,7 @@ def _create_user_roles(ctx: Lylac.TransactionContext):
     # Creación de rol de super usuario
     ctx.update(
         MODEL_NAME.BASE_USERS,
-        ctx.get_resource_id(DATA_RESOURCE.ROOT_USER),
+        ctx.get_resource_id(REF.BASE_USERS.ROOT_USER),
         {
             'role_ids': {
                 RELATION_ACTION_NAME.CREATE: {
@@ -474,7 +474,7 @@ def _create_user_roles(ctx: Lylac.TransactionContext):
     # Creación de rol de administrador de la base de datos
     ctx.update(
         MODEL_NAME.BASE_USERS,
-        ctx.get_resource_id(DATA_RESOURCE.ADMIN_USER),
+        ctx.get_resource_id(REF.BASE_USERS.ADMIN_USER),
         {
             'role_ids': {
                 RELATION_ACTION_NAME.CREATE: {

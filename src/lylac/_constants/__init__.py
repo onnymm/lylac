@@ -1,7 +1,6 @@
 from ._labels import ERROR_LABEL
 from ._labels import MONITOR
 from ._names import CRUD_METHOD_NAME
-from ._names import DATA_RESOURCE
 from ._names import FIELD_NAME
 from ._names import MODEL_NAME
 from ._names import FACTORY_FIELDS
@@ -16,6 +15,7 @@ from ._names import STATIC_FIELDS
 from ._names import TABLE_NAME
 from ._names import TRANSACTIONS
 from ._names import TTYPE_NAME
+from ._references import REF
 from ._values import DEFAULTS
 from ._values import ENCODE_REF
 from ._values import FIELD_SUFFIX
