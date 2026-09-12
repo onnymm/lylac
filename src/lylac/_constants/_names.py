@@ -49,7 +49,7 @@ class MODEL_NAME:
     """
     Sesiones de usuario.
     """
-    BASE_USER_ACCESS = 'base.user.access'
+    BASE_USERS_ACCESS = 'base.users.access'
     """
     Permisos de acceso.
     """
@@ -101,7 +101,7 @@ class MODEL_NAME:
 class TABLE_NAME:
     BASE_USERS = 'base_users'
     BASE_USER_SESSION = 'base_user_session'
-    BASE_USER_ACCESS = 'base_user_access'
+    BASE_USERS_ACCESS = 'base_users_access'
     BASE_USER_GROUPS = 'base_user_groups'
     BASE_USERS_ROLE = 'base_users_role'
     BASE_USERS_UPDATE_PASSWORD = 'base_users_update_password'

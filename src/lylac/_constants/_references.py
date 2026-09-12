@@ -5,7 +5,7 @@ class REF:
         ADMIN_USER = 'base_users.admin_user'
 
     class BASE_MODEL:
-        BASE_USER_ACCESS = 'base_model.base_user_access'
+        BASE_USERS_ACCESS = 'base_model.base_users_access'
         BASE_USER_GROUPS = 'base_model.base_user_groups'
         BASE_USERS = 'base_model.base_users'
         BASE_USERS_ROLE = 'base_model.base_users_role'

@@ -65,7 +65,7 @@ class CRUD(Generic[_M], _Properties):
         # Obtención del modelo de grupos de acceso
         base_user_groups = self._models_bearer.get_model(MODEL_NAME.BASE_USER_GROUPS)
         # Obtención del modelo de permisos de acceso
-        base_user_access = self._models_bearer.get_model(MODEL_NAME.BASE_USER_ACCESS)
+        base_users_access = self._models_bearer.get_model(MODEL_NAME.BASE_USERS_ACCESS)
         # Obtención del modelo de modelos
         base_model = self._models_bearer.get_model(MODEL_NAME.BASE_MODEL)
 
@@ -84,14 +84,14 @@ class CRUD(Generic[_M], _Properties):
         base_model__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_MODEL, FIELD_NAME.ID)
 
         # Obtención de instancia de ID de grupo
-        base_user_access__group_id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USER_ACCESS, 'group_id')
+        base_users_access__group_id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_ACCESS, 'group_id')
         # Obtención de instancia de modelo vinculado
-        base_user_access__model_id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USER_ACCESS, 'model_id')
+        base_users_access__model_id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_ACCESS, 'model_id')
         # Obtención de instancia de nombre de modelo
         base_model__model = self._models_bearer.get_field_instance(MODEL_NAME.BASE_MODEL, 'model')
 
         # Obtención de instancia de permiso
-        permission_instance = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USER_ACCESS, permission_column)
+        permission_instance = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_ACCESS, permission_column)
 
         # Construcción de query
         stmt = (
@@ -118,12 +118,12 @@ class CRUD(Generic[_M], _Properties):
                 m2m_base_users_role__group_ids.y == base_user_groups__id,
             )
             .outerjoin(
-                base_user_access,
-                base_user_groups__id == base_user_access__group_id,
+                base_users_access,
+                base_user_groups__id == base_users_access__group_id,
             )
             .outerjoin(
                 base_model,
-                base_user_access__model_id == base_model__id
+                base_users_access__model_id == base_model__id
             )
 
             # Donde...

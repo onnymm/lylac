@@ -75,7 +75,7 @@ class MODEL_FIELD_NAME:
         LABEL = 'label'
         GROUP_IDS = 'group_ids'
 
-    class BASE_USER_ACCESS(_FIELD_NAME):
+    class BASE_USERS_ACCESS(_FIELD_NAME):
         MODEL_ID = 'model_id'
         PERM_CREATE = 'perm_create'
         PERM_READ = 'perm_read'

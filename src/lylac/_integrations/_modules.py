@@ -94,7 +94,7 @@ class ModulesManager(Generic[_M]):
                 MODEL_NAME.BASE_MODEL: [],
                 MODEL_NAME.BASE_MODEL_FIELD: [],
                 MODEL_NAME.BASE_MODEL_FIELD_SELECTION: [],
-                MODEL_NAME.BASE_USER_ACCESS: [],
+                MODEL_NAME.BASE_USERS_ACCESS: [],
                 MODEL_NAME.BASE_USER_GROUPS: [],
                 MODEL_NAME.BASE_RULES: [],
             }
@@ -103,7 +103,7 @@ class ModulesManager(Generic[_M]):
                 MODEL_NAME.BASE_MODEL: 1,
                 MODEL_NAME.BASE_MODEL_FIELD: 1,
                 MODEL_NAME.BASE_MODEL_FIELD_SELECTION: 1,
-                MODEL_NAME.BASE_USER_ACCESS: 1,
+                MODEL_NAME.BASE_USERS_ACCESS: 1,
                 MODEL_NAME.BASE_USER_GROUPS: 1,
                 MODEL_NAME.BASE_RULES: 1,
             }
@@ -144,10 +144,10 @@ class ModulesManager(Generic[_M]):
                 },
             })
             step_ids.append({
-                'model_name': MODEL_NAME.BASE_USER_ACCESS,
+                'model_name': MODEL_NAME.BASE_USERS_ACCESS,
                 'sequence': 5,
                 'record_data_ids': {
-                    RELATION_ACTION_NAME.CREATE: record_data_ids[MODEL_NAME.BASE_USER_ACCESS],
+                    RELATION_ACTION_NAME.CREATE: record_data_ids[MODEL_NAME.BASE_USERS_ACCESS],
                 },
             })
             step_ids.append({
@@ -359,8 +359,8 @@ class ModulesManager(Generic[_M]):
                     sequence[MODEL_NAME.BASE_RULES] += 1
 
             # Búsqueda de los permisos de permiso
-            base_user_access__metadata = ctx.search_read(
-                MODEL_NAME.BASE_USER_ACCESS,
+            base_users_access__metadata = ctx.search_read(
+                MODEL_NAME.BASE_USERS_ACCESS,
                 [('model_id.model', 'in', model_names)],
                 [
                     'name',
@@ -388,7 +388,7 @@ class ModulesManager(Generic[_M]):
             group_ids: list[int] = []
 
             # Iteración por cada registro de permiso de acceso
-            for access_metadata_i in base_user_access__metadata:
+            for access_metadata_i in base_users_access__metadata:
                 # Remoción del valor de ID
                 del access_metadata_i['id']
                 # Obtención de la ID de grupo
@@ -400,24 +400,24 @@ class ModulesManager(Generic[_M]):
                 # Obtención del nombre del permiso de acceso
                 access_name = access_metadata_i['name']
                 # Construcción del nombre de recurso
-                base_user_access__res_name = f'base_user_access.{group_name}__{access_name}'
+                base_users_access__res_name = f'base_users_access.{group_name}__{access_name}'
                 # Construcción del registro de datos de modelo
-                base_user_access__model_data: _ModelData = {
-                    'name': base_user_access__res_name,
-                    'model_name': MODEL_NAME.BASE_USER_ACCESS,
+                base_users_access__model_data: _ModelData = {
+                    'name': base_users_access__res_name,
+                    'model_name': MODEL_NAME.BASE_USERS_ACCESS,
                 }
                 # Se añade éste a los datos de modelo
-                models_data.append(base_user_access__model_data)
+                models_data.append(base_users_access__model_data)
 
                 # Se añaden los datos del registro a crear
-                record_data_ids[MODEL_NAME.BASE_USER_ACCESS].append({
-                    'name': base_user_access__res_name,
-                    'sequence': sequence[MODEL_NAME.BASE_USER_ACCESS],
+                record_data_ids[MODEL_NAME.BASE_USERS_ACCESS].append({
+                    'name': base_users_access__res_name,
+                    'sequence': sequence[MODEL_NAME.BASE_USERS_ACCESS],
                     'data': access_metadata_i,
                 })
 
                 # Incremento en secuencia
-                sequence[MODEL_NAME.BASE_USER_ACCESS] += 1
+                sequence[MODEL_NAME.BASE_USERS_ACCESS] += 1
 
             # Búsqueda de los grupos mencionados por los accesos
             base_user_groups__metadata = ctx.search_read(

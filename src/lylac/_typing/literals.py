@@ -12,7 +12,7 @@ InitialModels = Literal[
     'base.users',
     'base.users.role',
     'base.users.update.password',
-    'base.user.access',
+    'base.users.access',
     'base.user.groups',
     'base.user.session',
 ]
