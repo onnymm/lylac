@@ -63,7 +63,7 @@ class CRUD(Generic[_M], _Properties):
         # Obtención del modelo de roles de usuario
         base_users_role = self._models_bearer.get_model(MODEL_NAME.BASE_USERS_ROLE)
         # Obtención del modelo de grupos de acceso
-        base_user_groups = self._models_bearer.get_model(MODEL_NAME.BASE_USER_GROUPS)
+        base_users_group = self._models_bearer.get_model(MODEL_NAME.BASE_USERS_GROUP)
         # Obtención del modelo de permisos de acceso
         base_users_access = self._models_bearer.get_model(MODEL_NAME.BASE_USERS_ACCESS)
         # Obtención del modelo de modelos
@@ -80,7 +80,7 @@ class CRUD(Generic[_M], _Properties):
         # Obtención de instancias de ID
         base_users__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS, FIELD_NAME.ID)
         base_users_role__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_ROLE, FIELD_NAME.ID)
-        base_user_groups__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USER_GROUPS, FIELD_NAME.ID)
+        base_users_group__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_GROUP, FIELD_NAME.ID)
         base_model__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_MODEL, FIELD_NAME.ID)
 
         # Obtención de instancia de ID de grupo
@@ -114,12 +114,12 @@ class CRUD(Generic[_M], _Properties):
                 base_users_role__id == m2m_base_users_role__group_ids.x,
             )
             .outerjoin(
-                base_user_groups,
-                m2m_base_users_role__group_ids.y == base_user_groups__id,
+                base_users_group,
+                m2m_base_users_role__group_ids.y == base_users_group__id,
             )
             .outerjoin(
                 base_users_access,
-                base_user_groups__id == base_users_access__group_id,
+                base_users_group__id == base_users_access__group_id,
             )
             .outerjoin(
                 base_model,
@@ -600,16 +600,16 @@ class CRUD(Generic[_M], _Properties):
         # Obtención de modelo de roles de usuario
         base_users_role = self._models_bearer.get_model(MODEL_NAME.BASE_USERS_ROLE)
         # Obtención de modelo de grupos de acceso
-        base_user_groups = self._models_bearer.get_model(MODEL_NAME.BASE_USER_GROUPS)
+        base_users_group = self._models_bearer.get_model(MODEL_NAME.BASE_USERS_GROUP)
         # Obtención de modelo de reglas de registro
         base_rules = self._models_bearer.get_model(MODEL_NAME.BASE_RULES)
         # Obtención de modelo de modelos
         base_model = self._models_bearer.get_model(MODEL_NAME.BASE_MODEL)
 
         # Obtención de relación de roles a grupos
-        m2m_base_users_role__base_user_groups = self._models_bearer.get_m2m_model(MODEL_NAME.BASE_USERS_ROLE, 'group_ids')
+        m2m_base_users_role__base_users_group = self._models_bearer.get_m2m_model(MODEL_NAME.BASE_USERS_ROLE, 'group_ids')
         # Obtención de relación de grupos a reglas de registro
-        m2m_base_user_groups__base_rules = self._models_bearer.get_m2m_model(MODEL_NAME.BASE_USER_GROUPS, 'rule_ids')
+        m2m_base_users_group__base_rules = self._models_bearer.get_m2m_model(MODEL_NAME.BASE_USERS_GROUP, 'rule_ids')
         # Obtención de relación de usuarios a roles
         m2m_base_users__base_users_role = self._models_bearer.get_m2m_model(MODEL_NAME.BASE_USERS, 'role_ids')
 
@@ -618,7 +618,7 @@ class CRUD(Generic[_M], _Properties):
         # Obtención de instancia de ID de rol
         base_users_role__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_ROLE, FIELD_NAME.ID)
         # Obtención de instancia de ID de grupo
-        base_user_groups__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USER_GROUPS, FIELD_NAME.ID)
+        base_users_group__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_GROUP, FIELD_NAME.ID)
         # Obtención de instancia de ID de regla de registro
         base_rules__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_RULES, FIELD_NAME.ID)
         # Obtención de instancia de ID de modelo
@@ -650,20 +650,20 @@ class CRUD(Generic[_M], _Properties):
                 m2m_base_users__base_users_role.y == base_users_role__id
             )
             .outerjoin(
-                m2m_base_users_role__base_user_groups,
-                base_users_role__id == m2m_base_users_role__base_user_groups.x,
+                m2m_base_users_role__base_users_group,
+                base_users_role__id == m2m_base_users_role__base_users_group.x,
             )
             .outerjoin(
-                base_user_groups,
-                m2m_base_users_role__base_user_groups.y == base_user_groups__id,
+                base_users_group,
+                m2m_base_users_role__base_users_group.y == base_users_group__id,
             )
             .outerjoin(
-                m2m_base_user_groups__base_rules,
-                base_user_groups__id == m2m_base_user_groups__base_rules.x,
+                m2m_base_users_group__base_rules,
+                base_users_group__id == m2m_base_users_group__base_rules.x,
             )
             .outerjoin(
                 base_rules,
-                m2m_base_user_groups__base_rules.y == base_rules__id,
+                m2m_base_users_group__base_rules.y == base_rules__id,
             )
             .outerjoin(
                 base_model,

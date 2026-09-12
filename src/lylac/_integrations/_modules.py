@@ -95,7 +95,7 @@ class ModulesManager(Generic[_M]):
                 MODEL_NAME.BASE_MODEL_FIELD: [],
                 MODEL_NAME.BASE_MODEL_FIELD_SELECTION: [],
                 MODEL_NAME.BASE_USERS_ACCESS: [],
-                MODEL_NAME.BASE_USER_GROUPS: [],
+                MODEL_NAME.BASE_USERS_GROUP: [],
                 MODEL_NAME.BASE_RULES: [],
             }
             # Inicialización de diccionario de secuencias
@@ -104,7 +104,7 @@ class ModulesManager(Generic[_M]):
                 MODEL_NAME.BASE_MODEL_FIELD: 1,
                 MODEL_NAME.BASE_MODEL_FIELD_SELECTION: 1,
                 MODEL_NAME.BASE_USERS_ACCESS: 1,
-                MODEL_NAME.BASE_USER_GROUPS: 1,
+                MODEL_NAME.BASE_USERS_GROUP: 1,
                 MODEL_NAME.BASE_RULES: 1,
             }
             # Inicialización de datos de proceso
@@ -137,10 +137,10 @@ class ModulesManager(Generic[_M]):
                 },
             })
             step_ids.append({
-                'model_name': MODEL_NAME.BASE_USER_GROUPS,
+                'model_name': MODEL_NAME.BASE_USERS_GROUP,
                 'sequence': 4,
                 'record_data_ids': {
-                    RELATION_ACTION_NAME.CREATE: record_data_ids[MODEL_NAME.BASE_USER_GROUPS],
+                    RELATION_ACTION_NAME.CREATE: record_data_ids[MODEL_NAME.BASE_USERS_GROUP],
                 },
             })
             step_ids.append({
@@ -376,7 +376,7 @@ class ModulesManager(Generic[_M]):
                         lambda ctx: ctx.case(
                             (
                                 ctx['group_id.id'] != None,
-                                ctx.concat(ENCODE_REF.START, 'base_user_groups.', ctx['group_id.name'], ENCODE_REF.END)
+                                ctx.concat(ENCODE_REF.START, 'base_users_group.', ctx['group_id.name'], ENCODE_REF.END)
                             )
                         )
                     ),
@@ -420,37 +420,37 @@ class ModulesManager(Generic[_M]):
                 sequence[MODEL_NAME.BASE_USERS_ACCESS] += 1
 
             # Búsqueda de los grupos mencionados por los accesos
-            base_user_groups__metadata = ctx.search_read(
-                MODEL_NAME.BASE_USER_GROUPS,
+            base_users_group__metadata = ctx.search_read(
+                MODEL_NAME.BASE_USERS_GROUP,
                 ['&', ('id', 'in', group_ids), ('name', '!=', 'basic_permissions')],
                 ['name', 'label'],
             )
 
             # Iteración por cada registro de grupo
-            for group_metadata_i in base_user_groups__metadata:
+            for group_metadata_i in base_users_group__metadata:
                 # Remoción del valor de ID
                 del group_metadata_i['id']
                 # Obtención del nombre del grupo
                 group_name = group_metadata_i['name']
                 # Construcción del nombre del recurso
-                base_user_groups__res_name = f'base_user_groups.{group_name}'
+                base_users_group__res_name = f'base_users_group.{group_name}'
                 # Construcción del registro de datos de modelo
-                base_user_groups__model_data: _ModelData = {
-                    'name': base_user_groups__res_name,
-                    'model_name': MODEL_NAME.BASE_USER_GROUPS,
+                base_users_group__model_data: _ModelData = {
+                    'name': base_users_group__res_name,
+                    'model_name': MODEL_NAME.BASE_USERS_GROUP,
                 }
                 # Se añade éste a los datos de modelo
-                models_data.append(base_user_groups__model_data)
+                models_data.append(base_users_group__model_data)
 
                 # Se añaden los datos del registro a crear
-                record_data_ids[MODEL_NAME.BASE_USER_GROUPS].append({
-                    'name': base_user_groups__res_name,
-                    'sequence': sequence[MODEL_NAME.BASE_USER_GROUPS],
+                record_data_ids[MODEL_NAME.BASE_USERS_GROUP].append({
+                    'name': base_users_group__res_name,
+                    'sequence': sequence[MODEL_NAME.BASE_USERS_GROUP],
                     'data': group_metadata_i,
                 })
 
                 # Incremento en secuencia
-                sequence[MODEL_NAME.BASE_USER_GROUPS] += 1
+                sequence[MODEL_NAME.BASE_USERS_GROUP] += 1
 
             # Construcción del objeto de datos de módulo a exportar
             module_data = {

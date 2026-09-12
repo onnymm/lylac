@@ -12,13 +12,13 @@ if TYPE_CHECKING:
 def _create_permission_groups(ctx: Lylac.TransactionContext):
 
     ctx.create(
-        MODEL_NAME.BASE_USER_GROUPS,
+        MODEL_NAME.BASE_USERS_GROUP,
         [
             # Permisos básicos
             {
-                MODEL_FIELD_NAME.BASE_USER_GROUPS.NAME: 'basic_permissions',
-                MODEL_FIELD_NAME.BASE_USER_GROUPS.LABEL: 'Permisos básicos',
-                MODEL_FIELD_NAME.BASE_USER_GROUPS.ACCESS_IDS: {
+                MODEL_FIELD_NAME.BASE_USERS_GROUP.NAME: 'basic_permissions',
+                MODEL_FIELD_NAME.BASE_USERS_GROUP.LABEL: 'Permisos básicos',
+                MODEL_FIELD_NAME.BASE_USERS_GROUP.ACCESS_IDS: {
                     RELATION_ACTION_NAME.CREATE: [
                         {
                             MODEL_FIELD_NAME.BASE_MODEL_FIELD.NAME: 'base_users__user',
@@ -71,8 +71,8 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                             MODEL_FIELD_NAME.BASE_USERS_ACCESS.PERM_READ: True,
                         },
                         {
-                            MODEL_FIELD_NAME.BASE_USERS_ACCESS.NAME: 'base_user_groups__user',
-                            MODEL_FIELD_NAME.BASE_USERS_ACCESS.MODEL_ID: ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_GROUPS),
+                            MODEL_FIELD_NAME.BASE_USERS_ACCESS.NAME: 'base_users_group__user',
+                            MODEL_FIELD_NAME.BASE_USERS_ACCESS.MODEL_ID: ctx.get_resource_id(REF.BASE_MODEL.BASE_USERS_GROUP),
                             MODEL_FIELD_NAME.BASE_USERS_ACCESS.PERM_READ: True,
                         },
                         {
@@ -92,9 +92,9 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
             },
             # Administrador de la estructura de la base de datos
             {
-                MODEL_FIELD_NAME.BASE_USER_GROUPS.NAME: 'database_structure_admin',
-                MODEL_FIELD_NAME.BASE_USER_GROUPS.LABEL: 'Administrador de la estructura de la base de datos',
-                MODEL_FIELD_NAME.BASE_USER_GROUPS.ACCESS_IDS: {
+                MODEL_FIELD_NAME.BASE_USERS_GROUP.NAME: 'database_structure_admin',
+                MODEL_FIELD_NAME.BASE_USERS_GROUP.LABEL: 'Administrador de la estructura de la base de datos',
+                MODEL_FIELD_NAME.BASE_USERS_GROUP.ACCESS_IDS: {
                     RELATION_ACTION_NAME.CREATE: [
                         {
                             MODEL_FIELD_NAME.BASE_USERS_ACCESS.NAME: 'base_model__admin',
@@ -157,9 +157,9 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
             },
             # Administrador de permisos de usuarios
             {
-                MODEL_FIELD_NAME.BASE_USER_GROUPS.NAME: 'access_admin',
-                MODEL_FIELD_NAME.BASE_USER_GROUPS.LABEL: 'Administrador de permisos de usuarios',
-                MODEL_FIELD_NAME.BASE_USER_GROUPS.ACCESS_IDS: {
+                MODEL_FIELD_NAME.BASE_USERS_GROUP.NAME: 'access_admin',
+                MODEL_FIELD_NAME.BASE_USERS_GROUP.LABEL: 'Administrador de permisos de usuarios',
+                MODEL_FIELD_NAME.BASE_USERS_GROUP.ACCESS_IDS: {
                     RELATION_ACTION_NAME.CREATE: [
                         {
                             MODEL_FIELD_NAME.BASE_USERS_ACCESS.NAME: 'base_users_access__admin',
@@ -170,8 +170,8 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                             MODEL_FIELD_NAME.BASE_USERS_ACCESS.PERM_DELETE: True,
                         },
                         {
-                            MODEL_FIELD_NAME.BASE_USERS_ACCESS.NAME: 'base_user_groups__admin',
-                            MODEL_FIELD_NAME.BASE_USERS_ACCESS.MODEL_ID: ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_GROUPS),
+                            MODEL_FIELD_NAME.BASE_USERS_ACCESS.NAME: 'base_users_group__admin',
+                            MODEL_FIELD_NAME.BASE_USERS_ACCESS.MODEL_ID: ctx.get_resource_id(REF.BASE_MODEL.BASE_USERS_GROUP),
                             MODEL_FIELD_NAME.BASE_USERS_ACCESS.PERM_CREATE: True,
                             MODEL_FIELD_NAME.BASE_USERS_ACCESS.PERM_READ: True,
                             MODEL_FIELD_NAME.BASE_USERS_ACCESS.PERM_UPDATE: True,
@@ -198,9 +198,9 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
             },
             # Administrador de usuarios
             {
-                MODEL_FIELD_NAME.BASE_USER_GROUPS.NAME: 'users_admin',
-                MODEL_FIELD_NAME.BASE_USER_GROUPS.LABEL: 'Administrador de usuarios',
-                MODEL_FIELD_NAME.BASE_USER_GROUPS.ACCESS_IDS: {
+                MODEL_FIELD_NAME.BASE_USERS_GROUP.NAME: 'users_admin',
+                MODEL_FIELD_NAME.BASE_USERS_GROUP.LABEL: 'Administrador de usuarios',
+                MODEL_FIELD_NAME.BASE_USERS_GROUP.ACCESS_IDS: {
                     RELATION_ACTION_NAME.CREATE: [
                         {
                             MODEL_FIELD_NAME.BASE_USERS_ACCESS.NAME: 'base_users__admin',
@@ -232,8 +232,8 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
         [
             # Creación de modelo de grupos de acceso
             {
-                MODEL_FIELD_NAME.BASE_MODEL.NAME: 'base_user_groups',
-                MODEL_FIELD_NAME.BASE_MODEL.MODEL: MODEL_NAME.BASE_USER_GROUPS,
+                MODEL_FIELD_NAME.BASE_MODEL.NAME: 'base_users_group',
+                MODEL_FIELD_NAME.BASE_MODEL.MODEL: MODEL_NAME.BASE_USERS_GROUP,
                 MODEL_FIELD_NAME.BASE_MODEL.LABEL: 'Grupos de acceso',
                 MODEL_FIELD_NAME.BASE_MODEL.DESCRIPTION: 'Registros de grupos de acceso.',
                 MODEL_FIELD_NAME.BASE_MODEL.HAS_LABEL: True,
@@ -383,7 +383,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                             MODEL_FIELD_NAME.BASE_MODEL_FIELD.NAME: 'group_id',
                             MODEL_FIELD_NAME.BASE_MODEL_FIELD.LABEL: 'Grupo',
                             MODEL_FIELD_NAME.BASE_MODEL_FIELD.TTYPE: TTYPE_NAME.MANY2ONE,
-                            MODEL_FIELD_NAME.BASE_MODEL_FIELD.RELATED_MODEL_ID: ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_GROUPS),
+                            MODEL_FIELD_NAME.BASE_MODEL_FIELD.RELATED_MODEL_ID: ctx.get_resource_id(REF.BASE_MODEL.BASE_USERS_GROUP),
                             MODEL_FIELD_NAME.BASE_MODEL_FIELD.ON_DELETE: 'cascade',
                             MODEL_FIELD_NAME.BASE_MODEL_FIELD.IS_REQUIRED: True,
                             MODEL_FIELD_NAME.BASE_MODEL_FIELD.NULLABLE: False,
@@ -404,7 +404,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                             MODEL_FIELD_NAME.BASE_MODEL_FIELD.NAME: 'group_ids',
                             MODEL_FIELD_NAME.BASE_MODEL_FIELD.LABEL: 'Grupos',
                             MODEL_FIELD_NAME.BASE_MODEL_FIELD.TTYPE: TTYPE_NAME.MANY2MANY,
-                            MODEL_FIELD_NAME.BASE_MODEL_FIELD.RELATED_MODEL_ID: ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_GROUPS),
+                            MODEL_FIELD_NAME.BASE_MODEL_FIELD.RELATED_MODEL_ID: ctx.get_resource_id(REF.BASE_MODEL.BASE_USERS_GROUP),
                         }
                     ],
                 },
@@ -414,7 +414,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
 
     ctx.update(
         MODEL_NAME.BASE_MODEL,
-        ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_GROUPS),
+        ctx.get_resource_id(REF.BASE_MODEL.BASE_USERS_GROUP),
         {
             MODEL_FIELD_NAME.BASE_MODEL.FIELD_IDS: {
                 RELATION_ACTION_NAME.CREATE: {
@@ -444,7 +444,7 @@ def _build_models_structure(ctx: Lylac.TransactionContext):
                 MODEL_FIELD_NAME.BASE_MODEL_FIELD.NAME: 'rule_ids',
                 MODEL_FIELD_NAME.BASE_MODEL_FIELD.LABEL: 'Reglas de registro',
                 MODEL_FIELD_NAME.BASE_MODEL_FIELD.TTYPE: TTYPE_NAME.MANY2MANY,
-                MODEL_FIELD_NAME.BASE_MODEL_FIELD.MODEL_ID: ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_GROUPS),
+                MODEL_FIELD_NAME.BASE_MODEL_FIELD.MODEL_ID: ctx.get_resource_id(REF.BASE_MODEL.BASE_USERS_GROUP),
                 MODEL_FIELD_NAME.BASE_MODEL_FIELD.RELATED_MODEL_ID: ctx.get_resource_id(REF.BASE_MODEL.BASE_RULES)
             },
         ],
@@ -464,10 +464,10 @@ def _create_user_roles(ctx: Lylac.TransactionContext):
                     MODEL_FIELD_NAME.BASE_USERS_ROLE.LABEL: 'Superusuario',
                     MODEL_FIELD_NAME.BASE_USERS_ROLE.GROUP_IDS: {
                         RELATION_ACTION_NAME.ADD: [
-                            ctx.get_resource_id(REF.BASE_USER_GROUPS.BASIC_PERMISSIONS),
-                            ctx.get_resource_id(REF.BASE_USER_GROUPS.DATABASE_STRUCTURE_ADMIN),
-                            ctx.get_resource_id(REF.BASE_USER_GROUPS.ACCESS_ADMIN),
-                            ctx.get_resource_id(REF.BASE_USER_GROUPS.USERS_ADMIN),
+                            ctx.get_resource_id(REF.BASE_USERS_GROUP.BASIC_PERMISSIONS),
+                            ctx.get_resource_id(REF.BASE_USERS_GROUP.DATABASE_STRUCTURE_ADMIN),
+                            ctx.get_resource_id(REF.BASE_USERS_GROUP.ACCESS_ADMIN),
+                            ctx.get_resource_id(REF.BASE_USERS_GROUP.USERS_ADMIN),
                         ],
                     },
                 },
@@ -486,10 +486,10 @@ def _create_user_roles(ctx: Lylac.TransactionContext):
                     MODEL_FIELD_NAME.BASE_USERS_ROLE.LABEL: 'Administrador de la base de datos',
                     MODEL_FIELD_NAME.BASE_USERS_ROLE.GROUP_IDS: {
                         RELATION_ACTION_NAME.ADD: [
-                            ctx.get_resource_id(REF.BASE_USER_GROUPS.BASIC_PERMISSIONS),
-                            ctx.get_resource_id(REF.BASE_USER_GROUPS.DATABASE_STRUCTURE_ADMIN),
-                            ctx.get_resource_id(REF.BASE_USER_GROUPS.ACCESS_ADMIN),
-                            ctx.get_resource_id(REF.BASE_USER_GROUPS.USERS_ADMIN),
+                            ctx.get_resource_id(REF.BASE_USERS_GROUP.BASIC_PERMISSIONS),
+                            ctx.get_resource_id(REF.BASE_USERS_GROUP.DATABASE_STRUCTURE_ADMIN),
+                            ctx.get_resource_id(REF.BASE_USERS_GROUP.ACCESS_ADMIN),
+                            ctx.get_resource_id(REF.BASE_USERS_GROUP.USERS_ADMIN),
                         ],
                     },
                 },

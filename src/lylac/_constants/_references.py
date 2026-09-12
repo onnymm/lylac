@@ -6,7 +6,7 @@ class REF:
 
     class BASE_MODEL:
         BASE_USERS_ACCESS = 'base_model.base_users_access'
-        BASE_USER_GROUPS = 'base_model.base_user_groups'
+        BASE_USERS_GROUP = 'base_model.base_users_group'
         BASE_USERS = 'base_model.base_users'
         BASE_USERS_ROLE = 'base_model.base_users_role'
         BASE_USERS_UPDATE_PASSWORD = 'base_model.base_users_update_password'
@@ -153,8 +153,8 @@ class REF:
         BASE_MODEL_FIELD__STATE__BASE = 'base_model_field_selection.base_model_field__state__base'
         BASE_MODEL_FIELD__STATE__GENERIC = 'base_model_field_selection.base_model_field__state__generic'
 
-    class BASE_USER_GROUPS:
-        BASIC_PERMISSIONS = 'base_user_groups.basic_permissions'
-        DATABASE_STRUCTURE_ADMIN = 'base_user_groups.database_structure_admin'
-        ACCESS_ADMIN = 'base_user_groups.access_admin'
-        USERS_ADMIN = 'base_user_groups.users_admin'
+    class BASE_USERS_GROUP:
+        BASIC_PERMISSIONS = 'base_users_group.basic_permissions'
+        DATABASE_STRUCTURE_ADMIN = 'base_users_group.database_structure_admin'
+        ACCESS_ADMIN = 'base_users_group.access_admin'
+        USERS_ADMIN = 'base_users_group.users_admin'

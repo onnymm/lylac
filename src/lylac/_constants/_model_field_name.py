@@ -67,7 +67,7 @@ class MODEL_FIELD_NAME:
         SEQUENCE = 'sequence'
         DATA = 'data'
 
-    class BASE_USER_GROUPS(_FIELD_NAME):
+    class BASE_USERS_GROUP(_FIELD_NAME):
         LABEL = 'label'
         ACCESS_IDS = 'access_ids'
 

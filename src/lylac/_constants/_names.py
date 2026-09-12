@@ -53,7 +53,7 @@ class MODEL_NAME:
     """
     Permisos de acceso.
     """
-    BASE_USER_GROUPS = 'base.user.groups'
+    BASE_USERS_GROUP = 'base.users.group'
     """
     Grupos de acceso.
     """
@@ -102,7 +102,7 @@ class TABLE_NAME:
     BASE_USERS = 'base_users'
     BASE_USER_SESSION = 'base_user_session'
     BASE_USERS_ACCESS = 'base_users_access'
-    BASE_USER_GROUPS = 'base_user_groups'
+    BASE_USERS_GROUP = 'base_users_group'
     BASE_USERS_ROLE = 'base_users_role'
     BASE_USERS_UPDATE_PASSWORD = 'base_users_update_password'
     BASE_MODEL = 'base_model'

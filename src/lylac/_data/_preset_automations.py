@@ -329,7 +329,7 @@ def _base_users_role__register_model_data(ctx: AutomationContext) -> None:
     # Creación de registros
     ctx.create(MODEL_NAME.BASE_MODEL_DATA, data_to_create)
 
-def _base_user_groups__register_model_data(ctx: AutomationContext) -> None:
+def _base_users_group__register_model_data(ctx: AutomationContext) -> None:
 
     # Inicialización de lista de registros a crear
     data_to_create: list[dict] = []
@@ -343,7 +343,7 @@ def _base_user_groups__register_model_data(ctx: AutomationContext) -> None:
         # Se comprueba que no exista el registro ya creado
         count = ctx.search_count(
             MODEL_NAME.BASE_MODEL_DATA,
-            [('name', '=', f'base_user_groups.{name}')],
+            [('name', '=', f'base_users_group.{name}')],
         )
         # Si hay existencia de registros...
         if count:
@@ -352,8 +352,8 @@ def _base_user_groups__register_model_data(ctx: AutomationContext) -> None:
         # Creación de los datos de registro de modelo
         new_record = {
             'res_id': record_id,
-            'name': f'base_user_groups.{name}',
-            'model_name': MODEL_NAME.BASE_USER_GROUPS,
+            'name': f'base_users_group.{name}',
+            'model_name': MODEL_NAME.BASE_USERS_GROUP,
         }
         # Se añade éste a la lista de registros a crear
         data_to_create.append(new_record)
@@ -491,11 +491,11 @@ DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[Ini
 
     },
 
-    MODEL_NAME.BASE_USER_GROUPS: {
+    MODEL_NAME.BASE_USERS_GROUP: {
 
-        _base_user_groups__register_model_data.__name__: AutomationProperties(
-            callback= _base_user_groups__register_model_data,
-            model_name= MODEL_NAME.BASE_USER_GROUPS,
+        _base_users_group__register_model_data.__name__: AutomationProperties(
+            callback= _base_users_group__register_model_data,
+            model_name= MODEL_NAME.BASE_USERS_GROUP,
             fields= (
                 'name',
                 ('id', 'res_id'),
