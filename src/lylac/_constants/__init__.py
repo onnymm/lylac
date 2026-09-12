@@ -1,5 +1,6 @@
 from ._labels import ERROR_LABEL
 from ._labels import MONITOR
+from ._model_field_name import MODEL_FIELD_NAME
 from ._names import CRUD_METHOD_NAME
 from ._names import FIELD_NAME
 from ._names import MODEL_NAME

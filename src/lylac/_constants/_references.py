@@ -151,3 +151,9 @@ class REF:
         BASE_MODEL_FIELD__TTYPE__JSON = 'base_model_field_selection.base_model_field__ttype__json'
         BASE_MODEL_FIELD__STATE__BASE = 'base_model_field_selection.base_model_field__state__base'
         BASE_MODEL_FIELD__STATE__GENERIC = 'base_model_field_selection.base_model_field__state__generic'
+
+    class BASE_USER_GROUPS:
+        BASIC_PERMISSIONS = 'base_user_groups.basic_permissions'
+        DATABASE_STRUCTURE_ADMIN = 'base_user_groups.database_structure_admin'
+        ACCESS_ADMIN = 'base_user_groups.access_admin'
+        USERS_ADMIN = 'base_user_groups.users_admin'
