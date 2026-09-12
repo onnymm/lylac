@@ -61,8 +61,8 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                             MODEL_FIELD_NAME.BASE_USERS_ACCESS.PERM_READ: True,
                         },
                         {
-                            MODEL_FIELD_NAME.BASE_USERS_ACCESS.NAME: 'base_user_session__user',
-                            MODEL_FIELD_NAME.BASE_USERS_ACCESS.MODEL_ID: ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_SESSION),
+                            MODEL_FIELD_NAME.BASE_USERS_ACCESS.NAME: 'base_users_session__user',
+                            MODEL_FIELD_NAME.BASE_USERS_ACCESS.MODEL_ID: ctx.get_resource_id(REF.BASE_MODEL.BASE_USERS_SESSION),
                             MODEL_FIELD_NAME.BASE_USERS_ACCESS.PERM_READ: True,
                         },
                         {
@@ -212,7 +212,7 @@ def _create_permission_groups(ctx: Lylac.TransactionContext):
                         },
                         {
                             MODEL_FIELD_NAME.BASE_USERS_ACCESS.NAME: 'base_users__admin',
-                            MODEL_FIELD_NAME.BASE_USERS_ACCESS.MODEL_ID: ctx.get_resource_id(REF.BASE_MODEL.BASE_USER_SESSION),
+                            MODEL_FIELD_NAME.BASE_USERS_ACCESS.MODEL_ID: ctx.get_resource_id(REF.BASE_MODEL.BASE_USERS_SESSION),
                             MODEL_FIELD_NAME.BASE_USERS_ACCESS.PERM_CREATE: True,
                             MODEL_FIELD_NAME.BASE_USERS_ACCESS.PERM_READ: True,
                             MODEL_FIELD_NAME.BASE_USERS_ACCESS.PERM_UPDATE: True,

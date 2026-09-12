@@ -14,7 +14,7 @@ InitialModels = Literal[
     'base.users.update.password',
     'base.users.access',
     'base.users.group',
-    'base.user.session',
+    'base.users.session',
 ]
 
 TTypeName = Literal[

@@ -120,7 +120,7 @@ def build_login_callback(
         # Creación de sesión de usuario
         main._crud.create(
             execution_ctx,
-            MODEL_NAME.BASE_USER_SESSION,
+            MODEL_NAME.BASE_USERS_SESSION,
             {
                 'name': hashed_session_uuid,
                 'user_id': user_id,
@@ -154,7 +154,7 @@ def build_authenticate_user_callback(
         # Búsqueda y lectura de la sesión
         found: _Records[_found_session] = main._crud.search_read(
             execution_ctx,
-            MODEL_NAME.BASE_USER_SESSION,
+            MODEL_NAME.BASE_USERS_SESSION,
             [('name', '=', hashed_session_uuid)],
             [
                 ('is_active_session', TTYPE_NAME.BOOLEAN, lambda ctx: ctx['expires_at'] > datetime.now()),

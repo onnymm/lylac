@@ -169,7 +169,7 @@ class Metadata:
         ModelTemplate,
         _Base,
     ):
-        __tablename__ = TABLE_NAME.BASE_USER_SESSION
+        __tablename__ = TABLE_NAME.BASE_USERS_SESSION
         # Usuario
         user_id: Mapped[int] = mapped_column(ForeignKey(f'{TABLE_NAME.BASE_USERS}.id', ondelete= 'CASCADE'))
         # Tiempo de expiración

@@ -24,7 +24,7 @@ class ComputeEngine(Generic[_M]):
         # Inicialización de centro de funciones de campos computados
         self.hub = {
             MODEL_NAME.BASE_USERS: {},
-            MODEL_NAME.BASE_USER_SESSION: {},
+            MODEL_NAME.BASE_USERS_SESSION: {},
             MODEL_NAME.BASE_MODEL: {},
             MODEL_NAME.BASE_MODEL_FIELD: {},
             MODEL_NAME.BASE_MODEL_FIELD_SELECTION: {},

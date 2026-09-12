@@ -13,7 +13,7 @@ DEFAULT_COMPUTATION_CALLBACKS: ComputeContextHub[_M] = {
 
     },
 
-    MODEL_NAME.BASE_USER_SESSION: {
+    MODEL_NAME.BASE_USERS_SESSION: {
 
         'expires_at': (
             lambda ctx: ctx['create_date'] + ctx['validity_time']

@@ -18,7 +18,7 @@ from .._typing.type_parameters import _M
 class ModelsBearer(Generic[_M]):
     _index: _ModelIndex[_M] = {
         MODEL_NAME.BASE_USERS: Metadata.BaseUsers,
-        MODEL_NAME.BASE_USER_SESSION: Metadata.BaseUserSession,
+        MODEL_NAME.BASE_USERS_SESSION: Metadata.BaseUserSession,
         MODEL_NAME.BASE_MODEL: Metadata.BaseModel,
         MODEL_NAME.BASE_MODEL_FIELD: Metadata.BaseModelField,
         MODEL_NAME.BASE_MODEL_FIELD_SELECTION: Metadata.BaseModelFieldSelection,

@@ -45,7 +45,7 @@ class MODEL_NAME:
     """
     Usuarios de la base de datos.
     """
-    BASE_USER_SESSION = 'base.user.session'
+    BASE_USERS_SESSION = 'base.users.session'
     """
     Sesiones de usuario.
     """
@@ -100,7 +100,7 @@ class MODEL_NAME:
 
 class TABLE_NAME:
     BASE_USERS = 'base_users'
-    BASE_USER_SESSION = 'base_user_session'
+    BASE_USERS_SESSION = 'base_users_session'
     BASE_USERS_ACCESS = 'base_users_access'
     BASE_USERS_GROUP = 'base_users_group'
     BASE_USERS_ROLE = 'base_users_role'
@@ -139,7 +139,7 @@ class CRUD_METHOD_NAME:
 
 FACTORY_MODELS = [
     MODEL_NAME.BASE_USERS,
-    MODEL_NAME.BASE_USER_SESSION,
+    MODEL_NAME.BASE_USERS_SESSION,
     MODEL_NAME.BASE_MODEL,
     MODEL_NAME.BASE_MODEL_FIELD,
     MODEL_NAME.BASE_MODEL_FIELD_SELECTION,
