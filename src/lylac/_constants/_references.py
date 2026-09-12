@@ -10,6 +10,7 @@ class REF:
         BASE_USERS = 'base_model.base_users'
         BASE_USERS_ROLE = 'base_model.base_users_role'
         BASE_USERS_UPDATE_PASSWORD = 'base_model.base_users_update_password'
+        BASE_USER_SESSION = 'base_model.base_user_session'
         BASE_MODEL = 'base_model.base_model'
         BASE_MODEL_FIELD = 'base_model.base_model_field'
         BASE_MODEL_FIELD_SELECTION = 'base_model.base_model_field_selection'
@@ -17,7 +18,7 @@ class REF:
         BASE_MODEL_DATA_PROCESS = 'base_model.base_model_data_process'
         BASE_MODEL_DATA_PROCESS_STEP = 'base_model.base_model_data_process_step'
         BASE_MODEL_DATA_PROCESS_STEP_RECORD = 'base_model.base_model_data_process_step_record'
-        BASE_USER_SESSION = 'base_model.base_user_session'
+        BASE_RULES = 'base_model.base_rules'
 
     class BASE_MODEL_FIELD:
         BASE_USERS__ID = 'base_model_field.base_users__id'
