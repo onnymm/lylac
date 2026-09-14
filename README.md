@@ -6,6 +6,7 @@
 - **[create — Creación de registros](#create-creación-de-uno-o-muchos-registros)**
 - **[search — Búsqueda de registros](#search-búsqueda-de-registros)**
 - **[read — Lectura de registros](#read-lectura-de-registros)**
+- **[search_read — Búsqueda y lectura de registros](#search_read-búsqueda-y-lectura-de-registros)**
 
 **INICIALIZACIÓN**
 - **[Variables de entorno](#variables-de-entorno)**
@@ -53,6 +54,8 @@ token = db.login('onnymm', 'contraseñasecreta123')
 > - `IncorrectPasswordError`: El usuario fue encontrado y está activo pero la contraseña no coincide con la almacenada en la base de datos.
 
 > ℹ️ Es decisión del desarrollador proveer o no la información sobre la falla encontrada en el inicio de sesión, por ejemplo, si desea decirle al usuario que su cuenta no existe o solo hacerle saber que "El usuario o la contraseña no son correctos".
+
+----
 
 ### `create` Creación de uno o muchos registros
 Este método realiza la creación de uno o muchos registros.
@@ -140,6 +143,8 @@ db.search(session_uuid, 'base.users', limit= 3)
 - `offset` **(Opcional)**: *int* — Desfase de resultados retornados.
 - `limit` **(Opcional)**: *int* — Límite de cantidad de resultados retornados.
 
+----
+
 ### `read` Lectura de registros
 Este método retorna una lista de diccionarios con el contenido de los registros de una tabla de la base de datos a partir de una lista de IDs, en el orden en el que se especificaron los campos o todos los campos en caso de no haber sido especificados.
 
@@ -168,6 +173,93 @@ db.read(session_uuid, 'base.users', [2, 3], ['login', 'create_date'])
 - `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a leer.
 - `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer.
+- `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
+- `ascending` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
+
+### `search_read` Búsqueda y lectura de registros
+Este método retorna una lista de diccionarios con el contenido de los registros de una tabla de la base de datos, en el orden en el que se especificaron los campos o todos los campos en caso de no haber sido especificados.
+
+Uso:
+```py
+# Ejemplo 1
+db.search_read(session_uuid, 'base.users')
+# [
+#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+#   ...
+# ]
+
+# Ejemplo 2
+db.search_read(session_uuid, 'base.users', [('user', '=', 'onnymm')])
+# [{'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...}]
+
+# Ejemplo 3
+db.search_read(session_uuid, 'base.users', fields= ['user', 'create_date'])
+# [
+#   {'id': 2, 'login': 'onnymm', 'create_date': '2026-09-12 12:15:36' ...},
+#   {'id': 3, 'login': 'lumii', 'create_date': '2026-09-12 13:28:14 ...},
+#   ...
+# ]
+```
+
+#### Desfase de registros para paginación
+Este parámetro sirve para retornar los registros a partir del índice indicado por éste. Suponiendo que una búsqueda normal arrojaría los siguientes resultados:
+```py
+db.search_read(session_uuid, 'base.users')
+# [
+#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+#   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+#   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+#   ...
+# ]
+```
+
+Se puede especificar que el retorno de los registros considerará solo a partir desde cierto registro, como por ejemplo lo siguiente:
+```py
+db.search_read(session_uuid, 'base.users', offset= 2)
+# [
+#   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+#   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+#   {'id': 7, 'name': 'Sarko Zuimx', 'login': 'sarzu', ...},
+#   {'id': 8, 'name': 'Leo Minnix', 'login': 'minnleo', ...},
+#   ...
+# ]
+```
+
+#### Límite de registros retornados para paginación
+También es posible establecer una cantidad máxima de registros desde la base de datos. Suponiendo que una búsqueda normal arrojaría los siguientes registros:
+```py
+db.search_read(session_uuid, 'base.users')
+# [
+#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+#   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+#   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+#   ...
+# ]
+```
+
+Se puede especificar que solo se requiere obtener una cantidad máxima de registros a partir de un número provisto:
+```py
+db.search_read(session_uuid, 'base.users', limit= 3)
+# [
+#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+#   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...}
+# ]
+```
+
+**Parámetros**
+- `session_uuid`: *str* — UUID de sesión.
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `search_criteria` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)* — Criterio de búsqueda.
+- `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer.
+- `offset` **(Opcional)**: *int* — Desfase de resultados retornados.
+- `limit` **(Opcional)**: *int* — Límite de cantidad de resultados retornados.
 - `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
 - `ascending` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
 
@@ -368,8 +460,8 @@ Estas tuplas deben contenerse en una lista. En caso de haber más de una condici
 ### `FieldComputation` Cómputo de campo
 Representación para declarar el cómputo de un campo en tiempo real. La estructura está conformada por una tupla de 3 elementos:
 1. [_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo.
-2. [TTypeName](#ttypename-nombre-de-tipo-de-dato-de-campo) — Nombre de tipo de dato de campo
-3. [ComputeFieldFn](#computefieldfn-función-de-cómputo-de-campo) — Función de cómputo de campo
+2. [TTypeName](#ttypename-nombre-de-tipo-de-dato-de-campo) — Nombre de tipo de dato de campo.
+3. [ComputeFieldFn](#computefieldfn-función-de-cómputo-de-campo)[_M](#_m-nombre-de-modelo-personalizado) — Función de cómputo de campo.
 
 Estructura de ejemplo:
 ```py
