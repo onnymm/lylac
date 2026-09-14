@@ -133,6 +133,39 @@ db.search(session_uuid, 'base.users', limit= 3)
 - `offset` **(Opcional)**: *int* — Desfase de resultados retornados.
 - `limit` **(Opcional)**: *int* — Límite de cantidad de resultados retornados.
 
+### `read` Lectura de registros
+Este método retorna una lista de diccionarios con el contenido de los registros de una tabla de la base de datos a partir de una lista de IDs, en el orden en el que se especificaron los campos o todos los campos en caso de no haber sido especificados.
+
+```py
+# Ejemplo 1
+db.read(session_uuid, 'base.users', [2])
+# [{'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...}]
+
+# Ejemplo 2
+db.read(session_uuid, 'base.users', [2, 3])
+# [
+#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+# ]
+
+# Ejemplo 3
+db.read(session_uuid, 'base.users', [2, 3], ['login', 'create_date'])
+# [
+#   {'id': 2, 'login': 'onnymm', 'create_date': '2026-09-12 12:15:36' ...},
+#   {'id': 3, 'login': 'lumii', 'create_date': '2026-09-12 13:28:14 ...},
+# ]
+```
+
+**Parámetros**
+- `session_uuid`: *str* — UUID de sesión.
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a leer.
+- `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer.
+- `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
+- `ascending` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
+
+----
+
 ## Inicialización
 
 ### Variables de entorno
@@ -287,6 +320,109 @@ Estas tuplas deben contenerse en una lista. En caso de haber más de una condici
 > - `'~'`: Coincide con expresión regular (sensible a mayúsculas y minúsculas)
 > - `'~*'`: Coincide con expresión regular (no sensible a mayúsculas y minúsculas)
 
+### `FieldReadDeclaration` Declaración de campos a leer
+Este tipado representa una lista de cualquiera de los siguientes tipos o representaciones:
+- [_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo.
+- [_Aliased](#_aliased-alias-de-tipo-_t-para-declaración-de-campos)[[_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)] — Nombre de campo con alias.
+- [FieldComputation](#fieldcomputation-cómputo-de-campo)[[_M](#_m-nombre-de-modelo-personalizado)] — Cómputo de campo
+
+### `_Aliased` Alias de tipo [_T](#_t-parámetro-de-tipo-_t) para declaración de campos
+Representación de una tupla que toma una declaración de campo de tipo [_T](#_t-parámetro-de-tipo-_t) y le da un nombre corto de tipo `str`:
+
+Ejemplo de representación:
+```py
+_Aliased[_FieldName]
+# tuple[_FieldName, str]
+
+_Aliased[_ArrayExpansion]
+# tuple[_ArrayExpansion, str]
+```
+
+Ejemplo de uso:
+```py
+# _Aliased[_FieldName]
+('create_id.name', 'created_by')
+
+# _Aliased[_FieldName]
+('record_id.employee_id.complete_name', 'responsible')
+
+# _Aliased[_ArrayExpansion]
+(('detail_ids', [...]), 'detailed_operation')
+```
+
+### `_FieldName` Nombre de campo existente en el modelo
+Alias del tipo `str`. Representa el nombre de un campo existente en un modelo de la base de datos o una referencia en cadena a través de relaciones de modelos.
+
+Los nombres más comunes son:
+- `'id'`
+- `'name'`
+- `'create_date'`
+- `'update_date'`
+- `'create_uid'`
+- `'update_uid'`
+- `'display_name'`
+
+Para obtener los detalles de un registro referenciado en campos de tipo `many2one` se puede usar el acceso `.` seguido del nombre del campo cuyo valor se desea obtener:
+
+```py
+'create_uid'
+# [2, 'Onnymm Azzur']
+# Usuario de creación
+
+'create_uid.name'
+# 'Onnymm Azzur'
+
+'create_uid.create_date'
+# '2026-09-12 12:15:36'
+```
+
+### `FieldComputation` Cómputo de campo
+Representación para declarar el cómputo de un campo en tiempo real. La estructura está conformada por una tupla de 3 elementos:
+1. [_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo.
+2. [TTypeName](#ttypename-nombre-de-tipo-de-dato-de-campo) — Nombre de tipo de dato de campo
+3. [ComputeFieldFn](#computefieldfn-función-de-cómputo-de-campo) — Función de cómputo de campo
+
+Estructura de ejemplo:
+```py
+computed_total = ('total', 'float', lambda ctx: ctx['qty'] * ctx['price'])
+
+# Uso
+db.read(session_uuid, 'sale.order', fields= ['name', computed_total])
+```
+
+### `ComputeFieldFn` Función de cómputo de campo
+Estructura que representa una función que recibe un contexto de cómputo y retorna una instancia de campo que se usa para computar una columna en la lectura de registros desde la base de datos.
+
+Estructura:
+```py
+# Función def
+def model_name__computed_field(ctx: Lylac.ComputeContext):
+    ...
+    return computed_field_instance
+
+# Función lambda
+fn = lambda ctx: ...
+```
+
+### `TTypeName` Nombre de tipo de dato de campo
+Conjunto de literales que representan los nombres de los tipos de dato disponibles para ser usados desde el framework.
+
+Los nombres disponibles son:
+- `'integer'` Entero.
+- `'char'` Caracter.
+- `'float'` Flotante.
+- `'boolean'` Booleano.
+- `'date'` Fecha.
+- `'datetime'` Fecha y hora.
+- `'time'` Hora.
+- `'duration'` Duración o intervalo.
+- `'file'` Archivo o binario.
+- `'text'` Texto largo.
+- `'selection'` Selección.
+- `'many2one'` Relación muchos a uno hacia un modelo.
+- `'one2many'` Relación uno a muchos hacia un modelo.
+- `'many2many'` Relación muchos a muchos hacia un modelo.
+- `'json'` JSON.
 
 
 ### `ItemOrList` Elemento o lista de elementos
