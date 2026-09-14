@@ -45,12 +45,12 @@ pip install git+https://github.com/onnymm/lylac.git
 ## Métodos
 
 ### `login` Iniciar sesión
-Este método permite crear una sesión de usuario y retorna un token para poder autenticarse cuando se use alguno de los métodos de transacción de datos.
+Este método permite crear una sesión de usuario y retorna una UUID de sesión para poder autenticarse cuando se use alguno de los métodos de transacción de datos.
 
 Uso:
 ```py
-# Obtención de token de autenticación
-token = db.login('onnymm', 'contraseñasecreta123')
+# Obtención de UUID de sesión de autenticación
+session_uuid = db.login('onnymm', 'contraseñasecreta123')
 ```
 
 **Parámetros**
@@ -94,7 +94,7 @@ records = [
     },
 ]
 
-db.create(token, 'base.users', records)
+db.create(session_uuid, 'base.users', records)
 ```
 
 **Parámetros**

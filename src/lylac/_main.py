@@ -127,12 +127,12 @@ class Lylac(Generic[_M]):
     `La base de datos de inicializó correctamente.`
 
     ## Iniciar sesión
-    Este método permite crear una sesión de usuario y retorna un token para poder
-    autenticarse cuando se use alguno de los métodos de transacción de datos.
+    Este método permite crear una sesión de usuario y retorna una UUID de sesión para
+    poder autenticarse cuando se use alguno de los métodos de transacción de datos.
 
     Uso:
-    >>> # Obtención de token de autenticación
-    >>> token = db.login('onnymm', 'contraseñasecreta123')
+    >>> # Obtención de UUID de sesión de autenticación
+    >>> session_uuid = db.login('onnymm', 'contraseñasecreta123')
 
     ## Creación de uno o muchos registros
     Este método realiza la creación de uno o muchos registros.
@@ -158,7 +158,7 @@ class Lylac(Generic[_M]):
     >>>     },
     >>> ]
     >>> 
-    >>> db.create(token, 'base.users', records)
+    >>> db.create(session_uuid, 'base.users', records)
 
     ## Búsqueda de registros
     Este método retorna todas las IDs de los registros de un modelo o los registros que
@@ -378,6 +378,34 @@ class Lylac(Generic[_M]):
         username: str,
         password: str,
     ) -> str:
+        """
+        ## Iniciar sesión
+        Este método permite crear una sesión de usuario y retorna una UUID de sesión
+        para poder autenticarse cuando se use alguno de los métodos de transacción de
+        datos.
+
+        Uso:
+        >>> # Obtención de UUID de sesión de autenticación
+        >>> session_uuid = db.login('onnymm', 'contraseñasecreta123')
+
+        **Parámetros**
+        :username: Nombre de usuario.
+        :password: Contraseña del usuario.
+
+        **Retorno**
+        :session_uuid: UUID de sesión para autenticación del usuario.
+
+        ### Errores comunes
+        - `UserNotFoundError`: El usuario no fue encontrado.
+        - `UserNotActiveError`: El usuario fue encontrado pero éste no está activo.
+        - `IncorrectPasswordError`: El usuario fue encontrado y está activo pero la
+        contraseña no coincide con la almacenada en la base de datos.
+
+        > `i` Es decisión del desarrollador proveer o no la información sobre la falla
+        encontrada en el inicio de sesión, por ejemplo, si desea decirle al usuario
+        que su cuenta no existe o solo hacerle saber que "El usuario o la contraseña
+        no son correctos".
+        """
 
         # Construcción de la transacción de inicio de sesión
         transaction = build_login_callback(self, username, password)
@@ -486,7 +514,7 @@ class Lylac(Generic[_M]):
         >>>     },
         >>> ]
         >>> 
-        >>> db.create(token, 'base.users', records)
+        >>> db.create(session_uuid, 'base.users', records)
 
         **Parámetros**
 
