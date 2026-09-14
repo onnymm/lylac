@@ -10,6 +10,7 @@
 - **[search_count — Conteo de búsqueda](#search_count-conteo-de-búsqueda)**
 - **[update — Actualización de registros](#update-actualización-de-registros)**
 - **[delete — Eliminación de registros](#delete-eliminación-de-registros)**
+- **[authenticate_user — Autenticación de usuario](#authenticate_user-autenticación-de-usuario)**
 
 **INICIALIZACIÓN**
 - **[Variables de entorno](#variables-de-entorno)**
@@ -146,6 +147,9 @@ db.search(session_uuid, 'base.users', limit= 3)
 - `offset` **(Opcional)**: *int* — Desfase de resultados retornados.
 - `limit` **(Opcional)**: *int* — Límite de cantidad de resultados retornados.
 
+**Retorno**
+- `record_ids`: *list[int]* — Lista de IDs de los registros encontrados.
+
 ----
 
 ### `read` Lectura de registros
@@ -178,6 +182,9 @@ db.read(session_uuid, 'base.users', [2, 3], ['login', 'create_date'])
 - `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer.
 - `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
 - `ascending` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
+
+**Retorno**
+- `records`: *list[RecordData]* — Lista de diccionarios con los datos de los registros solicitados.
 
 ----
 
@@ -268,6 +275,8 @@ db.search_read(session_uuid, 'base.users', limit= 3)
 - `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
 - `ascending` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
 
+**Retorno**
+- `records`: *list[RecordData]* — Lista de diccionarios con los datos de los registros solicitados.
 ----
 
 ### `search_count` Conteo de búsqueda
@@ -288,6 +297,9 @@ db.search_count(session_uuid, 'base.permissions', [('create_uid', '=', 5)])
 - `session_uuid`: *str* — UUID de sesión.
 - `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `search_criteria` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)* — Criterio de búsqueda.
+
+**Retorno**
+- `count`: *int* — Total de registros encontrados.
 
 ----
 
@@ -327,6 +339,9 @@ db.search_read(session_uuid, 'base.users', fields= ['login', 'name'])
 - `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a actualizar.
 - `data`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[RecordData]* — Diccionario o lista de diccionarios de los datos a crear.
 
+**Retorno**
+- `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
+
 ----
 
 ### `delete` Eliminación de registros
@@ -363,6 +378,29 @@ db.search_read(session_uuid, 'base.users')
 - `session_uuid`: *str* — UUID de sesión.
 - `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a eliminar.
+
+**Retorno**
+- `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
+
+----
+
+### `authenticate_user` Autenticación de usuario
+Este método recibe una UUID de sesión y resuelve a qué usuario le pertenece la sesión.
+
+```py
+session_uuid = '4d9ad73f-40cf-4b33-8feb-4c593c172cf2'
+
+db.authenticate_user(session_uuid)
+# 2
+```
+
+**Parámetros**
+- `session_uuid`: *str* — UUID de sesión.
+
+**Retorno**
+- `response`: *int* — ID del usuario propietario de la sesión.
+
+----
 
 ## Inicialización
 
