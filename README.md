@@ -7,6 +7,7 @@
 - **[search — Búsqueda de registros](#search-búsqueda-de-registros)**
 - **[read — Lectura de registros](#read-lectura-de-registros)**
 - **[search_read — Búsqueda y lectura de registros](#search_read-búsqueda-y-lectura-de-registros)**
+- **[search_count — Conteo de búsqueda](#search_count-conteo-de-búsqueda)**
 
 **INICIALIZACIÓN**
 - **[Variables de entorno](#variables-de-entorno)**
@@ -146,7 +147,7 @@ db.search(session_uuid, 'base.users', limit= 3)
 ----
 
 ### `read` Lectura de registros
-Este método retorna una lista de diccionarios con el contenido de los registros de una tabla de la base de datos a partir de una lista de IDs, en el orden en el que se especificaron los campos o todos los campos en caso de no haber sido especificados.
+Este método retorna una lista de diccionarios con el contenido de los registros de un modelo de la base de datos a partir de una lista de IDs, en el orden en el que se especificaron los campos o todos los campos en caso de no haber sido especificados.
 
 ```py
 # Ejemplo 1
@@ -176,8 +177,10 @@ db.read(session_uuid, 'base.users', [2, 3], ['login', 'create_date'])
 - `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
 - `ascending` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
 
+----
+
 ### `search_read` Búsqueda y lectura de registros
-Este método retorna una lista de diccionarios con el contenido de los registros de una tabla de la base de datos, en el orden en el que se especificaron los campos o todos los campos en caso de no haber sido especificados.
+Este método retorna una lista de diccionarios con el contenido de los registros de un modelo de la base de datos, en el orden en el que se especificaron los campos o todos los campos en caso de no haber sido especificados.
 
 Uso:
 ```py
@@ -262,6 +265,22 @@ db.search_read(session_uuid, 'base.users', limit= 3)
 - `limit` **(Opcional)**: *int* — Límite de cantidad de resultados retornados.
 - `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
 - `ascending` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
+
+----
+
+### `search_count` Conteo de búsqueda
+Este método retorna el conteo de de todos los registros de un modelo o los registros que cumplan con la condición de búsqueda provista, ideal para funcionalidades de paginación que muestran un total de registros.
+
+Uso:
+```py
+# Ejemplo 1
+db.search_count(session_uuid, 'base.users')
+# 5
+
+# Ejemplo 2
+db.search_count(session_uuid, 'base.permissions', [('create_uid', '=', 5)])
+# 126
+```
 
 ----
 
