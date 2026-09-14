@@ -9,6 +9,7 @@
 - **[search_read — Búsqueda y lectura de registros](#search_read-búsqueda-y-lectura-de-registros)**
 - **[search_count — Conteo de búsqueda](#search_count-conteo-de-búsqueda)**
 - **[update — Actualización de registros](#update-actualización-de-registros)**
+- **[delete — Eliminación de registros](#delete-eliminación-de-registros)**
 
 **INICIALIZACIÓN**
 - **[Variables de entorno](#variables-de-entorno)**
@@ -297,11 +298,11 @@ Uso:
 ```py
 db.search_read(session_uuid, 'base.users', fields= ['login', 'name'])
 # [
-#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
-#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
-#   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
-#   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
-#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm'},
+#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii'},
+#   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim'},
+#   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio'},
+#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu'},
 #   ...
 # ]
 
@@ -311,11 +312,11 @@ db.update(session_uuid, 'base.users', [3, 4, 5], {'name': 'Cambiado'})
 
 db.search_read(session_uuid, 'base.users', fields= ['login', 'name'])
 # [
-#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
-#   {'id': 3, 'name': 'Cambiado', 'login': 'lumii', ...},
-#   {'id': 4, 'name': 'Cambiado', 'login': 'meshkim', ...},
-#   {'id': 5, 'name': 'Cambiado', 'login': 'luunafio', ...},
-#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm'},
+#   {'id': 3, 'name': 'Cambiado', 'login': 'lumii'},
+#   {'id': 4, 'name': 'Cambiado', 'login': 'meshkim'},
+#   {'id': 5, 'name': 'Cambiado', 'login': 'luunafio'},
+#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu'},
 #   ...
 # ]
 ```
@@ -327,6 +328,41 @@ db.search_read(session_uuid, 'base.users', fields= ['login', 'name'])
 - `data`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[RecordData]* — Diccionario o lista de diccionarios de los datos a crear.
 
 ----
+
+### `delete` Eliminación de registros
+Este método realiza la eliminaciónd e uno o más registros de la base de datos a partir de su respectiva ID provista.
+
+Uso:
+```py
+db.search_read(session_uuid, 'base.users')
+# [
+#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+#   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+#   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+#   ...
+# ]
+
+# Eliminación del registro con ID 2
+
+db.delete(session_uuid, 'base.users', 2)
+# True
+
+db.search_read(session_uuid, 'base.users')
+# [
+#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+#   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+#   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+#   ...
+# ]
+```
+
+**Parámetros**
+- `session_uuid`: *str* — UUID de sesión.
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a eliminar.
 
 ## Inicialización
 
