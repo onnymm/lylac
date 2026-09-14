@@ -34,6 +34,7 @@ from ._resources import DatabaseMetadata
 from ._resources import ModelsBearer
 from ._services import DefaultNotifier
 from ._services import EngineService
+from ._typing.aliases import FieldName
 from ._typing.callables import ExecutableTransactionCallback
 from ._typing.callables import ComputeFieldFn as _ComputeFieldFn
 from ._typing.callables import NotifierInitializator
@@ -250,7 +251,7 @@ class Lylac(Generic[_M]):
         model_name: ModelName[_M],
         record_ids: ItemOrList[int],
         fields: list[FieldReadDeclaration] = [],
-        sortby: Optional[ItemOrList[str]] = None,
+        sortby: Optional[ItemOrList[FieldName]] = None,
         ascending: Optional[ItemOrList[bool]] = None,
     ) -> list[_Record]:
 
@@ -281,7 +282,7 @@ class Lylac(Generic[_M]):
         fields: list[FieldReadDeclaration] = [],
         offset: Optional[int] = None,
         limit: Optional[int] = None,
-        sortby: Optional[ItemOrList[str]] = None,
+        sortby: Optional[ItemOrList[FieldName]] = None,
         ascending: Optional[ItemOrList[bool]] = None,
     ) -> list[_Record]:
 

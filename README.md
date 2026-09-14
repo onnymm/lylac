@@ -34,7 +34,7 @@ pip install git+https://github.com/onnymm/lylac.git
 - **[ComputeFieldFn — Función de cómputo de campo](#computefieldfn-función-de-cómputo-de-campo)**
 - **[CriteriaStructure — Estructura de criterio de búsqueda](#criteriastructrure-estructura-de-criterio-de-búsqueda)**
 - **[FieldComputation — Cómputo de campo](#fieldcomputation-cómputo-de-campo)**
-- **[_FieldName — Nombre de campo existente en el modelo](#_fieldname-nombre-de-campo-existente-en-el-modelo)**
+- **[FieldName — Nombre de campo existente en el modelo](#fieldname-nombre-de-campo-existente-en-el-modelo)**
 - **[FieldReadDeclaration — Declaración de campos a leer](#fieldreaddeclaration-declaración-de-campos-a-leer)**
 - **[ItemOrList — Elemento o lista de elementos](#itemorlist-elemento-o-lista-de-elementos)**
 - **[ModelName — Nombre de modelo](#modelname-nombre-de-modelo)**
@@ -188,7 +188,7 @@ db.read(session_uuid, 'base.users', [2, 3], ['login', 'create_date'])
 - `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a leer.
 - `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer.
-- `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
+- `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
 - `ascending` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
 
 **Retorno**
@@ -280,7 +280,7 @@ db.search_read(session_uuid, 'base.users', limit= 3)
 - `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer.
 - `offset` **(Opcional)**: *int* — Desfase de resultados retornados.
 - `limit` **(Opcional)**: *int* — Límite de cantidad de resultados retornados.
-- `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
+- `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
 - `ascending` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
 
 **Retorno**
@@ -510,8 +510,8 @@ Representación de una tupla que toma una declaración de campo de tipo [_T](#_t
 
 Ejemplo de representación:
 ```py
-_Aliased[_FieldName]
-# tuple[_FieldName, str]
+_Aliased[FieldName]
+# tuple[FieldName, str]
 
 _Aliased[_ArrayExpansion]
 # tuple[_ArrayExpansion, str]
@@ -519,10 +519,10 @@ _Aliased[_ArrayExpansion]
 
 Ejemplo de uso:
 ```py
-# _Aliased[_FieldName]
+# _Aliased[FieldName]
 ('create_id.name', 'created_by')
 
-# _Aliased[_FieldName]
+# _Aliased[FieldName]
 ('record_id.employee_id.complete_name', 'responsible')
 
 # _Aliased[_ArrayExpansion]
@@ -604,7 +604,7 @@ Estas tuplas deben contenerse en una lista. En caso de haber más de una condici
 
 ### `FieldComputation` Cómputo de campo
 Representación para declarar el cómputo de un campo en tiempo real. La estructura está conformada por una tupla de 3 elementos:
-1. [_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo.
+1. [FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo.
 2. [TTypeName](#ttypename-nombre-de-tipo-de-dato-de-campo) — Nombre de tipo de dato de campo.
 3. [ComputeFieldFn](#computefieldfn-función-de-cómputo-de-campo)[_M](#_m-nombre-de-modelo-personalizado) — Función de cómputo de campo.
 
@@ -616,7 +616,7 @@ computed_total = ('total', 'float', lambda ctx: ctx['qty'] * ctx['price'])
 db.read(session_uuid, 'sale.order', fields= ['name', computed_total])
 ```
 
-### `_FieldName` Nombre de campo existente en el modelo
+### `FieldName` Nombre de campo existente en el modelo
 Alias del tipo `str`. Representa el nombre de un campo existente en un modelo de la base de datos o una referencia en cadena a través de relaciones de modelos.
 
 Los nombres más comunes son:
@@ -644,8 +644,8 @@ Para obtener los detalles de un registro referenciado en campos de tipo `many2on
 
 ### `FieldReadDeclaration` Declaración de campos a leer
 Este tipado representa una lista de cualquiera de los siguientes tipos o representaciones:
-- [_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo.
-- [_Aliased](#_aliased-alias-de-tipo-_t-para-declaración-de-campos)[[_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)] — Nombre de campo con alias.
+- [FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo.
+- [_Aliased](#_aliased-alias-de-tipo-_t-para-declaración-de-campos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)] — Nombre de campo con alias.
 - [FieldComputation](#fieldcomputation-cómputo-de-campo)[[_M](#_m-nombre-de-modelo-personalizado)] — Cómputo de campo
 
 ### `ItemOrList` Elemento o lista de elementos
