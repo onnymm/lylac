@@ -163,6 +163,7 @@ db.search(session_uuid, 'base.users', limit= 3)
 ### `read` Lectura de registros
 Este método retorna una lista de diccionarios con el contenido de los registros de un modelo de la base de datos a partir de una lista de IDs, en el orden en el que se especificaron los campos o todos los campos en caso de no haber sido especificados.
 
+Uso:
 ```py
 # Ejemplo 1
 db.read(session_uuid, 'base.users', [2])
@@ -285,6 +286,7 @@ db.search_read(session_uuid, 'base.users', limit= 3)
 
 **Retorno**
 - `records`: *list[RecordData]* — Lista de diccionarios con los datos de los registros solicitados.
+
 ----
 
 ### `search_count` Conteo de búsqueda
@@ -395,6 +397,7 @@ db.search_read(session_uuid, 'base.users')
 ### `authenticate_user` Autenticación de usuario
 Este método recibe una UUID de sesión y resuelve a qué usuario le pertenece la sesión.
 
+Uso:
 ```py
 session_uuid = '4d9ad73f-40cf-4b33-8feb-4c593c172cf2'
 
@@ -406,7 +409,7 @@ db.authenticate_user(session_uuid)
 - `session_uuid`: *str* — UUID de sesión.
 
 **Retorno**
-- `response`: *int* — ID del usuario propietario de la sesión.
+- `user_id`: *int* — ID del usuario propietario de la sesión.
 
 ----
 
