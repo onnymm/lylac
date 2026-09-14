@@ -8,6 +8,7 @@
 - **[read — Lectura de registros](#read-lectura-de-registros)**
 - **[search_read — Búsqueda y lectura de registros](#search_read-búsqueda-y-lectura-de-registros)**
 - **[search_count — Conteo de búsqueda](#search_count-conteo-de-búsqueda)**
+- **[update — Actualización de registros](#update-actualización-de-registros)**
 
 **INICIALIZACIÓN**
 - **[Variables de entorno](#variables-de-entorno)**
@@ -281,6 +282,49 @@ db.search_count(session_uuid, 'base.users')
 db.search_count(session_uuid, 'base.permissions', [('create_uid', '=', 5)])
 # 126
 ```
+
+**Parámetros**
+- `session_uuid`: *str* — UUID de sesión.
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `search_criteria` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)* — Criterio de búsqueda.
+
+----
+
+### `update` Actualización de registros
+Este método realiza la actualización de uno o más registros a partir de su respectiva ID provista, actualizando uno o más campos con el valor provisto. Este método solo sobreescribe un mismo valor por cada campo a todos los registros provistos.
+
+Uso:
+```py
+db.search_read(session_uuid, 'base.users', fields= ['login', 'name'])
+# [
+#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+#   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+#   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+#   ...
+# ]
+
+# Modificación
+db.update(session_uuid, 'base.users', [3, 4, 5], {'name': 'Cambiado'})
+# True
+
+db.search_read(session_uuid, 'base.users', fields= ['login', 'name'])
+# [
+#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+#   {'id': 3, 'name': 'Cambiado', 'login': 'lumii', ...},
+#   {'id': 4, 'name': 'Cambiado', 'login': 'meshkim', ...},
+#   {'id': 5, 'name': 'Cambiado', 'login': 'luunafio', ...},
+#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+#   ...
+# ]
+```
+
+**Parámetros**
+- `session_uuid`: *str* — UUID de sesión.
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a actualizar.
+- `data`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[RecordData]* — Diccionario o lista de diccionarios de los datos a crear.
 
 ----
 
