@@ -5,6 +5,7 @@
 - **[login — Iniciar sesión](#login-iniciar-sesión)**
 - **[create — Creación de registros](#create-creación-de-uno-o-muchos-registros)**
 - **[search — Búsqueda de registros](#search-búsqueda-de-registros)**
+- **[read — Lectura de registros](#read-lectura-de-registros)**
 
 **INICIALIZACIÓN**
 - **[Variables de entorno](#variables-de-entorno)**
@@ -16,9 +17,15 @@
 **TIPADOS**
 - **[_M — Nombre de modelo personalizado](#_m-nombre-de-modelo-personalizado)**
 - **[_T — Parámetro de tipo _T](#_t-parámetro-de-tipo-_t)**
+- **[_Aliased — Alias de tipo _T para declaración de campos](#_aliased-alias-de-tipo-_t-para-declaración-de-campos)**
+- **[ComputeFieldFn — Función de cómputo de campo](#computefieldfn-función-de-cómputo-de-campo)**
 - **[CriteriaStructure — Estructura de criterio de búsqueda](#criteriastructrure-estructura-de-criterio-de-búsqueda)**
+- **[FieldComputation — Cómputo de campo](#fieldcomputation-cómputo-de-campo)**
+- **[_FieldName — Nombre de campo existente en el modelo](#_fieldname-nombre-de-campo-existente-en-el-modelo)**
+- **[FieldReadDeclaration — Declaración de campos a leer](#fieldreaddeclaration-declaración-de-campos-a-leer)**
 - **[ItemOrList — Elemento o lista de elementos](#itemorlist-elemento-o-lista-de-elementos)**
 - **[ModelName — Nombre de modelo](#modelname-nombre-de-modelo)**
+- **[TTypeName — Nombre de tipo de dato de campo](#ttypename-nombre-de-tipo-de-dato-de-campo)**
 
 ----
 
@@ -261,6 +268,44 @@ db = CustomLylac()
 ### `_T` Parámetro de tipo _T
 Parámetro usado para tipados.
 
+### `_Aliased` Alias de tipo [_T](#_t-parámetro-de-tipo-_t) para declaración de campos
+Representación de una tupla que toma una declaración de campo de tipo [_T](#_t-parámetro-de-tipo-_t) y le da un nombre corto de tipo `str`:
+
+Ejemplo de representación:
+```py
+_Aliased[_FieldName]
+# tuple[_FieldName, str]
+
+_Aliased[_ArrayExpansion]
+# tuple[_ArrayExpansion, str]
+```
+
+Ejemplo de uso:
+```py
+# _Aliased[_FieldName]
+('create_id.name', 'created_by')
+
+# _Aliased[_FieldName]
+('record_id.employee_id.complete_name', 'responsible')
+
+# _Aliased[_ArrayExpansion]
+(('detail_ids', [...]), 'detailed_operation')
+```
+
+### `ComputeFieldFn` Función de cómputo de campo
+Estructura que representa una función que recibe un contexto de cómputo y retorna una instancia de campo que se usa para computar una columna en la lectura de registros desde la base de datos.
+
+Estructura:
+```py
+# Función def
+def model_name__computed_field(ctx: Lylac.ComputeContext):
+    ...
+    return computed_field_instance
+
+# Función lambda
+fn = lambda ctx: ...
+```
+
 ### `CriteriaStructrure` Estructura de criterio de búsqueda
 La estructura del criterio de búsqueda consiste en una lista de dos tipos de dato:
 - `TripletStructure`: Estructura de tripletas para queries SQL
@@ -320,34 +365,18 @@ Estas tuplas deben contenerse en una lista. En caso de haber más de una condici
 > - `'~'`: Coincide con expresión regular (sensible a mayúsculas y minúsculas)
 > - `'~*'`: Coincide con expresión regular (no sensible a mayúsculas y minúsculas)
 
-### `FieldReadDeclaration` Declaración de campos a leer
-Este tipado representa una lista de cualquiera de los siguientes tipos o representaciones:
-- [_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo.
-- [_Aliased](#_aliased-alias-de-tipo-_t-para-declaración-de-campos)[[_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)] — Nombre de campo con alias.
-- [FieldComputation](#fieldcomputation-cómputo-de-campo)[[_M](#_m-nombre-de-modelo-personalizado)] — Cómputo de campo
+### `FieldComputation` Cómputo de campo
+Representación para declarar el cómputo de un campo en tiempo real. La estructura está conformada por una tupla de 3 elementos:
+1. [_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo.
+2. [TTypeName](#ttypename-nombre-de-tipo-de-dato-de-campo) — Nombre de tipo de dato de campo
+3. [ComputeFieldFn](#computefieldfn-función-de-cómputo-de-campo) — Función de cómputo de campo
 
-### `_Aliased` Alias de tipo [_T](#_t-parámetro-de-tipo-_t) para declaración de campos
-Representación de una tupla que toma una declaración de campo de tipo [_T](#_t-parámetro-de-tipo-_t) y le da un nombre corto de tipo `str`:
-
-Ejemplo de representación:
+Estructura de ejemplo:
 ```py
-_Aliased[_FieldName]
-# tuple[_FieldName, str]
+computed_total = ('total', 'float', lambda ctx: ctx['qty'] * ctx['price'])
 
-_Aliased[_ArrayExpansion]
-# tuple[_ArrayExpansion, str]
-```
-
-Ejemplo de uso:
-```py
-# _Aliased[_FieldName]
-('create_id.name', 'created_by')
-
-# _Aliased[_FieldName]
-('record_id.employee_id.complete_name', 'responsible')
-
-# _Aliased[_ArrayExpansion]
-(('detail_ids', [...]), 'detailed_operation')
+# Uso
+db.read(session_uuid, 'sale.order', fields= ['name', computed_total])
 ```
 
 ### `_FieldName` Nombre de campo existente en el modelo
@@ -376,54 +405,11 @@ Para obtener los detalles de un registro referenciado en campos de tipo `many2on
 # '2026-09-12 12:15:36'
 ```
 
-### `FieldComputation` Cómputo de campo
-Representación para declarar el cómputo de un campo en tiempo real. La estructura está conformada por una tupla de 3 elementos:
-1. [_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo.
-2. [TTypeName](#ttypename-nombre-de-tipo-de-dato-de-campo) — Nombre de tipo de dato de campo
-3. [ComputeFieldFn](#computefieldfn-función-de-cómputo-de-campo) — Función de cómputo de campo
-
-Estructura de ejemplo:
-```py
-computed_total = ('total', 'float', lambda ctx: ctx['qty'] * ctx['price'])
-
-# Uso
-db.read(session_uuid, 'sale.order', fields= ['name', computed_total])
-```
-
-### `ComputeFieldFn` Función de cómputo de campo
-Estructura que representa una función que recibe un contexto de cómputo y retorna una instancia de campo que se usa para computar una columna en la lectura de registros desde la base de datos.
-
-Estructura:
-```py
-# Función def
-def model_name__computed_field(ctx: Lylac.ComputeContext):
-    ...
-    return computed_field_instance
-
-# Función lambda
-fn = lambda ctx: ...
-```
-
-### `TTypeName` Nombre de tipo de dato de campo
-Conjunto de literales que representan los nombres de los tipos de dato disponibles para ser usados desde el framework.
-
-Los nombres disponibles son:
-- `'integer'` Entero.
-- `'char'` Caracter.
-- `'float'` Flotante.
-- `'boolean'` Booleano.
-- `'date'` Fecha.
-- `'datetime'` Fecha y hora.
-- `'time'` Hora.
-- `'duration'` Duración o intervalo.
-- `'file'` Archivo o binario.
-- `'text'` Texto largo.
-- `'selection'` Selección.
-- `'many2one'` Relación muchos a uno hacia un modelo.
-- `'one2many'` Relación uno a muchos hacia un modelo.
-- `'many2many'` Relación muchos a muchos hacia un modelo.
-- `'json'` JSON.
-
+### `FieldReadDeclaration` Declaración de campos a leer
+Este tipado representa una lista de cualquiera de los siguientes tipos o representaciones:
+- [_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo.
+- [_Aliased](#_aliased-alias-de-tipo-_t-para-declaración-de-campos)[[_FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)] — Nombre de campo con alias.
+- [FieldComputation](#fieldcomputation-cómputo-de-campo)[[_M](#_m-nombre-de-modelo-personalizado)] — Cómputo de campo
 
 ### `ItemOrList` Elemento o lista de elementos
 Genérico que representa la unión de un escalar y una lista de tipos [_T](#_t-parámetro-de-tipo-_t).
@@ -457,3 +443,23 @@ Los modelos iniciales son:
 - `'base.users.access'`
 - `'base.users.group'`
 - `'base.users.session'`
+
+### `TTypeName` Nombre de tipo de dato de campo
+Conjunto de literales que representan los nombres de los tipos de dato disponibles para ser usados desde el framework.
+
+Los nombres disponibles son:
+- `'integer'` Entero.
+- `'char'` Caracter.
+- `'float'` Flotante.
+- `'boolean'` Booleano.
+- `'date'` Fecha.
+- `'datetime'` Fecha y hora.
+- `'time'` Hora.
+- `'duration'` Duración o intervalo.
+- `'file'` Archivo o binario.
+- `'text'` Texto largo.
+- `'selection'` Selección.
+- `'many2one'` Relación muchos a uno hacia un modelo.
+- `'one2many'` Relación uno a muchos hacia un modelo.
+- `'many2many'` Relación muchos a muchos hacia un modelo.
+- `'json'` JSON.
