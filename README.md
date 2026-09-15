@@ -32,6 +32,8 @@ pip install git+https://github.com/onnymm/lylac.git
     - **[`update` — Actualización de registros](#update-actualización-de-registros-1)**
     - **[`delete` — Eliminación de registros](#delete-eliminación-de-registros-1)**
     - **[`get_resource_id` — Obtención de ID de recurso](#get_resource_id-obtención-de-id-de-recurso)**
+- **[`ExecutionContext` — Contexto de ejecución](#executioncontext-contexto-de-ejecución)**
+    - **[`commit` — Commit en la base de datos](#commit-commit-en-la-base-de-datos)**
 
 **[INICIALIZACIÓN](#inicialización)**
 
@@ -415,6 +417,41 @@ db.search_read(session_uuid, 'base.users')
 
 ----
 
+### `execute_transaction` Ejecutar transacción
+Este método ejecuta una transacción compleja construida mediante una función que es provista a este método como argumento. La función debe estar preparada para recibir como argumento un [ExecutionContext](#executioncontext-contexto-de-ejecución)[[_M](#_m-nombre-de-modelo-personalizado)] para poder declarar instrucciones de operaciones en la base de datos. Al estar asociadas a una misma transacción, las instrucciones pueden confirmarse o revertirse como una sola unidad. Si ocurre un error durante la ejecución, la transacción puede realizar un rollback, evitando que los cambios realizados hasta ese momento sean persistidos parcialmente en la base de datos.
+
+Uso:
+```py
+# Definición de función de lectura del perfil del usuario de la sesión
+def me(ctx: Lylac.ExecutionContext):
+
+    # Obtención de los datos del usuario de la sesión
+    [ user_data ] = ctx.read(
+        'base.users',
+        ctx.uid,
+        fields = [
+            'name',
+            'active',
+            'login',
+            'profile_picture',
+        ],
+    )
+
+    return user_data
+
+# Ejecución de la transacción desde la instancia principal
+profile_data = db.execute_transaction(session_uuid, me)
+```
+
+**Parámetros**
+- `session_uuid`: *str* — UUID de sesión.
+- `callback`: *Callable[[[ExecutionContext](#executioncontext-contexto-de-ejecución)[[_M](#_m-nombre-de-modelo-personalizado)]], [_T](#_t-parámetro-de-tipo-_t)]* — Función de transacción.
+
+**Retorno**
+- `result`: *[_T](#_t-parámetro-de-tipo-_t)* — El valor u objeto que retorna la función de transacción.
+
+----
+
 ### `authenticate_user` Autenticación de usuario
 Este método recibe una UUID de sesión y resuelve a qué usuario le pertenece la sesión.
 
@@ -770,6 +807,7 @@ ctx.search_read('base.users')
 ```
 
 **Parámetros**
+
 - `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a eliminar.
 
@@ -781,8 +819,43 @@ ctx.search_read('base.users')
 #### `get_resource_id` Obtención de ID de recurso
 Este método se usa para obtener la ID de un registro en la base de datos señalado por su referencia única de mapeo.
 
+**Parámetros**
+
+*No se requieren parámetros de entrada.*
+
 **Retorno**
 - `record_id`: *int | None* — ID del registro referenciado o *None* si no existe.
+
+----
+
+### `ExecutionContext` Contexto de ejecución
+
+La clase de contexto de ejecución es la usada en todas las transacciones CRUD expuestas en la instancia principal y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listas a continuación:
+
+- **[`uid` — ID del usuario que ejecuta la transacción](#uid-id-del-usuario-que-ejecuta-la-transacción)**
+- **[`create` — Creación de registros](#create-creación-de-uno-o-muchos-registros-1)**
+- **[`search` — Búsqueda de registros](#search-búsqueda-de-registros-1)**
+- **[`read` — Lectura de registros](#read-lectura-de-registros-1)**
+- **[`search_read` — Búsqueda y lectura de registros](#search_read-búsqueda-y-lectura-de-registros-1)**
+- **[`search_count` — Conteo de búsqueda](#search_count-conteo-de-búsqueda-1)**
+- **[`update` — Actualización de registros](#update-actualización-de-registros-1)**
+- **[`delete` — Eliminación de registros](#delete-eliminación-de-registros-1)**
+- **[`get_resource_id` — Obtención de ID de recurso](#get_resource_id-obtención-de-id-de-recurso)**
+
+Además de ello, cuenta también con los métodos listados.
+
+----
+
+#### `commit` Commit en la base de datos
+Este método realiza un commit en la base de datos usando el método `commit` de la clase `Connection` de SQLAlchemy.
+
+**Parámetros**
+
+*No se requieren parámetros de entrada.*
+
+**Retorno**
+
+*Este método no retorna ningún valor.*
 
 ----
 
