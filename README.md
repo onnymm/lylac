@@ -8,41 +8,58 @@ pip install git+https://github.com/onnymm/lylac.git
 
 ## Índice
 
-**MÉTODOS**
+**[MÉTODOS](#métodos)**
 
-- **[login — Iniciar sesión](#login-iniciar-sesión)**
-- **[create — Creación de registros](#create-creación-de-uno-o-muchos-registros)**
-- **[search — Búsqueda de registros](#search-búsqueda-de-registros)**
-- **[read — Lectura de registros](#read-lectura-de-registros)**
-- **[search_read — Búsqueda y lectura de registros](#search_read-búsqueda-y-lectura-de-registros)**
-- **[search_count — Conteo de búsqueda](#search_count-conteo-de-búsqueda)**
-- **[update — Actualización de registros](#update-actualización-de-registros)**
-- **[delete — Eliminación de registros](#delete-eliminación-de-registros)**
-- **[authenticate_user — Autenticación de usuario](#authenticate_user-autenticación-de-usuario)**
+- **[`login` — Iniciar sesión](#login-iniciar-sesión)**
+- **[`create` — Creación de registros](#create-creación-de-uno-o-muchos-registros)**
+- **[`search` — Búsqueda de registros](#search-búsqueda-de-registros)**
+- **[`read` — Lectura de registros](#read-lectura-de-registros)**
+- **[`search_read` — Búsqueda y lectura de registros](#search_read-búsqueda-y-lectura-de-registros)**
+- **[`search_count` — Conteo de búsqueda](#search_count-conteo-de-búsqueda)**
+- **[`update` — Actualización de registros](#update-actualización-de-registros)**
+- **[`delete` — Eliminación de registros](#delete-eliminación-de-registros)**
+- **[`authenticate_user` — Autenticación de usuario](#authenticate_user-autenticación-de-usuario)**
 
-**INICIALIZACIÓN**
+**[CONTEXTOS](#contextos)**
+
+- **[`BaseContext` — Contexto base](#basecontext-contexto-base)**
+    - **[`uid` — ID del usuario que ejecuta la transacción](#uid-id-del-usuario-que-ejecuta-la-transacción)**
+    - **[`create` — Creación de registros](#create-creación-de-uno-o-muchos-registros-1)**
+    - **[`search` — Búsqueda de registros](#search-búsqueda-de-registros-1)**
+    - **[`read` — Lectura de registros](#read-lectura-de-registros-1)**
+    - **[`search_read` — Búsqueda y lectura de registros](#search_read-búsqueda-y-lectura-de-registros-1)**
+    - **[`search_count` — Conteo de búsqueda](#search_count-conteo-de-búsqueda-1)**
+    - **[`update` — Actualización de registros](#update-actualización-de-registros-1)**
+    - **[`delete` — Eliminación de registros](#delete-eliminación-de-registros-1)**
+    - **[`get_resource_id` — Obtención de ID de recurso](#get_resource_id-obtención-de-id-de-recurso)**
+
+**[INICIALIZACIÓN](#inicialización)**
+
 - **[Variables de entorno](#variables-de-entorno)**
     - **[Credenciales](#credenciales)**
     - **[Usuarios](#usuarios)**
     - **[Parámetros opcionales](#parámetros-opcionales)**
 - **[Creación de la base de datos](#creación-de-la-base-de-datos)**
 
-**TIPADOS**
-- **[_M — Nombre de modelo personalizado](#_m-nombre-de-modelo-personalizado)**
-- **[_T — Parámetro de tipo _T](#_t-parámetro-de-tipo-_t)**
-- **[_Aliased — Alias de tipo _T para declaración de campos](#_aliased-alias-de-tipo-_t-para-declaración-de-campos)**
-- **[ComputeFieldFn — Función de cómputo de campo](#computefieldfn-función-de-cómputo-de-campo)**
-- **[CriteriaStructure — Estructura de criterio de búsqueda](#criteriastructrure-estructura-de-criterio-de-búsqueda)**
-- **[FieldComputation — Cómputo de campo](#fieldcomputation-cómputo-de-campo)**
-- **[FieldName — Nombre de campo existente en el modelo](#fieldname-nombre-de-campo-existente-en-el-modelo)**
-- **[FieldReadDeclaration — Declaración de campos a leer](#fieldreaddeclaration-declaración-de-campos-a-leer)**
-- **[ItemOrList — Elemento o lista de elementos](#itemorlist-elemento-o-lista-de-elementos)**
-- **[ModelName — Nombre de modelo](#modelname-nombre-de-modelo)**
-- **[TTypeName — Nombre de tipo de dato de campo](#ttypename-nombre-de-tipo-de-dato-de-campo)**
+**[TIPADOS](#tipados)**
+- **[`_M` — Nombre de modelo personalizado](#_m-nombre-de-modelo-personalizado)**
+- **[`_T` — Parámetro de tipo _T](#_t-parámetro-de-tipo-_t)**
+- **[`_Aliased` — Alias de tipo _T para declaración de campos](#_aliased-alias-de-tipo-_t-para-declaración-de-campos)**
+- **[`ComputeFieldFn` — Función de cómputo de campo](#computefieldfn-función-de-cómputo-de-campo)**
+- **[`CriteriaStructure` — Estructura de criterio de búsqueda](#criteriastructrure-estructura-de-criterio-de-búsqueda)**
+- **[`FieldComputation` — Cómputo de campo](#fieldcomputation-cómputo-de-campo)**
+- **[`FieldName` — Nombre de campo existente en el modelo](#fieldname-nombre-de-campo-existente-en-el-modelo)**
+- **[`FieldReadDeclaration` — Declaración de campos a leer](#fieldreaddeclaration-declaración-de-campos-a-leer)**
+- **[`ItemOrList` — Elemento o lista de elementos](#itemorlist-elemento-o-lista-de-elementos)**
+- **[`ModelName` — Nombre de modelo](#modelname-nombre-de-modelo)**
+- **[`TTypeName` — Nombre de tipo de dato de campo](#ttypename-nombre-de-tipo-de-dato-de-campo)**
 
 ----
 
 ## Métodos
+Lylac pone a disposición métodos convenientes para llevar a cabo transacciones de datos con instrucciones anidadas, filtros extremadamente poderosos, lecturas de datos flexibles ya sea de campos existentes en los modelos de la base de datos o computándolos en tiempo real o en funciones previamente registradas.
+
+----
 
 ### `login` Iniciar sesión
 Este método permite crear una sesión de usuario y retorna una UUID de sesión para poder autenticarse cuando se use alguno de los métodos de transacción de datos.
@@ -122,31 +139,33 @@ db.search(session_uuid, 'base.users', [('create_uid', '=', 2)])
 # [3, 5, 6]
 ```
 
-#### Desfase de registros para paginación
-Este parámetro sirve para retornar los registros a partir del índice indicado por éste. Suponiendo que una búsqueda normal arrojaría los siguientes resultados:
-```py
-db.search(session_uuid, 'base.users')
-# [1, 2, 3, 4, 5, 6, 7]
-```
+> **Desfase de registros para paginación**
+> 
+> Este parámetro sirve para retornar los registros a partir del índice indicado por éste. Suponiendo que una búsqueda normal arrojaría los siguientes resultados:
+> ```py
+> db.search(session_uuid, 'base.users')
+> # [1, 2, 3, 4, 5, 6, 7]
+> ```
+> 
+> Se puede especificar que el retorno de los registros considerará solo a partir desde cierto desfase numérico, como por ejemplo lo siguiente:
+> ```py
+> db.search(session_uuid, 'base.users', offset= 2)
+> # [3, 4, 5, 6, 7]
+> ```
 
-Se puede especificar que el retorno de los registros considerará solo a partir desde cierto desfase numérico, como por ejemplo lo siguiente:
-```py
-db.search(session_uuid, 'base.users', offset= 2)
-# [3, 4, 5, 6, 7]
-```
-
-#### Límite de registros retornados para paginación
-También es posible establecer una cantidad máxima de registros desde la base de datos. Suponiendo que una búsqueda normal arrojaría los siguientes registros:
-```py
-db.search(session_uuid, 'base.users')
-# [1, 2, 3, 4, 5, 6, 7]
-```
-
-Se puede especificar que solo se requiere obtener una cantidad máxima de registros a partir de un número provisto:
-```py
-db.search(session_uuid, 'base.users', limit= 3)
-# [1, 2, 3]
-```
+> **Límite de registros retornados para paginación**
+> 
+> También es posible establecer una cantidad máxima de registros desde la base de datos. Suponiendo que una búsqueda normal arrojaría los siguientes registros:
+> ```py
+> db.search(session_uuid, 'base.users')
+> # [1, 2, 3, 4, 5, 6, 7]
+> ```
+> 
+> Se puede especificar que solo se requiere obtener una cantidad máxima de registros a partir de un número provisto:
+> ```py
+> db.search(session_uuid, 'base.users', limit= 3)
+> # [1, 2, 3]
+> ```
 
 **Parámetros**
 - `session_uuid`: *str* — UUID de sesión.
@@ -223,56 +242,58 @@ db.search_read(session_uuid, 'base.users', fields= ['user', 'create_date'])
 # ]
 ```
 
-#### Desfase de registros para paginación
-Este parámetro sirve para retornar los registros a partir del índice indicado por éste. Suponiendo que una búsqueda normal arrojaría los siguientes resultados:
-```py
-db.search_read(session_uuid, 'base.users')
-# [
-#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
-#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
-#   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
-#   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
-#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
-#   ...
-# ]
-```
+> **Desfase de registros para paginación**
+> 
+> Este parámetro sirve para retornar los registros a partir del índice indicado por éste. Suponiendo que una búsqueda normal arrojaría los siguientes resultados:
+> ```py
+> db.search_read(session_uuid, 'base.users')
+> # [
+> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+> #   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+> #   ...
+> # ]
+> ```
+> 
+> Se puede especificar que el retorno de los registros considerará solo a partir desde cierto registro, como por ejemplo lo siguiente:
+> ```py
+> db.search_read(session_uuid, 'base.users', offset= 2)
+> # [
+> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+> #   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+> #   {'id': 7, 'name': 'Sarko Zuimx', 'login': 'sarzu', ...},
+> #   {'id': 8, 'name': 'Leo Minnix', 'login': 'minnleo', ...},
+> #   ...
+> # ]
+> ```
 
-Se puede especificar que el retorno de los registros considerará solo a partir desde cierto registro, como por ejemplo lo siguiente:
-```py
-db.search_read(session_uuid, 'base.users', offset= 2)
-# [
-#   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
-#   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
-#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
-#   {'id': 7, 'name': 'Sarko Zuimx', 'login': 'sarzu', ...},
-#   {'id': 8, 'name': 'Leo Minnix', 'login': 'minnleo', ...},
-#   ...
-# ]
-```
-
-#### Límite de registros retornados para paginación
-También es posible establecer una cantidad máxima de registros desde la base de datos. Suponiendo que una búsqueda normal arrojaría los siguientes registros:
-```py
-db.search_read(session_uuid, 'base.users')
-# [
-#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
-#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
-#   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
-#   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
-#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
-#   ...
-# ]
-```
-
-Se puede especificar que solo se requiere obtener una cantidad máxima de registros a partir de un número provisto:
-```py
-db.search_read(session_uuid, 'base.users', limit= 3)
-# [
-#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
-#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
-#   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...}
-# ]
-```
+> **Límite de registros retornados para paginación**
+> 
+> También es posible establecer una cantidad máxima de registros desde la base de datos. Suponiendo que una búsqueda normal arrojaría los siguientes registros:
+> ```py
+> db.search_read(session_uuid, 'base.users')
+> # [
+> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+> #   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+> #   ...
+> # ]
+> ```
+> 
+> Se puede especificar que solo se requiere obtener una cantidad máxima de registros a partir de un número provisto:
+> ```py
+> db.search_read(session_uuid, 'base.users', limit= 3)
+> # [
+> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...}
+> # ]
+> ```
 
 **Parámetros**
 - `session_uuid`: *str* — UUID de sesión.
@@ -355,7 +376,7 @@ db.search_read(session_uuid, 'base.users', fields= ['login', 'name'])
 ----
 
 ### `delete` Eliminación de registros
-Este método realiza la eliminaciónd e uno o más registros de la base de datos a partir de su respectiva ID provista.
+Este método realiza la eliminación de uno o más registros de la base de datos a partir de su respectiva ID provista.
 
 Uso:
 ```py
@@ -410,6 +431,358 @@ db.authenticate_user(session_uuid)
 
 **Retorno**
 - `user_id`: *int* — ID del usuario propietario de la sesión.
+
+----
+
+## Contextos
+
+Los contextos son objetos que reúnen el estado y los recursos necesarios para ejecutar una operación dentro de un determinado ámbito de ejecución.
+
+En Lylac, un contexto se utiliza durante la ejecución de una función que forma parte de una misma transacción de base de datos. El contexto proporciona a la función acceso a información y recursos relevantes para dicha ejecución, como la ID del usuario que inició la transacción, la conexión de base de datos asociada a ella y otros recursos necesarios para realizar la operación.
+
+Los contextos permiten que varias instrucciones compartan el mismo estado y formen parte de una misma unidad de trabajo. Esto resulta especialmente útil para operaciones que requieren ejecutar múltiples instrucciones de forma conjunta.
+
+Al estar asociadas a una misma transacción, las instrucciones pueden confirmarse o revertirse como una sola unidad. Si ocurre un error durante la ejecución, la transacción puede realizar un rollback, evitando que los cambios realizados hasta ese momento sean persistidos parcialmente en la base de datos.
+
+### `BaseContext` Contexto base
+
+La clase de contexto base reúne los métodos y atributos comunes entre los contextos de Acción, Ambiente, Automatización, Tareas de servidor, Políticas y Validación.
+
+#### `uid` ID del usuario que ejecuta la transacción
+Este es un atributo de solo lectura. Muestra la ID del usuario que está ejecutando la transacción.
+
+**Retorno**
+- `user_uid`: *int* — ID del usuario que ejecuta la transacción.
+
+----
+
+#### `create` Creación de uno o muchos registros
+Este método realiza la creación de uno o muchos registros.
+
+Uso:
+```py
+# Para un solo registro
+record = {
+    'login': 'onnymm',
+    'name': 'Onnymm Azzur',
+}
+
+ctx.create('base.users', record)
+
+# Para muchos registros
+records = [
+    {
+        'login': 'onnymm',
+        'name': 'Onnymm Azzur',
+    },
+    {
+        'login': 'lumii',
+        'name': 'Lumii Mynx',
+    },
+]
+
+ctx.create('base.users', records)
+```
+
+**Parámetros**
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `data`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[RecordData]* — Diccionario o lista de diccionarios de los datos a crear.
+
+**Retorno**
+- `record_ids`: *list[int]* — Lista de IDs del registro o de los registros creados.
+
+----
+
+#### `search` Búsqueda de registros
+Este método retorna todas las IDs de los registros de un modelo o los registros que cumplan con la condición de búsqueda provista.
+
+Uso:
+```py
+# Registros existentes en el modelo base.users
+ctx.search('base.users')
+# [1, 2, 3, 4, 5, 6, 7]
+
+# Registros en el modelo base.users que hayan sido creados
+#   por el usuario con la ID 2
+ctx.search('base.users', [('create_uid', '=', 2)])
+# [3, 5, 6]
+```
+
+> **Desfase de registros para paginación**
+> 
+> Este parámetro sirve para retornar los registros a partir del índice indicado por éste. Suponiendo que una búsqueda normal arrojaría los siguientes resultados:
+> ```py
+> ctx.search('base.users')
+> # [1, 2, 3, 4, 5, 6, 7]
+> ```
+> 
+> Se puede especificar que el retorno de los registros considerará solo a partir desde cierto desfase numérico, como por ejemplo lo siguiente:
+> ```py
+> ctx.search('base.users', offset= 2)
+> # [3, 4, 5, 6, 7]
+> ```
+
+> **Límite de registros retornados para paginación**
+> 
+> También es posible establecer una cantidad máxima de registros desde la base de datos. Suponiendo que una búsqueda normal arrojaría los siguientes registros:
+> ```py
+> ctx.search('base.users')
+> # [1, 2, 3, 4, 5, 6, 7]
+> ```
+> 
+> Se puede especificar que solo se requiere obtener una cantidad máxima de registros a partir de un número provisto:
+> ```py
+> ctx.search('base.users', limit= 3)
+> # [1, 2, 3]
+> ```
+
+**Parámetros**
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `search_criteria` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)* — Criterio de búsqueda.
+- `offset` **(Opcional)**: *int* — Desfase de resultados retornados.
+- `limit` **(Opcional)**: *int* — Límite de cantidad de resultados retornados.
+
+**Retorno**
+- `record_ids`: *list[int]* — Lista de IDs de los registros encontrados.
+
+----
+
+#### `read` Lectura de registros
+Este método retorna una lista de diccionarios con el contenido de los registros de un modelo de la base de datos a partir de una lista de IDs, en el orden en el que se especificaron los campos o todos los campos en caso de no haber sido especificados.
+
+Uso:
+```py
+# Ejemplo 1
+ctx.read('base.users', [2])
+# [{'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...}]
+
+# Ejemplo 2
+ctx.read('base.users', [2, 3])
+# [
+#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+# ]
+
+# Ejemplo 3
+ctx.read('base.users', [2, 3], ['login', 'create_date'])
+# [
+#   {'id': 2, 'login': 'onnymm', 'create_date': '2026-09-12 12:15:36' ...},
+#   {'id': 3, 'login': 'lumii', 'create_date': '2026-09-12 13:28:14 ...},
+# ]
+```
+
+**Parámetros**
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a leer.
+- `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer.
+- `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
+- `ascending` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
+
+**Retorno**
+- `records`: *list[RecordData]* — Lista de diccionarios con los datos de los registros solicitados.
+
+----
+
+#### `search_read` Búsqueda y lectura de registros
+Este método retorna una lista de diccionarios con el contenido de los registros de un modelo de la base de datos, en el orden en el que se especificaron los campos o todos los campos en caso de no haber sido especificados.
+
+Uso:
+```py
+# Ejemplo 1
+ctx.search_read('base.users')
+# [
+#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+#   ...
+# ]
+
+# Ejemplo 2
+ctx.search_read('base.users', [('user', '=', 'onnymm')])
+# [{'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...}]
+
+# Ejemplo 3
+ctx.search_read('base.users', fields= ['user', 'create_date'])
+# [
+#   {'id': 2, 'login': 'onnymm', 'create_date': '2026-09-12 12:15:36' ...},
+#   {'id': 3, 'login': 'lumii', 'create_date': '2026-09-12 13:28:14 ...},
+#   ...
+# ]
+```
+
+> **Desfase de registros para paginación**
+> 
+> Este parámetro sirve para retornar los registros a partir del índice indicado por éste. Suponiendo que una búsqueda normal arrojaría los siguientes resultados:
+> ```py
+> ctx.search_read('base.users')
+> # [
+> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+> #   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+> #   ...
+> # ]
+> ```
+> 
+> Se puede especificar que el retorno de los registros considerará solo a partir desde cierto registro, como por ejemplo lo siguiente:
+> ```py
+> ctx.search_read('base.users', offset= 2)
+> # [
+> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+> #   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+> #   {'id': 7, 'name': 'Sarko Zuimx', 'login': 'sarzu', ...},
+> #   {'id': 8, 'name': 'Leo Minnix', 'login': 'minnleo', ...},
+> #   ...
+> # ]
+> ```
+
+> **Límite de registros retornados para paginación**
+> 
+> También es posible establecer una cantidad máxima de registros desde la base de datos. Suponiendo que una búsqueda normal arrojaría los siguientes registros:
+> ```py
+> ctx.search_read('base.users')
+> # [
+> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+> #   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+> #   ...
+> # ]
+> ```
+> 
+> Se puede especificar que solo se requiere obtener una cantidad máxima de registros a partir de un número provisto:
+> ```py
+> ctx.search_read('base.users', limit= 3)
+> # [
+> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...}
+> # ]
+> ```
+
+**Parámetros**
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `search_criteria` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)* — Criterio de búsqueda.
+- `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer.
+- `offset` **(Opcional)**: *int* — Desfase de resultados retornados.
+- `limit` **(Opcional)**: *int* — Límite de cantidad de resultados retornados.
+- `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
+- `ascending` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
+
+**Retorno**
+- `records`: *list[RecordData]* — Lista de diccionarios con los datos de los registros solicitados.
+
+----
+
+#### `search_count` Conteo de búsqueda
+Este método retorna el conteo de de todos los registros de un modelo o los registros que cumplan con la condición de búsqueda provista, ideal para funcionalidades de paginación que muestran un total de registros.
+
+Uso:
+```py
+# Ejemplo 1
+ctx.search_count('base.users')
+# 5
+
+# Ejemplo 2
+ctx.search_count('base.permissions', [('create_uid', '=', 5)])
+# 126
+```
+
+**Parámetros**
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `search_criteria` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)* — Criterio de búsqueda.
+
+**Retorno**
+- `count`: *int* — Total de registros encontrados.
+
+----
+
+#### `update` Actualización de registros
+Este método realiza la actualización de uno o más registros a partir de su respectiva ID provista, actualizando uno o más campos con el valor provisto. Este método solo sobreescribe un mismo valor por cada campo a todos los registros provistos.
+
+Uso:
+```py
+ctx.search_read('base.users', fields= ['login', 'name'])
+# [
+#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm'},
+#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii'},
+#   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim'},
+#   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio'},
+#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu'},
+#   ...
+# ]
+
+# Modificación
+ctx.update('base.users', [3, 4, 5], {'name': 'Cambiado'})
+# True
+
+ctx.search_read('base.users', fields= ['login', 'name'])
+# [
+#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm'},
+#   {'id': 3, 'name': 'Cambiado', 'login': 'lumii'},
+#   {'id': 4, 'name': 'Cambiado', 'login': 'meshkim'},
+#   {'id': 5, 'name': 'Cambiado', 'login': 'luunafio'},
+#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu'},
+#   ...
+# ]
+```
+
+**Parámetros**
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a actualizar.
+- `data`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[RecordData]* — Diccionario o lista de diccionarios de los datos a crear.
+
+**Retorno**
+- `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
+
+----
+
+#### `delete` Eliminación de registros
+Este método realiza la eliminación de uno o más registros de la base de datos a partir de su respectiva ID provista.
+
+Uso:
+```py
+ctx.search_read('base.users')
+# [
+#   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+#   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+#   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+#   ...
+# ]
+
+# Eliminación del registro con ID 2
+
+ctx.delete('base.users', 2)
+# True
+
+ctx.search_read('base.users')
+# [
+#   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+#   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+#   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+#   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+#   ...
+# ]
+```
+
+**Parámetros**
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a eliminar.
+
+**Retorno**
+- `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
+
+----
+
+#### `get_resource_id` Obtención de ID de recurso
+Este método se usa para obtener la ID de un registro en la base de datos señalado por su referencia única de mapeo.
+
+**Retorno**
+- `record_id`: *int | None* — ID del registro referenciado o *None* si no existe.
 
 ----
 
