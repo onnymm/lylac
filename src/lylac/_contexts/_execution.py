@@ -8,6 +8,7 @@ from .._resources import ModelDataIndex
 from .._resources import ModelsBearer
 from .._resources import UserEnv
 from .._typing.callables import NotifierInitializator
+from .._typing.generics import MaybeNone
 from .._typing.structures import NotificationTarget
 from .._typing.type_parameters import _M
 
@@ -64,23 +65,10 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
         # Inicialización de notificador
         self._notifier = notifier_init(self)
 
-    @property
-    def uid(
-        self,
-    ) -> int:
-        """
-        ID del usuario que ejecuta la transacción.
-        """
-
-        # Obtención de la ID del usuario en la ejecución
-        uid = self._uid
-
-        return uid
-
     def get_resource_id(
         self,
         name: str,
-    ) -> int:
+    ) -> MaybeNone[int]:
 
         # Obtención de la ID de la referencia de recurso
         resource_id = self._model_data_index.get_resource_id(name)
@@ -114,6 +102,19 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
     def commit(
         self,
     ) -> None:
+        """
+        ### Commit
+        Este método realiza un commit en la base de datos usando el método `commit` de
+        la clase `Connection` de SQLAlchemy.
+
+        **Parámetros**
+
+        *No se requieren parámetros de entrada.*
+
+        **Retorna**
+
+        *Este método no retorna ningún valor.*
+        """
 
         # Se realiza commit en la base de datos
         self.conn.commit()
