@@ -19,6 +19,7 @@ pip install git+https://github.com/onnymm/lylac.git
 - **[`update` — Actualización de registros](#update-actualización-de-registros)**
 - **[`delete` — Eliminación de registros](#delete-eliminación-de-registros)**
 - **[`action` — Ejecución de una acción](#action-ejecución-de-una-acción)**
+- **[`task` — Ejecución de una tarea de servidor](#task-ejecución-de-tarea-de-servidor)**
 - **[`execute_transaction` — Ejecutar transacción](#execute_transaction-ejecutar-transacción)**
 - **[`authenticate_user` — Autenticación de usuario](#authenticate_user-autenticación-de-usuario)**
 
@@ -47,11 +48,17 @@ pip install git+https://github.com/onnymm/lylac.git
 - **[`ActionContext` — Contexto de acción](#actioncontext-contexto-de-acción)**
     - **[`data` Datos del registro](#data-datos-del-registro-contexto-de-acción)**
     - **[`record_id` ID de registro](#record_id-id-de-registro-contexto-de-acción)**
+- **[`ServerTaskContext` — Contexto de tarea de servidor](#actioncontext-contexto-de-acción)**
 
 **[ACCIONES](#acciones)**
 
 - **[Registro de acciones](#registro-de-acciones)**
 - **[Ejecución de acciones](#ejecución-de-acciones)**
+
+**[TAREAS DE SERVIDOR](#tareas-de-servidor)**
+
+- **[Registro de tareas de servidor](#registro-de-tareas-de-servidor)**
+- **[Ejecución de tareas de servidor](#ejecución-de-tareas-de-servidor)**
 
 **[TIPADOS](#tipados)**
 - **[`_M` — Nombre de modelo personalizado](#_m-nombre-de-modelo-personalizado)**
@@ -449,6 +456,22 @@ En el fragmento de código ejecutamos una acción que archiva al registro con ID
 - `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
 
 ----
+
+### `task` Ejecución de tarea de servidor
+Este método ejecuta una tarea de servidor en la base de datos. Para más información véase la sección [Tareas de servidor](#tareas-de-servidor).
+
+Ejemplo:
+```py
+db.task(session_uuid, 'update_data_from_api')
+# True
+```
+
+**Parámetros**
+- `session_uuid`: *str* — UUID de sesión.
+- `name`: *str* — Nombre de la tarea de servidor.
+
+**Retorno**
+- `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
 
 ### `execute_transaction` Ejecutar transacción
 Este método ejecuta una transacción compleja construida mediante una función que es provista a este método como argumento. La función debe estar preparada para recibir como argumento un [ExecutionContext](#executioncontext-contexto-de-ejecución)[[_M](#_m-nombre-de-modelo-personalizado)] para poder declarar instrucciones de operaciones en la base de datos. Al estar asociadas a una misma transacción, las instrucciones pueden confirmarse o revertirse como una sola unidad. Si ocurre un error durante la ejecución, la transacción puede realizar un rollback, evitando que los cambios realizados hasta ese momento sean persistidos parcialmente en la base de datos.
@@ -995,8 +1018,20 @@ Atributo por el cual se puede acceder a la ID del registro sobre el que se ejecu
 
 ----
 
-## Acciones
+### `ServerTaskContext` Contexto de tarea de servidor
+La clase de contexto de tarea de servidor es usada como argumento en las funciones de tarea de servidor y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listas a continuación:
 
+- **[`uid` — ID del usuario que ejecuta la transacción](#uid-id-del-usuario-que-ejecuta-la-transacción)**
+- **[`create` — Creación de registros](#create-creación-de-uno-o-muchos-registros-1)**
+- **[`search` — Búsqueda de registros](#search-búsqueda-de-registros-1)**
+- **[`read` — Lectura de registros](#read-lectura-de-registros-1)**
+- **[`search_read` — Búsqueda y lectura de registros](#search_read-búsqueda-y-lectura-de-registros-1)**
+- **[`search_count` — Conteo de búsqueda](#search_count-conteo-de-búsqueda-1)**
+- **[`update` — Actualización de registros](#update-actualización-de-registros-1)**
+- **[`delete` — Eliminación de registros](#delete-eliminación-de-registros-1)**
+- **[`get_resource_id` — Obtención de ID de recurso](#get_resource_id-obtención-de-id-de-recurso)**
+
+## Acciones
 Una acción es una operación ejecutable asociada a un modelo que permite realizar una serie de operaciones a partir de un registro de dicho modelo.
 
 Las acciones son implementadas mediante funciones que reciben el contexto de ejecución y la ID del registro sobre el que deben operar. A partir de este registro, una acción puede consultar o modificar sus valores, crear registros relacionados, modificar otros registros y ejecutar otras acciones.
@@ -1085,6 +1120,85 @@ En el fragmento de código ejecutamos una acción que archiva al registro con ID
 - `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
 
 ----
+
+## Tareas de servidor
+Una tarea de servidor es una operación que permite ejecutar una serie de procesos con alcance a uno o muchos modelos de la base de datos, tal como lo haría una función común en Python pero sin retornar un valor en concreto.
+
+Las tareas de servidor son útiles para realizar actualizaciones, sincronizaciones periódicas o funciones complejas que involucran muchos registros en uno o varios modelos. Son implementadas mediante funciones que reciben un contexto de tarea de servidor y no deben retornar un valor.
+
+Una tarea de servidor puede estar compuesta por múltiples operaciones. Todas estas operaciones forman parte de la misma ejecución y, cuando corresponda, de la misma transacción, por lo que un error durante su ejecución puede provocar que los cambios realizados sean revertidos conjuntamente.
+
+Por ejemplo, una tarea de servidor podría actualizar un estado o una serie de registros conectándose a una API externa o realizar un reporte a partir una serie de registros al finalizar el día.
+
+### Registro de tareas de servidor
+Una tarea de servidor es básicamente una función en Python pero que cumple con una estructura especial para ser ejecutada por Lylac directamente cuando se invoca ésta por su nombre.
+
+La convención de nomenclatura de las tareas de servidor sigue la siguiente estructura:
+
+`_task` + `__` + *nombre de la tarea de servidor*
+
+Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas tareas de servidor parecidas en modelos parecidos.
+
+Por ejemplo, si quisiéramos construir una tarea de servidor que se conecta a la API de un tercero para actualizar un estado, una serie de registros o algo por el estilo, la nomenclatura dice que la función se llamaría:
+
+`_task` + `__` + `update_data_from_api`
+
+`_task__update_data_from_api`
+
+Para tipar el argumento `ctx` se puede usar el tipado `.ServerTaskContext` integrado en Lylac que nos ahorra el tener que importar tipados desde algún submódulo especial.
+
+Ejemplo de la construcción de la tarea de servidor:
+```py
+def _task__update_data_from_api(ctx: Lylac.ServerTaskContext):
+
+    # Obtención de datos externos
+    data = some_service.fetch_data(...)
+
+    # Procesamiento interno
+    formatted_data = process_data(data)
+
+    # Se guardan los datos en la API
+    ctx.create('service.registry', formatted_data)
+```
+
+El commit en la base de datos se hará automáticamente al finalizar todas las operaciones de la transacción.
+
+Una vez creada nuestra función de tarea de servidor, falta decorarla la API integrada accesible desde la instancia creada:
+```py
+@db.api.server_tasks.register('update_data_from_api')
+def _task__update_data_from_api(ctx: Lylac.ServerTaskContext):
+
+    # Obtención de datos externos
+    data = some_service.fetch_data(...)
+
+    # Procesamiento interno
+    formatted_data = process_data(data)
+
+    # Se guardan los datos en la API
+    ctx.create('service.registry', formatted_data)
+```
+
+**Parámetros del decorador**
+
+- `name`: *str* — Nombre de la tarea de servidor.
+
+> ℹ️ Las funciones de tarea de servidor no deben retornar ningún valor u objeto ya que éste no será retornado en la ejecución de éstas. Si se desea retornar un valor u objeto véase [Ejecutar transacción](#execute_transaction-ejecutar-transacción).
+
+### Ejecución de tareas de servidor
+Las tareas de servidor se ejecutan invocándolas con el nombre con el que fueron registradas. Para más información, véase [Registro de tareas de servidor](#registro-de-tareas-de-servidor)
+
+Ejemplo:
+```py
+db.task(session_uuid, 'update_data_from_api')
+# True
+```
+
+**Parámetros**
+- `session_uuid`: *str* — UUID de sesión.
+- `name`: *str* — Nombre de la tarea de servidor.
+
+**Retorno**
+- `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
 
 ## Tipados
 
