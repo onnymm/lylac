@@ -698,6 +698,22 @@ class BaseContext(Generic[_M]):
         self,
         name: str,
     ) -> Literal[True]:
+        """
+        ## Ejecución de tarea de servidor
+        Este método ejecuta una tarea de servidor en la base de datos.
+
+        Ejemplo:
+        >>> ctx.task('update_data_from_api')
+        >>> # True
+
+        **Parámetros**
+
+        :name: Nombre de la tarea de servidor.
+
+        **Retorno**
+
+        :response: Respuesta de que la operación se realizó correctamente.
+        """
 
         # Ejecución de tarea de servidor
         result = self._execution_ctx.server_tasks.execute(

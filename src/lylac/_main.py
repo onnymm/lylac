@@ -534,6 +534,23 @@ class Lylac(Generic[_M]):
         session_uuid: str,
         name: str,
     ) -> Literal[True]:
+        """
+        ## Ejecución de tarea de servidor
+        Este método ejecuta una tarea de servidor en la base de datos.
+
+        Ejemplo:
+        >>> db.task(session_uuid, 'update_data_from_api')
+        >>> # True
+
+        **Parámetros**
+
+        :session_uuid: UUID de sesión.
+        :name: Nombre de la tarea de servidor.
+
+        **Retorno**
+
+        :response: Respuesta de que la operación se realizó correctamente.
+        """
 
         # Definición de la transacción
         def transaction(execution_ctx: _ExecutionContext[_M]) -> Literal[True]:

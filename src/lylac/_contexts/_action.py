@@ -211,7 +211,7 @@ class ActionContext(Generic[_M, _R], BaseContext[_M]):
 
     ### Ejecución de una acción
     Este método ejecuta una acción sobre un registro de un modelo en la base de
-    datos. Para más información véase la sección [Acciones](#acciones).
+    datos.
 
     Ejemplo:
     >>> ctx.action('base.users', 'archive', 3)
@@ -219,6 +219,13 @@ class ActionContext(Generic[_M, _R], BaseContext[_M]):
 
     En el fragmento de código ejecutamos una acción que archiva al registro con ID
     `3` del modelo `base.users`.
+
+    ### Ejecución de tarea de servidor
+    Este método ejecuta una tarea de servidor en la base de datos.
+
+    Ejemplo:
+    >>> ctx.task('update_data_from_api')
+    >>> # True
     """
     data: _R
     record_id: int
