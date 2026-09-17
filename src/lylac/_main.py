@@ -420,6 +420,47 @@ class Lylac(Generic[_M]):
         session_uuid: str,
         callback: Callable[[_ExecutionContext[_M]], _T],
     ) -> _T:
+        """
+        ## Ejecutar transacción
+        Este método ejecuta una transacción compleja construida mediante una función
+        que es provista a este método como argumento. La función debe estar preparada
+        para recibir como argumento un `ExecutionContext[_M]` para poder declarar
+        instrucciones de operaciones en la base de datos. Al estar asociadas a una
+        misma transacción, las instrucciones pueden confirmarse o revertirse como una
+        sola unidad. Si ocurre un error durante la ejecución, la transacción puede
+        realizar un rollback, evitando que los cambios realizados hasta ese momento
+        sean persistidos parcialmente en la base de datos.
+
+        Uso:
+        >>> # Definición de función de lectura del perfil del usuario de la sesión
+        >>> def me(ctx: Lylac.ExecutionContext):
+        >>> 
+        >>>     # Obtención de los datos del usuario de la sesión
+        >>>     [ user_data ] = ctx.read(
+        >>>         'base.users',
+        >>>         ctx.uid,
+        >>>         fields = [
+        >>>             'name',
+        >>>             'active',
+        >>>             'login',
+        >>>             'profile_picture',
+        >>>         ],
+        >>>     )
+        >>> 
+        >>>     return user_data
+        >>> 
+        >>> # Ejecución de la transacción desde la instancia principal
+        >>> profile_data = db.execute_transaction(session_uuid, me)
+
+        **Parámetros**
+
+        :session_uuid: UUID de sesión.
+        :callback: Función de transacción.
+
+        **Retorno**
+
+        :result: El valor u objeto que retorna la función de transacción.
+        """
 
         # Autenticación del usuario
         uid = self.authenticate_user(session_uuid)
@@ -447,6 +488,29 @@ class Lylac(Generic[_M]):
         name: str,
         record_id: int,
     ) -> Literal[True]:
+        """
+        ## Ejecución de una acción
+        Este método ejecuta una acción sobre un registro de un modelo en la base de
+        datos.
+
+        Ejemplo:
+        >>> db.action(session_uuid, 'base.users', 'archive', 3)
+        >>> # True
+
+        En el fragmento de código ejecutamos una acción que archiva al registro con ID
+        `3` del modelo `base.users`.
+
+        **Parámetros**
+
+        :session_uuid: UUID de sesión.
+        :model_name: Nombre de modelo en la base de datos.
+        :name: Nombre de la acción.
+        :record_id: ID del registro sobre el que se va a ejecutar la acción.
+
+        **Retorno**
+
+        :response: Respuesta de que la operación se realizó correctamente.
+        """
 
         # Definición de la transacción
         def transaction(execution_ctx: _ExecutionContext[_M]) -> Literal[True]:

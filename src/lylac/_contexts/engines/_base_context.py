@@ -661,6 +661,28 @@ class BaseContext(Generic[_M]):
         name: str,
         record_id: int,
     ) -> Literal[True]:
+        """
+        ## Ejecución de una acción
+        Este método ejecuta una acción sobre un registro de un modelo en la base de
+        datos.
+
+        Ejemplo:
+        >>> ctx.action('base.users', 'archive', 3)
+        >>> # True
+
+        En el fragmento de código ejecutamos una acción que archiva al registro con ID
+        `3` del modelo `base.users`.
+
+        **Parámetros**
+
+        :model_name: Nombre de modelo en la base de datos.
+        :name: Nombre de la acción.
+        :record_id: ID del registro sobre el que se va a ejecutar la acción.
+
+        **Retorno**
+
+        :response: Respuesta de que la operación se realizó correctamente.
+        """
 
         # Ejecución de acción
         result = self._execution_ctx.actions.execute(
@@ -689,6 +711,22 @@ class BaseContext(Generic[_M]):
         self,
         ref: str,
     ) -> MaybeNone[int]:
+        """
+        ## Obtención de ID de recurso
+        Este método se usa para obtener la ID de un registro en la base de datos
+        señalado por su referencia única de mapeo.
+
+        >>> ctx.get_resource_id('base_users.root_user')
+        >>> # 1
+
+        **Parámetros**
+
+        :ref: Referencia única de mapeo de datos.
+
+        **Retorno**
+
+        :record_id: `MaybeNone[int]` ID del registro referenciado o *None* si no existe.
+        """
 
         # Obtención de la ID de recurso
         resource_id = self._model_data_index.get_resource_id(ref)
