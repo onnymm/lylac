@@ -18,7 +18,17 @@ pip install git+https://github.com/onnymm/lylac.git
 - **[`search_count` — Conteo de búsqueda](#search_count-conteo-de-búsqueda)**
 - **[`update` — Actualización de registros](#update-actualización-de-registros)**
 - **[`delete` — Eliminación de registros](#delete-eliminación-de-registros)**
+- **[`action` — Ejecución de una acción](#action-ejecución-de-una-acción)**
+- **[`execute_transaction` — Ejecutar transacción](#execute_transaction-ejecutar-transacción)**
 - **[`authenticate_user` — Autenticación de usuario](#authenticate_user-autenticación-de-usuario)**
+
+**[INICIALIZACIÓN](#inicialización)**
+
+- **[Variables de entorno](#variables-de-entorno)**
+    - **[Credenciales](#credenciales)**
+    - **[Usuarios](#usuarios)**
+    - **[Parámetros opcionales](#parámetros-opcionales)**
+- **[Creación de la base de datos](#creación-de-la-base-de-datos)**
 
 **[CONTEXTOS](#contextos)**
 
@@ -34,14 +44,14 @@ pip install git+https://github.com/onnymm/lylac.git
     - **[`get_resource_id` — Obtención de ID de recurso](#get_resource_id-obtención-de-id-de-recurso)**
 - **[`ExecutionContext` — Contexto de ejecución](#executioncontext-contexto-de-ejecución)**
     - **[`commit` — Commit en la base de datos](#commit-commit-en-la-base-de-datos)**
+- **[`ActionContext` — Contexto de acción](#actioncontext-contexto-de-acción)**
+    - **[`data` Datos del registro](#data-datos-del-registro-contexto-de-acción)**
+    - **[`record_id` ID de registro](#record_id-id-de-registro-contexto-de-acción)**
 
-**[INICIALIZACIÓN](#inicialización)**
+**[ACCIONES](#acciones)**
 
-- **[Variables de entorno](#variables-de-entorno)**
-    - **[Credenciales](#credenciales)**
-    - **[Usuarios](#usuarios)**
-    - **[Parámetros opcionales](#parámetros-opcionales)**
-- **[Creación de la base de datos](#creación-de-la-base-de-datos)**
+- **[Registro de acciones](#registro-de-acciones)**
+- **[Ejecución de acciones](#ejecución-de-acciones)**
 
 **[TIPADOS](#tipados)**
 - **[`_M` — Nombre de modelo personalizado](#_m-nombre-de-modelo-personalizado)**
@@ -53,6 +63,7 @@ pip install git+https://github.com/onnymm/lylac.git
 - **[`FieldName` — Nombre de campo existente en el modelo](#fieldname-nombre-de-campo-existente-en-el-modelo)**
 - **[`FieldReadDeclaration` — Declaración de campos a leer](#fieldreaddeclaration-declaración-de-campos-a-leer)**
 - **[`ItemOrList` — Elemento o lista de elementos](#itemorlist-elemento-o-lista-de-elementos)**
+- **[`MaybeNone` — Posiblemente nulo](#maybenone-posiblemente-nulo)**
 - **[`ModelName` — Nombre de modelo](#modelname-nombre-de-modelo)**
 - **[`TTypeName` — Nombre de tipo de dato de campo](#ttypename-nombre-de-tipo-de-dato-de-campo)**
 
@@ -417,6 +428,28 @@ db.search_read(session_uuid, 'base.users')
 
 ----
 
+### `action` Ejecución de una acción
+Este método ejecuta una acción sobre un registro de un modelo en la base de datos. Para más información véase la sección [Acciones](#acciones).
+
+Ejemplo:
+```py
+db.action(session_uuid, 'base.users', 'archive', 3)
+# True
+```
+
+En el fragmento de código ejecutamos una acción que archiva al registro con ID `3` del modelo `base.users`.
+
+**Parámetros**
+- `session_uuid`: *str* — UUID de sesión.
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `name`: *str* — Nombre de la acción.
+- `record_id`: *int* — ID del registro sobre el que se va a ejecutar la acción.
+
+**Retorno**
+- `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
+
+----
+
 ### `execute_transaction` Ejecutar transacción
 Este método ejecuta una transacción compleja construida mediante una función que es provista a este método como argumento. La función debe estar preparada para recibir como argumento un [ExecutionContext](#executioncontext-contexto-de-ejecución)[[_M](#_m-nombre-de-modelo-personalizado)] para poder declarar instrucciones de operaciones en la base de datos. Al estar asociadas a una misma transacción, las instrucciones pueden confirmarse o revertirse como una sola unidad. Si ocurre un error durante la ejecución, la transacción puede realizar un rollback, evitando que los cambios realizados hasta ese momento sean persistidos parcialmente en la base de datos.
 
@@ -444,10 +477,12 @@ profile_data = db.execute_transaction(session_uuid, me)
 ```
 
 **Parámetros**
+
 - `session_uuid`: *str* — UUID de sesión.
 - `callback`: *Callable[[[ExecutionContext](#executioncontext-contexto-de-ejecución)[[_M](#_m-nombre-de-modelo-personalizado)]], [_T](#_t-parámetro-de-tipo-_t)]* — Función de transacción.
 
 **Retorno**
+
 - `result`: *[_T](#_t-parámetro-de-tipo-_t)* — El valor u objeto que retorna la función de transacción.
 
 ----
@@ -471,6 +506,73 @@ db.authenticate_user(session_uuid)
 
 ----
 
+## Inicialización
+
+### Variables de entorno
+Para inicializar la estructura inicial de una base de datos se requieren configurar las siguientes variables de entorno:
+
+#### Credenciales
+Las siguientes variables pertenecen a las credenciales necesarias para conectarse a la base de datos.
+
+| Variable         | Descripción                          |
+|------------------|--------------------------------------|
+| `LYLAC_HOST`     | URL donde se aloja la base de datos. |
+| `LYLAC_PORT`     | Puerto.                              |
+| `LYLAC_NAME`     | Nombre de la base de datos.          |
+| `LYLAC_USER`     | Nombre de usuario administrador.     |
+| `LYLAC_PASSWORD` | Contraseña de acceso.                |
+
+Ejemplo:
+```
+LYLAC_HOST = https://wwww.mydatabasehost.com
+LYLAC_PORT = 5432
+LYLAC_NAME = production
+LYLAC_USER = admin
+LYLAC_PASSWORD = mypassword123
+```
+
+#### Usuarios
+Se requiere configurar dos usuarios iniciales a la base de datos. Un usuario raíz que se usará como autor de la creación de los registros de la estructura base de la base de datos y un usuario administrador. Puede ser tu usuario.
+
+| Variable                 | Descripción                                    |
+|--------------------------|------------------------------------------------|
+| `LYLAC_ROOT_USER_NAME`   | Nombre del usuario raíz.                       |
+| `LYLAC_ROOT_USER_LOGIN`  | Nombre de usuario de acceso del usuario raíz.  |
+| `LYLAC_ADMIN_USER_NAME`  | Nombre del usuario administrador.              |
+| `LYLAC_ADMIN_USER_LOGIN` | Nombre de usuario de acceso del administrador. |
+
+Ejemplo:
+```
+LYLAC_ROOT_USER_NAME = Root
+LYLAC_ROOT_USER_LOGIN = lylac_root
+LYLAC_ADMIN_USER_NAME = "Onnymm Azzur"
+LYLAC_ADMIN_USER_LOGIN = onnymm
+```
+
+> ℹ️ El usuario raíz aparecerá archivado una vez que se inicialice la base de datos.
+
+#### Parámetros opcionales
+También se pueden configurar algunos parámetros opcionales para personalizar más el flujo de trabajo del framework.
+
+| Variable                 | Descripción                                                                  |
+|--------------------------|------------------------------------------------------------------------------|
+| `LYLAC_DEFAULT_PASSWORD` | Contraseña predeterminada que se le asigna a un usuario cuando se crea éste. |
+
+### Creación de la base de datos
+Se puede comenzar con un archivo muy pequeño como el siguiente.
+
+```py
+from lylac import Lylac
+
+db = Lylac()
+```
+
+Al ejecutar el archivo por primera vez, se imprimirá la siguiente leyenda en consola:
+
+```cmd
+La base de datos de inicializó correctamente.
+```
+
 ## Contextos
 
 Los contextos son objetos que reúnen el estado y los recursos necesarios para ejecutar una operación dentro de un determinado ámbito de ejecución.
@@ -481,8 +583,9 @@ Los contextos permiten que varias instrucciones compartan el mismo estado y form
 
 Al estar asociadas a una misma transacción, las instrucciones pueden confirmarse o revertirse como una sola unidad. Si ocurre un error durante la ejecución, la transacción puede realizar un rollback, evitando que los cambios realizados hasta ese momento sean persistidos parcialmente en la base de datos.
 
-### `BaseContext` Contexto base
+----
 
+### `BaseContext` Contexto base
 La clase de contexto base reúne los métodos y atributos comunes entre los contextos de Acción, Ambiente, Automatización, Tareas de servidor, Políticas y Validación.
 
 #### `uid` ID del usuario que ejecuta la transacción
@@ -821,15 +924,15 @@ Este método se usa para obtener la ID de un registro en la base de datos señal
 
 **Parámetros**
 
-*No se requieren parámetros de entrada.*
+- `ref`: *str* Referencia única de mapeo de datos.
 
 **Retorno**
-- `record_id`: *int | None* — ID del registro referenciado o *None* si no existe.
+
+- `record_id`: *[MaybeNone](#maybenone-posiblemente-nulo)[int]* — ID del registro referenciado o `None` si no existe.
 
 ----
 
 ### `ExecutionContext` Contexto de ejecución
-
 La clase de contexto de ejecución es la usada en todas las transacciones CRUD expuestas en la instancia principal y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listas a continuación:
 
 - **[`uid` — ID del usuario que ejecuta la transacción](#uid-id-del-usuario-que-ejecuta-la-transacción)**
@@ -859,72 +962,129 @@ Este método realiza un commit en la base de datos usando el método `commit` de
 
 ----
 
-## Inicialización
+### `ActionContext` Contexto de acción
+La clase de contexto de acción es usada como argumento en las funciones de acción y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listas a continuación:
 
-### Variables de entorno
-Para inicializar la estructura inicial de una base de datos se requieren configurar las siguientes variables de entorno:
+- **[`uid` — ID del usuario que ejecuta la transacción](#uid-id-del-usuario-que-ejecuta-la-transacción)**
+- **[`create` — Creación de registros](#create-creación-de-uno-o-muchos-registros-1)**
+- **[`search` — Búsqueda de registros](#search-búsqueda-de-registros-1)**
+- **[`read` — Lectura de registros](#read-lectura-de-registros-1)**
+- **[`search_read` — Búsqueda y lectura de registros](#search_read-búsqueda-y-lectura-de-registros-1)**
+- **[`search_count` — Conteo de búsqueda](#search_count-conteo-de-búsqueda-1)**
+- **[`update` — Actualización de registros](#update-actualización-de-registros-1)**
+- **[`delete` — Eliminación de registros](#delete-eliminación-de-registros-1)**
+- **[`get_resource_id` — Obtención de ID de recurso](#get_resource_id-obtención-de-id-de-recurso)**
 
-#### Credenciales
-Las siguientes variables pertenecen a las credenciales necesarias para conectarse a la base de datos.
+Además de ello, cuenta también con los métodos listados.
 
-| Variable         | Descripción                          |
-|------------------|--------------------------------------|
-| `LYLAC_HOST`     | URL donde se aloja la base de datos. |
-| `LYLAC_PORT`     | Puerto.                              |
-| `LYLAC_NAME`     | Nombre de la base de datos.          |
-| `LYLAC_USER`     | Nombre de usuario administrador.     |
-| `LYLAC_PASSWORD` | Contraseña de acceso.                |
+----
 
-Ejemplo:
-```
-LYLAC_HOST = https://wwww.mydatabasehost.com
-LYLAC_PORT = 5432
-LYLAC_NAME = production
-LYLAC_USER = admin
-LYLAC_PASSWORD = mypassword123
-```
+#### `data` Datos del registro (Contexto de acción)
+Atributo por el cual se puede acceder a los datos del registro sobre el que se ejecuta una acción. Estos datos están definidos por el parámetro `fields` al registrar la acción. Para mayor información, véase [Registro de acciones](#registro-de-acciones).
 
-#### Usuarios
-Se requiere configurar dos usuarios iniciales a la base de datos. Un usuario raíz que se usará como autor de la creación de los registros de la estructura base de la base de datos y un usuario administrador. Puede ser tu usuario.
+**Retorno**
+- `data`: *_R* — Datos del registro.
 
-| Variable                 | Descripción                                    |
-|--------------------------|------------------------------------------------|
-| `LYLAC_ROOT_USER_NAME`   | Nombre del usuario raíz.                       |
-| `LYLAC_ROOT_USER_LOGIN`  | Nombre de usuario de acceso del usuario raíz.  |
-| `LYLAC_ADMIN_USER_NAME`  | Nombre del usuario administrador.              |
-| `LYLAC_ADMIN_USER_LOGIN` | Nombre de usuario de acceso del administrador. |
+----
 
-Ejemplo:
-```
-LYLAC_ROOT_USER_NAME = Root
-LYLAC_ROOT_USER_LOGIN = lylac_root
-LYLAC_ADMIN_USER_NAME = "Onnymm Azzur"
-LYLAC_ADMIN_USER_LOGIN = onnymm
-```
+#### `record_id` ID de registro (Contexto de acción)
+Atributo por el cual se puede acceder a la ID del registro sobre el que se ejecuta una acción.
 
-> ℹ️ El usuario raíz aparecerá archivado una vez que se inicialice la base de datos.
+**Retorno**
+- `record_id`: *int* — ID del registro sobre el que se ejecuta una acción.
 
-#### Parámetros opcionales
-También se pueden configurar algunos parámetros opcionales para personalizar más el flujo de trabajo del framework.
+----
 
-| Variable                 | Descripción                                                                  |
-|--------------------------|------------------------------------------------------------------------------|
-| `LYLAC_DEFAULT_PASSWORD` | Contraseña predeterminada que se le asigna a un usuario cuando se crea éste. |
+## Acciones
 
-### Creación de la base de datos
-Se puede comenzar con un archivo muy pequeño como el siguiente.
+Una acción es una operación ejecutable asociada a un modelo que permite realizar una serie de operaciones a partir de un registro de dicho modelo.
 
+Las acciones son implementadas mediante funciones que reciben el contexto de ejecución y la ID del registro sobre el que deben operar. A partir de este registro, una acción puede consultar o modificar sus valores, crear registros relacionados, modificar otros registros y ejecutar otras acciones.
+
+Una acción puede estar compuesta por múltiples operaciones. Todas estas operaciones forman parte de la misma ejecución y, cuando corresponda, de la misma transacción, por lo que un error durante su ejecución puede provocar que los cambios realizados sean revertidos conjuntamente.
+
+Por ejemplo, una acción de confirmación podría validar el estado de un registro, modificar sus valores, crear un registro relacionado y ejecutar posteriormente otra acción. Para el sistema, todas estas operaciones forman parte de una única acción.
+
+----
+
+### Registro de acciones
+Una acción es básicamente una función en Python pero que cumple con una estructura especial para ser ejecutada por Lylac directamente cuando se invoca ésta por su nombre.
+
+La convención de nomenclatura de las acciones sigue la siguiente estructura:
+
+`_action` + `__` + *nombre del modelo* + `__` + *nombre de la acción*
+
+Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas acciones parecidas en modelos parecidos.
+
+Por ejemplo, si quisiéramos construir una acción para el modelo `base.users` para archivar un usuario nombrando nuestra acción como `archive` la nomenclatura dice que la función se llamaría:
+
+`_action` + `__` + `base_users` + `__` + `archive`
+
+`_action__base_users__archive`
+
+En este caso, los `.` en el nombre del modelo se reemplazan por `_` para ser caracteres válidos en el nombre de una función.
+
+Para tipar el argumento `ctx` se puede usar el tipado `.ActionContext` integrado en Lylac que nos ahorra el tener que importar tipados desde algún submódulo especial.
+
+Ejemplo de la construcción de la acción:
 ```py
-from lylac import Lylac
+def _action__base_users__archive(ctx: Lylac.ActionContext):
 
-db = Lylac()
+    # Obtención de la ID del registro
+    record_id = ctx.record_id
+
+    # Actualización del valor de usuario activo
+    ctx.update('base.users', record_id, {'active': True})
 ```
 
-Al ejecutar el archivo por primera vez, se imprimirá la siguiente leyenda en consola:
+El commit en la base de datos se hará automáticamente al finalizar todas las operaciones de la transacción.
 
-```cmd
-La base de datos de inicializó correctamente.
+Una vez creada nuestra función de acción, falta decorarla la API integrada accesible desde la instancia creada:
+```py
+@db.api.actions.register(
+    'base.users',
+    'archive',
+)
+def _action__base_users__archive(ctx: Lylac.ActionContext):
+
+    # Obtención de la ID del registro
+    record_id = ctx.record_id
+
+    # Actualización del valor de usuario activo
+    ctx.update('base.users', record_id, {'active': True})
 ```
+
+**Parámetros del decorador**
+
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `name`: *str* — Nombre de la acción.
+- `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer antes de la ejecución de la acción, accesibles por el atributo `data`. Si el parámetro no se especifica, solo el valor `'id'` estará disponible.
+
+> ℹ️ Las funciones de acción no deben retornar ningún valor u objeto ya que éste no será retornado en la ejecución de éstas. Si se desea retornar un valor u objeto véase [Ejecutar transacción](#execute_transaction-ejecutar-transacción).
+
+----
+
+### Ejecución de acciones
+Las acciones se ejecutan sobre un registro especificado, en un modelo especificado.
+
+Ejemplo:
+```py
+db.action(session_uuid, 'base.users', 'archive', 3)
+# True
+```
+
+En el fragmento de código ejecutamos una acción que archiva al registro con ID `3` del modelo `base.users`.
+
+**Parámetros**
+- `session_uuid`: *str* — UUID de sesión.
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `name`: *str* — Nombre de la acción.
+- `record_id`: *int* — ID del registro sobre el que se va a ejecutar la acción.
+
+**Retorno**
+- `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
+
+----
 
 ## Tipados
 
@@ -1109,6 +1269,14 @@ def f(x: int | list[int]):
 # ItemOrList usado como abstracción del mismo tipo
 def f(x: ItemOrList[int]):
     ...
+```
+
+### `MaybeNone` Posiblemente nulo
+Este tipado es un alias equivalente al tipo `Optional` de la biblioteca estándar `typing`, utilizado para indicar que un valor puede ser del tipo especificado o None. Su nombre está orientado a tipar valores principalmente de retorno que pueden ser de un tipo especificado o `None`.
+
+```py
+MaybeNone[int] # Equivalente a Optional[int]
+MaybeNone[str] # Equivalente a Optional[str]
 ```
 
 ### `ModelName` Nombre de modelo
