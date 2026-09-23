@@ -963,7 +963,7 @@ Este método se usa para obtener la ID de un registro en la base de datos señal
 ----
 
 ### `ExecutionContext` Contexto de ejecución
-La clase de contexto de ejecución es la usada en todas las transacciones CRUD expuestas en la instancia principal y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listas a continuación:
+La clase de contexto de ejecución es la usada en todas las transacciones CRUD expuestas en los [métodos](#métodos) de la instancia principal y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listas a continuación:
 
 - **[`uid` — ID del usuario que ejecuta la transacción](#uid-id-del-usuario-que-ejecuta-la-transacción)**
 - **[`create` — Creación de registros](#create-creación-de-uno-o-muchos-registros-1)**
@@ -1013,7 +1013,7 @@ Además de ello, cuenta también con los métodos listados.
 Atributo por el cual se puede acceder a los datos del registro sobre el que se ejecuta una acción. Estos datos están definidos por el parámetro `fields` al registrar la acción. Para mayor información, véase [Registro de acciones](#registro-de-acciones).
 
 **Retorno**
-- `data`: *_R* — Datos del registro.
+- `data`: *[_R](#_r-parámetro-de-estructura-de-registro-dinámico)* — Datos del registro.
 
 ----
 
@@ -1063,10 +1063,12 @@ La clase de contexto de tarea de servidor es usada como argumento en las funcion
 - **[`delete` — Eliminación de registros](#delete-eliminación-de-registros-1)**
 - **[`get_resource_id` — Obtención de ID de recurso](#get_resource_id-obtención-de-id-de-recurso)**
 
+----
+
 ## Acciones
 Una acción es una operación ejecutable asociada a un modelo que permite realizar una serie de operaciones a partir de un registro de dicho modelo.
 
-Las acciones son implementadas mediante funciones que reciben el contexto de ejecución y la ID del registro sobre el que deben operar. A partir de este registro, una acción puede consultar o modificar sus valores, crear registros relacionados, modificar otros registros y ejecutar otras acciones.
+Las acciones son implementadas mediante funciones que reciben un [contexto de acción](#actioncontext-contexto-de-acción) que contiene la ID del registro sobre el que deben operar así como campos declarados por en el [registro](#registro-de-acciones) de la acción para poder leerse y consumirse. A partir de este registro, una acción puede consultar o modificar sus valores, crear registros relacionados, modificar otros registros y ejecutar otras acciones.
 
 Una acción puede estar compuesta por múltiples operaciones. Todas estas operaciones forman parte de la misma ejecución y, cuando corresponda, de la misma transacción, por lo que un error durante su ejecución puede provocar que los cambios realizados sean revertidos conjuntamente.
 
@@ -1127,6 +1129,10 @@ def _action__base_users__archive(ctx: Lylac.ActionContext):
 - `name`: *str* — Nombre de la acción.
 - `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer antes de la ejecución de la acción, accesibles por el atributo `data`. Si el parámetro no se especifica, solo el valor `'id'` estará disponible.
 
+**Parámetros de la función decorada**
+
+- `ctx`: *[ActionContext](#actioncontext-contexto-de-acción)[[_R](#_r-parámetro-de-estructura-de-registro-dinámico)]* Contexto de acción.
+
 > ℹ️ Las funciones de acción no deben retornar ningún valor u objeto ya que éste no será retornado en la ejecución de éstas. Si se desea retornar un valor u objeto véase [Ejecutar transacción](#execute_transaction-ejecutar-transacción).
 
 ----
@@ -1166,7 +1172,7 @@ Las automatizaciones pueden ejecutarse tras un evento de creación, modificació
 
 ### Registro de automatizaciones
 
-Una automatización es básicamente una función en Python pero que cumple con una estructyra especial para ser ejecutada por Lylac directamente cuando se desencadena ésta tras una operación CRUD en un modelo en específico.
+Una automatización es básicamente una función en Python pero que cumple con una estructura especial para ser ejecutada por Lylac directamente cuando se desencadena ésta tras una operación CRUD en un modelo en específico.
 
 La convención de nomenclatura de las automatizaciones sigue la siguiente estructura:
 
@@ -1218,17 +1224,13 @@ def _automation__base_users__create__add_preset_permissions(ctx: Lylac.Automatio
 - `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer antes de la ejecución de la acción, accesibles por el atributo `data`. Si el parámetro no se especifica, solo el valor `'id'` estará disponible.
 - `execute_only_when` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)* — Criterio requerido para que la automatización se ejecute sobre el registro.
 
+**Parámetros de la función decorada**
+
+- `ctx`: *[AutomationContext](#automationcontext-contexto-de-automatización)[[_R](#_r-parámetro-de-estructura-de-registro-dinámico)]* — Contexto de automatización.
+
 > ℹ️ Las funciones de automatización no deben retornar ningún valor u objeto ya que éste no será retornado en la ejecución de éstas. Si se desea retornar un valor u objéto véase [Ejecutar transacción](#execute_transaction-ejecutar-transacción).
 
 ----
-
-**Parámetros del decorador**
-
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
-- `name`: *str* — Nombre de la acción.
-- `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer antes de la ejecución de la acción, accesibles por el atributo `data`. Si el parámetro no se especifica, solo el valor `'id'` estará disponible.
-
-> ℹ️ Las funciones de acción no deben retornar ningún valor u objeto ya que éste no será retornado en la ejecución de éstas. Si se desea retornar un valor u objeto véase [Ejecutar transacción](#execute_transaction-ejecutar-transacción).
 
 ### Ejecucución de automatizaciones
 Las automatizaciones no pueden ejecutarse de forma manual. Éstas se ejecutan tras una operación de creación, modificación o eliminación de registros en un modelo especificado y, opcionalmente, si los registros involucrados cumplen con el criterio establecido para la automatización.
