@@ -48,7 +48,9 @@ pip install git+https://github.com/onnymm/lylac.git
 - **[`ActionContext` — Contexto de acción](#actioncontext-contexto-de-acción)**
     - **[`data` Datos del registro](#data-datos-del-registro-contexto-de-acción)**
     - **[`record_id` ID de registro](#record_id-id-de-registro-contexto-de-acción)**
-- **[`ServerTaskContext` — Contexto de tarea de servidor](#actioncontext-contexto-de-acción)**
+- **[`AutomationContext` — Contexto de automatización](#automationcontext-contexto-de-automatización)**
+    - **[`records` — Lista de registros](#records-lista-de-registros-contexto-de-automatización)**
+- **[`ServerTaskContext` — Contexto de tarea de servidor](#servertaskcontext-contexto-de-tarea-de-servidor)**
 
 **[ACCIONES](#acciones)**
 
@@ -60,12 +62,17 @@ pip install git+https://github.com/onnymm/lylac.git
 - **[Registro de tareas de servidor](#registro-de-tareas-de-servidor)**
 - **[Ejecución de tareas de servidor](#ejecución-de-tareas-de-servidor)**
 
+**[AUTOMATIZACIONES](#automatizaciones)**
+- **[Registro de automatizaciones](#registro-de-automatizaciones)**
+- **[Ejecucución de automatizaciones](#ejecucución-de-automatizaciones)**
+
 **[TIPADOS](#tipados)**
 - **[`_M` — Nombre de modelo personalizado](#_m-nombre-de-modelo-personalizado)**
 - **[`_T` — Parámetro de tipo _T](#_t-parámetro-de-tipo-_t)**
 - **[`_Aliased` — Alias de tipo _T para declaración de campos](#_aliased-alias-de-tipo-_t-para-declaración-de-campos)**
 - **[`ComputeFieldFn` — Función de cómputo de campo](#computefieldfn-función-de-cómputo-de-campo)**
 - **[`CriteriaStructure` — Estructura de criterio de búsqueda](#criteriastructrure-estructura-de-criterio-de-búsqueda)**
+- **[`DMLTransaction` — Transacción DML](#dmltransaction-transacción-dml)**
 - **[`FieldComputation` — Cómputo de campo](#fieldcomputation-cómputo-de-campo)**
 - **[`FieldName` — Nombre de campo existente en el modelo](#fieldname-nombre-de-campo-existente-en-el-modelo)**
 - **[`FieldReadDeclaration` — Declaración de campos a leer](#fieldreaddeclaration-declaración-de-campos-a-leer)**
@@ -1018,6 +1025,31 @@ Atributo por el cual se puede acceder a la ID del registro sobre el que se ejecu
 
 ----
 
+### `AutomationContext` Contexto de automatización
+La clase de contexto de automatización es usada como argumento en las funciones de automatización y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listas a continuación:
+
+- **[`uid` — ID del usuario que ejecuta la transacción](#uid-id-del-usuario-que-ejecuta-la-transacción)**
+- **[`create` — Creación de registros](#create-creación-de-uno-o-muchos-registros-1)**
+- **[`search` — Búsqueda de registros](#search-búsqueda-de-registros-1)**
+- **[`read` — Lectura de registros](#read-lectura-de-registros-1)**
+- **[`search_read` — Búsqueda y lectura de registros](#search_read-búsqueda-y-lectura-de-registros-1)**
+- **[`search_count` — Conteo de búsqueda](#search_count-conteo-de-búsqueda-1)**
+- **[`update` — Actualización de registros](#update-actualización-de-registros-1)**
+- **[`delete` — Eliminación de registros](#delete-eliminación-de-registros-1)**
+- **[`get_resource_id` — Obtención de ID de recurso](#get_resource_id-obtención-de-id-de-recurso)**
+
+Además de ello, cuenta también con los métodos listados.
+
+----
+
+#### `records` Lista de registros (Contexto de automatización)
+Lista de registros de tipo [_R](#_r-parámetro-de-estructura-de-registro-dinámico) sobre los que se ejecuta una automatización
+
+**Retorno**
+- `records`: *list[[_R](#_r-parámetro-de-estructura-de-registro-dinámico)]* Lista de registros sobre los que se ejecuta la automatización.
+
+----
+
 ### `ServerTaskContext` Contexto de tarea de servidor
 La clase de contexto de tarea de servidor es usada como argumento en las funciones de tarea de servidor y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listas a continuación:
 
@@ -1074,7 +1106,7 @@ def _action__base_users__archive(ctx: Lylac.ActionContext):
 
 El commit en la base de datos se hará automáticamente al finalizar todas las operaciones de la transacción.
 
-Una vez creada nuestra función de acción, falta decorarla la API integrada accesible desde la instancia creada:
+Una vez creada nuestra función de acción, falta decorarla con la API integrada accesible desde la instancia creada:
 ```py
 @db.api.actions.register(
     'base.users',
@@ -1118,6 +1150,88 @@ En el fragmento de código ejecutamos una acción que archiva al registro con ID
 
 **Retorno**
 - `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
+
+----
+
+## Automatizaciones
+Una automatización es una regla asociada a un modelo que permite ejecutar una operación automáticamente cuando ocurre un evento determinado.
+
+Una automatización define las circunstancias bajo las cuales debe ejecutarse y la operación que debe realizarse cuando dichas circunstancias se cumplen. La operación puede consistir en modificar el registro que originó el evento, crear o modificar otros registros, ejecutar una acción o realizar cualquier otra operación permitida por el framework.
+
+Las automatizaciones permiten asociar comportamiento a determinados eventos sin que el código que origina dicho evento tenga que invocar explícitamente la operación correspondiente.
+
+Las automatizaciones pueden ejecutarse tras un evento de creación, modificación o eliminación de registros, en un modelo especificado.
+
+----
+
+### Registro de automatizaciones
+
+Una automatización es básicamente una función en Python pero que cumple con una estructyra especial para ser ejecutada por Lylac directamente cuando se desencadena ésta tras una operación CRUD en un modelo en específico.
+
+La convención de nomenclatura de las automatizaciones sigue la siguiente estructura:
+
+`_automation` + `__` + *nombre del modelo* + `__` + *tipo de transacción CRUD* + `__` + *nombre de la automatización*
+
+Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas automatizaciones parecidas en modelos parecidos.
+
+Por ejemplo, si quisiéramos construir una automatización para el modelo `base.users` para añadirle permisos prestablecidos a un usuario cuando éste se crea, nombraríamos nuestra función a algo como `add_preset_permissions` la nomenclatura dice que la función se llamaría:
+
+`_automation` + `__` + `base_users` + `__` + `create` + `__` + `add_preset_permissions`
+
+`_automation__base_users__create__add_preset_permissions`
+
+En este caso, los `.` en el nombre del modelo se reemplazan por `_` para ser caracteres válidos en el nombre de una función.
+
+Para tipar el argumento `ctx` se puede usar el tipado `.AutomationContext` integrado en Lylac que nos ahorra el tener que importar tipados desde algún submódulo especial.
+
+Ejemplo de la construcción de la automatización:
+```py
+def _automation__base_users__create__add_preset_permissions(ctx: Lylac.AutomationContext):
+    # Iteración por cada registro de usuario creado
+    for user_record in ctx.records
+        # Obtención de la ID del usuario
+        user_id = user_record['id']
+        # Actualización del registro
+        ctx.update('base.users', user_id, {'role_ids': {'add': [basic_role_1_id, basic_role_2_id, ...]}})
+```
+
+El commit en la base de datos se hará automáticamente al finalizar todas las operaciones de la transacción.
+
+Una vez creada nuestra función de automatización, falta decorarla con la API integrada accesible desde la instancia creada:
+```py
+@db.api.automations.register(
+    'create',
+    'base.users'
+)
+def _automation__base_users__create__add_preset_permissions(ctx: Lylac.AutomationContext):
+    # Iteración por cada registro de usuario creado
+    for user_record in ctx.records
+        # Obtención de la ID del usuario
+        user_id = user_record['id']
+        # Actualización del registro
+        ctx.update('base.users', user_id, {'role_ids': {'add': [basic_role_1_id, basic_role_2_id, ...]}})
+```
+
+**Parámetros del decorador**
+- `on`: *[DMLTransaction](#dmltransaction-transacción-dml)* — Transacción tras la que se ejecutará la automatización.
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer antes de la ejecución de la acción, accesibles por el atributo `data`. Si el parámetro no se especifica, solo el valor `'id'` estará disponible.
+- `execute_only_when` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)* — Criterio requerido para que la automatización se ejecute sobre el registro.
+
+> ℹ️ Las funciones de automatización no deben retornar ningún valor u objeto ya que éste no será retornado en la ejecución de éstas. Si se desea retornar un valor u objéto véase [Ejecutar transacción](#execute_transaction-ejecutar-transacción).
+
+----
+
+**Parámetros del decorador**
+
+- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `name`: *str* — Nombre de la acción.
+- `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer antes de la ejecución de la acción, accesibles por el atributo `data`. Si el parámetro no se especifica, solo el valor `'id'` estará disponible.
+
+> ℹ️ Las funciones de acción no deben retornar ningún valor u objeto ya que éste no será retornado en la ejecución de éstas. Si se desea retornar un valor u objeto véase [Ejecutar transacción](#execute_transaction-ejecutar-transacción).
+
+### Ejecucución de automatizaciones
+Las automatizaciones no pueden ejecutarse de forma manual. Éstas se ejecutan tras una operación de creación, modificación o eliminación de registros en un modelo especificado y, opcionalmente, si los registros involucrados cumplen con el criterio establecido para la automatización.
 
 ----
 
@@ -1228,6 +1342,9 @@ db = CustomLylac()
 ### `_T` Parámetro de tipo _T
 Parámetro usado para tipados.
 
+### `_R` Parámetro de estructura de registro dinámico
+Este parámetro es usado para definir la estructura de un registro dentro de un diccionario tipado.
+
 ### `_Aliased` Alias de tipo [_T](#_t-parámetro-de-tipo-_t) para declaración de campos
 Representación de una tupla que toma una declaración de campo de tipo [_T](#_t-parámetro-de-tipo-_t) y le da un nombre corto de tipo `str`:
 
@@ -1324,6 +1441,12 @@ Estas tuplas deben contenerse en una lista. En caso de haber más de una condici
 > - `'not ilike'`: No contiene
 > - `'~'`: Coincide con expresión regular (sensible a mayúsculas y minúsculas)
 > - `'~*'`: Coincide con expresión regular (no sensible a mayúsculas y minúsculas)
+
+### `DMLTransaction` Transacción DML
+Alias usado para describir el literal de nombres de transacciones CRUD que excluye lectura. Los valores disponibles son:
+- `'create'`: Creación de registros.
+- `'update'`: Modificación de registros.
+- `'delete'`: Eliminación de registros.
 
 ### `FieldComputation` Cómputo de campo
 Representación para declarar el cómputo de un campo en tiempo real. La estructura está conformada por una tupla de 3 elementos:
