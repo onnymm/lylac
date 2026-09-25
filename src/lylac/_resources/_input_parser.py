@@ -40,7 +40,7 @@ class InputParser:
 
     def parse(
         self,
-        record: RecordData,
+        record: RecordData[Any],
     ) -> _Record:
 
         # Inicialización de diccionario de registro parseado

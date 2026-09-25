@@ -310,9 +310,9 @@ class Lylac(Generic[_M]):
     >>> # 2
     """
     # Interfaz para acceso al tipado de automatización sin tener que colocar literal de modelos
+    type ActionContext[T] = _ActionContext[_M, Union[T, _R]]
     type AutomationContext[T] = _AutomationContext[_M, T]
     type ValidationContext[T] = _ValidationContext[_M, T]
-    type ActionContext[T] = _ActionContext[_M, Union[T, _R]]
     type ServerTaskContext = _ServerTaskContext[_M]
     type TransactionContext = _TransactionContext[ModelName[_M]]
     type ExecutionContext = _ExecutionContext[_M]
@@ -568,7 +568,7 @@ class Lylac(Generic[_M]):
         self,
         session_uuid: str,
         model_name: ModelName[_M],
-        data: ItemOrList[RecordData],
+        data: ItemOrList[RecordData[_M]],
     ) -> list[int]:
         """
         ## Creación de uno o muchos registros

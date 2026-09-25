@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from .._contexts import FrameContext
 
 class WhereContext(Generic[_M]):
-    _comparison_expression: dict[ComparisonOperator, Callable[[InstrumentedAttribute, RecordValue], BinaryExpression]] = {
+    _comparison_expression: dict[ComparisonOperator, Callable[[InstrumentedAttribute, RecordValue[_M]], BinaryExpression]] = {
         '=': lambda field_instance, value: field_instance == value,
         '!=': lambda field, value: field != value,
         '>': lambda field, value: field > value,

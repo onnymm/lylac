@@ -22,8 +22,8 @@ class Many2OneCreate(Generic[_M]):
         self,
         execution_ctx: 'ExecutionContext[_M]',
         model_name: ModelName[_M],
-        data: list[RecordData],
-    ) -> list[RecordData]:
+        data: list[RecordData[_M]],
+    ) -> list[RecordData[_M]]:
 
         if self._crud.PERMISSIONS_BYPASS:
             return data

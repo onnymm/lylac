@@ -39,7 +39,7 @@ class _Step(TypedDict, Generic[_M]):
 class _ModuleData(TypedDict):
     name: str
     model_data: list[_ModelData]
-    data: list[RecordData]
+    data: list[RecordData[_M]]
 
 MODEL_ID__RES_NAME__FIELD_COMPUTATION: FieldComputation = (
     'model_id',
@@ -90,7 +90,7 @@ class ModulesManager(Generic[_M]):
             # Inicialización de registros de pasos
             step_ids: list[_Step] = []
             # Inicialización de registros referenciados
-            record_data_ids: dict[ModelName, list[RecordData]] = {
+            record_data_ids: dict[ModelName, list[RecordData[_M]]] = {
                 MODEL_NAME.BASE_MODEL: [],
                 MODEL_NAME.BASE_MODEL_FIELD: [],
                 MODEL_NAME.BASE_MODEL_FIELD_SELECTION: [],
@@ -108,7 +108,7 @@ class ModulesManager(Generic[_M]):
                 MODEL_NAME.BASE_RULES: 1,
             }
             # Inicialización de datos de proceso
-            process: RecordData = {
+            process: RecordData[_M] = {
                 'name': name,
                 'step_ids': {
                     RELATION_ACTION_NAME.CREATE: step_ids,

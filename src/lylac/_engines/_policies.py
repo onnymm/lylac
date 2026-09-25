@@ -106,7 +106,7 @@ class PoliciesEngine(Generic[_M, _R]):
         on: DMLTransaction,
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        data: list[RecordData],
+        data: list[RecordData[_M]],
     ) -> None:
 
         # Si el motor no está encendido aún...

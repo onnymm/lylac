@@ -1,5 +1,6 @@
 import base64
 from typing import Generic
+from types import FunctionType
 from typing import Literal
 from typing import Optional
 from typing import TYPE_CHECKING
@@ -188,7 +189,7 @@ class CRUD(Generic[_M], _Properties):
         self,
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        data: ItemOrList[RecordData],
+        data: ItemOrList[RecordData[_M]],
     ) -> list[int]:
 
         # Revisión de permisos
@@ -200,6 +201,9 @@ class CRUD(Generic[_M], _Properties):
 
         # Se asegura una lista de datos
         data = self._input_processing.process_on_creation(data)
+
+        # Resolución de valores computados
+        data = self._resolve_computed_values(data)
 
         # Validación de los datos
         execution_ctx.validations.validate(
@@ -428,7 +432,7 @@ class CRUD(Generic[_M], _Properties):
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         record_ids: ItemOrList[int],
-        data: RecordData,
+        data: RecordData[_M],
     ) -> Literal[True]:
 
         # Revisión de permisos
@@ -451,6 +455,9 @@ class CRUD(Generic[_M], _Properties):
             model_name,
             record_ids,
         )
+
+        # Resolución de valores computados
+        data = self._resolve_computed_values([data])
 
         # Validación de los datos
         execution_ctx.validations.validate(
@@ -581,6 +588,25 @@ class CRUD(Generic[_M], _Properties):
         if len(forbidden_ids):
             # Se arroja error
             raise RecordRulesPermissionError(f'No puedes realizar la acción [{permission}] los registros {list(forbidden_ids)} del modelo [{model_name}]')
+
+    def _resolve_computed_values(
+        self,
+        execution_ctx: ExecutionContext[_M],
+        data: list[RecordData[_M]],
+    ) -> list[RecordData[_M]]:
+
+        # Iteración por cada registro de los datos
+        for record in data:
+            # Iteración por cada campo - valor del registro
+            for ( field_name, value ) in record.items():
+                # Si el valor es una función...
+                if isinstance(value, FunctionType):
+                    # Se ejecuta ésta para obtener el valor
+                    computed_value = value(execution_ctx)
+                    # Se readigna el valor computado
+                    record[field_name] = computed_value
+
+        return data
 
     def _get_record_rules(
         self,
@@ -786,9 +812,9 @@ class CRUD(Generic[_M], _Properties):
 
     def _add_update_uid(
         self,
-        data: RecordData,
+        data: RecordData[_M],
         execution_ctx: ExecutionContext[_M],
-    ) -> RecordData:
+    ) -> RecordData[_M]:
 
         # Se coloca la ID de usuario del contexto de ejecución
         data[FIELD_NAME.UPDATE_UID] = execution_ctx.uid

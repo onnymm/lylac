@@ -94,7 +94,7 @@ class ValidationEngine(Generic[_M]):
         on: DMLTransaction,
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        records: list[RecordData],
+        records: list[RecordData[_M]],
     ) -> None:
 
         # Si el motor no está encendido aún...

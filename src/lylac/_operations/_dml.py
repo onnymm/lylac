@@ -20,7 +20,7 @@ class DML(Generic[_M]):
         rel_op_ctx: RelationOperationsContext[_M],
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        data: list[RecordData],
+        data: list[RecordData[_M]],
     ) -> list[int]:
 
         # Obtención del modelo de creación de datos
@@ -62,7 +62,7 @@ class DML(Generic[_M]):
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         record_ids: list[int],
-        data: RecordData,
+        data: RecordData[_M],
     ) -> list[int]:
 
         # Obtención del modelo de creación de datos

@@ -39,7 +39,7 @@ class BaseContext(Generic[_M]):
     def create(
         self,
         model_name: ModelName[_M],
-        data: ItemOrList[RecordData],
+        data: ItemOrList[RecordData[_M]],
     ) -> list[int]:
         """
         ## Creación de uno o muchos registros
@@ -546,7 +546,7 @@ class BaseContext(Generic[_M]):
         self,
         model_name: ModelName[_M],
         record_ids: ItemOrList[int],
-        data: RecordData,
+        data: RecordData[_M],
     ) -> Literal[True]:
         """
         ## Actualización de registros

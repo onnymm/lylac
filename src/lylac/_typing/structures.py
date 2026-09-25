@@ -19,6 +19,7 @@ from .type_parameters import _T
 
 if TYPE_CHECKING:
     from .callables import ComputeFieldFn
+    from .callables import RealTimeOperation
 
 JSONLikeObjShape = dict[str, Array[ Union['JSONLikeScalar', 'JSONLike'] ]]
 """
@@ -84,11 +85,11 @@ base de datos.
 
 class RelationCommand:
     class Create(TypedDict):
-        create: ItemOrList[RecordData]
+        create: ItemOrList[RecordData[_M]]
     class Add(TypedDict):
         add: RecordIDs
     class Update(TypedDict):
-        update: ItemOrList[ tuple[RecordIDs, RecordData] ]
+        update: ItemOrList[ tuple[RecordIDs, RecordData[_M]] ]
     class Replace(TypedDict):
         replace: RecordIDs
     class Unlink(TypedDict):
@@ -127,7 +128,7 @@ Las llaves y valores del diccionario son:
 - `'clear'`: Literal `True`.
 """
 
-RecordValue = Union[DMLCompatible, JSONLike, RelationCommands, 'RecordData']
+RecordValue = Union[DMLCompatible, JSONLike, RelationCommands, 'RecordData[_M]', RealTimeOperation[_M]]
 """
 ### Valor de registro
 Tipo de dato que se puede usar como valor para un campo de modelo en la base
@@ -177,7 +178,7 @@ mapeados como:
 tipo Many2one que puede contener como valores cualquiera de los tipos anteriores.
 """
 
-RecordData = dict[str, RecordValue]
+RecordData = dict[str, RecordValue[_M]]
 """
 ## Datos de registro
 Diccionario que contiene los datos de un registro para ser creado o modificado.
