@@ -203,7 +203,7 @@ class CRUD(Generic[_M], _Properties):
         data = self._input_processing.process_on_creation(data)
 
         # Resolución de valores computados
-        data = self._resolve_computed_values(data)
+        data = self._resolve_computed_values(execution_ctx, data)
 
         # Validación de los datos
         execution_ctx.validations.validate(
@@ -457,7 +457,7 @@ class CRUD(Generic[_M], _Properties):
         )
 
         # Resolución de valores computados
-        data = self._resolve_computed_values([data])
+        data = self._resolve_computed_values(execution_ctx, [data])
 
         # Validación de los datos
         execution_ctx.validations.validate(

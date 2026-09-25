@@ -128,7 +128,7 @@ Las llaves y valores del diccionario son:
 - `'clear'`: Literal `True`.
 """
 
-RecordValue = Union[DMLCompatible, JSONLike, RelationCommands, 'RecordData[_M]', 'RealTimeOperation[_M]']
+type RecordValue[_M] = Union[DMLCompatible, JSONLike, RelationCommands, 'RecordData[_M]', 'RealTimeOperation[_M]']
 """
 ### Valor de registro
 Tipo de dato que se puede usar como valor para un campo de modelo en la base

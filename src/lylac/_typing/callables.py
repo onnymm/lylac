@@ -72,4 +72,4 @@ NotifierInitializator = Callable[['ExecutionContext[_M]'], 'Notifier']
 
 ProcessingCallback = Callable[[_Record[_A]], _Record[_A]]
 
-RealTimeOperation = Callable[['ExecutionContext[_M]'], Any]
+type RealTimeOperation[_M] = Callable[['ExecutionContext[_M]'], Any]
