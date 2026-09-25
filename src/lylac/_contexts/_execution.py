@@ -263,6 +263,19 @@ class ExecutionContext(Generic[_M], BaseContext[_M]):
         # Inicialización de notificador
         self._notifier = notifier_init(self)
 
+    @property
+    def uid(
+        self,
+    ) -> int:
+        """
+        ID del usuario que ejecuta la transacción.
+        """
+
+        # Obtención de la ID del usuario en la ejecución
+        uid = self._uid
+
+        return uid
+
     def get_resource_id(
         self,
         name: str,
