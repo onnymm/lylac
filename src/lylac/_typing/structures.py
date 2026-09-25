@@ -2,6 +2,7 @@ from typing import Literal
 from typing import TypedDict
 from typing import Union
 from typing import TYPE_CHECKING
+from .aliases import FieldName
 from .aliases import DMLCompatible
 from .aliases import JSONLikeScalar
 from .aliases import RecordValueDataType
@@ -62,16 +63,15 @@ Los valores son convertidos a notación *JSON* (JavaScript Object Notation):
 
 ComputeContextHub = dict[ModelName[_M], dict[str, 'ComputeFieldFn[_M]']]
 
-FieldComputation = tuple[str, 'TTypeName', 'ComputeFieldFn']
+FieldComputation = tuple[FieldName, 'TTypeName', 'ComputeFieldFn']
 
 _ExpansionSpec = list[Union[str, 'FrameReadField']] | Literal[True]
 _ArrayExpansion = tuple[str, _ExpansionSpec]
-_FieldName = str
 _FieldAlias = str
 _Aliased = tuple[_T, _FieldAlias]
 _NestedExpansion = Union[_ArrayExpansion, _Aliased[_ArrayExpansion]]
 
-FrameReadField = Union[_FieldName, _Aliased[_FieldName], FieldComputation]
+FrameReadField = Union[FieldName, _Aliased[FieldName], FieldComputation]
 
 FieldReadDeclaration = Union[FrameReadField, _NestedExpansion]
 

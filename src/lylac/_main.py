@@ -34,6 +34,7 @@ from ._resources import DatabaseMetadata
 from ._resources import ModelsBearer
 from ._services import DefaultNotifier
 from ._services import EngineService
+from ._typing.aliases import FieldName
 from ._typing.callables import ExecutableTransactionCallback
 from ._typing.callables import ComputeFieldFn as _ComputeFieldFn
 from ._typing.callables import NotifierInitializator
@@ -50,6 +51,264 @@ from .security import build_authenticate_user_callback
 from .security import build_login_callback
 
 class Lylac(Generic[_M]):
+    """
+    # Lylac
+    Un framework ORM programable para PostgreSQL, diseñado para plataformas
+    empresariales extensibles.
+
+    ## Inicialización
+
+    ### Variables de entorno
+    Para inicializar la estructura inicial de una base de datos se requieren configurar
+    las siguientes variables de entorno:
+
+    #### Credenciales
+    Las siguientes variables pertenecen a las credenciales necesarias para conectarse a
+    la base de datos.
+
+    | Variable         | Descripción                          |
+    |------------------|--------------------------------------|
+    | `LYLAC_HOST`     | URL donde se aloja la base de datos. |
+    | `LYLAC_PORT`     | Puerto.                              |
+    | `LYLAC_NAME`     | Nombre de la base de datos.          |
+    | `LYLAC_USER`     | Nombre de usuario administrador.     |
+    | `LYLAC_PASSWORD` | Contraseña de acceso.                |
+
+    Ejemplo:
+    ```
+    LYLAC_HOST = https://wwww.mydatabasehost.com
+    LYLAC_PORT = 5432
+    LYLAC_NAME = production
+    LYLAC_USER = admin
+    LYLAC_PASSWORD = mypassword123
+    ```
+
+    #### Usuarios
+    Se requiere configurar dos usuarios iniciales a la base de datos. Un usuario raíz
+    que se usará como autor de la creación de los registros de la estructura base de la
+    base de datos y un usuario administrador. Puede ser tu usuario.
+
+    | Variable                 | Descripción                                    |
+    |--------------------------|------------------------------------------------|
+    | `LYLAC_ROOT_USER_NAME`   | Nombre del usuario raíz.                       |
+    | `LYLAC_ROOT_USER_LOGIN`  | Nombre de usuario de acceso del usuario raíz.  |
+    | `LYLAC_ADMIN_USER_NAME`  | Nombre del usuario administrador.              |
+    | `LYLAC_ADMIN_USER_LOGIN` | Nombre de usuario de acceso del administrador. |
+
+    Ejemplo:
+    ```
+    LYLAC_ROOT_USER_NAME = Root
+    LYLAC_ROOT_USER_LOGIN = lylac_root
+    LYLAC_ADMIN_USER_NAME = "Onnymm Azzur"
+    LYLAC_ADMIN_USER_LOGIN = onnymm
+    ```
+
+    > `i` El usuario raíz aparecerá archivado una vez que se inicialice la base de
+    datos.
+
+    #### Parámetros opcionales
+    También se pueden configurar algunos parámetros opcionales para personalizar más el
+    flujo de trabajo del framework.
+
+    | Variable                 | Descripción                                                                  |
+    |--------------------------|------------------------------------------------------------------------------|
+    | `LYLAC_DEFAULT_PASSWORD` | Contraseña predeterminada que se le asigna a un usuario cuando se crea éste. |
+
+    ### Creación de la base de datos
+    Se puede comenzar con un archivo muy pequeño como el siguiente.
+
+    >>> from lylac import Lylac
+    >>> 
+    >>> db = Lylac()
+
+    Al ejecutar el archivo por primera vez, se imprimirá la siguiente leyenda en
+    consola:
+
+    `La base de datos de inicializó correctamente.`
+
+    ## Iniciar sesión
+    Este método permite crear una sesión de usuario y retorna una UUID de sesión para
+    poder autenticarse cuando se use alguno de los métodos de transacción de datos.
+
+    Uso:
+    >>> # Obtención de UUID de sesión de autenticación
+    >>> session_uuid = db.login('onnymm', 'contraseñasecreta123')
+
+    ## Creación de uno o muchos registros
+    Este método realiza la creación de uno o muchos registros.
+
+    Uso:
+    >>> # Para un solo registro
+    >>> record = {
+    >>>     'login': 'onnymm',
+    >>>     'name': 'Onnymm Azzur',
+    >>> }
+    >>> 
+    >>> db.create(session_uuid, 'base.users', record)
+    >>> 
+    >>> # Para muchos registros
+    >>> records = [
+    >>>     {
+    >>>         'login': 'onnymm',
+    >>>         'name': 'Onnymm Azzur',
+    >>>     },
+    >>>     {
+    >>>         'login': 'lumii',
+    >>>         'name': 'Lumii Mynx',
+    >>>     },
+    >>> ]
+    >>> 
+    >>> db.create(session_uuid, 'base.users', records)
+
+    ## Búsqueda de registros
+    Este método retorna todas las IDs de los registros de un modelo o los registros que
+    cumplan con la condición de búsqueda provista.
+
+    Uso:
+    >>> # Registros existentes en el modelo base.users
+    >>> db.search(session_uuid, 'base.users')
+    >>> # [1, 2, 3, 4, 5, 6, 7]
+    >>> 
+    >>> # Registros en el modelo base.users que hayan sido creados
+    >>> #   por el usuario con la ID 2
+    >>> db.search(session_uuid, 'base.users', [('create_uid', '=', 2)])
+    >>> # [3, 5, 6]
+
+    ## Lectura de registros
+    Este método retorna una lista de diccionarios con el contenido de los registros de
+    un modelo de la base de datos a partir de una lista de IDs, en el orden en el que
+    se especificaron los campos o todos los campos en caso de no haber sido
+    especificados.
+
+    Uso:
+    >>> # Ejemplo 1
+    >>> db.read(session_uuid, 'base.users', [2])
+    >>> # [{'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...}]
+    >>> 
+    >>> # Ejemplo 2
+    >>> db.read(session_uuid, 'base.users', [2, 3])
+    >>> # [
+    >>> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+    >>> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+    >>> # ]
+    >>> 
+    >>> # Ejemplo 3
+    >>> db.read(session_uuid, 'base.users', [2, 3], ['login', 'create_date'])
+    >>> # [
+    >>> #   {'id': 2, 'login': 'onnymm', 'create_date': '2026-09-12 12:15:36' ...},
+    >>> #   {'id': 3, 'login': 'lumii', 'create_date': '2026-09-12 13:28:14 ...},
+    >>> # ]
+
+    ## Búsqueda y lectura de registros
+    Este método retorna una lista de diccionarios con el contenido de los registros de
+    un modelo de la base de datos, en el orden en el que se especificaron los campos o
+    todos los campos en caso de no haber sido especificados.
+
+    Uso:
+    >>> # Ejemplo 1
+    >>> db.search_read(session_uuid, 'base.users')
+    >>> # [
+    >>> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+    >>> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+    >>> #   ...
+    >>> # ]
+    >>> 
+    >>> # Ejemplo 2
+    >>> db.search_read(session_uuid, 'base.users', [('user', '=', 'onnymm')])
+    >>> # [{'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...}]
+    >>> 
+    >>> # Ejemplo 3
+    >>> db.search_read(session_uuid, 'base.users', fields= ['user', 'create_date'])
+    >>> # [
+    >>> #   {'id': 2, 'login': 'onnymm', 'create_date': '2026-09-12 12:15:36' ...},
+    >>> #   {'id': 3, 'login': 'lumii', 'create_date': '2026-09-12 13:28:14 ...},
+    >>> #   ...
+    >>> # ]
+
+    ## Conteo de búsqueda
+    Este método retorna el conteo de de todos los registros de un modelo o los
+    registros que cumplan con la condición de búsqueda provista, ideal para
+    funcionalidades de paginación que muestran un total de registros.
+
+    Uso:
+    >>> # Ejemplo 1
+    >>> db.search_count(session_uuid, 'base.users')
+    >>> # 5
+    >>> 
+    >>> # Ejemplo 2
+    >>> db.search_count(session_uuid, 'base.permissions', [('create_uid', '=', 5)])
+    >>> # 126
+
+    ## Actualización de registros
+    Este método realiza la actualización de uno o más registros a partir de su
+    respectiva ID provista, actualizando uno o más campos con el valor provisto. Este
+    método solo sobreescribe un mismo valor por cada campo a todos los registros
+    provistos.
+
+    Uso:
+    >>> db.search_read(session_uuid, 'base.users', fields= ['login', 'name'])
+    >>> # [
+    >>> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm'},
+    >>> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii'},
+    >>> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim'},
+    >>> #   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio'},
+    >>> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu'},
+    >>> #   ...
+    >>> # ]
+    >>> 
+    >>> # Modificación
+    >>> db.update(session_uuid, 'base.users', [3, 4, 5], {'name': 'Cambiado'})
+    >>> # True
+    >>> 
+    >>> db.search_read(session_uuid, 'base.users', fields= ['login', 'name'])
+    >>> # [
+    >>> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm'},
+    >>> #   {'id': 3, 'name': 'Cambiado', 'login': 'lumii'},
+    >>> #   {'id': 4, 'name': 'Cambiado', 'login': 'meshkim'},
+    >>> #   {'id': 5, 'name': 'Cambiado', 'login': 'luunafio'},
+    >>> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu'},
+    >>> #   ...
+    >>> # ]
+
+    ## Eliminación de registros
+    Este método realiza la eliminaciónd e uno o más registros de la base de datos a
+    partir de su respectiva ID provista.
+
+    Uso:
+    >>> db.search_read(session_uuid, 'base.users')
+    >>> # [
+    >>> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+    >>> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+    >>> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+    >>> #   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+    >>> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+    >>> #   ...
+    >>> # ]
+    >>> 
+    >>> # Eliminación del registro con ID 2
+    >>> 
+    >>> db.delete(session_uuid, 'base.users', 2)
+    >>> # True
+    >>> 
+    >>> db.search_read(session_uuid, 'base.users')
+    >>> # [
+    >>> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+    >>> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+    >>> #   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+    >>> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+    >>> #   ...
+    >>> # ]
+
+    ## Autenticación de usuario
+    Este método recibe una UUID de sesión y resuelve a qué usuario le pertenece la
+    sesión.
+
+    Uso:
+    >>> session_uuid = '4d9ad73f-40cf-4b33-8feb-4c593c172cf2'
+    >>> 
+    >>> db.authenticate_user(session_uuid)
+    >>> # 2
+    """
     # Interfaz para acceso al tipado de automatización sin tener que colocar literal de modelos
     type AutomationContext[T] = _AutomationContext[_M, T]
     type ValidationContext[T] = _ValidationContext[_M, T]
@@ -119,6 +378,34 @@ class Lylac(Generic[_M]):
         username: str,
         password: str,
     ) -> str:
+        """
+        ## Iniciar sesión
+        Este método permite crear una sesión de usuario y retorna una UUID de sesión
+        para poder autenticarse cuando se use alguno de los métodos de transacción de
+        datos.
+
+        Uso:
+        >>> # Obtención de UUID de sesión de autenticación
+        >>> session_uuid = db.login('onnymm', 'contraseñasecreta123')
+
+        **Parámetros**
+        :username: Nombre de usuario.
+        :password: Contraseña del usuario.
+
+        **Retorno**
+        :session_uuid: UUID de sesión para autenticación del usuario.
+
+        ### Errores comunes
+        - `UserNotFoundError`: El usuario no fue encontrado.
+        - `UserNotActiveError`: El usuario fue encontrado pero éste no está activo.
+        - `IncorrectPasswordError`: El usuario fue encontrado y está activo pero la
+        contraseña no coincide con la almacenada en la base de datos.
+
+        > `i` Es decisión del desarrollador proveer o no la información sobre la falla
+        encontrada en el inicio de sesión, por ejemplo, si desea decirle al usuario
+        que su cuenta no existe o solo hacerle saber que "El usuario o la contraseña
+        no son correctos".
+        """
 
         # Construcción de la transacción de inicio de sesión
         transaction = build_login_callback(self, username, password)
@@ -133,6 +420,47 @@ class Lylac(Generic[_M]):
         session_uuid: str,
         callback: Callable[[_ExecutionContext[_M]], _T],
     ) -> _T:
+        """
+        ## Ejecutar transacción
+        Este método ejecuta una transacción compleja construida mediante una función
+        que es provista a este método como argumento. La función debe estar preparada
+        para recibir como argumento un `ExecutionContext[_M]` para poder declarar
+        instrucciones de operaciones en la base de datos. Al estar asociadas a una
+        misma transacción, las instrucciones pueden confirmarse o revertirse como una
+        sola unidad. Si ocurre un error durante la ejecución, la transacción puede
+        realizar un rollback, evitando que los cambios realizados hasta ese momento
+        sean persistidos parcialmente en la base de datos.
+
+        Uso:
+        >>> # Definición de función de lectura del perfil del usuario de la sesión
+        >>> def me(ctx: Lylac.ExecutionContext):
+        >>> 
+        >>>     # Obtención de los datos del usuario de la sesión
+        >>>     [ user_data ] = ctx.read(
+        >>>         'base.users',
+        >>>         ctx.uid,
+        >>>         fields = [
+        >>>             'name',
+        >>>             'active',
+        >>>             'login',
+        >>>             'profile_picture',
+        >>>         ],
+        >>>     )
+        >>> 
+        >>>     return user_data
+        >>> 
+        >>> # Ejecución de la transacción desde la instancia principal
+        >>> profile_data = db.execute_transaction(session_uuid, me)
+
+        **Parámetros**
+
+        :session_uuid: UUID de sesión.
+        :callback: Función de transacción.
+
+        **Retorno**
+
+        :result: El valor u objeto que retorna la función de transacción.
+        """
 
         # Autenticación del usuario
         uid = self.authenticate_user(session_uuid)
@@ -160,6 +488,29 @@ class Lylac(Generic[_M]):
         name: str,
         record_id: int,
     ) -> Literal[True]:
+        """
+        ## Ejecución de una acción
+        Este método ejecuta una acción sobre un registro de un modelo en la base de
+        datos.
+
+        Ejemplo:
+        >>> db.action(session_uuid, 'base.users', 'archive', 3)
+        >>> # True
+
+        En el fragmento de código ejecutamos una acción que archiva al registro con ID
+        `3` del modelo `base.users`.
+
+        **Parámetros**
+
+        :session_uuid: UUID de sesión.
+        :model_name: Nombre de modelo en la base de datos.
+        :name: Nombre de la acción.
+        :record_id: ID del registro sobre el que se va a ejecutar la acción.
+
+        **Retorno**
+
+        :response: Respuesta de que la operación se realizó correctamente.
+        """
 
         # Definición de la transacción
         def transaction(execution_ctx: _ExecutionContext[_M]) -> Literal[True]:
@@ -183,6 +534,23 @@ class Lylac(Generic[_M]):
         session_uuid: str,
         name: str,
     ) -> Literal[True]:
+        """
+        ## Ejecución de tarea de servidor
+        Este método ejecuta una tarea de servidor en la base de datos.
+
+        Ejemplo:
+        >>> db.task(session_uuid, 'update_data_from_api')
+        >>> # True
+
+        **Parámetros**
+
+        :session_uuid: UUID de sesión.
+        :name: Nombre de la tarea de servidor.
+
+        **Retorno**
+
+        :response: Respuesta de que la operación se realizó correctamente.
+        """
 
         # Definición de la transacción
         def transaction(execution_ctx: _ExecutionContext[_M]) -> Literal[True]:
@@ -202,6 +570,44 @@ class Lylac(Generic[_M]):
         model_name: ModelName[_M],
         data: ItemOrList[RecordData],
     ) -> list[int]:
+        """
+        ## Creación de uno o muchos registros
+        Este método realiza la creación de uno o muchos registros.
+
+        Uso:
+        >>> # Para un solo registro
+        >>> record = {
+        >>>     'login': 'onnymm',
+        >>>     'name': 'Onnymm Azzur',
+        >>> }
+        >>> 
+        >>> db.create(session_uuid, 'base.users', record)
+        >>> 
+        >>> # Para muchos registros
+        >>> records = [
+        >>>     {
+        >>>         'login': 'onnymm',
+        >>>         'name': 'Onnymm Azzur',
+        >>>     },
+        >>>     {
+        >>>         'login': 'lumii',
+        >>>         'name': 'Lumii Mynx',
+        >>>     },
+        >>> ]
+        >>> 
+        >>> db.create(session_uuid, 'base.users', records)
+
+        **Parámetros**
+
+        :session_uuid:  UUID de sesión.
+        :model_name: Nombre de modelo en la base de datos.
+        :data: Diccionario o lista de diccionarios de los
+        datos a crear.
+
+        **Retorna**
+
+        :record_ids: Lista de IDs del registro o de los registros creados.
+        """
 
         # Definición de la transacción
         def transaction(execution_ctx: _ExecutionContext[_M]) -> list[int]:
@@ -225,6 +631,113 @@ class Lylac(Generic[_M]):
         offset: Optional[int] = None,
         limit: Optional[int] = None,
     ) -> list[int]:
+        """
+        ## Búsqueda de registros
+        Este método retorna todas las IDs de los registros de un modelo o los registros
+        que cumplan con la condición de búsqueda provista.
+
+        Uso:
+        >>> # Registros existentes en el modelo base.users
+        >>> db.search(session_uuid, 'base.users')
+        >>> # [1, 2, 3, 4, 5, 6, 7]
+        >>> 
+        >>> # Registros en el modelo base.users que hayan sido creados
+        >>> #   por el usuario con la ID 2
+        >>> db.search(session_uuid, 'base.users', [('create_uid', '=', 2)])
+        >>> # [3, 5, 6]
+
+        ### Criterio de búsqueda
+        La estructura del criterio de búsqueda consiste en una lista de dos tipos de
+        dato:
+        - `TripletStructure`: Estructura de tripletas para queries SQL
+        - `LogicOperator`: Operador lógico
+
+        Estas tuplas deben contenerse en una lista. En caso de haber más de una
+        condición, se deben unir por operadores lógicos `AND` u `OR`. Siendo el
+        operador lógico el que toma la primera posición:
+        >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
+        >>> # "amount" es mayor a 500 y "name" contiene "as"
+        >>> ['|', ('id', '=', 5), ('state', '=', 'posted')]
+        >>> # "id" es igual a 5 o "state" es igual a "posted"
+
+        #### Estructura de tripletas para queries SQL
+        Este tipo de dato representa una condición sencilla para usarse en una
+        transacción en base de datos. La estructura de una tripleta consiste en 3
+        diferentes parámetros:
+        1. Nombre del campo del modelo
+        2. Operador de comparación
+        3. Valor de comparación
+
+        Algunos ejemplos de tripletas son:
+        >>> ('name', '=', 'Onnymm')
+        >>> # Nombre es igual a "Onnymm"
+        >>> ('id', '=', 5)
+        >>> # ID es igual a 5
+        >>> ('amount', '>', 500)
+        >>> # "amount" es mayor a 500
+        >>> ('name', 'ilike', 'as')
+        >>> # "name" contiene "as"
+
+        #### Operador lógico
+        Tipo de dato que representa un operador lógico.
+
+        Los operadores lógicos disponibles son:
+        - `'&'`: AND
+        - `'|'`: OR
+
+        #### Operador de comparación
+
+        Tipo de dato que representa una operador de comparación.
+
+        Los operadores de comparación disponibles son:
+        - `'='`: Igual a
+        - `'!='`: Diferente de
+        - `'>'`: Mayor a
+        - `'>='`: Mayor o igual a
+        - `'<'`: Menor que
+        - `'<='`: Menor o igual que
+        - `'in'`: Está en
+        - `'not in'`: No está en
+        - `'ilike'`: Contiene
+        - `'not ilike'`: No contiene
+        - `'~'`: Coincide con expresión regular (sensible a mayúsculas y minúsculas)
+        - `'~*'`: Coincide con expresión regular (no sensible a mayúsculas y minúsculas)
+
+        ### Desfase de registros para paginación
+        Este parámetro sirve para retornar los registros a partir del índice indicado
+        por éste. Suponiendo que una búsqueda normal arrojaría los siguientes
+        resultados:
+        >>> db.search(session_uuid, 'base.users')
+        >>> # [1, 2, 3, 4, 5, 6, 7]
+
+        Se puede especificar que el retorno de los registros considerará solo a partir
+        desde cierto desfase numérico, como por ejemplo lo siguiente:
+        >>> db.search(session_uuid, 'base.users', offset= 2)
+        >>> # [3, 4, 5, 6, 7]
+
+        ### Límite de registros retornados para paginación
+        También es posible establecer una cantidad máxima de registros desde la base de
+        datos. Suponiendo que una búsqueda normal arrojaría los siguientes registros:
+        >>> db.search(session_uuid, 'base.users')
+        >>> # [1, 2, 3, 4, 5, 6, 7]
+
+        Se puede especificar que solo se requiere obtener una cantidad máxima de
+        registros a partir de un número provisto:
+        >>> db.search(session_uuid, 'base.users', limit= 3)
+        >>> # [1, 2, 3]
+
+        **Parámetros**
+
+        :session_uuid: UUID de sesión.
+        :model_name: Nombre de modelo en la base de datos.
+        :search_criteria: Criterio de búsqueda.
+        :offset: Desfase de resultados retornados.
+        :limit: Límite de cantidad de resultados retornados.
+
+        **Retorna**
+
+        :record_ids: Lista de IDs del registro o de los registros creados.
+        """
 
         # Definición de la transacción
         def transaction(execution_ctx: _ExecutionContext[_M]) -> list[int]:
@@ -250,9 +763,49 @@ class Lylac(Generic[_M]):
         model_name: ModelName[_M],
         record_ids: ItemOrList[int],
         fields: list[FieldReadDeclaration] = [],
-        sortby: Optional[ItemOrList[str]] = None,
+        sortby: Optional[ItemOrList[FieldName]] = None,
         ascending: Optional[ItemOrList[bool]] = None,
     ) -> list[_Record]:
+        """
+        ## Lectura de registros
+        Este método retorna una lista de diccionarios con el contenido de los registros
+        de un modelo de la base de datos a partir de una lista de IDs, en el orden en
+        el que se especificaron los campos o todos los campos en caso de no haber sido
+        especificados.
+
+        Uso:
+        >>> # Ejemplo 1
+        >>> db.read(session_uuid, 'base.users', [2])
+        >>> # [{'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...}]
+        >>> 
+        >>> # Ejemplo 2
+        >>> db.read(session_uuid, 'base.users', [2, 3])
+        >>> # [
+        >>> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+        >>> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+        >>> # ]
+        >>> 
+        >>> # Ejemplo 3
+        >>> db.read(session_uuid, 'base.users', [2, 3], ['login', 'create_date'])
+        >>> # [
+        >>> #   {'id': 2, 'login': 'onnymm', 'create_date': '2026-09-12 12:15:36' ...},
+        >>> #   {'id': 3, 'login': 'lumii', 'create_date': '2026-09-12 13:28:14 ...},
+        >>> # ]
+
+        **Parámetros**
+
+        :session_uuid: UUID de sesión.
+        :model_name: Nombre de modelo en la base de datos.
+        :record_ids: ID o lista de IDs de los registros a leer.
+        :fields: Declaración de campos a leer.
+        :sortby: Nombre o nombres de campo a usar para ordenar los registros.
+        :ascending: Dirección de ordenamiento, ascendente (*True*) o descendente
+        (*False*).
+
+        **Retorna**
+
+        :records: Lista de diccionarios con los datos de los registros solicitados.
+        """
 
         # Definición de la transacción
         def transaction(execution_ctx: _ExecutionContext[_M]) -> list[_Record]:
@@ -281,9 +834,157 @@ class Lylac(Generic[_M]):
         fields: list[FieldReadDeclaration] = [],
         offset: Optional[int] = None,
         limit: Optional[int] = None,
-        sortby: Optional[ItemOrList[str]] = None,
+        sortby: Optional[ItemOrList[FieldName]] = None,
         ascending: Optional[ItemOrList[bool]] = None,
     ) -> list[_Record]:
+        """
+        ## Búsqueda y lectura de registros
+        Este método retorna una lista de diccionarios con el contenido de los registros
+        de un modelo de la base de datos, en el orden en el que se especificaron los
+        campos o todos los campos en caso de no haber sido especificados.
+
+        Uso:
+        >>> # Ejemplo 1
+        >>> db.search_read(session_uuid, 'base.users')
+        >>> # [
+        >>> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+        >>> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+        >>> #   ...
+        >>> # ]
+        >>> 
+        >>> # Ejemplo 2
+        >>> db.search_read(session_uuid, 'base.users', [('user', '=', 'onnymm')])
+        >>> # [{'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...}]
+        >>> 
+        >>> # Ejemplo 3
+        >>> db.search_read(session_uuid, 'base.users', fields= ['user', 'create_date'])
+        >>> # [
+        >>> #   {'id': 2, 'login': 'onnymm', 'create_date': '2026-09-12 12:15:36' ...},
+        >>> #   {'id': 3, 'login': 'lumii', 'create_date': '2026-09-12 13:28:14 ...},
+        >>> #   ...
+        >>> # ]
+
+        ### Criterio de búsqueda
+        La estructura del criterio de búsqueda consiste en una lista de dos tipos de
+        dato:
+        - `TripletStructure`: Estructura de tripletas para queries SQL
+        - `LogicOperator`: Operador lógico
+
+        Estas tuplas deben contenerse en una lista. En caso de haber más de una
+        condición, se deben unir por operadores lógicos `AND` u `OR`. Siendo el
+        operador lógico el que toma la primera posición:
+        >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
+        >>> # "amount" es mayor a 500 y "name" contiene "as"
+        >>> ['|', ('id', '=', 5), ('state', '=', 'posted')]
+        >>> # "id" es igual a 5 o "state" es igual a "posted"
+
+        #### Estructura de tripletas para queries SQL
+        Este tipo de dato representa una condición sencilla para usarse en una
+        transacción en base de datos. La estructura de una tripleta consiste en 3
+        diferentes parámetros:
+        1. Nombre del campo del modelo
+        2. Operador de comparación
+        3. Valor de comparación
+
+        Algunos ejemplos de tripletas son:
+        >>> ('name', '=', 'Onnymm')
+        >>> # Nombre es igual a "Onnymm"
+        >>> ('id', '=', 5)
+        >>> # ID es igual a 5
+        >>> ('amount', '>', 500)
+        >>> # "amount" es mayor a 500
+        >>> ('name', 'ilike', 'as')
+        >>> # "name" contiene "as"
+
+        #### Operador lógico
+        Tipo de dato que representa un operador lógico.
+
+        Los operadores lógicos disponibles son:
+        - `'&'`: AND
+        - `'|'`: OR
+
+        #### Operador de comparación
+
+        Tipo de dato que representa una operador de comparación.
+
+        Los operadores de comparación disponibles son:
+        - `'='`: Igual a
+        - `'!='`: Diferente de
+        - `'>'`: Mayor a
+        - `'>='`: Mayor o igual a
+        - `'<'`: Menor que
+        - `'<='`: Menor o igual que
+        - `'in'`: Está en
+        - `'not in'`: No está en
+        - `'ilike'`: Contiene
+        - `'not ilike'`: No contiene
+        - `'~'`: Coincide con expresión regular (sensible a mayúsculas y minúsculas)
+        - `'~*'`: Coincide con expresión regular (no sensible a mayúsculas y minúsculas)
+
+        ### Desfase de registros para paginación
+        Este parámetro sirve para retornar los registros a partir del índice indicado
+        por éste. Suponiendo que una búsqueda normal arrojaría los siguientes
+        resultados:
+        >>> db.search_read(session_uuid, 'base.users')
+        >>> # [
+        >>> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+        >>> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+        >>> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+        >>> #   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+        >>> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+        >>> #   ...
+        >>> # ]
+
+        Se puede especificar que el retorno de los registros considerará solo a partir
+        desde cierto registro, como por ejemplo lo siguiente:
+        >>> db.search_read(session_uuid, 'base.users', offset= 2)
+        >>> # [
+        >>> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+        >>> #   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+        >>> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+        >>> #   {'id': 7, 'name': 'Sarko Zuimx', 'login': 'sarzu', ...},
+        >>> #   {'id': 8, 'name': 'Leo Minnix', 'login': 'minnleo', ...},
+        >>> #   ...
+        >>> # ]
+
+        ### Límite de registros retornados para paginación
+        También es posible establecer una cantidad máxima de registros desde la base de
+        datos. Suponiendo que una búsqueda normal arrojaría los siguientes registros:
+        >>> db.search_read(session_uuid, 'base.users')
+        >>> # [
+        >>> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+        >>> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+        >>> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+        >>> #   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+        >>> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+        >>> #   ...
+        >>> # ]
+
+        Se puede especificar que solo se requiere obtener una cantidad máxima de
+        registros a partir de un número provisto:
+        >>> db.search_read(session_uuid, 'base.users', limit= 3)
+        >>> # [
+        >>> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+        >>> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+        >>> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...}
+        >>> # ]
+
+        **Parámetros**
+
+        :session_uuid: UUID de sesión.
+        :model_name: Nombre de modelo en la base de datos.
+        :search_criteria: Criterio de búsqueda.
+        :fields: Declaración de campos a leer.
+        :offset: Desfase de resultados retornados.
+        :limit: Límite de cantidad de resultados retornados.
+        :sortby: Nombre o nombres de campo a usar para ordenar los registros.
+        :ascending: Dirección de ordenamiento, ascendente (*True*) o descendente
+        (*False*).
+
+        **Retorna**
+
+        :records: Lista de diccionarios con los datos de los registros solicitados.
+        """
 
         # Definición de la transacción
         def transaction(execution_ctx: _ExecutionContext[_M]) -> list[_Record]:
@@ -312,6 +1013,89 @@ class Lylac(Generic[_M]):
         model_name: ModelName[_M],
         search_criteria: CriteriaStructure = [],
     ) -> int:
+        """
+        ## Conteo de búsqueda
+        Este método retorna el conteo de de todos los registros de un modelo o los
+        registros que cumplan con la condición de búsqueda provista, ideal para
+        funcionalidades de paginación que muestran un total de registros.
+
+        Uso:
+        >>> # Ejemplo 1
+        >>> db.search_count(session_uuid, 'base.users')
+        >>> # 5
+        >>> 
+        >>> # Ejemplo 2
+        >>> db.search_count(session_uuid, 'base.permissions', [('create_uid', '=', 5)])
+        >>> # 126
+
+        ### Criterio de búsqueda
+        La estructura del criterio de búsqueda consiste en una lista de dos tipos de
+        dato:
+        - `TripletStructure`: Estructura de tripletas para queries SQL
+        - `LogicOperator`: Operador lógico
+
+        Estas tuplas deben contenerse en una lista. En caso de haber más de una
+        condición, se deben unir por operadores lógicos `AND` u `OR`. Siendo el
+        operador lógico el que toma la primera posición:
+        >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
+        >>> # "amount" es mayor a 500 y "name" contiene "as"
+        >>> ['|', ('id', '=', 5), ('state', '=', 'posted')]
+        >>> # "id" es igual a 5 o "state" es igual a "posted"
+
+        #### Estructura de tripletas para queries SQL
+        Este tipo de dato representa una condición sencilla para usarse en una
+        transacción en base de datos. La estructura de una tripleta consiste en 3
+        diferentes parámetros:
+        1. Nombre del campo del modelo
+        2. Operador de comparación
+        3. Valor de comparación
+
+        Algunos ejemplos de tripletas son:
+        >>> ('name', '=', 'Onnymm')
+        >>> # Nombre es igual a "Onnymm"
+        >>> ('id', '=', 5)
+        >>> # ID es igual a 5
+        >>> ('amount', '>', 500)
+        >>> # "amount" es mayor a 500
+        >>> ('name', 'ilike', 'as')
+        >>> # "name" contiene "as"
+
+        #### Operador lógico
+        Tipo de dato que representa un operador lógico.
+
+        Los operadores lógicos disponibles son:
+        - `'&'`: AND
+        - `'|'`: OR
+
+        #### Operador de comparación
+
+        Tipo de dato que representa una operador de comparación.
+
+        Los operadores de comparación disponibles son:
+        - `'='`: Igual a
+        - `'!='`: Diferente de
+        - `'>'`: Mayor a
+        - `'>='`: Mayor o igual a
+        - `'<'`: Menor que
+        - `'<='`: Menor o igual que
+        - `'in'`: Está en
+        - `'not in'`: No está en
+        - `'ilike'`: Contiene
+        - `'not ilike'`: No contiene
+        - `'~'`: Coincide con expresión regular (sensible a mayúsculas y minúsculas)
+        - `'~*'`: Coincide con expresión regular (no sensible a mayúsculas y
+        minúsculas)
+
+        **Parámetros**
+
+        :session_uuid: UUID de sesión.
+        :model_name: Nombre de modelo en la base de datos.
+        :search_criteria: Criterio de búsqueda.
+
+        **Retorna**
+
+        :count: Total de registros encontrados.
+        """
 
         # Definición de la transacción
         def transaction(execution_ctx: _ExecutionContext[_M]) -> int:
@@ -336,6 +1120,49 @@ class Lylac(Generic[_M]):
         record_ids: ItemOrList[int],
         data: dict,
     ) -> Literal[True]:
+        """
+        ## Actualización de registros
+        Este método realiza la actualización de uno o más registros a partir de su
+        respectiva ID provista, actualizando uno o más campos con el valor provisto.
+        Este método solo sobreescribe un mismo valor por cada campo a todos los
+        registros provistos.
+
+        Uso:
+        >>> db.search_read(session_uuid, 'base.users', fields= ['login', 'name'])
+        >>> # [
+        >>> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm'},
+        >>> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii'},
+        >>> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim'},
+        >>> #   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio'},
+        >>> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu'},
+        >>> #   ...
+        >>> # ]
+        >>> 
+        >>> # Modificación
+        >>> db.update(session_uuid, 'base.users', [3, 4, 5], {'name': 'Cambiado'})
+        >>> # True
+        >>> 
+        >>> db.search_read(session_uuid, 'base.users', fields= ['login', 'name'])
+        >>> # [
+        >>> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm'},
+        >>> #   {'id': 3, 'name': 'Cambiado', 'login': 'lumii'},
+        >>> #   {'id': 4, 'name': 'Cambiado', 'login': 'meshkim'},
+        >>> #   {'id': 5, 'name': 'Cambiado', 'login': 'luunafio'},
+        >>> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu'},
+        >>> #   ...
+        >>> # ]
+
+        **Parámetros**
+
+        :session_uuid: UUID de sesión.
+        :model_name: Nombre de modelo en la base de datos.
+        :record_ids: ID o lista de IDs de los registros a actualizar.
+        :data: Diccionario o lista de diccionarios de los datos a crear.
+
+        **Retorna**
+
+        :response: Respuesta de que la operación se realizó correctamente.
+        """
 
         # Definición de la transacción
         def transaction(execution_ctx: _ExecutionContext[_M]) -> Literal[True]:
@@ -360,6 +1187,46 @@ class Lylac(Generic[_M]):
         model_name: ModelName[_M],
         record_ids: ItemOrList[int],
     ) -> Literal[True]:
+        """
+        ## Eliminación de registros
+        Este método realiza la eliminaciónd e uno o más registros de la base de datos a
+        partir de su respectiva ID provista.
+
+        Uso:
+        >>> db.search_read(session_uuid, 'base.users')
+        >>> # [
+        >>> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
+        >>> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+        >>> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+        >>> #   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+        >>> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+        >>> #   ...
+        >>> # ]
+        >>> 
+        >>> # Eliminación del registro con ID 2
+        >>> 
+        >>> db.delete(session_uuid, 'base.users', 2)
+        >>> # True
+        >>> 
+        >>> db.search_read(session_uuid, 'base.users')
+        >>> # [
+        >>> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
+        >>> #   {'id': 4, 'name': 'Kim Mesh', 'login': 'meshkim', ...},
+        >>> #   {'id': 5, 'name': 'Fioriss Luuna', 'login': 'luunafio', ...},
+        >>> #   {'id': 6, 'name': 'Zaylu Bettel', 'login': 'zaylu', ...},
+        >>> #   ...
+        >>> # ]
+
+        **Parámetros**
+
+        :session_uuid: UUID de sesión.
+        :model_name: Nombre de modelo en la base de datos.
+        :record_ids: ID o lista de IDs de los registros a eliminar.
+
+        **Retorna**
+
+        :response: Respuesta de que la operación se realizó correctamente.
+        """
 
         # Definición de la transacción
         def transaction(execution_ctx: _ExecutionContext[_M]) -> Literal[True]:
@@ -381,6 +1248,25 @@ class Lylac(Generic[_M]):
         self,
         session_uuid: str,
     ) -> int:
+        """
+        ## Autenticación de usuario
+        Este método recibe una UUID de sesión y resuelve a qué usuario le pertenece la
+        sesión.
+
+        Uso:
+        >>> session_uuid = '4d9ad73f-40cf-4b33-8feb-4c593c172cf2'
+        >>> 
+        >>> db.authenticate_user(session_uuid)
+        >>> # 2
+
+        **Parámetros**
+
+        :session_uuid: UUID de sesión.
+
+        **Retorna**
+
+        :user_id: ID del usuario propietario de la sesión.
+        """
 
         # Construcción de función de autenticación de usuario
         transaction = build_authenticate_user_callback(self, session_uuid)

@@ -11,6 +11,12 @@ ModelClass = type[DeclarativeBase]
 Representación de una clase de modelo de SQLAlchemy.
 """
 
+FieldName = str
+"""
+### Nombre de campo
+Representación de nombre de campo.
+"""
+
 AliasedField = tuple[str, str]
 """
 ### Campo con alias
