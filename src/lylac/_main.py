@@ -38,7 +38,7 @@ from ._typing.aliases import FieldName
 from ._typing.callables import ExecutableTransactionCallback
 from ._typing.callables import ComputeFieldFn as _ComputeFieldFn
 from ._typing.callables import NotifierInitializator
-from ._typing.generics import ItemOrList
+from ._typing.generics import ScalarOrIterable
 from ._typing.generics import ModelName
 from ._typing.generics import _Record
 from ._typing.structures import CriteriaStructure
@@ -176,7 +176,7 @@ class Lylac(Generic[_M]):
 
     ## Lectura de registros
     Este método retorna una lista de diccionarios con el contenido de los registros de
-    un modelo de la base de datos a partir de una lista de IDs, en el orden en el que
+    un modelo de la base de datos a partir de un iterable de IDs, en el orden en el que
     se especificaron los campos o todos los campos en caso de no haber sido
     especificados.
 
@@ -568,7 +568,7 @@ class Lylac(Generic[_M]):
         self,
         session_uuid: str,
         model_name: ModelName[_M],
-        data: ItemOrList[RecordData[_M]],
+        data: ScalarOrIterable[RecordData[_M]],
     ) -> list[int]:
         """
         ## Creación de uno o muchos registros
@@ -601,8 +601,7 @@ class Lylac(Generic[_M]):
 
         :session_uuid:  UUID de sesión.
         :model_name: Nombre de modelo en la base de datos.
-        :data: Diccionario o lista de diccionarios de los
-        datos a crear.
+        :data: Diccionario o iterable de diccionarios de los datos a crear.
 
         **Retorna**
 
@@ -647,12 +646,12 @@ class Lylac(Generic[_M]):
         >>> # [3, 5, 6]
 
         ### Criterio de búsqueda
-        La estructura del criterio de búsqueda consiste en una lista de dos tipos de
+        La estructura del criterio de búsqueda consiste en un iterable de dos tipos de
         dato:
         - `TripletStructure`: Estructura de tripletas para queries SQL
         - `LogicOperator`: Operador lógico
 
-        Estas tuplas deben contenerse en una lista. En caso de haber más de una
+        Estas tuplas deben contenerse en un iterable. En caso de haber más de una
         condición, se deben unir por operadores lógicos `AND` u `OR`. Siendo el
         operador lógico el que toma la primera posición:
         >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
@@ -761,15 +760,15 @@ class Lylac(Generic[_M]):
         self,
         session_uuid: str,
         model_name: ModelName[_M],
-        record_ids: ItemOrList[int],
+        record_ids: ScalarOrIterable[int],
         fields: list[FieldReadDeclaration] = [],
-        sortby: Optional[ItemOrList[FieldName]] = None,
-        ascending: Optional[ItemOrList[bool]] = None,
+        sortby: Optional[ScalarOrIterable[FieldName]] = None,
+        ascending: Optional[ScalarOrIterable[bool]] = None,
     ) -> list[_Record]:
         """
         ## Lectura de registros
         Este método retorna una lista de diccionarios con el contenido de los registros
-        de un modelo de la base de datos a partir de una lista de IDs, en el orden en
+        de un modelo de la base de datos a partir de un iterable de IDs, en el orden en
         el que se especificaron los campos o todos los campos en caso de no haber sido
         especificados.
 
@@ -796,7 +795,7 @@ class Lylac(Generic[_M]):
 
         :session_uuid: UUID de sesión.
         :model_name: Nombre de modelo en la base de datos.
-        :record_ids: ID o lista de IDs de los registros a leer.
+        :record_ids: ID o iterable de IDs de los registros a leer.
         :fields: Declaración de campos a leer.
         :sortby: Nombre o nombres de campo a usar para ordenar los registros.
         :ascending: Dirección de ordenamiento, ascendente (*True*) o descendente
@@ -834,8 +833,8 @@ class Lylac(Generic[_M]):
         fields: list[FieldReadDeclaration] = [],
         offset: Optional[int] = None,
         limit: Optional[int] = None,
-        sortby: Optional[ItemOrList[FieldName]] = None,
-        ascending: Optional[ItemOrList[bool]] = None,
+        sortby: Optional[ScalarOrIterable[FieldName]] = None,
+        ascending: Optional[ScalarOrIterable[bool]] = None,
     ) -> list[_Record]:
         """
         ## Búsqueda y lectura de registros
@@ -865,12 +864,12 @@ class Lylac(Generic[_M]):
         >>> # ]
 
         ### Criterio de búsqueda
-        La estructura del criterio de búsqueda consiste en una lista de dos tipos de
+        La estructura del criterio de búsqueda consiste en un iterable de dos tipos de
         dato:
         - `TripletStructure`: Estructura de tripletas para queries SQL
         - `LogicOperator`: Operador lógico
 
-        Estas tuplas deben contenerse en una lista. En caso de haber más de una
+        Estas tuplas deben contenerse en un iterable. En caso de haber más de una
         condición, se deben unir por operadores lógicos `AND` u `OR`. Siendo el
         operador lógico el que toma la primera posición:
         >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
@@ -1029,12 +1028,12 @@ class Lylac(Generic[_M]):
         >>> # 126
 
         ### Criterio de búsqueda
-        La estructura del criterio de búsqueda consiste en una lista de dos tipos de
+        La estructura del criterio de búsqueda consiste en un iterable de dos tipos de
         dato:
         - `TripletStructure`: Estructura de tripletas para queries SQL
         - `LogicOperator`: Operador lógico
 
-        Estas tuplas deben contenerse en una lista. En caso de haber más de una
+        Estas tuplas deben contenerse en un iterable. En caso de haber más de una
         condición, se deben unir por operadores lógicos `AND` u `OR`. Siendo el
         operador lógico el que toma la primera posición:
         >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
@@ -1117,7 +1116,7 @@ class Lylac(Generic[_M]):
         self,
         session_uuid: str,
         model_name: ModelName[_M],
-        record_ids: ItemOrList[int],
+        record_ids: ScalarOrIterable[int],
         data: dict,
     ) -> Literal[True]:
         """
@@ -1156,8 +1155,8 @@ class Lylac(Generic[_M]):
 
         :session_uuid: UUID de sesión.
         :model_name: Nombre de modelo en la base de datos.
-        :record_ids: ID o lista de IDs de los registros a actualizar.
-        :data: Diccionario o lista de diccionarios de los datos a crear.
+        :record_ids: ID o iterable de IDs de los registros a actualizar.
+        :data: Diccionario o iterable de diccionarios de los datos a crear.
 
         **Retorna**
 
@@ -1185,7 +1184,7 @@ class Lylac(Generic[_M]):
         self,
         session_uuid: str,
         model_name: ModelName[_M],
-        record_ids: ItemOrList[int],
+        record_ids: ScalarOrIterable[int],
     ) -> Literal[True]:
         """
         ## Eliminación de registros
@@ -1221,7 +1220,7 @@ class Lylac(Generic[_M]):
 
         :session_uuid: UUID de sesión.
         :model_name: Nombre de modelo en la base de datos.
-        :record_ids: ID o lista de IDs de los registros a eliminar.
+        :record_ids: ID o iterable de IDs de los registros a eliminar.
 
         **Retorna**
 

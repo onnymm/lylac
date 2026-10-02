@@ -18,7 +18,7 @@ from .._resources import ModelsBearer
 from .._typing.callables import CaptureCreatedRecordID
 from .._typing.callables import CaptureRecordID
 from .._typing.callables import CRUD_Operation
-from .._typing.generics import ItemOrList
+from .._typing.generics import ScalarOrIterable
 from .._typing.generics import ModelName
 from .._typing.interfaces import Many2ManyRelation
 from .._typing.literals import RelationActionName
@@ -65,7 +65,7 @@ class _BaseRelation_CRUD(Generic[_M]):
     def _build_update(
         self,
         execution_ctx: ExecutionContext[_M],
-        update_data: ItemOrList[tuple[RecordIDs, RecordData[_M]]],
+        update_data: ScalarOrIterable[tuple[RecordIDs, RecordData[_M]]],
     ) -> CaptureRecordID[_M]:
 
         # Se asegura el formato en lista
@@ -112,7 +112,7 @@ class _BaseRelation_CRUD(Generic[_M]):
     def _build_create(
         self,
         execution_ctx: ExecutionContext[_M],
-        records_data: ItemOrList[RecordData[_M]],
+        records_data: ScalarOrIterable[RecordData[_M]],
     ) -> CaptureRecordID[_M]:
         ...
     def _build_add(
@@ -172,7 +172,7 @@ class _Many2One_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
     def _build_create(
         self,
         execution_ctx: ExecutionContext[_M],
-        records_data: ItemOrList[RecordData[_M]],
+        records_data: ScalarOrIterable[RecordData[_M]],
     ) -> CaptureRecordID[_M]:
 
         # Se asegura el formato en lista
@@ -325,7 +325,7 @@ class _Many2Many_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
     def _build_create(
         self,
         execution_ctx: ExecutionContext[_M],
-        records_data: ItemOrList[RecordData[_M]],
+        records_data: ScalarOrIterable[RecordData[_M]],
     ) -> CaptureRecordID[_M]:
 
         def create_records(created_or_updated_id: int) -> CRUD_Operation[_M]:

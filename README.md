@@ -76,7 +76,7 @@ pip install git+https://github.com/onnymm/lylac.git
 - **[`FieldComputation` — Cómputo de campo](#fieldcomputation-cómputo-de-campo)**
 - **[`FieldName` — Nombre de campo existente en el modelo](#fieldname-nombre-de-campo-existente-en-el-modelo)**
 - **[`FieldReadDeclaration` — Declaración de campos a leer](#fieldreaddeclaration-declaración-de-campos-a-leer)**
-- **[`ItemOrList` — Elemento o lista de elementos](#itemorlist-elemento-o-lista-de-elementos)**
+- **[`ScalarOrIterable` — Elemento o iterable de elementos](#scalaroriterable-elemento-o-iterable-de-elementos)**
 - **[`MaybeNone` — Posiblemente nulo](#maybenone-posiblemente-nulo)**
 - **[`ModelName` — Nombre de modelo](#modelname-nombre-de-modelo)**
 - **[`TTypeName` — Nombre de tipo de dato de campo](#ttypename-nombre-de-tipo-de-dato-de-campo)**
@@ -144,7 +144,7 @@ db.create(session_uuid, 'base.users', records)
 **Parámetros**
 - `session_uuid`: *str* — UUID de sesión.
 - `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
-- `data`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[RecordData]* — Diccionario o lista de diccionarios de los datos a crear.
+- `data`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[RecordData]* — Diccionario o iterable de diccionarios de los datos a crear.
 
 **Retorno**
 - `record_ids`: *list[int]* — Lista de IDs del registro o de los registros creados.
@@ -207,7 +207,7 @@ db.search(session_uuid, 'base.users', [('create_uid', '=', 2)])
 ----
 
 ### `read` Lectura de registros
-Este método retorna una lista de diccionarios con el contenido de los registros de un modelo de la base de datos a partir de una lista de IDs, en el orden en el que se especificaron los campos o todos los campos en caso de no haber sido especificados.
+Este método retorna una lista de diccionarios con el contenido de los registros de un modelo de la base de datos a partir de un iterable de IDs, en el orden en el que se especificaron los campos o todos los campos en caso de no haber sido especificados.
 
 Uso:
 ```py
@@ -233,10 +233,10 @@ db.read(session_uuid, 'base.users', [2, 3], ['login', 'create_date'])
 **Parámetros**
 - `session_uuid`: *str* — UUID de sesión.
 - `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
-- `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a leer.
+- `record_ids`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[int]* — ID o iterable de IDs de los registros a leer.
 - `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer.
-- `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
-- `ascending` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
+- `sortby` **(Opcional)**: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
+- `ascending` **(Opcional)**: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
 
 **Retorno**
 - `records`: *list[RecordData]* — Lista de diccionarios con los datos de los registros solicitados.
@@ -329,8 +329,8 @@ db.search_read(session_uuid, 'base.users', fields= ['user', 'create_date'])
 - `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer.
 - `offset` **(Opcional)**: *int* — Desfase de resultados retornados.
 - `limit` **(Opcional)**: *int* — Límite de cantidad de resultados retornados.
-- `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
-- `ascending` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
+- `sortby` **(Opcional)**: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
+- `ascending` **(Opcional)**: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
 
 **Retorno**
 - `records`: *list[RecordData]* — Lista de diccionarios con los datos de los registros solicitados.
@@ -394,8 +394,8 @@ db.search_read(session_uuid, 'base.users', fields= ['login', 'name'])
 **Parámetros**
 - `session_uuid`: *str* — UUID de sesión.
 - `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
-- `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a actualizar.
-- `data`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[RecordData]* — Diccionario o lista de diccionarios de los datos a crear.
+- `record_ids`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[int]* — ID o iterable de IDs de los registros a actualizar.
+- `data`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[RecordData]* — Diccionario o iterable de diccionarios de los datos a crear.
 
 **Retorno**
 - `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
@@ -435,7 +435,7 @@ db.search_read(session_uuid, 'base.users')
 **Parámetros**
 - `session_uuid`: *str* — UUID de sesión.
 - `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
-- `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a eliminar.
+- `record_ids`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[int]* — ID o iterable de IDs de los registros a eliminar.
 
 **Retorno**
 - `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
@@ -656,7 +656,7 @@ ctx.create('base.users', records)
 
 **Parámetros**
 - `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
-- `data`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[RecordData]* — Diccionario o lista de diccionarios de los datos a crear.
+- `data`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[RecordData]* — Diccionario o iterable de diccionarios de los datos a crear.
 
 **Retorno**
 - `record_ids`: *list[int]* — Lista de IDs del registro o de los registros creados.
@@ -718,7 +718,7 @@ ctx.search('base.users', [('create_uid', '=', 2)])
 ----
 
 #### `read` Lectura de registros
-Este método retorna una lista de diccionarios con el contenido de los registros de un modelo de la base de datos a partir de una lista de IDs, en el orden en el que se especificaron los campos o todos los campos en caso de no haber sido especificados.
+Este método retorna una lista de diccionarios con el contenido de los registros de un modelo de la base de datos a partir de un iterable de IDs, en el orden en el que se especificaron los campos o todos los campos en caso de no haber sido especificados.
 
 Uso:
 ```py
@@ -743,10 +743,10 @@ ctx.read('base.users', [2, 3], ['login', 'create_date'])
 
 **Parámetros**
 - `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
-- `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a leer.
+- `record_ids`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[int]* — ID o iterable de IDs de los registros a leer.
 - `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer.
-- `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
-- `ascending` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
+- `sortby` **(Opcional)**: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
+- `ascending` **(Opcional)**: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
 
 **Retorno**
 - `records`: *list[RecordData]* — Lista de diccionarios con los datos de los registros solicitados.
@@ -838,8 +838,8 @@ ctx.search_read('base.users', fields= ['user', 'create_date'])
 - `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer.
 - `offset` **(Opcional)**: *int* — Desfase de resultados retornados.
 - `limit` **(Opcional)**: *int* — Límite de cantidad de resultados retornados.
-- `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
-- `ascending` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
+- `sortby` **(Opcional)**: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
+- `ascending` **(Opcional)**: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[bool]* — Dirección de ordenamiento, ascendente (*True*) o descendente (*False*). Este y el parámetro `sortby` deben coincidir. Si se especificó 1 campo, 1 dirección de ordenamiento debe ser especificada. Si se especificaron $n$ campos de ordenamiento, $n$ direcciones de ordenamiento deben ser especificadas.
 
 **Retorno**
 - `records`: *list[RecordData]* — Lista de diccionarios con los datos de los registros solicitados.
@@ -901,8 +901,8 @@ ctx.search_read('base.users', fields= ['login', 'name'])
 
 **Parámetros**
 - `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
-- `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a actualizar.
-- `data`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[RecordData]* — Diccionario o lista de diccionarios de los datos a crear.
+- `record_ids`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[int]* — ID o iterable de IDs de los registros a actualizar.
+- `data`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[RecordData]* — Diccionario o iterable de diccionarios de los datos a crear.
 
 **Retorno**
 - `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
@@ -942,7 +942,7 @@ ctx.search_read('base.users')
 **Parámetros**
 
 - `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
-- `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a eliminar.
+- `record_ids`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[int]* — ID o iterable de IDs de los registros a eliminar.
 
 **Retorno**
 - `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
@@ -963,7 +963,7 @@ Este método se usa para obtener la ID de un registro en la base de datos señal
 ----
 
 ### `ExecutionContext` Contexto de ejecución
-La clase de contexto de ejecución es la usada en todas las transacciones CRUD expuestas en los [métodos](#métodos) de la instancia principal y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listas a continuación:
+La clase de contexto de ejecución es la usada en todas las transacciones CRUD expuestas en los [métodos](#métodos) de la instancia principal y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listadas a continuación:
 
 - **[`uid` — ID del usuario que ejecuta la transacción](#uid-id-del-usuario-que-ejecuta-la-transacción)**
 - **[`create` — Creación de registros](#create-creación-de-uno-o-muchos-registros-1)**
@@ -993,7 +993,7 @@ Este método realiza un commit en la base de datos usando el método `commit` de
 ----
 
 ### `ActionContext` Contexto de acción
-La clase de contexto de acción es usada como argumento en las funciones de acción y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listas a continuación:
+La clase de contexto de acción es usada como argumento en las funciones de acción y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listadas a continuación:
 
 - **[`uid` — ID del usuario que ejecuta la transacción](#uid-id-del-usuario-que-ejecuta-la-transacción)**
 - **[`create` — Creación de registros](#create-creación-de-uno-o-muchos-registros-1)**
@@ -1026,7 +1026,7 @@ Atributo por el cual se puede acceder a la ID del registro sobre el que se ejecu
 ----
 
 ### `AutomationContext` Contexto de automatización
-La clase de contexto de automatización es usada como argumento en las funciones de automatización y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listas a continuación:
+La clase de contexto de automatización es usada como argumento en las funciones de automatización y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listadas a continuación:
 
 - **[`uid` — ID del usuario que ejecuta la transacción](#uid-id-del-usuario-que-ejecuta-la-transacción)**
 - **[`create` — Creación de registros](#create-creación-de-uno-o-muchos-registros-1)**
@@ -1051,7 +1051,7 @@ Lista de registros de tipo [_R](#_r-parámetro-de-estructura-de-registro-dinámi
 ----
 
 ### `ServerTaskContext` Contexto de tarea de servidor
-La clase de contexto de tarea de servidor es usada como argumento en las funciones de tarea de servidor y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listas a continuación:
+La clase de contexto de tarea de servidor es usada como argumento en las funciones de tarea de servidor y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listadas a continuación:
 
 - **[`uid` — ID del usuario que ejecuta la transacción](#uid-id-del-usuario-que-ejecuta-la-transacción)**
 - **[`create` — Creación de registros](#create-creación-de-uno-o-muchos-registros-1)**
@@ -1386,11 +1386,11 @@ fn = lambda ctx: ...
 ```
 
 ### `CriteriaStructrure` Estructura de criterio de búsqueda
-La estructura del criterio de búsqueda consiste en una lista de dos tipos de dato:
+La estructura del criterio de búsqueda consiste en un iterable de dos tipos de dato:
 - `TripletStructure`: Estructura de tripletas para queries SQL
 - `LogicOperator`: Operador lógico
 
-Estas tuplas deben contenerse en una lista. En caso de haber más de una condición, se deben unir por operadores lógicos `AND` u `OR`. Siendo el operador lógico el que toma la primera posición:
+Estas tuplas deben contenerse en un iterable, como una lista. En caso de haber más de una condición, se deben unir por operadores lógicos `AND` u `OR`. Siendo el operador lógico el que toma la primera posición:
 ```py
 ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
 # "amount" es mayor a 500 y "name" contiene "as"
@@ -1491,22 +1491,22 @@ Para obtener los detalles de un registro referenciado en campos de tipo `many2on
 ```
 
 ### `FieldReadDeclaration` Declaración de campos a leer
-Este tipado representa una lista de cualquiera de los siguientes tipos o representaciones:
+Este tipado representa un iterable de cualquiera de los siguientes tipos o representaciones:
 - [FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo.
 - [_Aliased](#_aliased-alias-de-tipo-_t-para-declaración-de-campos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)] — Nombre de campo con alias.
 - [FieldComputation](#fieldcomputation-cómputo-de-campo)[[_M](#_m-nombre-de-modelo-personalizado)] — Cómputo de campo
 
-### `ItemOrList` Elemento o lista de elementos
-Genérico que representa la unión de un escalar y una lista de tipos [_T](#_t-parámetro-de-tipo-_t).
+### `ScalarOrIterable` Elemento o iterable de elementos
+Genérico que representa la unión de un escalar y un iterable de tipos [_T](#_t-parámetro-de-tipo-_t).
 
 Ejemplo:
 ```py
-# Una función f que recibe un entero o una lista de enteros
-def f(x: int | list[int]):
+# Una función f que recibe un entero o un iterable de enteros, como una lista
+def f(x: int | Iterable[int]):
     ...
 
-# ItemOrList usado como abstracción del mismo tipo
-def f(x: ItemOrList[int]):
+# ScalarOrIterable usado como abstracción del mismo tipo
+def f(x: ScalarOrIterable[int]):
     ...
 ```
 

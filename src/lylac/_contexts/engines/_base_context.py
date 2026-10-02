@@ -4,7 +4,7 @@ from typing import Literal
 from typing import Optional
 from typing import TYPE_CHECKING
 from ..._resources import ModelDataIndex
-from ..._typing.generics import ItemOrList
+from ..._typing.generics import ScalarOrIterable
 from ..._typing.generics import MaybeNone
 from ..._typing.generics import ModelName
 from ..._typing.generics import _Record
@@ -39,7 +39,7 @@ class BaseContext(Generic[_M]):
     def create(
         self,
         model_name: ModelName[_M],
-        data: ItemOrList[RecordData[_M]],
+        data: ScalarOrIterable[RecordData[_M]],
     ) -> list[int]:
         """
         ## Creación de uno o muchos registros
@@ -71,8 +71,7 @@ class BaseContext(Generic[_M]):
         **Parámetros**
 
         :model_name: Nombre de modelo en la base de datos.
-        :data: Diccionario o lista de diccionarios de los
-        datos a crear.
+        :data: Diccionario o iterable de diccionarios de los datos a crear.
 
         **Retorna**
 
@@ -111,12 +110,12 @@ class BaseContext(Generic[_M]):
         >>> # [3, 5, 6]
 
         ### Criterio de búsqueda
-        La estructura del criterio de búsqueda consiste en una lista de dos tipos de
+        La estructura del criterio de búsqueda consiste en un iterable de dos tipos de
         dato:
         - `TripletStructure`: Estructura de tripletas para queries SQL
         - `LogicOperator`: Operador lógico
 
-        Estas tuplas deben contenerse en una lista. En caso de haber más de una
+        Estas tuplas deben contenerse en un iterable. En caso de haber más de una
         condición, se deben unir por operadores lógicos `AND` u `OR`. Siendo el
         operador lógico el que toma la primera posición:
         >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
@@ -216,15 +215,15 @@ class BaseContext(Generic[_M]):
     def read(
         self,
         model_name: ModelName[_M],
-        record_ids: ItemOrList[int],
+        record_ids: ScalarOrIterable[int],
         fields: list[FieldReadDeclaration] = [],
-        sortby: Optional[ItemOrList[str]] = None,
-        ascending: Optional[ItemOrList[bool]] = None
+        sortby: Optional[ScalarOrIterable[str]] = None,
+        ascending: Optional[ScalarOrIterable[bool]] = None
     ) -> list[_Record]:
         """
         ## Lectura de registros
         Este método retorna una lista de diccionarios con el contenido de los registros
-        de un modelo de la base de datos a partir de una lista de IDs, en el orden en
+        de un modelo de la base de datos a partir de un iterable de IDs, en el orden en
         el que se especificaron los campos o todos los campos en caso de no haber sido
         especificados.
 
@@ -250,7 +249,7 @@ class BaseContext(Generic[_M]):
         **Parámetros**
 
         :model_name: Nombre de modelo en la base de datos.
-        :record_ids: ID o lista de IDs de los registros a leer.
+        :record_ids: ID o iterable de IDs de los registros a leer.
         :fields: Declaración de campos a leer.
         :sortby: Nombre o nombres de campo a usar para ordenar los registros.
         :ascending: Dirección de ordenamiento, ascendente (*True*) o descendente
@@ -280,8 +279,8 @@ class BaseContext(Generic[_M]):
         fields: list[FieldReadDeclaration] = [],
         offset: Optional[int] = None,
         limit: Optional[int] = None,
-        sortby: Optional[ItemOrList[str]] = None,
-        ascending: Optional[ItemOrList[bool]] = None,
+        sortby: Optional[ScalarOrIterable[str]] = None,
+        ascending: Optional[ScalarOrIterable[bool]] = None,
     ) -> list[_Record]:
         """
         ## Búsqueda y lectura de registros
@@ -311,12 +310,12 @@ class BaseContext(Generic[_M]):
         >>> # ]
 
         ### Criterio de búsqueda
-        La estructura del criterio de búsqueda consiste en una lista de dos tipos de
+        La estructura del criterio de búsqueda consiste en un iterable de dos tipos de
         dato:
         - `TripletStructure`: Estructura de tripletas para queries SQL
         - `LogicOperator`: Operador lógico
 
-        Estas tuplas deben contenerse en una lista. En caso de haber más de una
+        Estas tuplas deben contenerse en un iterable. En caso de haber más de una
         condición, se deben unir por operadores lógicos `AND` u `OR`. Siendo el
         operador lógico el que toma la primera posición:
         >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
@@ -466,12 +465,12 @@ class BaseContext(Generic[_M]):
         >>> # 126
 
         ### Criterio de búsqueda
-        La estructura del criterio de búsqueda consiste en una lista de dos tipos de
+        La estructura del criterio de búsqueda consiste en un iterable de dos tipos de
         dato:
         - `TripletStructure`: Estructura de tripletas para queries SQL
         - `LogicOperator`: Operador lógico
 
-        Estas tuplas deben contenerse en una lista. En caso de haber más de una
+        Estas tuplas deben contenerse en un iterable. En caso de haber más de una
         condición, se deben unir por operadores lógicos `AND` u `OR`. Siendo el
         operador lógico el que toma la primera posición:
         >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
@@ -545,7 +544,7 @@ class BaseContext(Generic[_M]):
     def update(
         self,
         model_name: ModelName[_M],
-        record_ids: ItemOrList[int],
+        record_ids: ScalarOrIterable[int],
         data: RecordData[_M],
     ) -> Literal[True]:
         """
@@ -583,8 +582,8 @@ class BaseContext(Generic[_M]):
         **Parámetros**
 
         :model_name: Nombre de modelo en la base de datos.
-        :record_ids: ID o lista de IDs de los registros a actualizar.
-        :data: Diccionario o lista de diccionarios de los datos a crear.
+        :record_ids: ID o iterable de IDs de los registros a actualizar.
+        :data: Diccionario o iterable de diccionarios de los datos a crear.
 
         **Retorna**
 
@@ -604,7 +603,7 @@ class BaseContext(Generic[_M]):
     def delete(
         self,
         model_name: ModelName[_M],
-        record_ids: ItemOrList[int],
+        record_ids: ScalarOrIterable[int],
     ) -> Literal[True]:
         """
         ## Eliminación de registros
@@ -639,7 +638,7 @@ class BaseContext(Generic[_M]):
         **Parámetros**
 
         :model_name: Nombre de modelo en la base de datos.
-        :record_ids: ID o lista de IDs de los registros a eliminar.
+        :record_ids: ID o iterable de IDs de los registros a eliminar.
 
         **Retorna**
 

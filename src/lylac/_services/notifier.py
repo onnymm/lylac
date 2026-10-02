@@ -3,7 +3,7 @@ from abc import abstractmethod
 from typing import Any
 from typing import Union
 from .._resources import Notification
-from .._typing.generics import ItemOrList
+from .._typing.generics import ScalarOrIterable
 from .._typing.literals import LiteralTarget
 from .._typing.structures import NotificationTarget
 from .._utils import to_list
@@ -26,7 +26,7 @@ class Notifier(ABC):
     def notify(
         self,
         event: str,
-        target: Union[LiteralTarget, ItemOrList[int]],
+        target: Union[LiteralTarget, ScalarOrIterable[int]],
         payload: dict[str, Any],
         after_commit: bool,
     ) -> None:

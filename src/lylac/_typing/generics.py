@@ -1,4 +1,5 @@
 from typing import Callable
+from typing import Iterable
 from typing import Union
 from typing import TYPE_CHECKING
 from .aliases import ModelClass
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
 
 ModelName = InitialModels | _M
 
-ItemOrList = _T | list[_T]
+ScalarOrIterable = _T | Iterable[_T]
 
 Array = _T | list[_T] | tuple[_T]
 

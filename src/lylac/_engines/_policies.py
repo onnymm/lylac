@@ -12,7 +12,7 @@ from .._resources import InputParser
 from .._resources import PolicyProperties
 from .._resources import Slot
 from .._typing.callables import PolicyCallback
-from .._typing.generics import ItemOrList
+from .._typing.generics import ScalarOrIterable
 from .._typing.generics import ModelName
 from .._typing.generics import _Record
 from .._typing.literals import TTypeName
@@ -131,7 +131,7 @@ class PoliciesEngine(Generic[_M, _R]):
 
     def register(
         self,
-        on: ItemOrList[DMLTransaction],
+        on: ScalarOrIterable[DMLTransaction],
         model_name: ModelName[_M],
         message: str,
     ) -> Callable[[PolicyCallback[_M]], PolicyCallback[_M]]:

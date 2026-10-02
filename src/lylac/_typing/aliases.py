@@ -41,7 +41,8 @@ DMLCompatible = Union[int, float, str, bool, date, datetime, time, timedelta, No
 """
 ### Compatible para PostgreSQL
 Tipo de dato que se puede usar como valor para un campo de modelo en la base
-datos al crear o modificar registros.
+datos al crear o modificar registros y para usarse como valor en filtros de
+búsqueda.
 
 El tipo de dato puede ser:
 - `int`
@@ -54,5 +55,3 @@ El tipo de dato puede ser:
 - `datetime.timedelta`
 - `None`
 """
-
-RecordValueDataType = Union[bool, int, float, str, date, datetime, time, timedelta]

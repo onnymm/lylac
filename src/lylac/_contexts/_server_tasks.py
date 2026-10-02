@@ -64,7 +64,7 @@ class ServerTaskContext(Generic[_M], BaseContext[_M]):
 
     ### Lectura de registros
     Este método retorna una lista de diccionarios con el contenido de los registros
-    de un modelo de la base de datos a partir de una lista de IDs, en el orden en
+    de un modelo de la base de datos a partir de un iterable de IDs, en el orden en
     el que se especificaron los campos o todos los campos en caso de no haber sido
     especificados.
 

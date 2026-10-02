@@ -2,7 +2,7 @@ from typing import Callable
 from typing import Generic
 from typing import TYPE_CHECKING
 from ..._typing.callables import PolicyCallback
-from ..._typing.generics import ItemOrList
+from ..._typing.generics import ScalarOrIterable
 from ..._typing.generics import ModelName
 from ..._typing.literals import DMLTransaction
 from ..._typing.type_parameters import _M
@@ -23,7 +23,7 @@ class _Interface_Policies(Generic[_M]):
 
     def register(
         self,
-        on: ItemOrList[DMLTransaction],
+        on: ScalarOrIterable[DMLTransaction],
         model_name: ModelName[_M],
         message: str,
     ) -> Callable[[PolicyCallback[_M]], PolicyCallback[_M]]:

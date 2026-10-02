@@ -25,8 +25,6 @@ if TYPE_CHECKING:
     from .._resources import ModelColumnBasicAtts
     from .._services import Notifier
 
-ExecutionCallback = Callable[[Connection], _T]
-
 ComputeFieldFn = Callable[['ComputeContext[_M]'], InstrumentedAttribute]
 
 CaptureComputeCallback = Callable[['ComputeContext[_M]'], 'ComputeContext[_M]']
@@ -39,10 +37,6 @@ Función que permite declarar la agregación de un campo de tipo `one2many` o
 """
 
 CaptureCreatedRecordID = Callable[[int], None]
-
-from typing import Callable
-
-from typing import TYPE_CHECKING
 
 AutomationCallback = Callable[['AutomationContext[_M, _R]'], None]
 

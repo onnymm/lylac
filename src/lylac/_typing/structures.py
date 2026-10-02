@@ -5,11 +5,9 @@ from typing import TYPE_CHECKING
 from .aliases import FieldName
 from .aliases import DMLCompatible
 from .aliases import JSONLikeScalar
-from .aliases import RecordValueDataType
 from .literals import LiteralTarget
 from .generics import Array
-from .generics import ItemOrList
-from .generics import MaybeNone
+from .generics import ScalarOrIterable
 from .generics import ModelName
 from .literals import ComparisonOperator
 from .literals import TTypeName
@@ -28,7 +26,7 @@ Diccionario compatible para ser serializado a tipo de dato `JSONB` por el motor
 de PostgreSQL.
 
 - El tipo de dato de la llave debe ser `str`.
-- El tipo de dato del valor puede ser escalar, lista o tupla de:
+- El tipo de dato del valor puede ser escalar o iterable de:
     - `JSONLikeScalar`
     - `JSONLike`
 """
@@ -38,7 +36,7 @@ JSONLike = Array[ Union[JSONLikeObjShape, 'JSONLikeScalar'] ]
 Tipo de dato compatible para ser serializado a tipo de dato `JSONB` por el
 motor de PostgreSQL.
 
-El tipo de dato puede ser escalar, lista o tupla de:
+El tipo de dato puede ser escalar o iterable de:
 - `JSONLikeScalar` que representa los tipos:
     - `int`
     - `float`
@@ -48,7 +46,7 @@ El tipo de dato puede ser escalar, lista o tupla de:
 - `JSONLikeObjShape` que representa un diccionario serializable conformado
 por:
     - Llaves que deben ser de tipo `str`
-    - Valores que pueden ser escalar, lista o tupla de:
+    - Valores que pueden ser escalar o iterable de:
         - `JSONLikeScalar`
         - `JSONLike`
 
@@ -76,20 +74,20 @@ FrameReadField = Union[FieldName, _Aliased[FieldName], FieldComputation]
 
 FieldReadDeclaration = Union[FrameReadField, _NestedExpansion]
 
-RecordIDs = ItemOrList[int]
+RecordIDs = ScalarOrIterable[int]
 """
 ### IDs de registros
-Escalar o una lista de `int` que representa IDs de registros en tablas de la
+Escalar o iterable de `int` que representa IDs de registros en tablas de la
 base de datos.
 """
 
 class RelationCommand:
     class Create(TypedDict):
-        create: ItemOrList[RecordData[_M]]
+        create: ScalarOrIterable[RecordData[_M]]
     class Add(TypedDict):
         add: RecordIDs
     class Update(TypedDict):
-        update: ItemOrList[ tuple[RecordIDs, RecordData[_M]] ]
+        update: ScalarOrIterable[ tuple[RecordIDs, RecordData[_M]] ]
     class Replace(TypedDict):
         replace: RecordIDs
     class Unlink(TypedDict):
@@ -117,14 +115,14 @@ de registros relacionados o modificando registros específicos desde el registro
 que los referencía.
 
 Las llaves y valores del diccionario son:
-- `'create'`: Escalar o lista de `RecordData`.
-- `'add'`: Escalar o lista de `int`.
+- `'create'`: Escalar o iterable de `RecordData`.
+- `'add'`: Escalar o iterable de `int`.
 - `'update'`: Tupla de:
-    - Escalar o lista de `int`.
+    - Escalar o iterable de `int`.
     - `RecordData`
-- `'replace'`: Escalar o lista de `int`.
-- `'unlink'`: Escalar o lista de `int`.
-- `'delete'`: Escalar o lista de `int`.
+- `'replace'`: Escalar o iterable de `int`.
+- `'unlink'`: Escalar o iterable de `int`.
+- `'delete'`: Escalar o iterable de `int`.
 - `'clear'`: Literal `True`.
 """
 
@@ -150,7 +148,7 @@ Los valores posibles pueden ser:
     - `datetime.time`
     - `datetime.timedelta`
     - `None`
-- `JSONLike` que puede ser un escalar o lista de:
+- `JSONLike` que puede ser un escalar o iterable de:
     - `JSONLikeScalar` que representa los tipos:
         - `int`
         - `float`
@@ -160,19 +158,19 @@ Los valores posibles pueden ser:
     - `JSONLikeObjShape` que representa un diccionario serializable conformado
     por:
         - Llaves que deben ser de tipo `str`
-        - Valores que pueden ser escalar, lista o tupla de:
+        - Valores que pueden ser escalar o iterable de:
             - `JSONLikeScalar`
             - `JSONLike`
 - `RelationCommands` que representa un diccionario con llaves y valores
 mapeados como:
-    - `'create'`: Escalar o lista de `RecordData`.
-    - `'add'`: Escalar o lista de `int`.
+    - `'create'`: Escalar o iterable de `RecordData`.
+    - `'add'`: Escalar o iterable de `int`.
     - `'update'`: Tupla de:
-        - Escalar o lista de `int`.
+        - Escalar o iterable de `int`.
         - `RecordData`
-    - `'replace'`: Escalar o lista de `int`.
-    - `'unlink'`: Escalar o lista de `int`.
-    - `'delete'`: Escalar o lista de `int`.
+    - `'replace'`: Escalar o iterable de `int`.
+    - `'unlink'`: Escalar o iterable de `int`.
+    - `'delete'`: Escalar o iterable de `int`.
     - `'clear'`: Literal `True`.
 - `RecordData` que representa un diccionario de datos para crear un registro de
 tipo Many2one que puede contener como valores cualquiera de los tipos anteriores.
@@ -195,7 +193,7 @@ Diccionario que contiene los datos de un registro para ser creado o modificado.
         - `datetime.time`
         - `datetime.timedelta`
         - `None`
-    - `JSONLike` que puede ser un escalar o lista de:
+    - `JSONLike` que puede ser un escalar o iterable de:
         - `JSONLikeScalar` que representa los tipos:
             - `int`
             - `float`
@@ -205,19 +203,19 @@ Diccionario que contiene los datos de un registro para ser creado o modificado.
         - `JSONLikeObjShape` que representa un diccionario serializable
         conformado por:
             - Llaves que deben ser de tipo `str`
-            - Valores que pueden ser escalar, lista o tupla de:
+            - Valores que pueden ser escalar o iterable de:
                 - `JSONLikeScalar`
                 - `JSONLike`
     - `RelationCommands` que representa un diccionario con llaves y valores
     mapeados como:
-        - `'create'`: Escalar o lista de `RecordData`.
-        - `'add'`: Escalar o lista de `int`.
+        - `'create'`: Escalar o iterable de `RecordData`.
+        - `'add'`: Escalar o iterable de `int`.
         - `'update'`: Tupla de:
-            - Escalar o lista de `int`.
+            - Escalar o iterable de `int`.
             - `RecordData`
-        - `'replace'`: Escalar o lista de `int`.
-        - `'unlink'`: Escalar o lista de `int`.
-        - `'delete'`: Escalar o lista de `int`.
+        - `'replace'`: Escalar o iterable de `int`.
+        - `'unlink'`: Escalar o iterable de `int`.
+        - `'delete'`: Escalar o iterable de `int`.
         - `'clear'`: Literal `True`.
 
 ----
@@ -241,7 +239,7 @@ El tipo de dato puede ser:
 Tipo de dato compatible para ser serializado a tipo de dato `JSONB` por el
 motor de PostgreSQL.
 
-El tipo de dato puede ser escalar, lista o tupla de:
+El tipo de dato puede ser escalar o iterable de:
 - `JSONLikeScalar` que representa los tipos:
     - `int`
     - `float`
@@ -251,7 +249,7 @@ El tipo de dato puede ser escalar, lista o tupla de:
 - `JSONLikeObjShape` que representa un diccionario serializable conformado
 por:
     - Llaves que deben ser de tipo `str`
-    - Valores que pueden ser escalar, lista o tupla de:
+    - Valores que pueden ser escalar o iterable de:
         - `JSONLikeScalar`
         - `JSONLike`
 
@@ -270,7 +268,7 @@ Diccionario compatible para ser serializado a tipo de dato `JSONB` por el motor
 de PostgreSQL.
 
 - El tipo de dato de la llave debe ser `str`.
-- El tipo de dato del valor puede ser escalar, lista o tupla de:
+- El tipo de dato del valor puede ser escalar o iterable de:
     - `JSONLikeScalar`
     - `JSONLike`
 
@@ -294,30 +292,30 @@ de registros relacionados o modificando registros específicos desde el registro
 que los referencía.
 
 Las llaves y valores del diccionario son:
-- `'create'`: Escalar o lista de `RecordData`.
-- `'add'`: Escalar o lista de `int`.
+- `'create'`: Escalar o iterable de `RecordData`.
+- `'add'`: Escalar o iterable de `int`.
 - `'update'`: Tupla de:
-    - Escalar o lista de `int`.
+    - Escalar o iterable de `int`.
     - `RecordData`
-- `'replace'`: Escalar o lista de `int`.
-- `'unlink'`: Escalar o lista de `int`.
-- `'delete'`: Escalar o lista de `int`.
+- `'replace'`: Escalar o iterable de `int`.
+- `'unlink'`: Escalar o iterable de `int`.
+- `'delete'`: Escalar o iterable de `int`.
 - `'clear'`: Literal `True`.
 """
 
-CriteriaValue = ItemOrList[ MaybeNone[RecordValueDataType] ]
+CriteriaValue = ScalarOrIterable[DMLCompatible]
 
 TripletStructure = tuple[str, ComparisonOperator, CriteriaValue]
 
 CriteriaStructure = list[ Union[LogicOperator, TripletStructure] ]
 """
 ## Estructura de criterio de búsqueda
-La estructura del criterio de búsqueda consiste en una lista de dos tipos de
+La estructura del criterio de búsqueda consiste en un iterable de dos tipos de
 dato:
 - `TripletStructure`: Estructura de tripletas para queries SQL
 - `LogicOperator`: Operador lógico
 
-Estas tuplas deben contenerse en una lista. En caso de haber más de una condición, se deben
+Estas tuplas deben contenerse en un iterable. En caso de haber más de una condición, se deben
 unir por operadores lógicos `'AND'` u `'OR'`. Siendo el operador lógico el que toma la
 primera posición:
 >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
@@ -375,4 +373,4 @@ Los operadores de comparación disponibles son:
 
 RawFieldProperties = tuple[str, TTypeName, bool, ModelName[_M], str]
 
-NotificationTarget = Union[LiteralTarget, ItemOrList[int]]
+NotificationTarget = Union[LiteralTarget, ScalarOrIterable[int]]

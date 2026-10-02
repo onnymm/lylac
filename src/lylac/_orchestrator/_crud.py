@@ -18,7 +18,7 @@ from .._resources import InputProcessing
 from .._resources import Many2OneCreate
 from .._resources import ModelsBearer
 from .._typing.callables import ProcessingCallback
-from .._typing.generics import ItemOrList
+from .._typing.generics import ScalarOrIterable
 from .._typing.generics import ModelName
 from .._typing.generics import _Record
 from .._typing.literals import CRUDPermission
@@ -189,7 +189,7 @@ class CRUD(Generic[_M], _Properties):
         self,
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        data: ItemOrList[RecordData[_M]],
+        data: ScalarOrIterable[RecordData[_M]],
     ) -> list[int]:
 
         # Revisión de permisos
@@ -300,8 +300,8 @@ class CRUD(Generic[_M], _Properties):
         fields: list[FieldReadDeclaration] = [],
         offset: Optional[int] = None,
         limit: Optional[int] = None,
-        sortby: Optional[ItemOrList[str]] = None,
-        ascending: Optional[ItemOrList[bool]] = None,
+        sortby: Optional[ScalarOrIterable[str]] = None,
+        ascending: Optional[ScalarOrIterable[bool]] = None,
     ) -> list[_Record]:
 
         # Revisión de permisos
@@ -379,10 +379,10 @@ class CRUD(Generic[_M], _Properties):
         self,
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        record_ids: ItemOrList[int],
+        record_ids: ScalarOrIterable[int],
         fields: list[FieldReadDeclaration] = [],
-        sortby: Optional[ItemOrList[str]] = None,
-        ascending: Optional[ItemOrList[bool]] = None
+        sortby: Optional[ScalarOrIterable[str]] = None,
+        ascending: Optional[ScalarOrIterable[bool]] = None
     ) -> list[_Record]:
 
         # Revisión de permisos
@@ -396,7 +396,7 @@ class CRUD(Generic[_M], _Properties):
         expansion_ctx = ExpansionContext(execution_ctx, self)
 
         # Se asegura una lista de datos
-        record_ids = self._input_processing.to_list(record_ids)
+        record_ids = to_list(record_ids)
 
         # Evaluación de IDs permitidas
         self._evalute_allowed_ids(
@@ -431,7 +431,7 @@ class CRUD(Generic[_M], _Properties):
         self,
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        record_ids: ItemOrList[int],
+        record_ids: ScalarOrIterable[int],
         data: RecordData[_M],
     ) -> Literal[True]:
 
@@ -510,7 +510,7 @@ class CRUD(Generic[_M], _Properties):
         self,
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        record_ids: ItemOrList[int],
+        record_ids: ScalarOrIterable[int],
     ) -> Literal[True]:
 
         # Revisión de permisos

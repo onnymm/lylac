@@ -1,11 +1,12 @@
 from typing import Generic
 from .._constants import FIELD_NAME
 from .._typing.generics import _Record
-from .._typing.generics import ItemOrList
+from .._typing.generics import ScalarOrIterable
 from .._typing.type_parameters import _A
 from .._typing.type_parameters import _M
 from .._typing.type_parameters import _T
 from .._typing.callables import ProcessingCallback
+from .._utils import to_list
 
 class InputProcessing(Generic[_M]):
     _FIRST_FIELDS = [
@@ -48,11 +49,11 @@ class InputProcessing(Generic[_M]):
 
     def process_on_creation(
         self,
-        data: ItemOrList[_Record[_A]],
+        data: ScalarOrIterable[_Record[_A]],
     ) -> list[_Record[_A]]:
 
         # Se asegura una lista de datos
-        data = self.to_list(data)
+        data = to_list(data)
         # Preprocesamiento a través de las funciones personalizadas
         data = self.on_creation_custom_preprocessing(data)
 
@@ -67,18 +68,6 @@ class InputProcessing(Generic[_M]):
         record = self.on_update_custom_preprocessing(record)
 
         return record
-
-    def to_list(
-        self,
-        content: ItemOrList[_T],
-    ) -> list[_T]:
-
-        # Si el contenido ya es una lista...
-        if isinstance(content, list):
-            # Se retorna igual
-            return content
-        # Se retorna el contenido dentro de una lista
-        return [content]
 
     def on_creation_custom_preprocessing(
         self,

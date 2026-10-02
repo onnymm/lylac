@@ -12,7 +12,7 @@ from .._resources import InputParser
 from .._resources import Slot
 from .._resources import ValidationProperties
 from .._typing.callables import ValidationCallback
-from .._typing.generics import ItemOrList
+from .._typing.generics import ScalarOrIterable
 from .._typing.generics import ModelName
 from .._typing.literals import TTypeName
 from .._typing.literals import DMLTransaction
@@ -151,7 +151,7 @@ class ValidationEngine(Generic[_M]):
 
     def register(
         self,
-        on: ItemOrList[DMLTransaction],
+        on: ScalarOrIterable[DMLTransaction],
         model_name: ModelName[_M],
         message: str,
     ) -> Callable[[ValidationCallback[_M]], ValidationCallback[_M]]:

@@ -11,7 +11,7 @@ from .._contexts import FrameContext
 from .._contexts import WhereContext
 from .._resources import InputProcessing
 from .._resources import OutputParser
-from .._typing.generics import ItemOrList
+from .._typing.generics import ScalarOrIterable
 from .._typing.generics import ModelName
 from .._typing.generics import _Record
 from .._typing.structures import CriteriaStructure
@@ -110,8 +110,8 @@ class DQL(Generic[_M]):
         model_name: ModelName[_M],
         record_ids: list[int],
         fields: list[FrameReadField] = [],
-        sortby: Optional[ItemOrList[str]] = None,
-        ascending: Optional[ItemOrList[bool]] = None,
+        sortby: Optional[ScalarOrIterable[str]] = None,
+        ascending: Optional[ScalarOrIterable[bool]] = None,
     ) -> list[_Record]:
 
         # Inicialización de contexto de frame
@@ -178,8 +178,8 @@ class DQL(Generic[_M]):
         fields: list[FrameReadField] = [],
         offset: Optional[int] = None,
         limit: Optional[int] = None,
-        sortby: Optional[ItemOrList[str]] = None,
-        ascending: Optional[ItemOrList[bool]] = None,
+        sortby: Optional[ScalarOrIterable[str]] = None,
+        ascending: Optional[ScalarOrIterable[bool]] = None,
     ) -> list[_Record]:
 
         # Inicialización de contexto de frame
@@ -309,8 +309,8 @@ class DQL(Generic[_M]):
     def _build_sorting_field_instances(
         self,
         frame_ctx: FrameContext[_M],
-        sortby: Optional[ItemOrList[str]],
-        ascending: Optional[ItemOrList[bool]],
+        sortby: Optional[ScalarOrIterable[str]],
+        ascending: Optional[ScalarOrIterable[bool]],
     ) -> list[InstrumentedAttribute]:
 
         # Inicialización de lista de ordenamientos
