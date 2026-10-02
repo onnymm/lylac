@@ -143,7 +143,7 @@ db.create(session_uuid, 'base.users', records)
 
 **Parámetros**
 - `session_uuid`: *str* — UUID de sesión.
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `data`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[RecordData]* — Diccionario o lista de diccionarios de los datos a crear.
 
 **Retorno**
@@ -196,7 +196,7 @@ db.search(session_uuid, 'base.users', [('create_uid', '=', 2)])
 
 **Parámetros**
 - `session_uuid`: *str* — UUID de sesión.
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `search_criteria` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)* — Criterio de búsqueda.
 - `offset` **(Opcional)**: *int* — Desfase de resultados retornados.
 - `limit` **(Opcional)**: *int* — Límite de cantidad de resultados retornados.
@@ -232,7 +232,7 @@ db.read(session_uuid, 'base.users', [2, 3], ['login', 'create_date'])
 
 **Parámetros**
 - `session_uuid`: *str* — UUID de sesión.
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a leer.
 - `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer.
 - `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
@@ -324,7 +324,7 @@ db.search_read(session_uuid, 'base.users', fields= ['user', 'create_date'])
 
 **Parámetros**
 - `session_uuid`: *str* — UUID de sesión.
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `search_criteria` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)* — Criterio de búsqueda.
 - `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer.
 - `offset` **(Opcional)**: *int* — Desfase de resultados retornados.
@@ -353,7 +353,7 @@ db.search_count(session_uuid, 'base.permissions', [('create_uid', '=', 5)])
 
 **Parámetros**
 - `session_uuid`: *str* — UUID de sesión.
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `search_criteria` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)* — Criterio de búsqueda.
 
 **Retorno**
@@ -393,7 +393,7 @@ db.search_read(session_uuid, 'base.users', fields= ['login', 'name'])
 
 **Parámetros**
 - `session_uuid`: *str* — UUID de sesión.
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a actualizar.
 - `data`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[RecordData]* — Diccionario o lista de diccionarios de los datos a crear.
 
@@ -434,7 +434,7 @@ db.search_read(session_uuid, 'base.users')
 
 **Parámetros**
 - `session_uuid`: *str* — UUID de sesión.
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a eliminar.
 
 **Retorno**
@@ -455,7 +455,7 @@ En el fragmento de código ejecutamos una acción que archiva al registro con ID
 
 **Parámetros**
 - `session_uuid`: *str* — UUID de sesión.
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `name`: *str* — Nombre de la acción.
 - `record_id`: *int* — ID del registro sobre el que se va a ejecutar la acción.
 
@@ -655,7 +655,7 @@ ctx.create('base.users', records)
 ```
 
 **Parámetros**
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `data`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[RecordData]* — Diccionario o lista de diccionarios de los datos a crear.
 
 **Retorno**
@@ -707,7 +707,7 @@ ctx.search('base.users', [('create_uid', '=', 2)])
 > ```
 
 **Parámetros**
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `search_criteria` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)* — Criterio de búsqueda.
 - `offset` **(Opcional)**: *int* — Desfase de resultados retornados.
 - `limit` **(Opcional)**: *int* — Límite de cantidad de resultados retornados.
@@ -742,7 +742,7 @@ ctx.read('base.users', [2, 3], ['login', 'create_date'])
 ```
 
 **Parámetros**
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a leer.
 - `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer.
 - `sortby` **(Opcional)**: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)]* — Nombre o nombres de campo a usar para ordenar los registros.
@@ -833,7 +833,7 @@ ctx.search_read('base.users', fields= ['user', 'create_date'])
 > ```
 
 **Parámetros**
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `search_criteria` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)* — Criterio de búsqueda.
 - `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer.
 - `offset` **(Opcional)**: *int* — Desfase de resultados retornados.
@@ -861,7 +861,7 @@ ctx.search_count('base.permissions', [('create_uid', '=', 5)])
 ```
 
 **Parámetros**
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `search_criteria` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)* — Criterio de búsqueda.
 
 **Retorno**
@@ -900,7 +900,7 @@ ctx.search_read('base.users', fields= ['login', 'name'])
 ```
 
 **Parámetros**
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a actualizar.
 - `data`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[RecordData]* — Diccionario o lista de diccionarios de los datos a crear.
 
@@ -941,7 +941,7 @@ ctx.search_read('base.users')
 
 **Parámetros**
 
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `record_ids`: *[ItemOrList](#itemorlist-elemento-o-lista-de-elementos)[int]* — ID o lista de IDs de los registros a eliminar.
 
 **Retorno**
@@ -1125,7 +1125,7 @@ def _action__base_users__archive(ctx: Lylac.ActionContext):
 
 **Parámetros del decorador**
 
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `name`: *str* — Nombre de la acción.
 - `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer antes de la ejecución de la acción, accesibles por el atributo `data`. Si el parámetro no se especifica, solo el valor `'id'` estará disponible.
 
@@ -1150,7 +1150,7 @@ En el fragmento de código ejecutamos una acción que archiva al registro con ID
 
 **Parámetros**
 - `session_uuid`: *str* — UUID de sesión.
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `name`: *str* — Nombre de la acción.
 - `record_id`: *int* — ID del registro sobre el que se va a ejecutar la acción.
 
@@ -1220,7 +1220,7 @@ def _automation__base_users__create__add_preset_permissions(ctx: Lylac.Automatio
 
 **Parámetros del decorador**
 - `on`: *[DMLTransaction](#dmltransaction-transacción-dml)* — Transacción tras la que se ejecutará la automatización.
-- `model_name`: *[ModelName](#modelname_m-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer antes de la ejecución de la acción, accesibles por el atributo `data`. Si el parámetro no se especifica, solo el valor `'id'` estará disponible.
 - `execute_only_when` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)* — Criterio requerido para que la automatización se ejecute sobre el registro.
 
@@ -1301,7 +1301,7 @@ def _task__update_data_from_api(ctx: Lylac.ServerTaskContext):
 > ℹ️ Las funciones de tarea de servidor no deben retornar ningún valor u objeto ya que éste no será retornado en la ejecución de éstas. Si se desea retornar un valor u objeto véase [Ejecutar transacción](#execute_transaction-ejecutar-transacción).
 
 ### Ejecución de tareas de servidor
-Las tareas de servidor se ejecutan invocándolas con el nombre con el que fueron registradas. Para más información, véase [Registro de tareas de servidor](#registro-de-tareas-de-servidor)
+Las tareas de servidor se ejecutan invocándolas con el nombre con el que fueron registradas. Para más información, véase [Registro de tareas de servidor](#registro-de-tareas-de-servidor).
 
 Ejemplo:
 ```py
@@ -1319,7 +1319,7 @@ db.task(session_uuid, 'update_data_from_api')
 ## Tipados
 
 ### `_M` Nombre de modelo personalizado
-Genérico usado para extender los nombres de modelo a nombres de modelo personalizados originalmente representados por el tipo [ModelName](#modelname_m-nombre-de-modelo).
+Genérico usado para extender los nombres de modelo a nombres de modelo personalizados originalmente representados por el tipo [ModelName](#modelname-nombre-de-modelo).
 
 Para poder hacer uso de esta extensión se requiere el uso del tipo `Literal` proveniente de la biblioteca nativa `typing`.
 
