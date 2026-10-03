@@ -12,6 +12,7 @@ from .._constants import MODEL_NAME
 from .._constants import PERMISSION
 from .._contexts import ExpansionContext
 from .._contexts import RelationOperationsContext
+from .._contexts import ValueResolutionContext
 from .._operations import DQL
 from .._operations import DML
 from .._resources import InputProcessing
@@ -601,8 +602,14 @@ class CRUD(Generic[_M], _Properties):
             for ( field_name, value ) in record.items():
                 # Si el valor es una función...
                 if isinstance(value, FunctionType):
+                    # Inicialización de un contexto de resolución de valor
+                    value_resolution_ctx = ValueResolutionContext(
+                        record,
+                        field_name,
+                        execution_ctx,
+                    )
                     # Se ejecuta ésta para obtener el valor
-                    computed_value = value(execution_ctx)
+                    computed_value = value(value_resolution_ctx)
                     # Se readigna el valor computado
                     record[field_name] = computed_value
 

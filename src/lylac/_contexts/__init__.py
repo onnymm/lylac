@@ -10,4 +10,5 @@ from ._relation_operations import RelationOperationsContext
 from ._server_tasks import ServerTaskContext
 from ._transaction import TransactionContext
 from ._validation import ValidationContext
+from ._value_resolution import ValueResolutionContext
 from ._where import WhereContext

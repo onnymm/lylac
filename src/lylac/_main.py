@@ -17,6 +17,7 @@ from ._contexts import ExecutionContext as _ExecutionContext
 from ._contexts import ServerTaskContext as _ServerTaskContext
 from ._contexts import TransactionContext as _TransactionContext
 from ._contexts import ValidationContext as _ValidationContext
+from ._contexts import ValueResolutionContext as _ValueResolutionContext
 from ._core.models import _Base
 from ._data import build_database_structure
 from ._data import build_initial_data
@@ -313,6 +314,7 @@ class Lylac(Generic[_M]):
     type ActionContext[T] = _ActionContext[_M, Union[T, _R]]
     type AutomationContext[T] = _AutomationContext[_M, T]
     type ValidationContext[T] = _ValidationContext[_M, T]
+    type ValueResolutionContext[T] = _ValueResolutionContext[_M, Union[T, _R]]
     type ServerTaskContext = _ServerTaskContext[_M]
     type TransactionContext = _TransactionContext[ModelName[_M]]
     type ExecutionContext = _ExecutionContext[_M]
