@@ -37,9 +37,9 @@ El tipo de dato puede ser:
 - `None`
 """
 
-DMLCompatible = Union[int, float, str, bool, date, datetime, time, timedelta, None]
+DMLScalarCompatible = Union[int, float, str, bool, date, datetime, time, timedelta, None]
 """
-### Compatible para PostgreSQL
+### Escalar compatible con PostgreSQL
 Tipo de dato que se puede usar como valor para un campo de modelo en la base
 datos al crear o modificar registros y para usarse como valor en filtros de
 búsqueda.

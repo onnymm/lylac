@@ -23,7 +23,7 @@ from .._typing.generics import ModelName
 from .._typing.interfaces import Many2ManyRelation
 from .._typing.literals import RelationActionName
 from .._typing.literals import TTypeName
-from .._typing.structures import RecordData
+from .._typing.structures import InputRecordData
 from .._typing.structures import RelationCommands
 from .._typing.structures import RecordIDs
 from .._typing.type_parameters import _M
@@ -65,7 +65,7 @@ class _BaseRelation_CRUD(Generic[_M]):
     def _build_update(
         self,
         execution_ctx: ExecutionContext[_M],
-        update_data: ScalarOrIterable[tuple[RecordIDs, RecordData[_M]]],
+        update_data: ScalarOrIterable[tuple[RecordIDs, InputRecordData[_M]]],
     ) -> CaptureRecordID[_M]:
 
         # Se asegura el formato en lista
@@ -112,7 +112,7 @@ class _BaseRelation_CRUD(Generic[_M]):
     def _build_create(
         self,
         execution_ctx: ExecutionContext[_M],
-        records_data: ScalarOrIterable[RecordData[_M]],
+        records_data: ScalarOrIterable[InputRecordData[_M]],
     ) -> CaptureRecordID[_M]:
         ...
     def _build_add(
@@ -172,7 +172,7 @@ class _Many2One_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
     def _build_create(
         self,
         execution_ctx: ExecutionContext[_M],
-        records_data: ScalarOrIterable[RecordData[_M]],
+        records_data: ScalarOrIterable[InputRecordData[_M]],
     ) -> CaptureRecordID[_M]:
 
         # Se asegura el formato en lista
@@ -325,7 +325,7 @@ class _Many2Many_CRUD(Generic[_M], _BaseRelation_CRUD[_M]):
     def _build_create(
         self,
         execution_ctx: ExecutionContext[_M],
-        records_data: ScalarOrIterable[RecordData[_M]],
+        records_data: ScalarOrIterable[InputRecordData[_M]],
     ) -> CaptureRecordID[_M]:
 
         def create_records(created_or_updated_id: int) -> CRUD_Operation[_M]:
@@ -606,7 +606,7 @@ class RelationOperationsContext(Generic[_M]):
 
     def capture_relation_commands(
         self,
-        record_data: RecordData[_M],
+        record_data: InputRecordData[_M],
     ) -> CaptureCreatedRecordID:
 
         # Inicialización de lista de funciones de captura de ID creada

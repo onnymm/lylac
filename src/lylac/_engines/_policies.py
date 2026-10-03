@@ -17,7 +17,7 @@ from .._typing.generics import ModelName
 from .._typing.generics import _Record
 from .._typing.literals import TTypeName
 from .._typing.literals import DMLTransaction
-from .._typing.structures import RecordData
+from .._typing.structures import InputRecordData
 from .._typing.type_parameters import _M
 from .._typing.type_parameters import _R
 from ..errors import PolicyExecutionError
@@ -106,7 +106,7 @@ class PoliciesEngine(Generic[_M, _R]):
         on: DMLTransaction,
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        data: list[RecordData[_M]],
+        data: list[InputRecordData[_M]],
     ) -> None:
 
         # Si el motor no está encendido aún...

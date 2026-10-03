@@ -24,7 +24,7 @@ from .._typing.generics import _Record
 from .._typing.literals import CRUDPermission
 from .._typing.literals import CRUDPermissionColumnName
 from .._typing.structures import CriteriaStructure
-from .._typing.structures import RecordData
+from .._typing.structures import InputRecordData
 from .._typing.structures import FieldReadDeclaration
 from .._typing.type_parameters import _A
 from .._typing.type_parameters import _M
@@ -189,7 +189,7 @@ class CRUD(Generic[_M], _Properties):
         self,
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        data: ScalarOrIterable[RecordData[_M]],
+        data: ScalarOrIterable[InputRecordData[_M]],
     ) -> list[int]:
 
         # Revisión de permisos
@@ -204,6 +204,13 @@ class CRUD(Generic[_M], _Properties):
 
         # Resolución de valores computados
         data = self._resolve_computed_values(execution_ctx, data)
+
+        # Creación de registros Many2One en caso existir
+        data = self._m2o_create.resolve(
+            execution_ctx,
+            model_name,
+            data,
+        )
 
         # Validación de los datos
         execution_ctx.validations.validate(
@@ -224,13 +231,6 @@ class CRUD(Generic[_M], _Properties):
         # Procesamiento de los datos
         processed_data = self._add_create_and_update_uid(data, execution_ctx)
         processed_data = self._prepare_file_values(model_name, processed_data, execution_ctx)
-
-        # Creación de registros Many2One en caso existir
-        processed_data = self._m2o_create.resolve(
-            execution_ctx,
-            model_name,
-            processed_data,
-        )
 
         # Creación de contexto de operaciones de relación
         rel_op_ctx = RelationOperationsContext(execution_ctx, model_name, self._models_bearer)
@@ -432,7 +432,7 @@ class CRUD(Generic[_M], _Properties):
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         record_ids: ScalarOrIterable[int],
-        data: RecordData[_M],
+        data: InputRecordData[_M],
     ) -> Literal[True]:
 
         # Revisión de permisos
@@ -459,6 +459,13 @@ class CRUD(Generic[_M], _Properties):
         # Resolución de valores computados
         [ data ] = self._resolve_computed_values(execution_ctx, [data])
 
+        # Creación de registros Many2One en caso existir
+        [ data ] = self._m2o_create.resolve(
+            execution_ctx,
+            model_name,
+            [data],
+        )
+
         # Validación de los datos
         execution_ctx.validations.validate(
             CRUD_METHOD_NAME.UPDATE,
@@ -478,13 +485,6 @@ class CRUD(Generic[_M], _Properties):
         # Procesamiento de los datos
         processed_data = self._add_update_uid(data, execution_ctx)
         [ processed_data ] = self._prepare_file_values(model_name, [processed_data], execution_ctx)
-
-        # Creación de registros Many2One en caso existir
-        [ processed_data ] = self._m2o_create.resolve(
-            execution_ctx,
-            model_name,
-            [processed_data],
-        )
 
         # Creación de contexto de operaciones de relación
         rel_op_ctx = RelationOperationsContext(execution_ctx, model_name, self._models_bearer)
@@ -592,8 +592,8 @@ class CRUD(Generic[_M], _Properties):
     def _resolve_computed_values(
         self,
         execution_ctx: ExecutionContext[_M],
-        data: list[RecordData[_M]],
-    ) -> list[RecordData[_M]]:
+        data: list[InputRecordData[_M]],
+    ) -> list[InputRecordData[_M]]:
 
         # Iteración por cada registro de los datos
         for record in data:
@@ -812,9 +812,9 @@ class CRUD(Generic[_M], _Properties):
 
     def _add_update_uid(
         self,
-        data: RecordData[_M],
+        data: InputRecordData[_M],
         execution_ctx: ExecutionContext[_M],
-    ) -> RecordData[_M]:
+    ) -> InputRecordData[_M]:
 
         # Se coloca la ID de usuario del contexto de ejecución
         data[FIELD_NAME.UPDATE_UID] = execution_ctx.uid

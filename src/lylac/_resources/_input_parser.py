@@ -3,44 +3,87 @@ from datetime import datetime
 from datetime import time
 from typing import Any
 from typing import Callable
+from typing import Union
 from .._constants import TTYPE_NAME
+from .._typing.aliases import FieldName
+from .._typing.aliases import DMLScalarCompatible
 from .._typing.generics import _Record
 from .._typing.literals import TTypeName
-from .._typing.structures import RecordData
+from .._typing.structures import InputRecordData
 from .._typing.structures import JSONLike
+from .._typing.structures import ParsedFromInput
+from .._typing.structures import RelationCommands
+from .._typing.type_parameters import _T
+
+ParsedDataType = Union[DMLScalarCompatible, JSONLike]
+
+class ParseCallback:
+
+    @classmethod
+    def bypass(
+        cls,
+        value: _T,
+    ) -> _T:
+        return value
+
+    @classmethod
+    def parse_date(
+        cls,
+        value: date | str,
+    ) -> date:
+        # Si el valor es cadena de texto...
+        if isinstance(value, str):
+            # Parseo a fecha
+            return date.fromisoformat(value)
+
+    @classmethod
+    def parse_time(
+        cls,
+        value: time | str,
+    ) -> time:
+        # Si el valor es cadena de texto...
+        if isinstance(value, str):
+            # Parseo a hora
+            return time.fromisoformat(value)
+
+    @classmethod
+    def parse_datetime(
+        cls,
+        value: datetime | str,
+    ) -> datetime:
+        # Si el valor es cadena de text...
+        if isinstance(value, str):
+            # Parseo a fecha y hora
+            return datetime.fromisoformat(value)
 
 class InputParser:
+    _ADAPTER: dict[TTypeName, Callable[[Union[DMLScalarCompatible, JSONLike, RelationCommands, InputRecordData[Any]]], ParsedFromInput]] = {
+        TTYPE_NAME.INTEGER: ParseCallback.bypass,
+        TTYPE_NAME.CHAR: ParseCallback.bypass,
+        TTYPE_NAME.BOOLEAN: ParseCallback.bypass,
+        TTYPE_NAME.FLOAT: ParseCallback.bypass,
+        TTYPE_NAME.SELECTION: ParseCallback.bypass,
+        TTYPE_NAME.DATE: ParseCallback.parse_date,
+        TTYPE_NAME.TIME: ParseCallback.parse_time,
+        TTYPE_NAME.DATETIME: ParseCallback.parse_datetime,
+        TTYPE_NAME.DURATION: ParseCallback.bypass,
+        TTYPE_NAME.MANY2ONE: ParseCallback.bypass,
+        TTYPE_NAME.TEXT: ParseCallback.bypass,
+        TTYPE_NAME.FILE: ParseCallback.bypass,
+        TTYPE_NAME.JSON: ParseCallback.bypass,
+    }
 
     def __init__(
         self,
-        field_ttypes: dict[str, TTypeName],
+        field_ttypes: dict[FieldName, TTypeName],
     ) -> None:
 
         # Asignación de tipos de dato de campos
         self._field_ttypes = field_ttypes
-        # Inicialización de subclase
-        self._functions = self.Functions()
-
-        # Inicialización de adaptador
-        self._adapter: dict[TTypeName, Callable[[Any], int | str | float | bool | date | time | datetime | JSONLike]] = {
-            TTYPE_NAME.INTEGER: self._functions.bypass,
-            TTYPE_NAME.CHAR: self._functions.bypass,
-            TTYPE_NAME.BOOLEAN: self._functions.bypass,
-            TTYPE_NAME.FLOAT: self._functions.bypass,
-            TTYPE_NAME.SELECTION: self._functions.bypass,
-            TTYPE_NAME.DATE: self._functions.parse_date,
-            TTYPE_NAME.TIME: self._functions.parse_time,
-            TTYPE_NAME.DATETIME: self._functions.parse_datetime,
-            TTYPE_NAME.DURATION: self._functions.bypass,
-            TTYPE_NAME.MANY2ONE: self._functions.bypass,
-            TTYPE_NAME.TEXT: self._functions.bypass,
-            TTYPE_NAME.FILE: self._functions.bypass,
-            TTYPE_NAME.JSON: self._functions.bypass,
-        }
 
     def parse(
         self,
-        record: RecordData[Any],
+        record: InputRecordData[Any],
     ) -> _Record:
 
         # Inicialización de diccionario de registro parseado
@@ -55,48 +98,10 @@ class InputParser:
                 # Se continúa con la siguiente iteración
                 continue
 
-            # Si el tipo de dato es many2one y es creación...
-            if ttype == TTYPE_NAME.MANY2ONE and isinstance(record[field_name], dict):
-                # Se continúa con la siguiente iteración
-                continue
-
             # Obtención del valor del registro
             value = record[field_name]
 
             # Parseo del valor y almacenamiento en el diccionario de registro parseado
-            parsed_record[field_name] = self._adapter[ttype](value)
+            parsed_record[field_name] = self._ADAPTER[ttype](value)
 
         return parsed_record
-
-    class Functions:
-
-        def bypass(
-            self,
-            value: Any,
-        ) -> Any:
-
-            return value
-
-        def parse_date(
-            self,
-            value: date | str,
-        ) -> date:
-
-            if isinstance(value, str):
-                return date.fromisoformat(value)
-
-        def parse_time(
-            self,
-            value: time | str,
-        ) -> time:
-
-            if isinstance(value, str):
-                return time.fromisoformat(value)
-
-        def parse_datetime(
-            self,
-            value: datetime | str,
-        ) -> datetime:
-
-            if isinstance(value, str):
-                return datetime.fromisoformat(value)

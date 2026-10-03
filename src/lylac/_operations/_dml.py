@@ -6,7 +6,7 @@ from sqlalchemy import update
 from sqlalchemy import delete
 from .._constants import FIELD_NAME
 from .._typing.generics import ModelName
-from .._typing.structures import RecordData
+from .._typing.structures import InputRecordData
 from .._typing.type_parameters import _M
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ class DML(Generic[_M]):
         rel_op_ctx: RelationOperationsContext[_M],
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        data: list[RecordData[_M]],
+        data: list[InputRecordData[_M]],
     ) -> list[int]:
 
         # Obtención del modelo de creación de datos
@@ -62,7 +62,7 @@ class DML(Generic[_M]):
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
         record_ids: list[int],
-        data: RecordData[_M],
+        data: InputRecordData[_M],
     ) -> list[int]:
 
         # Obtención del modelo de creación de datos

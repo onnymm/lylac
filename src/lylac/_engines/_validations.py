@@ -16,7 +16,7 @@ from .._typing.generics import ScalarOrIterable
 from .._typing.generics import ModelName
 from .._typing.literals import TTypeName
 from .._typing.literals import DMLTransaction
-from .._typing.structures import RecordData
+from .._typing.structures import InputRecordData
 from .._typing.type_parameters import _M
 from ..errors import ValidationExecutionError
 from ..errors import ValidationsFailedError
@@ -94,7 +94,7 @@ class ValidationEngine(Generic[_M]):
         on: DMLTransaction,
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        records: list[RecordData[_M]],
+        records: list[InputRecordData[_M]],
     ) -> None:
 
         # Si el motor no está encendido aún...
@@ -140,7 +140,7 @@ class ValidationEngine(Generic[_M]):
         if errors:
             # Iteración por cada error
             for error in errors:
-                # Se imprime éste
+                # Se muestra éste
                 execution_ctx.notify(
                     'validation.failed',
                     'current_user',

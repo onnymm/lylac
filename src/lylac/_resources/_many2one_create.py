@@ -2,7 +2,7 @@ from typing import Generic
 from typing import TYPE_CHECKING
 from .._constants import TTYPE_NAME
 from .._typing.generics import ModelName
-from .._typing.structures import RecordData
+from .._typing.structures import InputRecordData
 from .._typing.type_parameters import _M
 
 if TYPE_CHECKING:
@@ -22,8 +22,8 @@ class Many2OneCreate(Generic[_M]):
         self,
         execution_ctx: 'ExecutionContext[_M]',
         model_name: ModelName[_M],
-        data: list[RecordData[_M]],
-    ) -> list[RecordData[_M]]:
+        data: list[InputRecordData[_M]],
+    ) -> list[InputRecordData[_M]]:
 
         if self._crud.PERMISSIONS_BYPASS:
             return data

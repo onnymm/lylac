@@ -3,7 +3,7 @@ from typing import TypedDict
 from typing import Union
 from typing import TYPE_CHECKING
 from .aliases import FieldName
-from .aliases import DMLCompatible
+from .aliases import DMLScalarCompatible
 from .aliases import JSONLikeScalar
 from .literals import LiteralTarget
 from .generics import Array
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from .callables import ComputeFieldFn
     from .callables import RealTimeOperation
 
-JSONLikeObjShape = dict[str, Array[ Union['JSONLikeScalar', 'JSONLike'] ]]
+JSONLikeObjShape = dict[str, ScalarOrIterable[ Union['JSONLikeScalar', 'JSONLike'] ]]
 """
 ### Diccionario serializable
 Diccionario compatible para ser serializado a tipo de dato `JSONB` por el motor
@@ -31,7 +31,7 @@ de PostgreSQL.
     - `JSONLike`
 """
 
-JSONLike = Array[ Union[JSONLikeObjShape, 'JSONLikeScalar'] ]
+JSONLike = ScalarOrIterable[ Union[JSONLikeObjShape, 'JSONLikeScalar'] ]
 """
 Tipo de dato compatible para ser serializado a tipo de dato `JSONB` por el
 motor de PostgreSQL.
@@ -60,6 +60,75 @@ Los valores son convertidos a notación *JSON* (JavaScript Object Notation):
 - `tuple` → `array`
 """
 
+ParsedFromInput = Union[DMLScalarCompatible, JSONLike]
+"""
+### Tipo de dato parseado desde entrada
+Tipo de dato parseado desde una entrada de datos.
+Este tipado garantiza el tipo de dato estándar para cada *TType*:
+
+| TType       | Python               |
+|-------------|----------------------|
+| `integer`   | `int`                |
+| `char`      | `str`                |
+| `boolean`   | `bool`               |
+| `float`     | `float`              |
+| `selection` | `str`                |
+| `date`      | `datetime.date`      |
+| `time`      | `datetime.time`      |
+| `datetime`  | `datetime.datetime`  |
+| `duration`  | `datetime.timedelta` |
+| `many2one`  | `int`                |
+| `text`      | `str`                |
+| `file`      | `BytesIO`            |
+| `JSON`      | `JSONLike`           |
+
+### # `JSONLike`
+Tipo de dato compatible para ser serializado a tipo de dato `JSONB` por el
+motor de PostgreSQL.
+
+El tipo de dato puede ser escalar o iterable de:
+- `JSONLikeScalar` que representa los tipos:
+    - `int`
+    - `float`
+    - `str`
+    - `bool`
+    - `None`
+- `JSONLikeObjShape` que representa un diccionario serializable conformado
+por:
+    - Llaves que deben ser de tipo `str`
+    - Valores que pueden ser escalar o iterable de:
+        - `JSONLikeScalar`
+        - `JSONLike`
+
+Los valores son convertidos a notación *JSON* (JavaScript Object Notation):
+- `int` → `number` (Sin punto decimal)
+- `float` → `number` (Con punto decimal)
+- `str` → `string`
+- `bool` → `boolean`
+- `dict` → `object`
+- `list` → `array`
+- `tuple` → `array`
+
+### # JSONLikeScalar
+Tipo de dato escalar serializable a JSON.
+
+El tipo de dato puede ser:
+- `int`
+- `float`
+- `str`
+- `bool`
+- `None`
+
+### # JSONLikeObjShape
+Diccionario compatible para ser serializado a tipo de dato `JSONB` por el motor
+de PostgreSQL.
+
+- El tipo de dato de la llave debe ser `str`.
+- El tipo de dato del valor puede ser escalar o iterable de:
+    - `JSONLikeScalar`
+    - `JSONLike`
+"""
+
 ComputeContextHub = dict[ModelName[_M], dict[str, 'ComputeFieldFn[_M]']]
 
 FieldComputation = tuple[FieldName, 'TTypeName', 'ComputeFieldFn']
@@ -83,11 +152,11 @@ base de datos.
 
 class RelationCommand:
     class Create(TypedDict):
-        create: ScalarOrIterable[RecordData[_M]]
+        create: ScalarOrIterable[InputRecordData[_M]]
     class Add(TypedDict):
         add: RecordIDs
     class Update(TypedDict):
-        update: ScalarOrIterable[ tuple[RecordIDs, RecordData[_M]] ]
+        update: ScalarOrIterable[ tuple[RecordIDs, InputRecordData[_M]] ]
     class Replace(TypedDict):
         replace: RecordIDs
     class Unlink(TypedDict):
@@ -115,18 +184,18 @@ de registros relacionados o modificando registros específicos desde el registro
 que los referencía.
 
 Las llaves y valores del diccionario son:
-- `'create'`: Escalar o iterable de `RecordData`.
+- `'create'`: Escalar o iterable de `InputRecordData`.
 - `'add'`: Escalar o iterable de `int`.
 - `'update'`: Tupla de:
     - Escalar o iterable de `int`.
-    - `RecordData`
+    - `InputRecordData`
 - `'replace'`: Escalar o iterable de `int`.
 - `'unlink'`: Escalar o iterable de `int`.
 - `'delete'`: Escalar o iterable de `int`.
 - `'clear'`: Literal `True`.
 """
 
-type RecordValue[_M] = Union[DMLCompatible, JSONLike, RelationCommands, 'RecordData[_M]', 'RealTimeOperation[_M]']
+type RecordValue[_M] = Union[DMLScalarCompatible, JSONLike, RelationCommands, 'InputRecordData[_M]', 'RealTimeOperation[_M]']
 """
 ### Valor de registro
 Tipo de dato que se puede usar como valor para un campo de modelo en la base
@@ -163,20 +232,20 @@ Los valores posibles pueden ser:
             - `JSONLike`
 - `RelationCommands` que representa un diccionario con llaves y valores
 mapeados como:
-    - `'create'`: Escalar o iterable de `RecordData`.
+    - `'create'`: Escalar o iterable de `InputRecordData`.
     - `'add'`: Escalar o iterable de `int`.
     - `'update'`: Tupla de:
         - Escalar o iterable de `int`.
-        - `RecordData`
+        - `InputRecordData`
     - `'replace'`: Escalar o iterable de `int`.
     - `'unlink'`: Escalar o iterable de `int`.
     - `'delete'`: Escalar o iterable de `int`.
     - `'clear'`: Literal `True`.
-- `RecordData` que representa un diccionario de datos para crear un registro de
+- `InputRecordData` que representa un diccionario de datos para crear un registro de
 tipo Many2one que puede contener como valores cualquiera de los tipos anteriores.
 """
 
-RecordData = dict[str, RecordValue[_M]]
+InputRecordData = dict[FieldName, RecordValue[_M]]
 """
 ## Datos de registro
 Diccionario que contiene los datos de un registro para ser creado o modificado.
@@ -208,11 +277,11 @@ Diccionario que contiene los datos de un registro para ser creado o modificado.
                 - `JSONLike`
     - `RelationCommands` que representa un diccionario con llaves y valores
     mapeados como:
-        - `'create'`: Escalar o iterable de `RecordData`.
+        - `'create'`: Escalar o iterable de `InputRecordData`.
         - `'add'`: Escalar o iterable de `int`.
         - `'update'`: Tupla de:
             - Escalar o iterable de `int`.
-            - `RecordData`
+            - `InputRecordData`
         - `'replace'`: Escalar o iterable de `int`.
         - `'unlink'`: Escalar o iterable de `int`.
         - `'delete'`: Escalar o iterable de `int`.
@@ -292,18 +361,18 @@ de registros relacionados o modificando registros específicos desde el registro
 que los referencía.
 
 Las llaves y valores del diccionario son:
-- `'create'`: Escalar o iterable de `RecordData`.
+- `'create'`: Escalar o iterable de `InputRecordData`.
 - `'add'`: Escalar o iterable de `int`.
 - `'update'`: Tupla de:
     - Escalar o iterable de `int`.
-    - `RecordData`
+    - `InputRecordData`
 - `'replace'`: Escalar o iterable de `int`.
 - `'unlink'`: Escalar o iterable de `int`.
 - `'delete'`: Escalar o iterable de `int`.
 - `'clear'`: Literal `True`.
 """
 
-CriteriaValue = ScalarOrIterable[DMLCompatible]
+CriteriaValue = ScalarOrIterable[DMLScalarCompatible]
 
 TripletStructure = tuple[str, ComparisonOperator, CriteriaValue]
 

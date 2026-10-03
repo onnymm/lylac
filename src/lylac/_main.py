@@ -14,9 +14,9 @@ from ._contexts import ActionContext as _ActionContext
 from ._contexts import AutomationContext as _AutomationContext
 from ._contexts import ComputeContext as _ComputeContext
 from ._contexts import ExecutionContext as _ExecutionContext
-from ._contexts import ValidationContext as _ValidationContext
 from ._contexts import ServerTaskContext as _ServerTaskContext
 from ._contexts import TransactionContext as _TransactionContext
+from ._contexts import ValidationContext as _ValidationContext
 from ._core.models import _Base
 from ._data import build_database_structure
 from ._data import build_initial_data
@@ -42,7 +42,7 @@ from ._typing.generics import ScalarOrIterable
 from ._typing.generics import ModelName
 from ._typing.generics import _Record
 from ._typing.structures import CriteriaStructure
-from ._typing.structures import RecordData
+from ._typing.structures import InputRecordData
 from ._typing.structures import FieldReadDeclaration
 from ._typing.type_parameters import _M
 from ._typing.type_parameters import _R
@@ -568,7 +568,7 @@ class Lylac(Generic[_M]):
         self,
         session_uuid: str,
         model_name: ModelName[_M],
-        data: ScalarOrIterable[RecordData[_M]],
+        data: ScalarOrIterable[InputRecordData[_M]],
     ) -> list[int]:
         """
         ## Creación de uno o muchos registros
@@ -1117,7 +1117,7 @@ class Lylac(Generic[_M]):
         session_uuid: str,
         model_name: ModelName[_M],
         record_ids: ScalarOrIterable[int],
-        data: dict,
+        data: InputRecordData[_M],
     ) -> Literal[True]:
         """
         ## Actualización de registros

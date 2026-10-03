@@ -9,7 +9,7 @@ from ..._typing.generics import MaybeNone
 from ..._typing.generics import ModelName
 from ..._typing.generics import _Record
 from ..._typing.structures import CriteriaStructure
-from ..._typing.structures import RecordData
+from ..._typing.structures import InputRecordData
 from ..._typing.structures import NotificationTarget
 from ..._typing.structures import FieldReadDeclaration
 from ..._typing.type_parameters import _M
@@ -39,7 +39,7 @@ class BaseContext(Generic[_M]):
     def create(
         self,
         model_name: ModelName[_M],
-        data: ScalarOrIterable[RecordData[_M]],
+        data: ScalarOrIterable[InputRecordData[_M]],
     ) -> list[int]:
         """
         ## Creación de uno o muchos registros
@@ -545,7 +545,7 @@ class BaseContext(Generic[_M]):
         self,
         model_name: ModelName[_M],
         record_ids: ScalarOrIterable[int],
-        data: RecordData[_M],
+        data: InputRecordData[_M],
     ) -> Literal[True]:
         """
         ## Actualización de registros
