@@ -215,3 +215,4 @@ class ValueResolutionContext(Generic[_M, _R], BaseContext[_M]):
         # Asignación de valores
         self._execution_ctx = execution_ctx
         self._crud = execution_ctx._crud
+        self._model_data_index = execution_ctx._model_data_index
