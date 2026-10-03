@@ -51,6 +51,8 @@ pip install git+https://github.com/onnymm/lylac.git
 - **[`AutomationContext` — Contexto de automatización](#automationcontext-contexto-de-automatización)**
     - **[`records` — Lista de registros](#records-lista-de-registros-contexto-de-automatización)**
 - **[`ServerTaskContext` — Contexto de tarea de servidor](#servertaskcontext-contexto-de-tarea-de-servidor)**
+- **[`ValueResolutionContext` — Contexto de resolución de valor](#valueresolutioncontext-contexto-de-resolución-de-valor)**
+    - **[`record_data` — Datos de registro](#record_data-datos-de-registro-contexto-de-resolución-de-valor)**
 
 **[ACCIONES](#acciones)**
 
@@ -66,20 +68,35 @@ pip install git+https://github.com/onnymm/lylac.git
 - **[Registro de automatizaciones](#registro-de-automatizaciones)**
 - **[Ejecucución de automatizaciones](#ejecucución-de-automatizaciones)**
 
+**[COMANDOS DE RELACIÓN](#comandos-de-relación)**
+- **[`RelationCommand.Create` — Comando de relación de creación](#relationcommandcreate-comando-de-relación-de-creación)**
+- **[`RelationCommand.Add` — Comando de relación de adición](#relationcommandadd-comando-de-relación-de-adición)**
+- **[`RelationCommand.Update` — Comando de relación de actualización](#relationcommandupdate-comando-de-relación-de-actualización)**
+- **[`RelationCommand.Replace` — Comando de relación de reemplazo](#relationcommandreplace-comando-de-relación-de-reemplazo)**
+- **[`RelationCommand.Unlink` — Comando de relación de desvinculación](#relationcommandunlink-comando-de-relación-de-desvinculación)**
+- **[`RelationCommand.Delete` — Comando de relación de eliminación](#relationcommanddelete-comando-de-relación-de-eliminación)**
+- **[`RelationCommand.Clear` — Comando de relación de limpieza](#relationcommandclear-comando-de-relación-de-limpieza)**
+
 **[TIPADOS](#tipados)**
 - **[`_M` — Nombre de modelo personalizado](#_m-nombre-de-modelo-personalizado)**
 - **[`_T` — Parámetro de tipo _T](#_t-parámetro-de-tipo-_t)**
 - **[`_Aliased` — Alias de tipo _T para declaración de campos](#_aliased-alias-de-tipo-_t-para-declaración-de-campos)**
 - **[`ComputeFieldFn` — Función de cómputo de campo](#computefieldfn-función-de-cómputo-de-campo)**
 - **[`CriteriaStructure` — Estructura de criterio de búsqueda](#criteriastructrure-estructura-de-criterio-de-búsqueda)**
+- **[`DMLScalarCompatible` — Escalar compatible con PostgreSQL](#dmlscalarcompatible-escalar-compatible-con-postgresql)**
 - **[`DMLTransaction` — Transacción DML](#dmltransaction-transacción-dml)**
 - **[`FieldComputation` — Cómputo de campo](#fieldcomputation-cómputo-de-campo)**
 - **[`FieldName` — Nombre de campo existente en el modelo](#fieldname-nombre-de-campo-existente-en-el-modelo)**
 - **[`FieldReadDeclaration` — Declaración de campos a leer](#fieldreaddeclaration-declaración-de-campos-a-leer)**
-- **[`ScalarOrIterable` — Elemento o iterable de elementos](#scalaroriterable-elemento-o-iterable-de-elementos)**
+- **[`InputRecordData` — Datos de registro](#inputrecorddata-datos-de-registro)**
+- **[`JSONLikeObjShape` — Diccionario serializable](#jsonlikeobjshape-diccionario-serializable)**
+- **[`JSONLikeScalar` — Escalar serializable](#jsonlikescalar-escalar-serializable)**
+- **[`JSONLike` — Estructura equivalente a JSON](#jsonlike-estructura-equivalente-a-json)**
 - **[`MaybeNone` — Posiblemente nulo](#maybenone-posiblemente-nulo)**
 - **[`ModelName` — Nombre de modelo](#modelname-nombre-de-modelo)**
+- **[`ScalarOrIterable` — Elemento o iterable de elementos](#scalaroriterable-elemento-o-iterable-de-elementos)**
 - **[`TTypeName` — Nombre de tipo de dato de campo](#ttypename-nombre-de-tipo-de-dato-de-campo)**
+- **[`ValueResolutionFn` — Función de resolución de valor](#valueresolutionfn-función-de-resolución-de-valor)**
 
 ----
 
@@ -144,7 +161,14 @@ db.create(session_uuid, 'base.users', records)
 **Parámetros**
 - `session_uuid`: *str* — UUID de sesión.
 - `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
-- `data`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[RecordData]* — Diccionario o iterable de diccionarios de los datos a crear.
+- `data`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[[InputRecordData](#inputrecorddata-datos-de-registro)]* — Diccionario o iterable de diccionarios de los datos a crear:
+    1. Las llaves deben ser de tipo *[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)* — Nombre de campo existente en el modelo.
+    2. Los valores pueden ser cualquiera de los siguientes tipos de entrada:
+        - *[DMLScalarCompatible](#dmlscalarcompatible-escalar-compatible-con-postgresql)* — Tipo de dato que se puede usar como valor para un campo de modelo.
+        - *[JSONLike](#jsonlike-estructura-equivalente-a-json)* — Estructura equivalente a JSON.
+        - *[InputRecordData](#inputrecorddata-datos-de-registro)* — Datos para crear un registro vinculado, en campos de tipo `many2one`.
+        - *[RelationCommands](#comandos-de-relación)[[_M](#_m-nombre-de-modelo-personalizado)]* — Comandos de modificación de los registros referenciados en campos de tipo `one2many` y `many2many` desde el registro que los referencía.
+        - *[Función de resolución de valor](#valueresolutionfn-función-de-resolución-de-valor)[[_M](#_m-nombre-de-modelo-personalizado)]* Función de resolución de valor que se usa para resolver y retornar un valor que se usará en el campo para almacenarse en la base de datos.
 
 **Retorno**
 - `record_ids`: *list[int]* — Lista de IDs del registro o de los registros creados.
@@ -395,7 +419,14 @@ db.search_read(session_uuid, 'base.users', fields= ['login', 'name'])
 - `session_uuid`: *str* — UUID de sesión.
 - `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
 - `record_ids`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[int]* — ID o iterable de IDs de los registros a actualizar.
-- `data`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[RecordData]* — Diccionario o iterable de diccionarios de los datos a crear.
+- `data`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[[InputRecordData](#inputrecorddata-datos-de-registro)]* — Diccionario o iterable de diccionarios de los datos a crear.
+    1. Las llaves deben ser de tipo *[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)* — Nombre de campo existente en el modelo.
+    2. Los valores pueden ser cualquiera de los siguientes tipos de entrada:
+        - *[DMLScalarCompatible](#dmlscalarcompatible-escalar-compatible-con-postgresql)* — Tipo de dato que se puede usar como valor para un campo de modelo.
+        - *[JSONLike](#jsonlike-estructura-equivalente-a-json)* — Estructura equivalente a JSON.
+        - *[InputRecordData](#inputrecorddata-datos-de-registro)* — Datos para crear un registro vinculado, en campos de tipo `many2one`.
+        - *[RelationCommands](#comandos-de-relación)[[_M](#_m-nombre-de-modelo-personalizado)]* — Comandos de modificación de los registros referenciados en campos de tipo `one2many` y `many2many` desde el registro que los referencía.
+        - *[Función de resolución de valor](#valueresolutionfn-función-de-resolución-de-valor)[[_M](#_m-nombre-de-modelo-personalizado)]* Función de resolución de valor que se usa para resolver y retornar un valor que se usará en el campo para almacenarse en la base de datos.
 
 **Retorno**
 - `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
@@ -1065,6 +1096,31 @@ La clase de contexto de tarea de servidor es usada como argumento en las funcion
 
 ----
 
+### `ValueResolutionContext` Contexto de resolución de valor
+La clase de contexto de resolución de valor es usada como argumento en las funciones de resolución de valor y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listadas a continuación:
+
+- **[`uid` — ID del usuario que ejecuta la transacción](#uid-id-del-usuario-que-ejecuta-la-transacción)**
+- **[`create` — Creación de registros](#create-creación-de-uno-o-muchos-registros-1)**
+- **[`search` — Búsqueda de registros](#search-búsqueda-de-registros-1)**
+- **[`read` — Lectura de registros](#read-lectura-de-registros-1)**
+- **[`search_read` — Búsqueda y lectura de registros](#search_read-búsqueda-y-lectura-de-registros-1)**
+- **[`search_count` — Conteo de búsqueda](#search_count-conteo-de-búsqueda-1)**
+- **[`update` — Actualización de registros](#update-actualización-de-registros-1)**
+- **[`delete` — Eliminación de registros](#delete-eliminación-de-registros-1)**
+- **[`get_resource_id` — Obtención de ID de recurso](#get_resource_id-obtención-de-id-de-recurso)**
+
+Además de ello, cuenta también con los métodos listados.
+
+----
+
+#### `record_data` Datos de registro (Contexto de resolución de valor)
+Datos de registro del que proviene la función a ejecutar.
+
+**Retorno**
+- `record_data`: *[`InputRecordData` — Datos de registro](#inputrecorddata-datos-de-registro)* Datos de registro del que proviene la función a ejecutar.
+
+----
+
 ## Acciones
 Una acción es una operación ejecutable asociada a un modelo que permite realizar una serie de operaciones a partir de un registro de dicho modelo.
 
@@ -1316,6 +1372,173 @@ db.task(session_uuid, 'update_data_from_api')
 **Retorno**
 - `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
 
+----
+
+## Comandos de relación
+Este tipo de dato representa un diccionario que contiene comandos de modificación de los registros referenciados en campos de tipo `one2many` y `many2many` ya sea crear, añadir, desvincular, reemplazar o limpiar la lista de registros relacionados o modificando registros específicos desde el registro que los referencía.
+
+Las llaves y valores del diccionario pueden ser:
+- `'create'`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[[RelationCommand.Create](#relationcommandcreate-comando-de-relación-de-creación)]* — Comando de relación de creación.
+- `'add'`: *[RelationCommand.Add](#relationcommandadd-comando-de-relación-de-adición)* — Comando de relación de adición.
+- `'update'`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[[RelationCommand.Update](#relationcommandupdate-comando-de-relación-de-actualización)]* — Comando de relación de actualización.
+- `'replace'`: *[RelationCommand.Replace](#relationcommandreplace-comando-de-relación-de-reemplazo)* — Comando de relación de reemplazo.
+- `'unlink'`: *[RelationCommand.Unlink](#relationcommandunlink-comando-de-relación-de-desvinculación)* — Comando de relación de desvinculación.
+- `'delete'`: *[RelationCommand.Delete](#relationcommanddelete-comando-de-relación-de-eliminación)* — Comando de relación de eliminación.
+- `'clear'`: *[RelationCommand.Clear](#relationcommandclear-comando-de-relación-de-limpieza)* — Comando de relación de limpieza.
+
+### `RelationCommand.Create` Comando de relación de creación
+El comando de relación de creación permite enviar instrucciones de creación de registros hijos que luego se van a vincular al campo de relación `one2many` o `many2many` (según sea el caso) del registro desde el que se ha codificado el comando.
+
+> El tipo de dato del comando es un diccionario de datos del tipo [InputRecordData](#inputrecorddata-datos-de-registro) que cumple con la forma de los registros del modelo relacionado al campo.
+
+Ejemplo:
+```py
+db.update(
+    'base.users',
+    record_id,
+    {
+        # Campo de tipo [many2many]
+        'role_ids': {
+            # Comando de relación de creación
+            'create': {
+                'name': 'command_admin',
+                'label': 'Administrador de comandos',
+                ...
+            }
+        }
+    }
+)
+```
+
+### `RelationCommand.Add` Comando de relación de adición
+El comando de relación de adición permite enviar instrucciones de adición de registros hijos que luego se van a vincular al campo de relación `many2many` del registro desde el que se ha codificado el comando.
+
+> El tipo de dato del comando es un escalar o iterable de IDs de registros del modelo relacionado al campo.
+
+Ejemplo:
+```py
+db.create(
+    'base.users',
+    {
+        'login': 'lumii',
+        'name': 'Lumii Mynx',
+        # Campo de tipo [many2many]
+        'role_ids': {
+            # Comando de relación de adición
+            'add': [1, 2, 3] # Registros que ya existen
+        }
+    }
+)
+```
+
+### `RelationCommand.Update` Comando de relación de actualización
+El comando de relación de actualización permite enviar instrucciones de modificación de los registros hijos vinculados al campo de relación `one2many` o `many2many` (según sea el caso) del registro desde el que se ha codificado el comando.
+
+> El tipo de dato del comando es una tupla que contiene:
+> 1. Escalar o iterable de IDs de registro a modificar.
+> 2. Diccionario de datos del tipo [InputRecordData](#inputrecorddata-datos-de-registro) que cumple con la forma de los registros del modelo relacionado al campo.
+
+Ejemplo:
+```py
+db.update(
+    'base.users',
+    record_id,
+    {
+        # Campo de tipo [many2many]
+        'role_ids': {
+            # Comando de relación de actualización
+            'update': (
+                # ID a modificar
+                2,
+                {
+                    'name': 'Administrador supremo de comandos',
+                    ...
+                }
+            )
+        }
+    }
+)
+```
+
+### `RelationCommand.Replace` Comando de relación de reemplazo
+El comando de relación de reemplazo permite enviar instrucciones de reemplazo de los registros hijos vinculados al campo de relación `many2many` del registro desde el que se ha codificado el comando por los registros provistos en el comando.
+
+> El tipo de dato del comando es un escalar o iterable de IDs de registros del modelo relacionado al campo.
+
+Ejemplo:
+```py
+db.update(
+    'base.users',
+    record_id,
+    {
+        # Campo de tipo [many2many]
+        'role_ids': {
+            # Comando de relación de reemplazo
+            'replace': [4, 5] # Cualquier otra ID vinculada es reemplazada por estas
+        }
+    }
+)
+```
+
+### `RelationCommand.Unlink` Comando de relación de desvinculación
+El comando de relación de desvinculación permite enviar instrucciones para desvincular registros hijos vinculados al campo de relación `one2many` o `many2many` (según sea el caso) del registro desde el que se ha codificado el comando.
+
+> El tipo de dato del comando es un escalar o iterable de IDs de registros del modelo relacionado al campo.
+
+Ejemplo:
+```py
+db.update(
+    'base.users',
+    {
+        # Campo de tipo [many2many]
+        'role_ids': {
+            # Comando de relación de desvinculación
+            'unlink': [2, 3]
+        }
+    }
+)
+```
+
+### `RelationCommand.Delete` Comando de relación de eliminación
+El comando de relación de eliminación permite enviar instrucciones para eliminar registros hijos vinculados al campo de relación `one2many` o `many2many` (según sea el caso) del registro desde el que se ha codificado el comando.
+
+> El tipo de dato del comando es un escalar o iterable de IDs de registros del modelo relacionado al campo.
+
+Ejemplo:
+```py
+db.update(
+    'base.users',
+    {
+        # Campo de tipo [many2many]
+        'role_ids': {
+            # Comando de relación de eliminación
+            'delete': [6]
+        }
+    }
+)
+```
+
+### `RelationCommand.Clear` Comando de relación de limpieza
+El comando de relación de limpieza permite enviar instrucciones para limpiar la relación con todos los registros hijos vinculados al campo de relación `one2many` o `many2many` (según sea el caso) del registro desde el que se ha codificado el comando. Este comando desvincula los registros sin eliminarlos, tal como lo haría el comando *[RelationCommand.Unlink](#relationcommandunlink-comando-de-relación-de-desvinculación)* pero sin especificar explícitamente las IDs y desvinculando todos los registros sin importar cuáles son.
+
+> El tipo de dato del comando es un Literal el `True`.
+
+Ejemplo:
+```py
+db.update(
+    'base.users',
+    {
+        # Campo de tipo [many2many]
+        'role_ids': {
+            # Comando de relación de eliminación
+            'clear': True # Se le remueven todos los roles al usuario
+        }
+    }
+)
+```
+
+----
+
 ## Tipados
 
 ### `_M` Nombre de modelo personalizado
@@ -1444,6 +1667,20 @@ Estas tuplas deben contenerse en un iterable, como una lista. En caso de haber m
 > - `'~'`: Coincide con expresión regular (sensible a mayúsculas y minúsculas)
 > - `'~*'`: Coincide con expresión regular (no sensible a mayúsculas y minúsculas)
 
+### `DMLScalarCompatible` Escalar compatible con PostgreSQL
+Tipo de dato que se puede usar como valor para un campo de modelo en la base datos al crear o modificar registros y para usarse como valor en filtros de búsqueda.
+
+El tipo de dato puede ser:
+- `int`
+- `float`
+- `str`
+- `bool`
+- `datetime.date`
+- `datetime.datetime`
+- `datetime.time`
+- `datetime.timedelta`
+- `None`
+
 ### `DMLTransaction` Transacción DML
 Alias usado para describir el literal de nombres de transacciones CRUD que excluye lectura. Los valores disponibles son:
 - `'create'`: Creación de registros.
@@ -1496,19 +1733,90 @@ Este tipado representa un iterable de cualquiera de los siguientes tipos o repre
 - [_Aliased](#_aliased-alias-de-tipo-_t-para-declaración-de-campos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)] — Nombre de campo con alias.
 - [FieldComputation](#fieldcomputation-cómputo-de-campo)[[_M](#_m-nombre-de-modelo-personalizado)] — Cómputo de campo
 
-### `ScalarOrIterable` Elemento o iterable de elementos
-Genérico que representa la unión de un escalar y un iterable de tipos [_T](#_t-parámetro-de-tipo-_t).
+### `InputRecordData` Datos de registro
+Diccionario que contiene los datos de un registro para ser creado o modificado.
 
-Ejemplo:
-```py
-# Una función f que recibe un entero o un iterable de enteros, como una lista
-def f(x: int | Iterable[int]):
-    ...
+1. Las llaves deben ser de tipo *[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)* — Nombre de campo existente en el modelo.
+2. Los valores pueden ser cualquiera de los siguientes tipos de entrada:
+    - *[DMLScalarCompatible](#dmlscalarcompatible-escalar-compatible-con-postgresql)* — Tipo de dato que se puede usar como valor para un campo de modelo. El tipo de dato puede ser:
+        - `int`
+        - `float`
+        - `str`
+        - `bool`
+        - `datetime.date`
+        - `datetime.datetime`
+        - `datetime.time`
+        - `datetime.timedelta`
+        - `None`
+    - *[JSONLike](#jsonlike-estructura-equivalente-a-json)* — Estructura equivalente a JSON. El tipo de dato puede ser escalar o iterable de:
+        - [JSONLikeScalar](#jsonlikescalar-escalar-serializable) que representa los tipos:
+            - `int`
+            - `float`
+            - `str`
+            - `bool`
+            - `None`
+        - [JSONLikeObjShape](#jsonlikeobjshape-diccionario-serializable) que representa un diccionario serializable conformado
+        por:
+            - Llaves que deben ser de tipo `str`
+            - Valores que pueden ser escalar o iterable de:
+                - [JSONLikeScalar](#jsonlikescalar-escalar-serializable)
+                - [JSONLike](#jsonlike-estructura-equivalente-a-json)
+    - *[InputRecordData](#inputrecorddata-datos-de-registro)* — Datos para crear un registro vinculado, en campos de tipo `many2one`.
+    - *[RelationCommands](#comandos-de-relación)[[_M](#_m-nombre-de-modelo-personalizado)]* — Comandos de modificación de los registros referenciados en campos de tipo `one2many` y `many2many` desde el registro que los referencía. Las llaves y valores del diccionario pueden ser:
+        - `'create'`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[[RelationCommand.Create](#relationcommandcreate-comando-de-relación-de-creación)]* — Comando de relación de creación.
+        - `'add'`: *[RelationCommand.Add](#relationcommandadd-comando-de-relación-de-adición)* — Comando de relación de adición.
+        - `'update'`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[[RelationCommand.Update](#relationcommandupdate-comando-de-relación-de-actualización)]* — Comando de relación de actualización.
+        - `'replace'`: *[RelationCommand.Replace](#relationcommandreplace-comando-de-relación-de-reemplazo)* — Comando de relación de reemplazo.
+        - `'unlink'`: *[RelationCommand.Unlink](#relationcommandunlink-comando-de-relación-de-desvinculación)* — Comando de relación de desvinculación.
+        - `'delete'`: *[RelationCommand.Delete](#relationcommanddelete-comando-de-relación-de-eliminación)* — Comando de relación de eliminación.
+        - `'clear'`: *[RelationCommand.Clear](#relationcommandclear-comando-de-relación-de-limpieza)* — Comando de relación de limpieza.
+    - *[Función de resolución de valor](#valueresolutionfn-función-de-resolución-de-valor)[[_M](#_m-nombre-de-modelo-personalizado)]* Función de resolución de valor que se usa para resolver y retornar un valor que se usará en el campo para almacenarse en la base de datos.
 
-# ScalarOrIterable usado como abstracción del mismo tipo
-def f(x: ScalarOrIterable[int]):
-    ...
-```
+### `JSONLikeObjShape` Diccionario serializable
+Diccionario compatible para ser serializado a tipo de dato `JSONB` por el motor
+de PostgreSQL.
+
+- El tipo de dato de la llave debe ser `str`.
+- El tipo de dato del valor puede ser escalar o iterable de:
+    - [JSONLikeScalar](#jsonlikescalar-escalar-serializable)
+    - [JSONLike](#jsonlike-estructura-equivalente-a-json)
+
+### `JSONLikeScalar` Escalar serializable
+Tipo de dato escalar serializable a JSON.
+
+El tipo de dato puede ser:
+- `int`
+- `float`
+- `str`
+- `bool`
+- `None`
+
+### `JSONLike` Estructura equivalente a JSON
+Tipo de dato compatible para ser serializado a tipo de dato `JSONB` por el
+motor de PostgreSQL.
+
+El tipo de dato puede ser escalar o iterable de:
+- [JSONLikeScalar](#jsonlikescalar-escalar-serializable) que representa los tipos:
+    - `int`
+    - `float`
+    - `str`
+    - `bool`
+    - `None`
+- [JSONLikeObjShape](#jsonlikeobjshape-diccionario-serializable) que representa un diccionario serializable conformado
+por:
+    - Llaves que deben ser de tipo `str`
+    - Valores que pueden ser escalar o iterable de:
+        - [JSONLikeScalar](#jsonlikescalar-escalar-serializable)
+        - [JSONLike](#jsonlike-estructura-equivalente-a-json)
+
+Los valores son convertidos a notación *JSON* (JavaScript Object Notation):
+- `int` → `number` (Sin punto decimal)
+- `float` → `number` (Con punto decimal)
+- `str` → `string`
+- `bool` → `boolean`
+- `dict` → `object`
+- `list` → `array`
+- `tuple` → `array`
 
 ### `MaybeNone` Posiblemente nulo
 Este tipado es un alias equivalente al tipo `Optional` de la biblioteca estándar `typing`, utilizado para indicar que un valor puede ser del tipo especificado o None. Su nombre está orientado a tipar valores principalmente de retorno que pueden ser de un tipo especificado o `None`.
@@ -1537,6 +1845,20 @@ Los modelos iniciales son:
 - `'base.users.group'`
 - `'base.users.session'`
 
+### `ScalarOrIterable` Elemento o iterable de elementos
+Genérico que representa la unión de un escalar y un iterable de tipos [_T](#_t-parámetro-de-tipo-_t).
+
+Ejemplo:
+```py
+# Una función f que recibe un entero o un iterable de enteros, como una lista
+def f(x: int | Iterable[int]):
+    ...
+
+# ScalarOrIterable usado como abstracción del mismo tipo
+def f(x: ScalarOrIterable[int]):
+    ...
+```
+
 ### `TTypeName` Nombre de tipo de dato de campo
 Conjunto de literales que representan los nombres de los tipos de dato disponibles para ser usados desde el framework.
 
@@ -1556,3 +1878,85 @@ Los nombres disponibles son:
 - `'one2many'` Relación uno a muchos hacia un modelo.
 - `'many2many'` Relación muchos a muchos hacia un modelo.
 - `'json'` JSON.
+
+----
+
+## `ValueResolutionFn` Función de resolución de valor
+Las funciones de resolución de valor se usan como valor en los datos de entrada para crear o modificar registros por medio de los métodos correspondientes de la instancia principal o los contextos usados en funciones de ejecución de transacciones, automatizaciones, acciones, tareas de servidor, validaciones y políticas. Estas funciones se usan para resolver y retornar un valor que se usará como valor del campo para almacenarse en la base de datos.
+
+Por ejemplo, si quisiéramos crear un campo vinculado a un modelo específico cuyo ID desconocemos podemos usar el método [Obtención de ID de recurso](#get_resource_id-obtención-de-id-de-recurso) usando la referencia única del modelo:
+```py
+db.create(
+    'base.model.field',
+    {
+        'name': 'hire_date',
+        'label': 'Fecha de contrato',
+        'ttype': 'date',
+        # Función de resolución para asignar una ID
+        'model_id': lambda ctx: ctx.get_resource_id('base_model.hr_employee'),
+    },
+)
+```
+
+Antes de que el registro sea ingresado para ser creado en la base de datos, la función de resolución de valor es ejecutada usando el contexto de ejecución de la transacción. La ID del modelo se obtiene, se reemplaza la función por el valor y entonces el registro es enviado para ser creado:
+```py
+{
+    'name': 'hire_date',
+    'label': 'Fecha de contrato',
+    'ttype': 'date',
+    'model_id': 27,
+},
+```
+
+> ℹ️ Para este caso también podríamos modificar directamente el registro del modelo `hr.employee` (Si contamos con la ID) y modificar el campo de `field_ids` usando un [comando de relación de creación](#relationcommandcreate-comando-de-relación-de-creación) proporcionando los datos del campo a crear.
+
+Existen casos más complejos como cuando se lleva a cabo un registro de asistencia de los empleados donde cada uno registra su hora de inicio de jornada laboral, inicio de comida, fin de comida y fin de jornada laboral. Si se quisiera poder ver métricas diarias como si el empleado tuvo un retraso al iniciar su jornada laboral o saber cuánto tiempo se tomó en su tiempo de comida sería ideal computar esos valores dentro de un registro diario. Entonces, cuando se crea el primer registro de evento de asistencia, también se crea un registro de día de asistencia. Pero al crearse el segundo, solo queremos que se vincule el registro (ya existente a este punto) de día de asistencia del empleado. Podemos entonces hacer una función para resolver en la ID de registro de día de asistencia a vincular al momento de crear el registro de evento de asistencia:
+```py
+# Modelo de día de asistencia: [assistance.registry.day]
+# Modelo de evento de asistencia: [assistance.registry.event]
+
+def create_or_link_day_record(ctx: Lylac.ValueResolutionContext):
+
+    # Obtención de los valores relevantes
+    employee_id = ctx.record_data['employee_id']
+    date = ctx.record_data['date']
+
+    # Búsqueda del registro
+    results = ctx.search(
+        'assistance.registry.day',
+        ['&', ('employe_id.id', '=', employee_id), ('date', '=', date)]
+    )
+
+    # Si se encontró un resultado...
+    if results:
+        # Obtención de la ID del registro de día de asistencia
+        [ day_id ] = results
+    # Si no se encontró resultado...
+    [ day_id ] = ctx.create(
+        'assistance.registry.day',
+        {
+            'date': date,
+            'employee_id': employee_id,
+        },
+    )
+
+# Creación de registro de evento
+db.create(
+    'assistance.registry.event',
+    {
+        'employee_id': employee_id,
+        'registry_time': registry_time,
+        'status': status,
+        # Función provista como valor del campo
+        'day_id': create_or_link_day_record,
+        ...,
+    }
+)
+```
+
+**Parámetros de la función de resolución de valor**
+
+- `ctx`: *[ValueResolutionContext](#valueresolutioncontext-contexto-de-resolución-de-valor)[[_M](#_m-nombre-de-modelo-personalizado)]* — Contexto de resolución de valor.
+
+**Retorno**
+- `response`: *Any* — Lo que sea que la función tenga que retornar para resolver el valor.
