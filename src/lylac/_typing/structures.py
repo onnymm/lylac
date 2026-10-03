@@ -17,7 +17,7 @@ from .type_parameters import _T
 
 if TYPE_CHECKING:
     from .callables import ComputeFieldFn
-    from .callables import RealTimeOperation
+    from .callables import ValueResolutionFn
 
 JSONLikeObjShape = dict[str, ScalarOrIterable[ Union['JSONLikeScalar', 'JSONLike'] ]]
 """
@@ -167,9 +167,9 @@ class RelationCommand:
         clear: Literal[True]
 
 RelationCommands = Union[
-    RelationCommand.Create,
+    RelationCommand.Create[_M],
     RelationCommand.Add,
-    RelationCommand.Update,
+    RelationCommand.Update[_M],
     RelationCommand.Replace,
     RelationCommand.Unlink,
     RelationCommand.Delete,
@@ -195,7 +195,7 @@ Las llaves y valores del diccionario son:
 - `'clear'`: Literal `True`.
 """
 
-type RecordValue[_M] = Union[DMLScalarCompatible, JSONLike, RelationCommands, 'InputRecordData[_M]', 'RealTimeOperation[_M]']
+type RecordValue[_M] = Union[DMLScalarCompatible, JSONLike, RelationCommands[_M], 'InputRecordData[_M]', 'ValueResolutionFn[_M]']
 """
 ### Valor de registro
 Tipo de dato que se puede usar como valor para un campo de modelo en la base
@@ -252,7 +252,7 @@ Diccionario que contiene los datos de un registro para ser creado o modificado.
 
 - Las llaves deben ser de tipo `str`.
 - Los valores pueden ser cualquiera de:
-    - `DMLCompatible`:
+    - `DMLScalarCompatible`:
         - `int`
         - `float`
         - `str`
@@ -288,7 +288,7 @@ Diccionario que contiene los datos de un registro para ser creado o modificado.
         - `'clear'`: Literal `True`.
 
 ----
-### # `DMLCompatible`
+### # `DMLScalarCompatible`
 Tipo de dato que se puede usar como valor para un campo de modelo en la base
 datos al crear o modificar registros.
 
