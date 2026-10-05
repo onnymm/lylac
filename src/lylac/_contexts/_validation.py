@@ -93,7 +93,7 @@ class ValidationContext(Generic[_M, _R], BaseContext[_M]):
                     break
 
             # Inicialización de criterio de búsqueda
-            search_criteria: CriteriaStructure = []
+            search_criteria: CriteriaStructure[_M] = []
             # Iteración por cada nombre de campo que forma la llave compuesta
             for field_name in field_names_composite_key:
                 # Construcción de condición como tripleta

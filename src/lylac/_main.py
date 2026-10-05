@@ -628,7 +628,7 @@ class Lylac(Generic[_M]):
         self,
         session_uuid: str,
         model_name: ModelName[_M],
-        search_criteria: CriteriaStructure = [],
+        search_criteria: CriteriaStructure[_M] = [],
         offset: Optional[int] = None,
         limit: Optional[int] = None,
     ) -> list[int]:
@@ -831,7 +831,7 @@ class Lylac(Generic[_M]):
         self,
         session_uuid: str,
         model_name: ModelName[_M],
-        search_criteria: CriteriaStructure = [],
+        search_criteria: CriteriaStructure[_M] = [],
         fields: list[FieldReadDeclaration] = [],
         offset: Optional[int] = None,
         limit: Optional[int] = None,
@@ -1012,7 +1012,7 @@ class Lylac(Generic[_M]):
         self,
         session_uuid: str,
         model_name: ModelName[_M],
-        search_criteria: CriteriaStructure = [],
+        search_criteria: CriteriaStructure[_M] = [],
     ) -> int:
         """
         ## Conteo de búsqueda

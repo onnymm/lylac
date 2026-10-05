@@ -90,7 +90,7 @@ class BaseContext(Generic[_M]):
     def search(
         self,
         model_name: ModelName[_M],
-        search_criteria: CriteriaStructure = [],
+        search_criteria: CriteriaStructure[_M] = [],
         offset: Optional[int] = None,
         limit: Optional[int] = None,
     ) -> list[int]:
@@ -275,7 +275,7 @@ class BaseContext(Generic[_M]):
     def search_read(
         self,
         model_name: ModelName[_M],
-        search_criteria: CriteriaStructure = [],
+        search_criteria: CriteriaStructure[_M] = [],
         fields: list[FieldReadDeclaration] = [],
         offset: Optional[int] = None,
         limit: Optional[int] = None,
@@ -447,7 +447,7 @@ class BaseContext(Generic[_M]):
     def search_count(
         self,
         model_name: ModelName[_M],
-        search_criteria: CriteriaStructure = [],
+        search_criteria: CriteriaStructure[_M] = [],
     ) -> int:
         """
         ## Conteo de búsqueda

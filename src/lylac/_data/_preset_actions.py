@@ -164,7 +164,7 @@ def _base_model__restore(ctx: ActionContext):
     )
 
     # Creación de criterio de búsqueda para encontrar todos los campos pertenientes al modelo
-    criteria: CriteriaStructure = [
+    criteria: CriteriaStructure[_M] = [
         '&',
             '&',
                 ('model_id', '=', ctx.data['id']),

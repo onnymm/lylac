@@ -1,3 +1,4 @@
+from types import FunctionType
 from typing import Callable
 from typing import Generic
 from typing import TYPE_CHECKING
@@ -17,21 +18,29 @@ from .._typing.type_parameters import _M
 
 if TYPE_CHECKING:
     from .._contexts import FrameContext
+    from .._contexts import ValueResolutionContext
 
 class WhereContext(Generic[_M]):
     _comparison_expression: dict[ComparisonOperator, Callable[[InstrumentedAttribute, RecordValue[_M]], BinaryExpression]] = {
-        '=': lambda field_instance, value: field_instance == value,
+        '=': lambda field, value: field == value,
         '!=': lambda field, value: field != value,
+        '=?': lambda field, value: or_(field == value, field == None),
         '>': lambda field, value: field > value,
         '>=': lambda field, value: field >= value,
         '<': lambda field, value: field < value,
         '<=': lambda field, value: field <= value,
         'in': lambda field, value: field.in_(value),
         'not in': lambda field, value: field.not_in(value),
-        'ilike': lambda field, value: field.contains(value),
-        'not ilike': lambda field, value: not_(field.contains(value)),
+        'like': lambda field, value: field.like(f'%{value}%', escape= '\\'),
+        'ilike': lambda field, value: field.ilike(f'%{value}%', escape= '\\'),
+        'not like': lambda field, value: not_(field.like(f'%{value}%', escape= '\\')),
+        'not ilike': lambda field, value: not_(field.ilike(f'%{value}%', escape= '\\')),
+        'starts with': lambda field, value: field.ilike(f'{value}%', escape= '\\'),
+        'ends with': lambda field, value: field.ilike(f'%{value}', escape= '\\'),
         '~': lambda field, value: field.regexp_match(value),
         '~*': lambda field, value: field.regexp_match(value, 'i'),
+        '!~': lambda field, value: not_(field.regexp_match(value)),
+        '!~*': lambda field, value: not_(field.regexp_match(value, 'i')),
     }
     _logic_expression: dict[LogicOperator, Callable[[BinaryExpression, BinaryExpression], BinaryExpression]] = {
         '&': lambda a, b: and_(a, b),
@@ -45,10 +54,12 @@ class WhereContext(Generic[_M]):
 
         # Asignación de instancia de contexto de frame
         self._frame_ctx = frame_ctx
+        # Asignación de instancia de contexto de ejecución
+        self._execution_ctx = frame_ctx.execution_ctx
 
     def build_conditions(
         self,
-        search_criteria: CriteriaStructure,
+        search_criteria: CriteriaStructure[_M],
     ) -> BinaryExpression | BooleanClauseList:
 
         # Si el criterio de búsqueda solo tiene un elemento...
@@ -132,15 +143,31 @@ class WhereContext(Generic[_M]):
 
     def create_binary_expression(
         self,
-        triplet: TripletStructure,
+        triplet: TripletStructure[_M],
     ) -> BinaryExpression:
 
         # Obtención de los elementos desde la tripleta
-        ( field_name, op, value ) = triplet
+        ( field_name, op, value_or_function ) = triplet
         # Inicialización de un objetivo de campo
         field_target = self._frame_ctx.create_field_target(field_name, True)
         # Obtención de la instancia de campo
         [ field_instance ] = self._frame_ctx.get_field_instances_from_target(field_target)
+
+        # Si el valor es una función...
+        if isinstance(value_or_function, FunctionType):
+            # Creación de contexto de resolución de valor
+            resolution_ctx = ValueResolutionContext[_M](
+                # Uso de valores dummy
+                {'id': 0},
+                'id',
+                self._execution_ctx,
+            )
+            # Cómputo del valor
+            value = value_or_function(resolution_ctx)
+        # Si el valor no es una función...
+        else:
+            # Uso directo de éste
+            value = value_or_function
 
         # Construcción de expresión binaria
         expression = self._comparison_expression[op](field_instance, value)

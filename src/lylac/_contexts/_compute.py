@@ -189,7 +189,7 @@ class ComputeContext(Generic[_M]):
         o2m_field_name: str,
         field_to_aggregate_name: str | ComputeFieldFn[_M],
         fn_name: AggFuncName,
-        search_criteria: CriteriaStructure = [],
+        search_criteria: CriteriaStructure[_M] = [],
         default_zero_value: Optional[str | int | float] = None,
     ) -> InstrumentedAttribute:
 

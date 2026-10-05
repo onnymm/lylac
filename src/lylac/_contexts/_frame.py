@@ -7,7 +7,6 @@ from sqlalchemy import Subquery
 from sqlalchemy import select
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import aggregate_order_by
-from sqlalchemy.engine import Connection
 from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql.elements import BinaryExpression
@@ -17,11 +16,9 @@ from .._constants import FIELD_SUFFIX
 from .._constants import RELATION_PATH_SEPARATOR
 from .._constants import ROOT_PATH
 from .._constants import TTYPE_NAME
-from .._resources import DatabaseMetadata
 from .._resources import FieldProperties
 from .._resources import FieldTarget
 from .._resources import ModelProperties
-from .._resources import ModelsBearer
 from .._resources import OuterJoin
 from .._typing.aliases import ModelClass
 from .._typing.generics import ModelName
@@ -31,11 +28,12 @@ from ._compute import ComputeContext
 from ._where import WhereContext
 
 if TYPE_CHECKING:
-    from .._engines import ComputeEngine
+    from .._contexts import ExecutionContext
 
 class Interface_FrameContext(Generic[_M]):
     model_name: ModelName[_M]
     origin_model: ModelClass
+    execution_ctx: 'ExecutionContext[_M]'
     @property
     def outerjoins(
         self,
@@ -120,20 +118,20 @@ class FrameContext(Generic[_M], Interface_FrameContext[_M]):
     def __init__(
         self,
         model_name: ModelName[_M],
-        conn: Connection,
-        database_metadata: DatabaseMetadata[_M],
-        computation_engine: ComputeEngine[_M],
-        models_bearer: ModelsBearer[_M],
+        execution_ctx: ExecutionContext[_M],
     ) -> None:
 
+        # Asignación de contexto de ejecución
+        self.execution_ctx = execution_ctx
+
         # Inicialización de instancia de portador de modelos
-        self._models_bearer = models_bearer
-        self._computation_engine = computation_engine
+        self._models_bearer = execution_ctx.models_bearer
+        self._computation_engine = execution_ctx.compute
 
         # Obtención de instancia de conexión
-        self._conn = conn
+        self._conn = execution_ctx.conn
         # Obtención de instancia de metadatos de la base de datos
-        self._database_metadata = database_metadata
+        self._database_metadata = execution_ctx.database_metadata
 
         # Obtención del nombre del modelo
         self.model_name = model_name
@@ -731,6 +729,9 @@ class RelativeFrameContext(Generic[_M], Interface_FrameContext[_M]):
         main_ctx: FrameContext[_M],
         relative_origin: str,
     ) -> None:
+
+        # Asignación de contexto de ejecución
+        self._execution_ctx = main_ctx.execution_ctx
 
         # Obtención de las propiedades del modelo de inicio relativo
         model_properties = main_ctx.build_graph_from_field_path(relative_origin)

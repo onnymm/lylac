@@ -39,7 +39,7 @@ class DQL(Generic[_M]):
         self,
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        search_criteria: CriteriaStructure = [],
+        search_criteria: CriteriaStructure[_M] = [],
         offset: Optional[int] = None,
         limit: Optional[int] = None,
     ) -> list[int]:
@@ -174,7 +174,7 @@ class DQL(Generic[_M]):
         self,
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        search_criteria: CriteriaStructure = [],
+        search_criteria: CriteriaStructure[_M] = [],
         fields: list[FrameReadField] = [],
         offset: Optional[int] = None,
         limit: Optional[int] = None,
@@ -260,7 +260,7 @@ class DQL(Generic[_M]):
         self,
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        search_criteria: CriteriaStructure = [],
+        search_criteria: CriteriaStructure[_M] = [],
     ) -> int:
 
         # Inicialización de contexto de frame

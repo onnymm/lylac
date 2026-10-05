@@ -68,16 +68,23 @@ Nombres de funciones de agregación para utilizar en cómputos de campo de tipo
 ComparisonOperator = Literal[
     '=',
     '!=',
+    '=?',
     '>',
     '>=',
     '<',
     '<=',
     'in',
     'not in',
+    'like',
     'ilike',
+    'not like',
     'not ilike',
+    'starts with',
+    'ends with',
     '~',
     '~*',
+    '!~',
+    '!~*',
 ]
 """
 ### Operador de comparación
@@ -86,16 +93,23 @@ Tipo de dato que representa una operador de comparación.
 Los operadores de comparación disponibles son:
 - `'='`: Igual a
 - `'!='`: Diferente de
+- `'=?'`: No está establecido o es igual a
 - `'>'`: Mayor a
 - `'>='`: Mayor o igual a
 - `'<'`: Menor que
 - `'<='`: Menor o igual que
 - `'in'`: Está en
 - `'not in'`: No está en
-- `'ilike'`: Contiene
-- `'not ilike'`: No contiene
+- `'like'`: Contiene (sensible a mayúsculas y minúsculas)
+- `'ilike'`: Contiene (no sensible a mayúsculas y minúsculas)
+- `'not like'`: No contiene (sensible a mayúsculas y minúsculas)
+- `'not ilike'`: No contiene (no sensible a mayúsculas y minúsculas)
+- `'starts with'`: Comienza con (sensible a mayúsculas y minúsculas)
+- `'ends with'`: Termina con (sensible a mayúsculas y minúsculas)
 - `'~'`: Coincide con expresión regular (sensible a mayúsculas y minúsculas)
 - `'~*'`: Coincide con expresión regular (no sensible a mayúsculas y minúsculas)
+- `!'~'`: No coincide con expresión regular (sensible a mayúsculas y minúsculas)
+- `!'~*'`: No coincide con expresión regular (no sensible a mayúsculas y minúsculas)
 """
 
 LogicOperator = Literal['&', '|']

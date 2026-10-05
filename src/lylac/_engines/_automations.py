@@ -77,7 +77,7 @@ class AutomationsEngine(Generic[_M]):
         on: DMLTransaction,
         model_name: ModelName[_M],
         fields: list[FieldReadDeclaration] = [FIELD_NAME.ID],
-        execute_only_when: CriteriaStructure = [],
+        execute_only_when: CriteriaStructure[_M] = [],
     ) -> FunctionDecorator[AutomationCallback[_M]]:
 
         # Inicialización de decorador para obtener la función a registrar
@@ -117,7 +117,7 @@ class AutomationsEngine(Generic[_M]):
         for ( automation_name, automation_properties ) in model_automations.items():
 
             # Inicialización de criterio de búsqueda
-            search_criteria: CriteriaStructure = [(FIELD_NAME.ID, 'in', record_ids)]
+            search_criteria: CriteriaStructure[_M] = [(FIELD_NAME.ID, 'in', record_ids)]
 
             # Si las propiedades de automatización contienen un criterio de búsqueda...
             if automation_properties.execute_only_when:
@@ -161,7 +161,7 @@ class AutomationsEngine(Generic[_M]):
         for ( automation_name, automation_properties ) in model_automations.items():
 
             # Inicialización de criterio de búsqueda
-            condition: CriteriaStructure = [(FIELD_NAME.ID, 'in', record_ids)]
+            condition: CriteriaStructure[_M] = [(FIELD_NAME.ID, 'in', record_ids)]
 
             # Si las propiedades de automatización contienen un criterio de búsqueda...
             if automation_properties.execute_only_when:
@@ -211,7 +211,7 @@ class AutomationsEngine(Generic[_M]):
         for ( automation_name, automation_properties ) in model_automations.items():
 
             # Inicialización de criterio de búsqueda
-            condition: CriteriaStructure = [(FIELD_NAME.ID, 'in', record_ids)]
+            condition: CriteriaStructure[_M] = [(FIELD_NAME.ID, 'in', record_ids)]
 
             # Si las propiedades de automatización contienen un criterio de búsqueda...
             if automation_properties.execute_only_when:
@@ -276,7 +276,7 @@ class AutomationsEngine(Generic[_M]):
         callback: AutomationCallback[_M],
         model_name: ModelName[_M],
         fields: list[FieldReadDeclaration] = [FIELD_NAME.ID],
-        execute_only_when: CriteriaStructure = [],
+        execute_only_when: CriteriaStructure[_M] = [],
     ) -> None:
 
         # Obtención del centro de automatizaciones del tipo de transacción

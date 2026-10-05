@@ -23,7 +23,7 @@ class _Interface_Automations(Generic[_M]):
         on: DMLTransaction,
         model_name: ModelName[_M],
         fields: list[FieldReadDeclaration] = [FIELD_NAME.ID],
-        execute_only_when: CriteriaStructure = [],
+        execute_only_when: CriteriaStructure[_M] = [],
     ) -> None:
 
         # Obtención del decorador para registrar la función

@@ -262,7 +262,7 @@ class CRUD(Generic[_M], _Properties):
         self,
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        search_criteria: CriteriaStructure = [],
+        search_criteria: CriteriaStructure[_M] = [],
         offset: Optional[int] = None,
         limit: Optional[int] = None,
     ) -> list[int]:
@@ -297,7 +297,7 @@ class CRUD(Generic[_M], _Properties):
         self,
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        search_criteria: CriteriaStructure = [],
+        search_criteria: CriteriaStructure[_M] = [],
         fields: list[FieldReadDeclaration] = [],
         offset: Optional[int] = None,
         limit: Optional[int] = None,
@@ -349,7 +349,7 @@ class CRUD(Generic[_M], _Properties):
         self,
         execution_ctx: ExecutionContext[_M],
         model_name: ModelName[_M],
-        search_criteria: CriteriaStructure = [],
+        search_criteria: CriteriaStructure[_M] = [],
     ) -> int:
 
         # Revisión de permisos
@@ -620,8 +620,8 @@ class CRUD(Generic[_M], _Properties):
         execution_ctx: ExecutionContext[_M],
         permission: CRUDPermission,
         model_name: ModelName[_M],
-        search_criteria: CriteriaStructure = [],
-    ) -> CriteriaStructure:
+        search_criteria: CriteriaStructure[_M] = [],
+    ) -> CriteriaStructure[_M]:
 
         # Si el bypass de revisión de permisos está activado...
         if self.PERMISSIONS_BYPASS:

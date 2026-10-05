@@ -10,7 +10,7 @@ from .._typing.type_parameters import _R
 
 @dataclass
 class AutomationProperties(Generic[_M, _R]):
-    execute_only_when: CriteriaStructure
+    execute_only_when: CriteriaStructure[_M]
     callback: AutomationCallback[_M, _R]
     model_name: ModelName[_M]
     fields: tuple[FieldReadDeclaration] = (FIELD_NAME.ID,)
