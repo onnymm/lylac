@@ -309,37 +309,89 @@ class BaseContext(Generic[_M]):
         >>> #   ...
         >>> # ]
 
-        ### Criterio de búsqueda
-        La estructura del criterio de búsqueda consiste en un iterable de dos tipos de
-        dato:
-        - `TripletStructure`: Estructura de tripletas para queries SQL
-        - `LogicOperator`: Operador lógico
+        ### Estructura de criterio de búsqueda
+        La estructura del criterio de búsqueda expresa un conjunto de condiciones que
+        se pueden usar para filtrar registros en la base de datos al momento de leer o
+        invocar registros para un fin específico.
 
-        Estas tuplas deben contenerse en un iterable. En caso de haber más de una
-        condición, se deben unir por operadores lógicos `AND` u `OR`. Siendo el
-        operador lógico el que toma la primera posición:
-        >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
-        >>> # "amount" es mayor a 500 y "name" contiene "as"
-        >>> ['|', ('id', '=', 5), ('state', '=', 'posted')]
-        >>> # "id" es igual a 5 o "state" es igual a "posted"
+        La estructura se conforma de un iterable con los tipos:
+        - `TripletStructure`: Tupla de 3 posiciones que representa una condición.
+        - `LogicOperator`: Operador lógico que une tripletas de condiciones.
 
-        #### Estructura de tripletas para queries SQL
-        Este tipo de dato representa una condición sencilla para usarse en una
-        transacción en base de datos. La estructura de una tripleta consiste en 3
-        diferentes parámetros:
-        1. Nombre del campo del modelo
-        2. Operador de comparación
-        3. Valor de comparación
+        ----
 
-        Algunos ejemplos de tripletas son:
-        >>> ('name', '=', 'Onnymm')
-        >>> # Nombre es igual a "Onnymm"
+        #### Estructura de tripletas de condición
+        Este tipo de dato representa una condición para usarse en una transacción en
+        base de datos.
+
+        La estructura de una tripleta consiste en 3 diferentes parámetros:
+        1. Referencia de campo. Puede ser alguno de los siguientes tipos:
+            - `FieldName`: Nombre del campo del modelo o referencia *Many2One*
+            - `FieldComputation`: Cómputo de campo.
+        Nombre del campo del modelo, referencia many2one o campo computado
+        2. Operador de comparación. Puede ser alguno de los siguientes literales:
+            - `'='`: Igual a
+            - `'!='`: Diferente de
+            - `'=?'`: No está establecido o es igual a
+            - `'>'`: Mayor a
+            - `'>='`: Mayor o igual a
+            - `'<'`: Menor que
+            - `'<='`: Menor o igual que
+            - `'in'`: Está en
+            - `'not in'`: No está en
+            - `'like'`: Contiene (sensible a mayúsculas y minúsculas)
+            - `'ilike'`: Contiene (no sensible a mayúsculas y minúsculas)
+            - `'not like'`: No contiene (sensible a mayúsculas y minúsculas)
+            - `'not ilike'`: No contiene (no sensible a mayúsculas y minúsculas)
+            - `'starts with'`: Comienza con (sensible a mayúsculas y minúsculas)
+            - `'ends with'`: Termina con (sensible a mayúsculas y minúsculas)
+            - `'~'`: Coincide con expresión regular (sensible a mayúsculas y
+            minúsculas)
+            - `'~*'`: Coincide con expresión regular (no sensible a mayúsculas y
+            minúsculas)
+            - `!'~'`: No coincide con expresión regular (sensible a mayúsculas y
+            minúsculas)
+            - `!'~*'`: No coincide con expresión regular (no sensible a mayúsculas y
+            minúsculas)
+        3. Valor de comparación. Puede ser alguno de los siguientes tipos:
+            - `ScalarOrIterable[DMLScalarCompatible]`Escalar o iterable de Tipo de dato
+            que se puede usar como valor para un campo de modelo. El tipo de dato puede
+            ser:
+                - `int`
+                - `float`
+                - `str`
+                - `bool`
+                - `datetime.date`
+                - `datetime.datetime`
+                - `datetime.time`
+                - `datetime.timedelta`
+                - `None`
+            - `ValueResolutionFn[_M]`: Función de resolución de valor que se usa para
+            resolver y retornar un valor que se usará en el campo para almacenarse en
+            la base de datos
+
+        Algunos ejemplos de tripletas:
+        >>> ('name', 'like', 'Onnymm')
+        >>> # El nombre contiene 'Onnymm'
         >>> ('id', '=', 5)
-        >>> # ID es igual a 5
+        >>> # La ID es igual a 5
+        >>> ('create_uid.name', 'ends with', 'Azzur')
+        >>> # El nombre del usuario creador del registro termina con "Azzur"
+        >>> ('device_id.type_id.create_date', '=', lambda ctx: ctx.today())
+        >>> # La fecha de creación del tipo de dispostivo del dispositivo es igual a hoy
+        >>> (('subtotal', 'float', lambda ctx: ctx['qty'] * ctx['price']), '<', 500)
+        >>> # El cómputo del subtotal es menor a 500
+
+        Las tuplas de estructura se deben unir por medio de un operador lógico que va
+        al principio. Por ejemplo:
         >>> ('amount', '>', 500)
-        >>> # "amount" es mayor a 500
+        >>> # El monto es mayor a 500
         >>> ('name', 'ilike', 'as')
-        >>> # "name" contiene "as"
+        >>> # El nombre contiene "as"
+        >>> 
+        >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
+        >>> # El monto es mayor a 500 y el nombre contiene "as"
+        ----
 
         #### Operador lógico
         Tipo de dato que representa un operador lógico.
@@ -347,24 +399,6 @@ class BaseContext(Generic[_M]):
         Los operadores lógicos disponibles son:
         - `'&'`: AND
         - `'|'`: OR
-
-        #### Operador de comparación
-
-        Tipo de dato que representa una operador de comparación.
-
-        Los operadores de comparación disponibles son:
-        - `'='`: Igual a
-        - `'!='`: Diferente de
-        - `'>'`: Mayor a
-        - `'>='`: Mayor o igual a
-        - `'<'`: Menor que
-        - `'<='`: Menor o igual que
-        - `'in'`: Está en
-        - `'not in'`: No está en
-        - `'ilike'`: Contiene
-        - `'not ilike'`: No contiene
-        - `'~'`: Coincide con expresión regular (sensible a mayúsculas y minúsculas)
-        - `'~*'`: Coincide con expresión regular (no sensible a mayúsculas y minúsculas)
 
         ### Desfase de registros para paginación
         Este parámetro sirve para retornar los registros a partir del índice indicado
@@ -464,37 +498,89 @@ class BaseContext(Generic[_M]):
         >>> ctx.search_count('base.permissions', [('create_uid', '=', 5)])
         >>> # 126
 
-        ### Criterio de búsqueda
-        La estructura del criterio de búsqueda consiste en un iterable de dos tipos de
-        dato:
-        - `TripletStructure`: Estructura de tripletas para queries SQL
-        - `LogicOperator`: Operador lógico
+        ### Estructura de criterio de búsqueda
+        La estructura del criterio de búsqueda expresa un conjunto de condiciones que
+        se pueden usar para filtrar registros en la base de datos al momento de leer o
+        invocar registros para un fin específico.
 
-        Estas tuplas deben contenerse en un iterable. En caso de haber más de una
-        condición, se deben unir por operadores lógicos `AND` u `OR`. Siendo el
-        operador lógico el que toma la primera posición:
-        >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
-        >>> # "amount" es mayor a 500 y "name" contiene "as"
-        >>> ['|', ('id', '=', 5), ('state', '=', 'posted')]
-        >>> # "id" es igual a 5 o "state" es igual a "posted"
+        La estructura se conforma de un iterable con los tipos:
+        - `TripletStructure`: Tupla de 3 posiciones que representa una condición.
+        - `LogicOperator`: Operador lógico que une tripletas de condiciones.
 
-        #### Estructura de tripletas para queries SQL
-        Este tipo de dato representa una condición sencilla para usarse en una
-        transacción en base de datos. La estructura de una tripleta consiste en 3
-        diferentes parámetros:
-        1. Nombre del campo del modelo
-        2. Operador de comparación
-        3. Valor de comparación
+        ----
 
-        Algunos ejemplos de tripletas son:
-        >>> ('name', '=', 'Onnymm')
-        >>> # Nombre es igual a "Onnymm"
+        #### Estructura de tripletas de condición
+        Este tipo de dato representa una condición para usarse en una transacción en
+        base de datos.
+
+        La estructura de una tripleta consiste en 3 diferentes parámetros:
+        1. Referencia de campo. Puede ser alguno de los siguientes tipos:
+            - `FieldName`: Nombre del campo del modelo o referencia *Many2One*
+            - `FieldComputation`: Cómputo de campo.
+        Nombre del campo del modelo, referencia many2one o campo computado
+        2. Operador de comparación. Puede ser alguno de los siguientes literales:
+            - `'='`: Igual a
+            - `'!='`: Diferente de
+            - `'=?'`: No está establecido o es igual a
+            - `'>'`: Mayor a
+            - `'>='`: Mayor o igual a
+            - `'<'`: Menor que
+            - `'<='`: Menor o igual que
+            - `'in'`: Está en
+            - `'not in'`: No está en
+            - `'like'`: Contiene (sensible a mayúsculas y minúsculas)
+            - `'ilike'`: Contiene (no sensible a mayúsculas y minúsculas)
+            - `'not like'`: No contiene (sensible a mayúsculas y minúsculas)
+            - `'not ilike'`: No contiene (no sensible a mayúsculas y minúsculas)
+            - `'starts with'`: Comienza con (sensible a mayúsculas y minúsculas)
+            - `'ends with'`: Termina con (sensible a mayúsculas y minúsculas)
+            - `'~'`: Coincide con expresión regular (sensible a mayúsculas y
+            minúsculas)
+            - `'~*'`: Coincide con expresión regular (no sensible a mayúsculas y
+            minúsculas)
+            - `!'~'`: No coincide con expresión regular (sensible a mayúsculas y
+            minúsculas)
+            - `!'~*'`: No coincide con expresión regular (no sensible a mayúsculas y
+            minúsculas)
+        3. Valor de comparación. Puede ser alguno de los siguientes tipos:
+            - `ScalarOrIterable[DMLScalarCompatible]`Escalar o iterable de Tipo de dato
+            que se puede usar como valor para un campo de modelo. El tipo de dato puede
+            ser:
+                - `int`
+                - `float`
+                - `str`
+                - `bool`
+                - `datetime.date`
+                - `datetime.datetime`
+                - `datetime.time`
+                - `datetime.timedelta`
+                - `None`
+            - `ValueResolutionFn[_M]`: Función de resolución de valor que se usa para
+            resolver y retornar un valor que se usará en el campo para almacenarse en
+            la base de datos
+
+        Algunos ejemplos de tripletas:
+        >>> ('name', 'like', 'Onnymm')
+        >>> # El nombre contiene 'Onnymm'
         >>> ('id', '=', 5)
-        >>> # ID es igual a 5
+        >>> # La ID es igual a 5
+        >>> ('create_uid.name', 'ends with', 'Azzur')
+        >>> # El nombre del usuario creador del registro termina con "Azzur"
+        >>> ('device_id.type_id.create_date', '=', lambda ctx: ctx.today())
+        >>> # La fecha de creación del tipo de dispostivo del dispositivo es igual a hoy
+        >>> (('subtotal', 'float', lambda ctx: ctx['qty'] * ctx['price']), '<', 500)
+        >>> # El cómputo del subtotal es menor a 500
+
+        Las tuplas de estructura se deben unir por medio de un operador lógico que va
+        al principio. Por ejemplo:
         >>> ('amount', '>', 500)
-        >>> # "amount" es mayor a 500
+        >>> # El monto es mayor a 500
         >>> ('name', 'ilike', 'as')
-        >>> # "name" contiene "as"
+        >>> # El nombre contiene "as"
+        >>> 
+        >>> ['&', ('amount', '>', 500), ('name', 'ilike', 'as')]
+        >>> # El monto es mayor a 500 y el nombre contiene "as"
+        ----
 
         #### Operador lógico
         Tipo de dato que representa un operador lógico.
@@ -502,25 +588,6 @@ class BaseContext(Generic[_M]):
         Los operadores lógicos disponibles son:
         - `'&'`: AND
         - `'|'`: OR
-
-        #### Operador de comparación
-
-        Tipo de dato que representa una operador de comparación.
-
-        Los operadores de comparación disponibles son:
-        - `'='`: Igual a
-        - `'!='`: Diferente de
-        - `'>'`: Mayor a
-        - `'>='`: Mayor o igual a
-        - `'<'`: Menor que
-        - `'<='`: Menor o igual que
-        - `'in'`: Está en
-        - `'not in'`: No está en
-        - `'ilike'`: Contiene
-        - `'not ilike'`: No contiene
-        - `'~'`: Coincide con expresión regular (sensible a mayúsculas y minúsculas)
-        - `'~*'`: Coincide con expresión regular (no sensible a mayúsculas y
-        minúsculas)
 
         **Parámetros**
 
