@@ -398,7 +398,7 @@ base de datos.
 La estructura de una tripleta consiste en 3 diferentes parámetros:
 1. Referencia de campo. Puede ser alguno de los siguientes tipos:
     - `FieldName`: Nombre del campo del modelo o referencia *Many2One*
-    - `ComputeFieldFn`: Función de cómputo de campo.
+    - `FieldComputation`: Cómputo de campo.
 Nombre del campo del modelo, referencia many2one o campo computado
 2. Operador de comparación. Puede ser alguno de los siguientes literales:
     - `'='`: Igual a

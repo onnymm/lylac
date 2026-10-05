@@ -1843,7 +1843,7 @@ La estructura se conforma de un iterable con los tipos:
 > La estructura de una tripleta consiste en 3 diferentes parámetros:
 > 1. Referencia de campo. Puede ser alguno de los siguientes tipos:
 >     - [FieldName](#fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre del campo del modelo o referencia *Many2One*
->     - [ComputeFieldFn](#computefieldfn-función-de-cómputo-de-campo) — Función de cómputo de campo.
+>     - [FieldComputation](#fieldcomputation-cómputo-de-campo)[[_M](#_m-nombre-de-modelo-personalizado)] — Cómputo de campo.
 > 2. Operador de comparación. Puede ser alguno de los siguientes literales:
 >     - `'='`: Igual a
 >     - `'!='`: Diferente de
@@ -1937,7 +1937,7 @@ Alias usado para describir el literal de nombres de transacciones CRUD que exclu
 Representación para declarar el cómputo de un campo en tiempo real. La estructura está conformada por una tupla de 3 elementos:
 1. [FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo.
 2. [TTypeName](#ttypename-nombre-de-tipo-de-dato-de-campo) — Nombre de tipo de dato de campo.
-3. [ComputeFieldFn](#computefieldfn-función-de-cómputo-de-campo)[_M](#_m-nombre-de-modelo-personalizado) — Función de cómputo de campo.
+3. [ComputeFieldFn](#computefieldfn-función-de-cómputo-de-campo)[[_M](#_m-nombre-de-modelo-personalizado)] — Función de cómputo de campo.
 
 Estructura de ejemplo:
 ```py
@@ -1977,7 +1977,7 @@ Para obtener los detalles de un registro referenciado en campos de tipo `many2on
 Este tipado representa un iterable de cualquiera de los siguientes tipos o representaciones:
 - [FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo.
 - [_Aliased](#_aliased-alias-de-tipo-_t-para-declaración-de-campos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)] — Nombre de campo con alias.
-- [FieldComputation](#fieldcomputation-cómputo-de-campo)[[_M](#_m-nombre-de-modelo-personalizado)] — Cómputo de campo
+- [FieldComputation](#fieldcomputation-cómputo-de-campo)[[_M](#_m-nombre-de-modelo-personalizado)] — Cómputo de campo.
 
 ### `InputRecordData` Datos de registro
 Diccionario que contiene los datos de un registro para ser creado o modificado.
