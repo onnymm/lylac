@@ -81,6 +81,7 @@ pip install git+https://github.com/onnymm/lylac.git
 - **[`_M` — Nombre de modelo personalizado](#_m-nombre-de-modelo-personalizado)**
 - **[`_T` — Parámetro de tipo _T](#_t-parámetro-de-tipo-_t)**
 - **[`_Aliased` — Alias de tipo _T para declaración de campos](#_aliased-alias-de-tipo-_t-para-declaración-de-campos)**
+- **[`_ArrayExpansion` — Expansión anidada de campos de relación](#_arrayexpansion-expansión-anidada-de-campos-de-relación)**
 - **[`ComputeFieldFn` — Función de cómputo de campo](#computefieldfn-función-de-cómputo-de-campo)**
 - **[`CriteriaStructure` — Estructura de criterio de búsqueda](#criteriastructrure-estructura-de-criterio-de-búsqueda)**
 - **[`DMLScalarCompatible` — Escalar compatible con PostgreSQL](#dmlscalarcompatible-escalar-compatible-con-postgresql)**
@@ -1814,6 +1815,71 @@ Ejemplo de uso:
 (('detail_ids', [...]), 'detailed_operation')
 ```
 
+### `_ArrayExpansion` Expansión anidada de campos de relación
+Las expansiones anidadas de campos de relación son un tipo de dato que permite codificar instrucciones para expandir a detalle la información de registros referenciados en campos `one2many` y `many2many` y así poder visualizar más datos en vez de solo una lista de las IDs de los registros.
+
+Por ejemplo, si queremos revisar el detalle de las líneas de una venta...
+```py
+db.read(
+    'sale.order',
+    1,
+    [
+        'name',
+        'subtotal',
+        # Campo [one2many]
+        'line_ids',
+    ]
+)
+# [
+#     {
+#         'name': 'S00000',
+#         'subtotal': 235.15,
+#         'line_ids': [1, 2],
+#     },
+# ]
+```
+
+Podemos pedir una expansión de campos usando una tupla de dos posiciones. La primera debe ser el nombre del campo One2Many o Many2Many cuyos registros queremos ver a detalle, seguido de un iterable de las referencias de campo correspondientes al modelo al que pertenecen los registros referenciados, en este ejemplo, `sale.order.line`:
+```py
+db.read(
+    'sale.order',
+    1,
+    [
+        ...,
+        # Expansión de campo [one2many]
+        (
+            'line_ids',
+            # Campos de los registros de líneas
+            [
+                'product_id',
+                'quantity',
+                'subtotal',
+            ],
+        ),
+    ]
+)
+# [
+#     {
+#         'name': 'S00000',
+#         'subtotal': 235.15,
+#         'line_ids': [
+#             {'id': 1, 'product_id': [13, 'Café sencillo'], 'quantity': 1, 'subtotal': 35.15},
+#             {'id': 2, 'product_id': [2, 'Taza de café'], 'quantity': 1, 'subtotal': 200.00},
+#         ],
+#     },
+# ]
+```
+
+El tipo de dato se constituye de una tupla que representa una expansión anidada en campos `one2many` y `many2many`. La tupla está conformada por los siguientes tipos:
+1. [FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo `one2many` o `many2many` existente en el modelo o desde cadena de referencias *Many2One*.
+2. Una declaración de campos a leer. Puede ser alguno de los siguientes tipos:
+    - `Literal`[`True`]: Significa que todos los campos se van a mostrar.
+    - `Iterable`[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)] — Iterable de declaración de campos a leer. Puede ser alguno de los siguientes tipos:
+        - [FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo o cadena de referencias *Many2One*.
+        - [FieldComputation](#fieldcomputation-cómputo-de-campo)[[_M](#_m-nombre-de-modelo-personalizado)]: Cómputo de campo.
+        - [_ArrayExpansion](#_arrayexpansion-expansión-anidada-de-campos-de-relación) — Tupla que representa una expansión anidada (En campos `one2many` y `many2many`).
+        - [_Aliased](#_aliased-alias-de-tipo-_t-para-declaración-de-campos) — Alias de de campo existente en el modelo o cadena de referencias *Many2One*.
+
 ### `ComputeFieldFn` Función de cómputo de campo
 Estructura que representa una función que recibe un contexto de cómputo y retorna una instancia de campo que se usa para computar una columna en la lectura de registros desde la base de datos.
 
@@ -1974,10 +2040,225 @@ Para obtener los detalles de un registro referenciado en campos de tipo `many2on
 ```
 
 ### `FieldReadDeclaration` Declaración de campos a leer
-Este tipado representa un iterable de cualquiera de los siguientes tipos o representaciones:
-- [FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo.
-- [_Aliased](#_aliased-alias-de-tipo-_t-para-declaración-de-campos)[[FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo)] — Nombre de campo con alias.
-- [FieldComputation](#fieldcomputation-cómputo-de-campo)[[_M](#_m-nombre-de-modelo-personalizado)] — Cómputo de campo.
+Iterable que representa una declaración de campos a leer. Los elementos contenidos pueden ser una cadena de texto que indica el nombre de un campo existente en el modelo, una cadena de referencias *Many2One* a partir de un campo de este tipo existente en el modelo, pueden ser un cómputo en tiempo real basado en campos existentes en el modelo, funciones de agregación en base a valores de registros relacionados en los campos `one2many` o `many2many` en el modelo, una declaración de lectura de campos en registros referenciados desde campos `one2many` o `many2many` e incluso la posibilidad de asignarles un alias para acortar o hacer más explícito el nombre que los representa en el retorno de los datos.
+
+Una declaración de campos existentes en el modelo sería como esta:
+```py
+db.read(
+    'sale.order',
+    [1, 2, 3],
+    [
+        # Campos existentes en la base de datos
+        'name',
+        'subtotal',
+        'user_id',
+    ]
+)
+# [
+#     {'name': 'S00000', 'subtotal': 235.15, 'user_id': [2, 'Onnymm Azzur']},
+#     {'name': 'S00001', 'subtotal': 587.89, 'user_id': [2, 'Usuario Root']},
+#     {'name': 'S00002', 'subtotal': 1012.20, 'user_id': [3, 'Mynx Lumii']},
+# ]
+```
+
+También se puede acceder a los atributos de los registros referenciados, como en este caso, a los atributos del usuario que pertenece a cada registro de ventas:
+```py
+db.read(
+    'sale.order',
+    [1, 2, 3],
+    [
+        'name',
+        'subtotal',
+        # Cadena de referencias [many2one]
+        'user_id.active',
+    ]
+)
+# [
+#     {'name': 'S00000', 'subtotal': 235.15, 'user_id.active': True},
+#     {'name': 'S00001', 'subtotal': 587.89, 'user_id.active': False},
+#     {'name': 'S00002', 'subtotal': 1012.20, 'user_id.active': True},
+# ]
+```
+
+Podemos usar un alias para cambiar la salida de `'user_id.active'` a `'is_user_active'` proporcionando una tupla de dos posiciones donde la primera es la referencia del campo (En este caso, la cadena *Many2One* `'user_id.active'` seguido del nombre que usaremos como alias que, en este caso sería `'is_user_active'`):
+```py
+db.read(
+    'sale.order',
+    [1, 2, 3],
+    [
+        'name',
+        'subtotal',
+        # Campo con alias
+        ('user_id.active', 'is_user_active'),
+    ]
+)
+# [
+#     {'name': 'S00000', 'subtotal': 235.15, 'is_user_active': True},
+#     {'name': 'S00001', 'subtotal': 587.89, 'is_user_active': False},
+#     {'name': 'S00002', 'subtotal': 1012.20, 'is_user_active': True},
+# ]
+```
+
+Pueden computarse campos en tiempo real sin que éstos existan en la base de datos. La estructura está conformada por una tupla de 3 elementos:
+1. [FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo.
+2. [TTypeName](#ttypename-nombre-de-tipo-de-dato-de-campo) — Nombre de tipo de dato de campo.
+3. [ComputeFieldFn](#computefieldfn-función-de-cómputo-de-campo)[[_M](#_m-nombre-de-modelo-personalizado)] — Función de cómputo de campo.
+
+Para calcular el total usando un impuesto del 16% sería así:
+```py
+db.read(
+    'sale.order',
+    [1, 2, 3],
+    [
+        'name',
+        'subtotal',
+        # Cómputo de campo
+        ('total', 'float', lambda ctx: ctx['subtotal'] * 1.16),
+    ]
+)
+# [
+#     {'name': 'S00000', 'subtotal': 235.15, 'total': 272.77},
+#     {'name': 'S00001', 'subtotal': 587.89, 'total': 281.95},
+#     {'name': 'S00002', 'subtotal': 1012.20, 'total': 1174.15},
+# ]
+```
+
+Si queremos revisar el detalle de las líneas de venta...
+```py
+db.read(
+    'sale.order',
+    1,
+    [
+        'name',
+        'subtotal',
+        # Campo [one2many]
+        'line_ids',
+    ]
+)
+# [
+#     {
+#         'name': 'S00000',
+#         'subtotal': 235.15,
+#         'line_ids': [1, 2],
+#     },
+# ]
+```
+
+Podemos pedir una expansión de campos usando una tupla de dos posiciones. La primera debe ser el nombre del campo One2Many o Many2Many cuyos registros queremos ver a detalle, seguido de un iterable de las referencias de campo correspondientes al modelo al que pertenecen los registros referenciados, en este ejemplo, `sale.order.line`:
+```py
+db.read(
+    'sale.order',
+    1,
+    [
+        ...,
+        # Expansión de campo [one2many]
+        (
+            'line_ids',
+            # Campos de los registros de líneas
+            [
+                'product_id',
+                'quantity',
+                'subtotal',
+            ],
+        ),
+    ]
+)
+# [
+#     {
+#         'name': 'S00000',
+#         'subtotal': 235.15,
+#         'line_ids': [
+#             {'id': 1, 'product_id': [13, 'Café sencillo'], 'quantity': 1, 'subtotal': 35.15},
+#             {'id': 2, 'product_id': [2, 'Taza de café'], 'quantity': 1, 'subtotal': 200.00},
+#         ],
+#     },
+# ]
+```
+
+También podemos usar las cadenas de referencias *Many2One*, cómputos de campo y los alias en las expansiones de campos:
+```py
+db.read(
+    'sale.order',
+    1,
+    [
+        ...,
+        (
+            'line_ids',
+            # Campos de los registros de líneas
+            [
+                # Cadena de referencia
+                'product_id.code',
+                # Alias
+                ('quantity', 'qty'),
+                # Cómputo de campo
+                ('total', 'float', lambda ctx: ctx['subtotal'] * 1.16),
+            ],
+        ),
+    ]
+)
+# [
+#     {
+#         'name': 'S00000',
+#         'subtotal': 235.15,
+#         'line_ids': [
+#             {'id': 1, 'product_id.code': '00COFFEE', 'qty': 1, 'subtotal': 40.77},
+#             {'id': 2, 'product_id.code': 'CUP-BK', 'qty': 1, 'subtotal': 232.00},
+#         ],
+#     },
+# ]
+```
+
+Incluso asignarle un alias a la expansión de campos:
+```py
+db.read(
+    'sale.order',
+    1,
+    [
+        ...,
+        (
+            # Expansión de campos
+            (
+                'line_ids',
+                [
+                    'product_id.code',
+                    ...,
+                ],
+            ),
+            # Asignación de alias
+            'detail',
+        )
+    ]
+)
+# [
+#     {
+#         'name': 'S00000',
+#         'subtotal': 235.15,
+#         'detail': [
+#             {'id': 1, 'product_id.code': '00COFFEE', 'qty': 1, 'subtotal': 40.77},
+#             {'id': 2, 'product_id.code': 'CUP-BK', 'qty': 1, 'subtotal': 232.00},
+#         ],
+#     },
+# ]
+```
+
+El tipado representa un iterable de cualquiera de los siguientes tipos o representaciones:
+- [FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo o cadena de referencias *Many2One*.
+- [FieldComputation](#fieldcomputation-cómputo-de-campo)[[_M](#_m-nombre-de-modelo-personalizado)]: Cómputo de campo.
+- [_ArrayExpansion](#_arrayexpansion-expansión-anidada-de-campos-de-relación) — Tupla que representa una expansión anidada (En campos `one2many` y `many2many`). La tupla está conformada por los siguientes tipos:
+    1. [FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo `one2many` o `many2many` existente en el modelo o desde cadena de referencias *Many2One*.
+    2. Una declaración de campos a leer. Puede ser alguno de los siguientes tipos:
+        - `Literal`[`True`]: Significa que todos los campos se van a mostrar.
+        - `Iterable`[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)] — Iterable de declaración de campos a leer. Puede ser alguno de los siguientes tipos:
+            - [FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo o cadena de referencias *Many2One*.
+            - [FieldComputation](#fieldcomputation-cómputo-de-campo)[[_M](#_m-nombre-de-modelo-personalizado)]: Cómputo de campo.
+            - [_ArrayExpansion](#_arrayexpansion-expansión-anidada-de-campos-de-relación) — Tupla que representa una expansión anidada (En campos `one2many` y `many2many`).
+            - [_Aliased](#_aliased-alias-de-tipo-_t-para-declaración-de-campos) — Alias de de campo existente en el modelo o cadena de referencias *Many2One*.
+- [_Aliased](#_aliased-alias-de-tipo-_t-para-declaración-de-campos) — Alias de de campo existente en el modelo o cadena de referencias *Many2One*. Es una tupla de:
+    1. [FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer) — Iterable de declaración de campos a leer. Puede ser alguno de los siguientes tipos:
+        - [FieldName](#_fieldname-nombre-de-campo-existente-en-el-modelo) — Nombre de campo existente en el modelo o cadena de referencias *Many2One*.
+        - [FieldComputation](#fieldcomputation-cómputo-de-campo)[[_M](#_m-nombre-de-modelo-personalizado)]: Cómputo de campo.
+        - [_ArrayExpansion](#_arrayexpansion-expansión-anidada-de-campos-de-relación) — Tupla que representa una expansión anidada (En campos `one2many` y `many2many`).
+    2. `str` — Nombre usado para alias.
 
 ### `InputRecordData` Datos de registro
 Diccionario que contiene los datos de un registro para ser creado o modificado.

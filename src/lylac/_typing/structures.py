@@ -1,3 +1,4 @@
+from typing import Iterable
 from typing import Literal
 from typing import TypedDict
 from typing import Union
@@ -133,15 +134,17 @@ ComputeContextHub = dict[ModelName[_M], dict[str, 'ComputeFieldFn']]
 
 FieldComputation = tuple[FieldName, 'TTypeName', 'ComputeFieldFn']
 
-_ExpansionSpec = list[Union[str, 'FrameReadField']] | Literal[True]
-_ArrayExpansion = tuple[str, _ExpansionSpec[_M]]
-_FieldAlias = str
-_Aliased = tuple[_T, _FieldAlias]
-_NestedExpansion = Union[_ArrayExpansion, _Aliased[_ArrayExpansion]]
+_ExpansionSpec = Iterable['FieldReadDeclaration'] | Literal[True]
+
+_ArrayExpansion = tuple[FieldName, _ExpansionSpec]
+
+_Aliased = tuple[_T, str]
 
 FrameReadField = Union[FieldName, _Aliased[FieldName], FieldComputation]
 
-FieldReadDeclaration = Union[FrameReadField, _NestedExpansion]
+Aliaseddd = _Aliased[Union[FieldName, FieldComputation, _ArrayExpansion]]
+
+FieldReadDeclaration = Union[FieldName, FieldComputation, _ArrayExpansion, Aliaseddd]
 
 RecordIDs = ScalarOrIterable[int]
 """
