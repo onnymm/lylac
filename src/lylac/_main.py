@@ -598,6 +598,101 @@ class Lylac(Generic[_M]):
         >>> ]
         >>> 
         >>> db.create(session_uuid, 'base.users', records)
+        >>> 
+        >>> # Podemos crear o añadir registros referenciados directamente
+        >>> #    con un comando de relación
+        >>> db.create(
+        >>>     session_uuid,
+        >>>     'base.users',
+        >>>     {
+        >>>         'login': 'onnymm',
+        >>>         'name': 'Onnymm Azzur',
+        >>>         # Campo de tipo [many2many]
+        >>>         'role_ids': {
+        >>>             # Comando de relación de creación
+        >>>             'create': {
+        >>>                 'name': 'command_admin',
+        >>>                 'label': 'Administrador de comandos',
+        >>>                 ...
+        >>>             },
+        >>>             # Comando de relación de adición
+        >>>             'add': {
+        >>>                 'add': [1, 2, 3] # Registros que ya existen
+        >>>             },
+        >>>         },
+        >>>     },
+        >>> )
+
+        Se pueden proporcionar también funciones de resolución de valor:
+        >>> db.create(
+        >>>     session_uuid,
+        >>>     'base.model.field',
+        >>>     {
+        >>>         'name': 'hire_date',
+        >>>         'label': 'Fecha de contrato',
+        >>>         'ttype': 'date',
+        >>>         # Función de resolución para asignar una ID
+        >>>         'model_id': lambda ctx: ctx.get_resource_id('base_model.hr_employee'),
+        >>>     },
+        >>> )
+
+        Antes de que el registro sea ingresado para ser creado en la base de datos, la
+        función de resolución de valor es ejecutada usando un contexto de resolución de
+        valor. La ID del modelo se obtiene, se reemplaza la función por el valor y
+        entonces el registro es enviado para ser creado:
+        >>> {
+        >>>     'name': 'hire_date',
+        >>>     'label': 'Fecha de contrato',
+        >>>     'ttype': 'date',
+        >>>     'model_id': 27,
+        >>> }
+
+        `i` Para este caso también podríamos modificar directamente el registro del
+        modelo `hr.employee` (Si contamos con la ID) y modificar el campo de
+        `field_ids` usando un *Comando de Relación* de creación proporcionando los
+        datos del campo a crear.
+
+        Los valores para cada valor pueden ser cualquiera de:
+        - `DMLScalarCompatible` — Tipo de dato que se puede usar como valor para un
+        campo de modelo. El tipo de dato puede ser:
+            - `int`
+            - `float`
+            - `str`
+            - `bool`
+            - `datetime.date`
+            - `datetime.datetime`
+            - `datetime.time`
+            - `datetime.timedelta`
+            - `None`
+        - `JSONLike` — Estructura equivalente a JSON. El tipo de dato puede ser escalar
+        o iterable de:
+            - `JSONLikeScalar` — Representa los tipos:
+                - `int`
+                - `float`
+                - `str`
+                - `bool`
+                - `None`
+            - `JSONLikeObjShape` — Representa un diccionario serializable conformado
+        por:
+                - Llaves que deben ser de tipo `str`
+                - Valores que pueden ser escalar o iterable de:
+                    - `JSONLikeScalar`
+                    - `JSONLike`
+        - `InputRecordData` — Datos para crear un registro vinculado, en campos de tipo
+        `many2one`.
+        - `RelationCommands` — Comandos de modificación de los registros referenciados
+        en campos de tipo `one2many` y `many2many` desde el registro que los
+        referencía. Las llaves y valores del diccionario pueden ser:
+            - `'create'` — Comando de relación de creación.
+            - `'add'` — Comando de relación de adición.
+            - `'update'` — Comando de relación de actualización.
+            - `'replace'` — Comando de relación de reemplazo.
+            - `'unlink'` — Comando de relación de desvinculación.
+            - `'delete'` — Comando de relación de eliminación.
+            - `'clear'` — Comando de relación de limpieza.
+        - `ValueResolutionFn` — Función de resolución de valor que se usa para resolver
+        y retornar un valor que se usará en el campo para almacenarse en la base de
+        datos.
 
         **Parámetros**
 
@@ -646,6 +741,48 @@ class Lylac(Generic[_M]):
         >>> #   por el usuario con la ID 2
         >>> db.search(session_uuid, 'base.users', [('create_uid', '=', 2)])
         >>> # [3, 5, 6]
+
+        Pueden buscarse registros que cumplan múltiples condiciones:
+        >>> db.search(
+        >>>     session_uuid,
+        >>>     'base.users',
+        >>>     [
+        >>>         # Las siguientes dos condiciones deben cumplirse
+        >>>         '&',
+        >>>             # La ID del usuario creador es igual a 2
+        >>>             ('create_uid.id', '=', 2),
+        >>>             # Nombre de inicio de sesión comienza con "as"
+        >>>             ('login', 'starts with', 'as'),
+        >>>     ]
+        >>> )
+        >>> # [5]
+
+        Pueden usarse cadenas de atributos en campos de tipo `many2one`:
+        >>> db.search(
+        >>>     session_uuid,
+        >>>     # Modelo de eventos de asistencia de empleados
+        >>>     'assistance.registry.event',
+        >>>     # La ubicación designada del empleado está activa
+        >>>     [('employee_id.location_id.active', '=', True)]
+        >>> )
+        >>> # [3, 4, 5, 6, 7, ...]
+
+        También pueden usarse cómputos de campo:
+        >>> # Función de cómputo
+        >>> def compute_total(ctx: Lylac.ComputeContext):
+        >>>     total = ctx['subtotal'] * (ctx['tax_id.amount'] + 1)
+        >>>     return total
+
+        >>> # Cómputo de campo
+        >>> line_total = ('total', 'float', compute_total)
+
+        >>> db.search(
+        >>>     session_uuid,
+        >>>     'sale.order.line',
+        >>>     # El subtotal más el monto del impuesto es mayor a $150.00
+        >>>     [(line_total, '>', 150)],
+        >>> )
+        >>> # [24, 31, 56, 89, ...]
 
         ### Estructura de criterio de búsqueda
         La estructura del criterio de búsqueda expresa un conjunto de condiciones que
@@ -813,18 +950,202 @@ class Lylac(Generic[_M]):
         >>> db.read(session_uuid, 'base.users', [2])
         >>> # [{'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...}]
         >>> 
-        >>> # Ejemplo 2
         >>> db.read(session_uuid, 'base.users', [2, 3])
         >>> # [
         >>> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
         >>> #   {'id': 3, 'name': 'Lumii Mynx', 'login': 'lumii', ...},
         >>> # ]
         >>> 
-        >>> # Ejemplo 3
+        >>> # Especificación de campos a leer
         >>> db.read(session_uuid, 'base.users', [2, 3], ['login', 'create_date'])
         >>> # [
         >>> #   {'id': 2, 'login': 'onnymm', 'create_date': '2026-09-12 12:15:36' ...},
         >>> #   {'id': 3, 'login': 'lumii', 'create_date': '2026-09-12 13:28:14 ...},
+        >>> # ]
+        >>> 
+        >>> db.read(
+        >>>     'sale.order',
+        >>>     [1, 2, 3],
+        >>>     [
+        >>>         # Campos existentes en la base de datos
+        >>>         'name',
+        >>>         'subtotal',
+        >>>         'user_id',
+        >>>     ]
+        >>> )
+        >>> # [
+        >>> #     {'id': 1, 'name': 'S00000', 'subtotal': 235.15, 'user_id': [2, 'Onnymm Azzur']},
+        >>> #     {'id': 2, 'name': 'S00001', 'subtotal': 587.89, 'user_id': [2, 'Usuario Root']},
+        >>> #     {'id': 3, 'name': 'S00002', 'subtotal': 1012.20, 'user_id': [3, 'Mynx Lumii']},
+        >>> # ]
+
+        Se puede acceder a los atributos de los registros referenciados:
+        >>> db.read(
+        >>>     session_uuid,
+        >>>     'sale.order',
+        >>>     [1, 2, 3],
+        >>>     [
+        >>>         'name',
+        >>>         'subtotal',
+        >>>         # Cadena de referencias [many2one]
+        >>>         'user_id.active',
+        >>>     ]
+        >>> )
+        >>> # [
+        >>> #     {'id': 1, 'name': 'S00000', 'subtotal': 235.15, 'user_id.active': True},
+        >>> #     {'id': 2, 'name': 'S00001', 'subtotal': 587.89, 'user_id.active': False},
+        >>> #     {'id': 3, 'name': 'S00002', 'subtotal': 1012.20, 'user_id.active': True},
+        >>> # ]
+
+        Uso de campos con un alias:
+        >>> db.read(
+        >>>     session_uuid,
+        >>>     'sale.order',
+        >>>     [1, 2, 3],
+        >>>     [
+        >>>         'name',
+        >>>         'subtotal',
+        >>>         # Campo con alias
+        >>>         ('user_id.active', 'is_user_active'),
+        >>>     ]
+        >>> )
+        >>> # [
+        >>> #     {'id': 1, 'name': 'S00000', 'subtotal': 235.15, 'is_user_active': True},
+        >>> #     {'id': 2, 'name': 'S00001', 'subtotal': 587.89, 'is_user_active': False},
+        >>> #     {'id': 3, 'name': 'S00002', 'subtotal': 1012.20, 'is_user_active': True},
+        >>> # ]
+
+        Uso de cómputo de campo:
+        >>> db.read(
+        >>>     session_uuid,
+        >>>     'sale.order',
+        >>>     [1, 2, 3],
+        >>>     [
+        >>>         'name',
+        >>>         'subtotal',
+        >>>         # Cómputo de campo
+        >>>         ('total', 'float', lambda ctx: ctx['subtotal'] * 1.16),
+        >>>     ]
+        >>> )
+        >>> # [
+        >>> #     {'id': 1, 'name': 'S00000', 'subtotal': 235.15, 'total': 272.77},
+        >>> #     {'id': 2, 'name': 'S00001', 'subtotal': 587.89, 'total': 281.95},
+        >>> #     {'id': 3, 'name': 'S00002', 'subtotal': 1012.20, 'total': 1174.15},
+        >>> # ]
+
+        Con expansión de campos en campos de tipo `one2many` y `many2many`:
+        >>> db.read(
+        >>>     session_uuid,
+        >>>     'sale.order',
+        >>>     1,
+        >>>     [
+        >>>         'name',
+        >>>         'subtotal',
+        >>>         # Campo [one2many]
+        >>>         'line_ids',
+        >>>     ]
+        >>> )
+        >>> # [
+        >>> #     {
+        >>> #         'id': 1,
+        >>> #         'name': 'S00000',
+        >>> #         'subtotal': 235.15,
+        >>> #         'line_ids': [1, 2],
+        >>> #     },
+        >>> # ]
+        >>> db.read(
+        >>>     session_uuid,
+        >>>     'sale.order',
+        >>>     1,
+        >>>     [
+        >>>         ...,
+        >>>         (
+        >>>             'line_ids',
+        >>>             # Campos de los registros de líneas
+        >>>             [
+        >>>                 'product_id',
+        >>>                 'quantity',
+        >>>                 'subtotal',
+        >>>             ],
+        >>>         ),
+        >>>     ]
+        >>> )
+        >>> # [
+        >>> #     {
+        >>> #         'id': 1,
+        >>> #         'name': 'S00000',
+        >>> #         'subtotal': 235.15,
+        >>> #         'line_ids': [
+        >>> #             {'id': 1, 'product_id': [13, 'Café sencillo'], 'quantity': 1, 'subtotal': 35.15},
+        >>> #             {'id': 2, 'product_id': [2, 'Taza de café'], 'quantity': 1, 'subtotal': 200.00},
+        >>> #         ],
+        >>> #     },
+        >>> # ]
+
+        Se pueden usar múltiples tipos de entrada:
+        >>> db.read(
+        >>>     session_uuid,
+        >>>     'sale.order',
+        >>>     1,
+        >>>     [
+        >>>         ...,
+        >>>         (
+        >>>             'line_ids',
+        >>>             # Campos de los registros de líneas
+        >>>             [
+        >>>                 # Cadena de referencia
+        >>>                 'product_id.code',
+        >>>                 # Alias
+        >>>                 ('quantity', 'qty'),
+        >>>                 # Cómputo de campo
+        >>>                 ('total', 'float', lambda ctx: ctx['subtotal'] * 1.16),
+        >>>             ],
+        >>>         ),
+        >>>     ]
+        >>> )
+        >>> # [
+        >>> #     {
+        >>> #         'id': 1,
+        >>> #         'name': 'S00000',
+        >>> #         'subtotal': 235.15,
+        >>> #         'line_ids': [
+        >>> #             {'id': 1, 'product_id.code': '00COFFEE', 'qty': 1, 'subtotal': 40.77},
+        >>> #             {'id': 2, 'product_id.code': 'CUP-BK', 'qty': 1, 'subtotal': 232.00},
+        >>> #         ],
+        >>> #     },
+        >>> # ]
+
+        Alias a la expansión de campos:
+        >>> db.read(
+        >>>     session_uuid,
+        >>>     'sale.order',
+        >>>     1,
+        >>>     [
+        >>>         ...,
+        >>>         (
+        >>>             # Expansión de campos
+        >>>             (
+        >>>                 'line_ids',
+        >>>                 [
+        >>>                     'product_id.code',
+        >>>                     ...,
+        >>>                 ],
+        >>>             ),
+        >>>             # Asignación de alias
+        >>>             'detail',
+        >>>         )
+        >>>     ]
+        >>> )
+        >>> # [
+        >>> #     {
+        >>> #         'id': 1,
+        >>> #         'name': 'S00000',
+        >>> #         'subtotal': 235.15,
+        >>> #         'detail': [
+        >>> #             {'id': 1, 'product_id.code': '00COFFEE', 'qty': 1, 'subtotal': 40.77},
+        >>> #             {'id': 2, 'product_id.code': 'CUP-BK', 'qty': 1, 'subtotal': 232.00},
+        >>> #         ],
+        >>> #     },
         >>> # ]
 
         **Parámetros**
@@ -879,7 +1200,6 @@ class Lylac(Generic[_M]):
         campos o todos los campos en caso de no haber sido especificados.
 
         Uso:
-        >>> # Ejemplo 1
         >>> db.search_read(session_uuid, 'base.users')
         >>> # [
         >>> #   {'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...},
@@ -887,16 +1207,244 @@ class Lylac(Generic[_M]):
         >>> #   ...
         >>> # ]
         >>> 
-        >>> # Ejemplo 2
         >>> db.search_read(session_uuid, 'base.users', [('user', '=', 'onnymm')])
         >>> # [{'id': 2, 'name': 'Onnymm Azzur', 'login': 'onnymm', ...}]
         >>> 
-        >>> # Ejemplo 3
+        >>> # Especificación de campos
         >>> db.search_read(session_uuid, 'base.users', fields= ['user', 'create_date'])
         >>> # [
         >>> #   {'id': 2, 'login': 'onnymm', 'create_date': '2026-09-12 12:15:36' ...},
         >>> #   {'id': 3, 'login': 'lumii', 'create_date': '2026-09-12 13:28:14 ...},
         >>> #   ...
+        >>> # ]
+
+        Pueden buscarse registros que cumplan múltiples condiciones:
+        >>> db.search_read(
+        >>>     session_uuid,
+        >>>     'base.users',
+        >>>     [
+        >>>         # Las siguientes dos condiciones deben cumplirse
+        >>>         '&',
+        >>>             # La ID del usuario creador es igual a 2
+        >>>             ('create_uid.id', '=', 2),
+        >>>             # Nombre de inicio de sesión comienza con "as"
+        >>>             ('login', 'starts with', 'as'),
+        >>>     ]
+        >>> )
+        >>> # [...]
+
+        Pueden usarse cadenas de atributos en campos de tipo `many2one`:
+        >>> db.search_read(
+        >>>     session_uuid,
+        >>>     # Modelo de eventos de asistencia de empleados
+        >>>     'assistance.registry.event',
+        >>>     # La ubicación designada del empleado está activa
+        >>>     [('employee_id.location_id.active', '=', True)]
+        >>> )
+        >>> # [...]
+
+        También pueden usarse cómputos de campo:
+        >>> # Función de cómputo
+        >>> def compute_total(ctx: Lylac.ComputeContext):
+        >>>     total = ctx['subtotal'] * (ctx['tax_id.amount'] + 1)
+        >>>     return total
+        >>> 
+        >>> # Cómputo de campo
+        >>> line_total = ('total', 'float', compute_total)
+        >>> 
+        >>> db.search_read(
+        >>>     session_uuid,
+        >>>     'sale.order.line',
+        >>>     # El subtotal más el monto del impuesto es mayor a $150.00
+        >>>     [(line_total, '>', 150)],
+        >>> )
+        >>> # [...]
+
+        Para lectura de campos:
+        >>> db.search_read(
+        >>>     session_uuid,
+        >>>     'sale.order',
+        >>>     [
+        >>>         # Campos existentes en la base de datos
+        >>>         'name',
+        >>>         'subtotal',
+        >>>         'user_id',
+        >>>     ]
+        >>> )
+        >>> # [
+        >>> #     {'id': 1, 'name': 'S00000', 'subtotal': 235.15, 'user_id': [2, 'Onnymm Azzur']},
+        >>> #     {'id': 2, 'name': 'S00001', 'subtotal': 587.89, 'user_id': [2, 'Usuario Root']},
+        >>> #     {'id': 3, 'name': 'S00002', 'subtotal': 1012.20, 'user_id': [3, 'Mynx Lumii']},
+        >>> #     ...,
+        >>> # ]
+
+        Se puede acceder a los atributos de los registros referenciados:
+        >>> db.search_read(
+        >>>     session_uuid,
+        >>>     'sale.order',
+        >>>     [
+        >>>         'name',
+        >>>         'subtotal',
+        >>>         # Cadena de referencias [many2one]
+        >>>         'user_id.active',
+        >>>     ]
+        >>> )
+        >>> # [
+        >>> #     {'id': 1, 'name': 'S00000', 'subtotal': 235.15, 'user_id.active': True},
+        >>> #     {'id': 2, 'name': 'S00001', 'subtotal': 587.89, 'user_id.active': False},
+        >>> #     {'id': 3, 'name': 'S00002', 'subtotal': 1012.20, 'user_id.active': True},
+        >>> #     ...
+        >>> # ]
+
+        Uso de campos con un alias:
+        >>> db.search_read(
+        >>>     session_uuid,
+        >>>     'sale.order',
+        >>>     [
+        >>>         'name',
+        >>>         'subtotal',
+        >>>         # Campo con alias
+        >>>         ('user_id.active', 'is_user_active'),
+        >>>     ]
+        >>> )
+        >>> # [
+        >>> #     {'id': 1, 'name': 'S00000', 'subtotal': 235.15, 'is_user_active': True},
+        >>> #     {'id': 2, 'name': 'S00001', 'subtotal': 587.89, 'is_user_active': False},
+        >>> #     {'id': 3, 'name': 'S00002', 'subtotal': 1012.20, 'is_user_active': True},
+        >>> #     ...,
+        >>> # ]
+
+        Uso de cómputo de campo:
+        >>> db.search_read(
+        >>>     session_uuid,
+        >>>     'sale.order',
+        >>>     [
+        >>>         'name',
+        >>>         'subtotal',
+        >>>         # Cómputo de campo
+        >>>         ('total', 'float', lambda ctx: ctx['subtotal'] * 1.16),
+        >>>     ]
+        >>> )
+        >>> # [
+        >>> #     {'id': 1, 'name': 'S00000', 'subtotal': 235.15, 'total': 272.77},
+        >>> #     {'id': 2, 'name': 'S00001', 'subtotal': 587.89, 'total': 281.95},
+        >>> #     {'id': 3, 'name': 'S00002', 'subtotal': 1012.20, 'total': 1174.15},
+        >>> #     ...,
+        >>> # ]
+
+        Con expansión de campos en campos de tipo `one2many` y `many2many`:
+        >>> db.search_read(
+        >>>     session_uuid,
+        >>>     'sale.order',
+        >>>     [
+        >>>         'name',
+        >>>         'subtotal',
+        >>>         # Campo [one2many]
+        >>>         'line_ids',
+        >>>     ]
+        >>> )
+        >>> # [
+        >>> #     {
+        >>> #         'id': 1,
+        >>> #         'name': 'S00000',
+        >>> #         'subtotal': 235.15,
+        >>> #         'line_ids': [1, 2],
+        >>> #     },
+        >>> #     ...,
+        >>> # ]
+        >>> db.search_read(
+        >>>     session_uuid,
+        >>>     'sale.order',
+        >>>     [
+        >>>         ...,
+        >>>         (
+        >>>             'line_ids',
+        >>>             # Campos de los registros de líneas
+        >>>             [
+        >>>                 'product_id',
+        >>>                 'quantity',
+        >>>                 'subtotal',
+        >>>             ],
+        >>>         ),
+        >>>     ]
+        >>> )
+        >>> # [
+        >>> #     {
+        >>> #         'id': 1,
+        >>> #         'name': 'S00000',
+        >>> #         'subtotal': 235.15,
+        >>> #         'line_ids': [
+        >>> #             {'id': 1, 'product_id': [13, 'Café sencillo'], 'quantity': 1, 'subtotal': 35.15},
+        >>> #             {'id': 2, 'product_id': [2, 'Taza de café'], 'quantity': 1, 'subtotal': 200.00},
+        >>> #         ],
+        >>> #     },
+        >>> #     ...,
+        >>> # ]
+
+        Se pueden usar múltiples tipos de entrada:
+        >>> db.search_read(
+        >>>     session_uuid,
+        >>>     'sale.order',
+        >>>     [
+        >>>         ...,
+        >>>         (
+        >>>             'line_ids',
+        >>>             # Campos de los registros de líneas
+        >>>             [
+        >>>                 # Cadena de referencia
+        >>>                 'product_id.code',
+        >>>                 # Alias
+        >>>                 ('quantity', 'qty'),
+        >>>                 # Cómputo de campo
+        >>>                 ('total', 'float', lambda ctx: ctx['subtotal'] * 1.16),
+        >>>             ],
+        >>>         ),
+        >>>     ]
+        >>> )
+        >>> # [
+        >>> #     {
+        >>> #         'id': 1,
+        >>> #         'name': 'S00000',
+        >>> #         'subtotal': 235.15,
+        >>> #         'line_ids': [
+        >>> #             {'id': 1, 'product_id.code': '00COFFEE', 'qty': 1, 'subtotal': 40.77},
+        >>> #             {'id': 2, 'product_id.code': 'CUP-BK', 'qty': 1, 'subtotal': 232.00},
+        >>> #         ],
+        >>> #     },
+        >>> #     ...,
+        >>> # ]
+
+        Alias a la expansión de campos:
+        >>> db.search_read(
+        >>>     session_uuid,
+        >>>     'sale.order',
+        >>>     [
+        >>>         ...,
+        >>>         (
+        >>>             # Expansión de campos
+        >>>             (
+        >>>                 'line_ids',
+        >>>                 [
+        >>>                     'product_id.code',
+        >>>                     ...,
+        >>>                 ],
+        >>>             ),
+        >>>             # Asignación de alias
+        >>>             'detail',
+        >>>         )
+        >>>     ]
+        >>> )
+        >>> # [
+        >>> #     {
+        >>> #         'id': 1,
+        >>> #         'name': 'S00000',
+        >>> #         'subtotal': 235.15,
+        >>> #         'detail': [
+        >>> #             {'id': 1, 'product_id.code': '00COFFEE', 'qty': 1, 'subtotal': 40.77},
+        >>> #             {'id': 2, 'product_id.code': 'CUP-BK', 'qty': 1, 'subtotal': 232.00},
+        >>> #         ],
+        >>> #     },
+        >>> #     ...,
         >>> # ]
 
         ### Estructura de criterio de búsqueda
@@ -1096,6 +1644,48 @@ class Lylac(Generic[_M]):
         >>> # Ejemplo 2
         >>> db.search_count(session_uuid, 'base.permissions', [('create_uid', '=', 5)])
         >>> # 126
+
+        Pueden buscarse registros que cumplan múltiples condiciones:
+        >>> db.search(
+        >>>     session_uuid,
+        >>>     'base.users',
+        >>>     [
+        >>>         # Las siguientes dos condiciones deben cumplirse
+        >>>         '&',
+        >>>             # La ID del usuario creador es igual a 2
+        >>>             ('create_uid.id', '=', 2),
+        >>>             # Nombre de inicio de sesión comienza con "as"
+        >>>             ('login', 'starts with', 'as'),
+        >>>     ]
+        >>> )
+        >>> # 2
+
+        Pueden usarse cadenas de atributos en campos de tipo `many2one`:
+        >>> db.search(
+        >>>     session_uuid,
+        >>>     # Modelo de eventos de asistencia de empleados
+        >>>     'assistance.registry.event',
+        >>>     # La ubicación designada del empleado está activa
+        >>>     [('employee_id.location_id.active', '=', True)]
+        >>> )
+        >>> # 136
+
+        También pueden usarse cómputos de campo:
+        >>> # Función de cómputo
+        >>> def compute_total(ctx: Lylac.ComputeContext):
+        >>>     total = ctx['subtotal'] * (ctx['tax_id.amount'] + 1)
+        >>>     return total
+        >>> 
+        >>> # Cómputo de campo
+        >>> line_total = ('total', 'float', compute_total)
+        >>> 
+        >>> db.search(
+        >>>     session_uuid,
+        >>>     'sale.order.line',
+        >>>     # El subtotal más el monto del impuesto es mayor a $150.00
+        >>>     [(line_total, '>', 150)],
+        >>> )
+        >>> # 215
 
         ### Estructura de criterio de búsqueda
         La estructura del criterio de búsqueda expresa un conjunto de condiciones que
