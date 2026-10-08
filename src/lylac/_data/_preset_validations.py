@@ -12,33 +12,6 @@ from .._typing.type_parameters import _M
 if TYPE_CHECKING:
     from .._contexts import ValidationContext
 
-def _validation__reject_id_values(ctx: 'ValidationContext') -> None:
-
-    # Iteración por cada registro
-    for record in ctx.records:
-        # Si el campo de ID se encuentra en los datos...
-        if FIELD_NAME.ID in record:
-            # Se captura el registro
-            ctx.catch(record)
-
-def _validation__reject_create_and_update_date_values(ctx: 'ValidationContext') -> None:
-
-    # Iteración por cada registro
-    for record in ctx.records:
-        # Si el campo de ID se encuentra en los datos...
-        if FIELD_NAME.CREATE_DATE in record or FIELD_NAME.UPDATE_DATE in record:
-            # Se captura el registro
-            ctx.catch(record)
-
-def _validation__reject_create_and_update_user_values(ctx: 'ValidationContext') -> None:
-
-    # Iteración por cada registro
-    for record in ctx.records:
-        # Si el campo de ID se encuentra en los datos...
-        if FIELD_NAME.CREATE_UID in record or FIELD_NAME.UPDATE_UID in record:
-            # Se captura el registro
-            ctx.catch(record)
-
 def _validation__confirm_required_fields(ctx: 'ValidationContext') -> None:
 
     # Búsqueda de los campos requeridos del modelo
@@ -284,15 +257,6 @@ def _validation__base_model_field__reject_missing_on_delete_on_many2one_ttype(ct
                 # Se captura el error
                 ctx.catch(record)
 
-def _validation__base_users__restrict_manual_password(ctx: 'ValidationContext[_M, _InternalModelSchema.base_users]') -> None:
-
-    # Iteración por cada registro
-    for record in ctx.records:
-        # Si el campo de contraseña se encuentra en los datos
-        if 'password' in record:
-            # Se captura el error
-            ctx.catch(record)
-
 def _validation__base_model_field__reject_related_field_on_one2many_ttype(ctx: 'ValidationContext[_M, _InternalModelSchema.base_model_field]') -> None:
 
     # Iteración por cada registro
@@ -425,24 +389,6 @@ def _validation__base_model_field_selection__unique_selection_value_per_model_fi
 PRESET_VALIDATIONS: list[ValidationProperties[_M]] = [
 
         ValidationProperties(
-            [CRUD_METHOD_NAME.CREATE, CRUD_METHOD_NAME.UPDATE],
-            _validation__reject_id_values,
-            'Los valores de ID no se pueden asignar ni modificar manualmente.',
-        ),
-
-        ValidationProperties(
-            [CRUD_METHOD_NAME.CREATE, CRUD_METHOD_NAME.UPDATE],
-            _validation__reject_create_and_update_date_values,
-            'Los valores de fecha de creación y fecha de modificación no se pueden asignar ni modificar manualmente.',
-        ),
-
-        ValidationProperties(
-            [CRUD_METHOD_NAME.CREATE, CRUD_METHOD_NAME.UPDATE],
-            _validation__reject_create_and_update_user_values,
-            'Los valores de fecha de creación y fecha de modificación no se pueden asignar ni modificar manualmente.',
-        ),
-
-        ValidationProperties(
             CRUD_METHOD_NAME.CREATE,
             _validation__confirm_required_fields,
             'El campo [{value}] es requerido',
@@ -464,13 +410,6 @@ PRESET_VALIDATIONS: list[ValidationProperties[_M]] = [
             [CRUD_METHOD_NAME.CREATE, CRUD_METHOD_NAME.UPDATE],
             _validation__prevent_create_or_update_on_computed_fields,
             'El campo [{value}] es computado y no se le puede asignar un valor explícito diferente al calculado.',
-        ),
-
-        ValidationProperties(
-            [CRUD_METHOD_NAME.CREATE, CRUD_METHOD_NAME.UPDATE],
-            _validation__base_users__restrict_manual_password,
-            'La contraseña no se puede establecer manualmente.',
-            MODEL_NAME.BASE_USERS,
         ),
 
         ValidationProperties(
