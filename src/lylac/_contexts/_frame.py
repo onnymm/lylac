@@ -172,7 +172,7 @@ class FrameContext(Generic[_M], Interface_FrameContext[_M]):
     ) -> Interface_FrameContext[_M]:
 
         # Creación de un contexto de portal de frame
-        frame_ctx = FrameContext[_M](model_name, self._conn, self._database_metadata, self._computation_engine, self._models_bearer)
+        frame_ctx = FrameContext[_M](model_name, self.execution_ctx)
 
         return frame_ctx
 
