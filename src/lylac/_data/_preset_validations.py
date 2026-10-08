@@ -226,7 +226,7 @@ def _validation__base_model_field__forbid_duplicated_labels_in_same_model(ctx: '
         record['label']
         for record in ctx.search_read(
             'base.model.field',
-            [('model', '=', ctx.model_name)],
+            [('model_id.model', '=', ctx.model_name)],
             fields= ['label']
         )
     ]
