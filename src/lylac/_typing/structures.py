@@ -375,7 +375,7 @@ Las llaves y valores del diccionario son:
 - `'clear'`: Literal `True`.
 """
 
-CriteriaValue = Union[ ScalarOrIterable[DMLScalarCompatible], 'ValueResolutionFn[_M]' ]
+type CriteriaValue[_M] = Union[ ScalarOrIterable[DMLScalarCompatible], 'ValueResolutionFn[_M]' ]
 
 FieldReference = Union[ FieldName, FieldComputation ]
 
