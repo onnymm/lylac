@@ -1,6 +1,7 @@
 import re
 from typing import TYPE_CHECKING
 from .._constants import CRUD_METHOD_NAME
+from .._constants import FACTORY_FIELDS
 from .._constants import MODEL_NAME
 from .._constants import FIELD_NAME
 from .._constants import TTYPE_NAME
@@ -193,7 +194,11 @@ def _validation__base_model_field__forbid_duplicated_names_in_same_model(ctx: 'V
         for record
         in ctx.search_read(
             'base.model.field',
-            [('model_id.model', '=', ctx.model_name)],
+            [
+                '&',
+                    ('model_id.model', '=', ctx.model_name),
+                    ('name', 'not in', FACTORY_FIELDS),
+            ],
             fields= ['name'],
         )
     ]
@@ -226,7 +231,11 @@ def _validation__base_model_field__forbid_duplicated_labels_in_same_model(ctx: '
         record['label']
         for record in ctx.search_read(
             'base.model.field',
-            [('model_id.model', '=', ctx.model_name)],
+            [
+                '&',
+                    ('model_id.model', '=', ctx.model_name),
+                    ('name', 'not in', FACTORY_FIELDS),
+            ],
             fields= ['label']
         )
     ]
@@ -268,10 +277,12 @@ def _validation__base_model_field__reject_missing_on_delete_on_many2one_ttype(ct
 
     # Iteración por cada registro
     for record in ctx.records:
-        # Si el valor [on_delete] es None...
-        if record.get('on_delete') == None:
-            # Se captura el error
-            ctx.catch(record)
+        # Si el tipo de campo es [many2one]...
+        if record['ttype'] == 'many2one':
+            # Si el valor [on_delete] es None...
+            if record.get('on_delete') == None:
+                # Se captura el error
+                ctx.catch(record)
 
 def _validation__base_users__restrict_manual_password(ctx: 'ValidationContext[_M, _InternalModelSchema.base_users]') -> None:
 
