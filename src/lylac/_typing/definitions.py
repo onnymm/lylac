@@ -187,6 +187,7 @@ class _InternalModelSchema:
         is_computed: TType.Boolean
 
     class base_model_field_selection(_Common, _LabeledModel):
+        name: TType.Char
         field_id: TType.Many2One
 
     class base_model_data(_Common):
