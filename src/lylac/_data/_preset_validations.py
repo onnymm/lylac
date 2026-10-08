@@ -197,7 +197,7 @@ def _validation__base_model_field__forbid_duplicated_names_in_same_model(ctx: 'V
             [
                 '&',
                     ('model_id.model', '=', ctx.model_name),
-                    ('name', 'not in', FACTORY_FIELDS),
+                    ('state', '!=', 'base'),
             ],
             fields= ['name'],
         )
@@ -234,7 +234,7 @@ def _validation__base_model_field__forbid_duplicated_labels_in_same_model(ctx: '
             [
                 '&',
                     ('model_id.model', '=', ctx.model_name),
-                    ('name', 'not in', FACTORY_FIELDS),
+                    ('state', '!=', 'base'),
             ],
             fields= ['label']
         )
@@ -329,7 +329,7 @@ def _validation__base_model_field__validate_related_field(ctx: 'ValidationContex
             related_field_name = record['related_field']
 
             # Comprobación de la existencia del campo
-            count = ctx.search(
+            count = ctx.search_count(
                 'base.model.field',
                 [
                     '&',
@@ -377,7 +377,7 @@ def _validation__base_model_field__unique_related_field(ctx: 'ValidationContext[
                         '&',
                             ('related_field', '=', related_field_name),
                             '&',
-                                ('model', '=', ctx.model_name),
+                                ('model_id.model', '=', ctx.model_name),
                                 ('related_model_id.id', '=', related_model_id),
                 ]
             )
