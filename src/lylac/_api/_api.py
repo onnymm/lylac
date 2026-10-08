@@ -28,6 +28,7 @@ class _MainAPI(Generic[_M]):
     compute: _Interface_Compute[_M]
     policies: _Interface_Policies[_M]
     server_tasks: _Interface_ServerTasks[_M]
+    validations: _Interface_Validations[_M]
     env: _Interface_UserEnv[_M]
     crud: _Interface_CRUD[_M]
 

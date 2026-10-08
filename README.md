@@ -51,6 +51,9 @@ pip install git+https://github.com/onnymm/lylac.git
 - **[`AutomationContext` — Contexto de automatización](#automationcontext-contexto-de-automatización)**
     - **[`records` — Lista de registros](#records-lista-de-registros-contexto-de-automatización)**
 - **[`ServerTaskContext` — Contexto de tarea de servidor](#servertaskcontext-contexto-de-tarea-de-servidor)**
+- **[`ValidationContext` — Contexto de validación](#validationcontext-contexto-de-validación)**
+    - **[`catch` — Capturar registro con error](#catch-capturar-registro-con-error-contexto-de-validación)**
+    - **[`find_duplicated_composite_keys` — Encontrar llaves compuestas duplicadas](#find_duplicated_composite_keys-encontrar-llaves-compuestas-duplicadas-contexto-de-validación)**
 - **[`ValueResolutionContext` — Contexto de resolución de valor](#valueresolutioncontext-contexto-de-resolución-de-valor)**
     - **[`record_data` — Datos de registro](#record_data-datos-de-registro-contexto-de-resolución-de-valor)**
 
@@ -67,6 +70,11 @@ pip install git+https://github.com/onnymm/lylac.git
 **[AUTOMATIZACIONES](#automatizaciones)**
 - **[Registro de automatizaciones](#registro-de-automatizaciones)**
 - **[Ejecucución de automatizaciones](#ejecucución-de-automatizaciones)**
+
+**[VALIDACIONES](#validaciones)**
+- **[Flujo de las validaciones](#flujo-de-las-validaciones)**
+- **[Registro de validaciones](#registro-de-validaciones)**
+
 
 **[COMANDOS DE RELACIÓN](#comandos-de-relación)**
 - **[`RelationCommand.Create` — Comando de relación de creación](#relationcommandcreate-comando-de-relación-de-creación)**
@@ -2317,7 +2325,7 @@ Este método se usa para obtener la ID de un registro en la base de datos señal
 
 **Parámetros**
 
-- `ref`: *str* Referencia única de mapeo de datos.
+- `ref`: *str* — Referencia única de mapeo de datos.
 
 **Retorno**
 
@@ -2425,6 +2433,51 @@ La clase de contexto de tarea de servidor es usada como argumento en las funcion
 - **[`update` — Actualización de registros](#update-actualización-de-registros-1)**
 - **[`delete` — Eliminación de registros](#delete-eliminación-de-registros-1)**
 - **[`get_resource_id` — Obtención de ID de recurso](#get_resource_id-obtención-de-id-de-recurso)**
+
+----
+
+### `ValidationContext` Contexto de validación
+La clase de contexto de validación es usada como argumento en las funciones de validación cuando se crean o actualizan registros y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listadas a continuación:
+
+- **[`uid` — ID del usuario que ejecuta la transacción](#uid-id-del-usuario-que-ejecuta-la-transacción)**
+- **[`create` — Creación de registros](#create-creación-de-uno-o-muchos-registros-1)**
+- **[`search` — Búsqueda de registros](#search-búsqueda-de-registros-1)**
+- **[`read` — Lectura de registros](#read-lectura-de-registros-1)**
+- **[`search_read` — Búsqueda y lectura de registros](#search_read-búsqueda-y-lectura-de-registros-1)**
+- **[`search_count` — Conteo de búsqueda](#search_count-conteo-de-búsqueda-1)**
+- **[`update` — Actualización de registros](#update-actualización-de-registros-1)**
+- **[`delete` — Eliminación de registros](#delete-eliminación-de-registros-1)**
+- **[`get_resource_id` — Obtención de ID de recurso](#get_resource_id-obtención-de-id-de-recurso)**
+
+Además de ello, cuenta también con los métodos listados.
+
+----
+
+#### `catch` Capturar registro con error (Contexto de validación)
+Este método permite capturar un registro para mostrarlo como error al finalizar las validaciones. Se necesita que al menos un registro entre a este método para que la ejecución de una transacción sea abortada.
+
+**Parámetros**
+
+- `record`: `Record` — Registro que no pasa la validación.
+- `value`: `Any` (Opcional) — Valor de error.
+
+**Retorno**
+
+*Este método no retorna ningún valor.*
+
+----
+
+#### `find_duplicated_composite_keys` Encontrar llaves compuestas duplicadas (Contexto de validación)
+Este método permite encontrar registros cuyos valores en una combinación de nombres de campo provistos estén duplicados y retorna éstos para ser revisados.
+
+**Parámetros**
+
+`records`: `Iterable`[`_Record`] — Iterable de registros a evaluar.
+`field_names_composite_key`: `Iterable`[[FieldName](#fieldname-nombre-de-campo-existente-en-el-modelo)] — Iterable de nombres de campo que se usarán como combinaciones únicas de valor.
+
+**Retorno**
+
+`found_records`: `list`[`_Record`] — Lista de registros que se encontraron con combinaciones de valores duplicados.
 
 ----
 
@@ -2705,6 +2758,168 @@ db.task(session_uuid, 'update_data_from_api')
 - `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
 
 ----
+
+## Validaciones
+Una validación es una regla que comprueba que los datos involucrados en una operación cumplen las condiciones establecidas por el modelo o por el framework. Una validación puede inspeccionar tanto los valores que se están creando o modificando como otros datos relacionados necesarios para determinar si la operación es válida.
+
+Cuando una validación encuentra una condición que no se cumple, puede capturar el registro y, opcionalmente, el valor del campo que provocó la infracción. Una vez finalizada la ejecución de las validaciones, las infracciones capturadas pueden utilizarse para generar los errores correspondientes e impedir que la operación continúe.
+
+Lylac incluye un conjunto de validaciones predefinidas que protegen las reglas fundamentales del framework. Entre ellas se encuentran la comprobación de campos requeridos, la validación de valores de selección, la protección de campos de solo lectura y la prohibición de asignar valores explícitos a campos computados.
+
+Las validaciones también pueden utilizarse para comprobar reglas más específicas de una entidad. Por ejemplo, una validación puede impedir que existan nombres de campo duplicados dentro de un mismo modelo o comprobar que el nombre de un modelo siga la nomenclatura establecida por el framework.
+
+### Flujo de las validaciones
+Antes de que las validaciones comiencen a realizarse, los datos de entrada son filtrados por tipo de dato, descartando los tipos de dato `one2many` y `many2many`. Esto ocurre porque los valores codificados como comandos de relación no se validarán hasta que éstos sean transformados a comandos CRUD.
+
+Una vez filtrados los datos éstos son parseados. Esto ocurre porque si, por ejemplo, se valida un valor de fecha comprobando si éste es mayor o menor a un valor específico, esto arrojará un error si el usuario introdujo una cadena de texto en formato ISO 8601 ya que los valores de tipo `str` no soportan operaciones `>`, `<`, `>=` y `<=`.
+
+Los parseos son los siguientes
+| TType         | Parseo                                              |
+|---------------|-----------------------------------------------------|
+| `'integer'`   | `int`                                               |
+| `'char'`      | `str`                                               |
+| `'float'`     | `float`                                             |
+| `'boolean'`   | `bool`                                              |
+| `'date'`      | `datetime.date`                                     |
+| `'datetime'`  | `datetime.datetime`                                 |
+| `'time'`      | `datetime.time`                                     |
+| `'duration'`  | `datetime.timedelta`                                |
+| `'file'`      | `IO.Bytes`                                          |
+| `'text'`      | `str`                                               |
+| `'selection'` | `str`                                               |
+| `'many2one'`  | `int`                                               |
+| `'json'`      | [JSONLike](#jsonlike-estructura-equivalente-a-json) |
+
+Dentro del flujo de una validación, normalmente se iteran los registros y se validan uno por uno o se [buscan combinaciones de valores duplicados](#find_duplicated_composite_keys-encontrar-llaves-compuestas-duplicadas-contexto-de-validación). Cuando un registro infrinje una validación, se captura éste para mostrarse al finalizar todas las validaciones. Se requiere que al menos un registro infrinja una validación para abortar la transacción completa.
+
+```py
+# Iteración por cada registro a validar
+for record in ctx.records:
+    # Validación
+    ...
+    # Si el registro infrinje la validación...
+    if ...:
+        # Captura del error
+        ctx.catch(record)
+```
+
+```py
+# Búsqueda de combinaciones de valores duplicados
+records_with_duplicates = ctx.find_duplicated_composite_keys(
+    ctx.records,
+    ['field_a', 'field_b'],
+)
+
+# Si se encontraron duplicados...
+if records_with_duplicates:
+    for record in records_with_duplicates:
+        # Captura del error
+        ctx.catch(record)
+```
+
+### Registro de validaciones
+Una validación es básicamente una función en Python pero que cumple con una estructura especial para ser ejecutada por Lylac directamente cuando se requieren validar los datos de registro en una operación de creación o modificación.
+
+La convención de nomenclatura de las validaciones sigue la siguiente estrucutra:
+
+`_validation` + `__` + *nombre del modelo (si aplica)* + `__` + *nombre de la validación*
+
+Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas tareas de servidor parecidas en modelos parecidos.
+
+Por ejemplo, existe una validación para restringir la entrada de valores de contraseña en creación o modificación directa de usuarios en el modelo `base.users` ya que estos valores requieren ser hasheados antes de almacenarse en la base de datos (Para esto, el cambio de contraseña se hace por medio del modelo `base.users.update.password`).
+
+La validación entonces se llama `restrict_manual_password` y se construye con la siguiente nomenclatura:
+
+`_validation` + `__` + `base_users` + `__` + `restrict_manual_password`
+
+`_validation__base_users__restrict_manual_password`
+
+En este caso, los `.` en el nombre del modelo se reemplazan por `_` para ser caracteres válidos en el nombre de una función.
+
+Para tipar el argumento `ctx` se puede usar el tipado `.ValidationContext` integrado en Lylac que nos ahorra el tener que importar tipados desde algún submódulo especial.
+
+```py
+def _validation__base_users__restrict_manual_password(ctx: Lylac.ValidationContext) -> None:
+
+    # Iteración por cada registro
+    for record in ctx.records:
+        # Si el campo de contraseña se encuentra en los datos
+        if 'password' in record:
+            # Se captura el error
+            ctx.catch(record)
+```
+
+Una vez creada nuestra función de validación, falta decorarla la API integrada accesible desde la instancia creada:
+```py
+@db.api.validations.register(
+    ['create', 'update'],
+    'base.users',
+    'La contraseña no se puede establecer manualmente.'
+)
+def _validation__base_users__restrict_manual_password(ctx: Lylac.ValidationContext) -> None:
+
+    # Iteración por cada registro
+    for record in ctx.records:
+        # Si el campo de contraseña se encuentra en los datos
+        if 'password' in record:
+            # Se captura el error
+            ctx.catch(record)
+```
+
+Entonces la validación se llevará a cabo cuando se creen o modifiquen registros en el modelo `base.users` y, cuando la validación se infrinja, el mensaje *La contraseña no se puede establecer manualmente.* se mostrará tras finalizar todas las validaciones, junto con otros errores si es que más de una validación se infringió.
+
+```py
+db.create(
+    session_uuid,
+    'base.users',
+    {
+        'name': 'Onnymm Azzur',
+        'login': 'onnymm',
+        'password': 'zapatito123',
+    }
+)
+# "La contraseña no se puede establecer manualmente"
+# ...
+# -------------------------------------------------------------------
+# ValidationError: Las validaciones no pasaron.
+```
+
+```py
+db.create(
+    session_uuid,
+    'base.users',
+    {
+        'id': 'ID0001',
+        # 'name': 'Onnymm Azzur',
+        'login': 'onnymm',
+        'password': 'zapatito123',
+    }
+)
+# "Los valores de ID no se pueden asignar ni modificar manualmente."
+# "El campo [name] es requerido."
+# "La contraseña no se puede establecer manualmente"
+# ...
+# -------------------------------------------------------------------
+# ValidationError: Las validaciones no pasaron.
+```
+
+Para el valor de error de un valor se usa el argumento posicional `value` del método [catch](#catch-capturar-registro-con-error-contexto-de-validación) y en el valor del mensaje de error se usa la codificación `{value}`:
+```py
+@db.api.validations.register(
+    'create',
+    ...,
+    'El campo [{value}] es requerido',
+)
+def _validation__confirm_required_fields(ctx: 'ValidationContext') -> None:
+    for record in ctx.records:
+        ctx.catch(record, missing_required_field)
+```
+----
+
+
+
+
+
 
 ## Comandos de relación
 Este tipo de dato representa un diccionario que contiene comandos de modificación de los registros referenciados en campos de tipo `one2many` y `many2many` ya sea crear, añadir, desvincular, reemplazar o limpiar la lista de registros relacionados o modificando registros específicos desde el registro que los referencía.
