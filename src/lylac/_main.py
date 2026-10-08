@@ -363,6 +363,9 @@ class Lylac(Generic[_M]):
             # Se construye la estructura de la base de datos
             self._build_database_structure(build_models_fn)
 
+        # Se activa el motor de validaciones
+        self._validations.activate()
+
     def populate_if_first_initialization(
         self,
     ) -> None:

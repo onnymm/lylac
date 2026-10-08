@@ -86,6 +86,10 @@ class ValidationEngine(Generic[_M]):
             # Registro de las propiedades de validación por la transacción y el nombre del modelo
                 self._hub[validation_properties.transaction][model_name][callback_name] = validation_properties
 
+    def activate(
+        self,
+    ) -> None:
+
         # Se activa el motor de validaciones
         self._active = True
 
