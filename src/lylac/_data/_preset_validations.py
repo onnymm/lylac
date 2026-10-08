@@ -193,7 +193,7 @@ def _validation__base_model_field__forbid_duplicated_names_in_same_model(ctx: 'V
         for record
         in ctx.search_read(
             'base.model.field',
-            [('model', '=', ctx.model_name)],
+            [('model_id.model', '=', ctx.model_name)],
             fields= ['name'],
         )
     ]
