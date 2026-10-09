@@ -31,34 +31,6 @@ pip install git+https://github.com/onnymm/lylac.git
     - **[Parámetros opcionales](#parámetros-opcionales)**
 - **[Creación de la base de datos](#creación-de-la-base-de-datos)**
 
-**[CONTEXTOS](#contextos)**
-
-- **[`BaseContext` — Contexto base](#basecontext-contexto-base)**
-    - **[`uid` — ID del usuario que ejecuta la transacción](#uid-id-del-usuario-que-ejecuta-la-transacción)**
-    - **[`create` — Creación de registros](#create-creación-de-uno-o-muchos-registros-1)**
-    - **[`search` — Búsqueda de registros](#search-búsqueda-de-registros-1)**
-    - **[`read` — Lectura de registros](#read-lectura-de-registros-1)**
-    - **[`search_read` — Búsqueda y lectura de registros](#search_read-búsqueda-y-lectura-de-registros-1)**
-    - **[`search_count` — Conteo de búsqueda](#search_count-conteo-de-búsqueda-1)**
-    - **[`update` — Actualización de registros](#update-actualización-de-registros-1)**
-    - **[`delete` — Eliminación de registros](#delete-eliminación-de-registros-1)**
-    - **[`get_resource_id` — Obtención de ID de recurso](#get_resource_id-obtención-de-id-de-recurso)**
-- **[`ExecutionContext` — Contexto de ejecución](#executioncontext-contexto-de-ejecución)**
-    - **[`commit` — Commit en la base de datos](#commit-commit-en-la-base-de-datos)**
-- **[`ActionContext` — Contexto de acción](#actioncontext-contexto-de-acción)**
-    - **[`data` Datos del registro](#data-datos-del-registro-contexto-de-acción)**
-    - **[`record_id` ID de registro](#record_id-id-de-registro-contexto-de-acción)**
-- **[`AutomationContext` — Contexto de automatización](#automationcontext-contexto-de-automatización)**
-    - **[`records` — Lista de registros](#records-lista-de-registros-contexto-de-automatización)**
-- **[`ServerTaskContext` — Contexto de tarea de servidor](#servertaskcontext-contexto-de-tarea-de-servidor)**
-- **[`ValidationContext` — Contexto de validación](#validationcontext-contexto-de-validación)**
-    - **[`catch` — Capturar registro con error](#catch-capturar-registro-con-error-contexto-de-validación)**
-    - **[`find_duplicated_composite_keys` — Encontrar llaves compuestas duplicadas](#find_duplicated_composite_keys-encontrar-llaves-compuestas-duplicadas-contexto-de-validación)**
-- **[`PoliciesContext` — Contexto de políticas](#policiescontext-contexto-de-políticas)**
-    - **[`catch` — Capturar registro con error](#catch-capturar-registro-con-error-contexto-de-políticas)**
-- **[`ValueResolutionContext` — Contexto de resolución de valor](#valueresolutioncontext-contexto-de-resolución-de-valor)**
-    - **[`record_data` — Datos de registro](#record_data-datos-de-registro-contexto-de-resolución-de-valor)**
-
 **[ACCIONES](#acciones)**
 
 - **[Registro de acciones](#registro-de-acciones)**
@@ -89,6 +61,34 @@ pip install git+https://github.com/onnymm/lylac.git
 - **[`RelationCommand.Unlink` — Comando de relación de desvinculación](#relationcommandunlink-comando-de-relación-de-desvinculación)**
 - **[`RelationCommand.Delete` — Comando de relación de eliminación](#relationcommanddelete-comando-de-relación-de-eliminación)**
 - **[`RelationCommand.Clear` — Comando de relación de limpieza](#relationcommandclear-comando-de-relación-de-limpieza)**
+
+**[CONTEXTOS](#contextos)**
+
+- **[`BaseContext` — Contexto base](#basecontext-contexto-base)**
+    - **[`uid` — ID del usuario que ejecuta la transacción](#uid-id-del-usuario-que-ejecuta-la-transacción)**
+    - **[`create` — Creación de registros](#create-creación-de-uno-o-muchos-registros-1)**
+    - **[`search` — Búsqueda de registros](#search-búsqueda-de-registros-1)**
+    - **[`read` — Lectura de registros](#read-lectura-de-registros-1)**
+    - **[`search_read` — Búsqueda y lectura de registros](#search_read-búsqueda-y-lectura-de-registros-1)**
+    - **[`search_count` — Conteo de búsqueda](#search_count-conteo-de-búsqueda-1)**
+    - **[`update` — Actualización de registros](#update-actualización-de-registros-1)**
+    - **[`delete` — Eliminación de registros](#delete-eliminación-de-registros-1)**
+    - **[`get_resource_id` — Obtención de ID de recurso](#get_resource_id-obtención-de-id-de-recurso)**
+- **[`ExecutionContext` — Contexto de ejecución](#executioncontext-contexto-de-ejecución)**
+    - **[`commit` — Commit en la base de datos](#commit-commit-en-la-base-de-datos)**
+- **[`ActionContext` — Contexto de acción](#actioncontext-contexto-de-acción)**
+    - **[`data` Datos del registro](#data-datos-del-registro-contexto-de-acción)**
+    - **[`record_id` ID de registro](#record_id-id-de-registro-contexto-de-acción)**
+- **[`AutomationContext` — Contexto de automatización](#automationcontext-contexto-de-automatización)**
+    - **[`records` — Lista de registros](#records-lista-de-registros-contexto-de-automatización)**
+- **[`ServerTaskContext` — Contexto de tarea de servidor](#servertaskcontext-contexto-de-tarea-de-servidor)**
+- **[`ValidationContext` — Contexto de validación](#validationcontext-contexto-de-validación)**
+    - **[`catch` — Capturar registro con error](#catch-capturar-registro-con-error-contexto-de-validación)**
+    - **[`find_duplicated_composite_keys` — Encontrar llaves compuestas duplicadas](#find_duplicated_composite_keys-encontrar-llaves-compuestas-duplicadas-contexto-de-validación)**
+- **[`PoliciesContext` — Contexto de políticas](#policiescontext-contexto-de-políticas)**
+    - **[`catch` — Capturar registro con error](#catch-capturar-registro-con-error-contexto-de-políticas)**
+- **[`ValueResolutionContext` — Contexto de resolución de valor](#valueresolutioncontext-contexto-de-resolución-de-valor)**
+    - **[`record_data` — Datos de registro](#record_data-datos-de-registro-contexto-de-resolución-de-valor)**
 
 **[TIPADOS](#tipados)**
 - **[`_M` — Nombre de modelo personalizado](#_m-nombre-de-modelo-personalizado)**
@@ -1320,6 +1320,723 @@ Al ejecutar el archivo por primera vez, se imprimirá la siguiente leyenda en co
 La base de datos de inicializó correctamente.
 ```
 
+## Acciones
+Una acción es una operación ejecutable asociada a un modelo que permite realizar una serie de operaciones a partir de un registro de dicho modelo.
+
+Las acciones son implementadas mediante funciones que reciben un [contexto de acción](#actioncontext-contexto-de-acción) que contiene la ID del registro sobre el que deben operar así como campos declarados por en el [registro](#registro-de-acciones) de la acción para poder leerse y consumirse. A partir de este registro, una acción puede consultar o modificar sus valores, crear registros relacionados, modificar otros registros y ejecutar otras acciones.
+
+Una acción puede estar compuesta por múltiples operaciones. Todas estas operaciones forman parte de la misma ejecución y, cuando corresponda, de la misma transacción, por lo que un error durante su ejecución puede provocar que los cambios realizados sean revertidos conjuntamente.
+
+Por ejemplo, una acción de confirmación podría validar el estado de un registro, modificar sus valores, crear un registro relacionado y ejecutar posteriormente otra acción. Para el sistema, todas estas operaciones forman parte de una única acción.
+
+----
+
+### Registro de acciones
+Una acción es básicamente una función en Python pero que cumple con una estructura especial para ser ejecutada por Lylac directamente cuando se invoca ésta por su nombre.
+
+La convención de nomenclatura de las acciones sigue la siguiente estructura:
+
+`_action` + `__` + *nombre del modelo* + `__` + *nombre de la acción*
+
+Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas acciones parecidas en modelos parecidos.
+
+Por ejemplo, si quisiéramos construir una acción para el modelo `base.users` para archivar un usuario nombrando nuestra acción como `archive` la nomenclatura dice que la función se llamaría:
+
+`_action` + `__` + `base_users` + `__` + `archive`
+
+`_action__base_users__archive`
+
+En este caso, los `.` en el nombre del modelo se reemplazan por `_` para ser caracteres válidos en el nombre de una función.
+
+Para tipar el argumento `ctx` se puede usar el tipado `.ActionContext` integrado en Lylac que nos ahorra el tener que importar tipados desde algún submódulo especial.
+
+Ejemplo de la construcción de la acción:
+```py
+def _action__base_users__archive(ctx: Lylac.ActionContext):
+
+    # Obtención de la ID del registro
+    record_id = ctx.record_id
+
+    # Actualización del valor de usuario activo
+    ctx.update('base.users', record_id, {'active': True})
+```
+
+El commit en la base de datos se hará automáticamente al finalizar todas las operaciones de la transacción.
+
+Una vez creada nuestra función de acción, falta decorarla con la API integrada accesible desde la instancia creada:
+```py
+@db.api.actions.register(
+    'base.users',
+    'archive',
+)
+def _action__base_users__archive(ctx: Lylac.ActionContext):
+
+    # Obtención de la ID del registro
+    record_id = ctx.record_id
+
+    # Actualización del valor de usuario activo
+    ctx.update('base.users', record_id, {'active': True})
+```
+
+**Parámetros del decorador**
+
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `name`: *str* — Nombre de la acción.
+- `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer antes de la ejecución de la acción, accesibles por el atributo `data`. Si el parámetro no se especifica, solo el valor `'id'` estará disponible.
+
+**Parámetros de la función decorada**
+
+- `ctx`: *[ActionContext](#actioncontext-contexto-de-acción)[[_R](#_r-parámetro-de-estructura-de-registro-dinámico)]* Contexto de acción.
+
+> ℹ️ Las funciones de acción no deben retornar ningún valor u objeto ya que éste no será retornado en la ejecución de éstas. Si se desea retornar un valor u objeto véase [Ejecutar transacción](#execute_transaction-ejecutar-transacción).
+
+----
+
+### Ejecución de acciones
+Las acciones se ejecutan sobre un registro especificado, en un modelo especificado.
+
+Ejemplo:
+```py
+db.action(session_uuid, 'base.users', 'archive', 3)
+# True
+```
+
+En el fragmento de código ejecutamos una acción que archiva al registro con ID `3` del modelo `base.users`.
+
+**Parámetros**
+- `session_uuid`: *str* — UUID de sesión.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `name`: *str* — Nombre de la acción.
+- `record_id`: *int* — ID del registro sobre el que se va a ejecutar la acción.
+
+**Retorno**
+- `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
+
+----
+
+## Automatizaciones
+Una automatización es una regla asociada a un modelo que permite ejecutar una operación automáticamente cuando ocurre un evento determinado.
+
+Una automatización define las circunstancias bajo las cuales debe ejecutarse y la operación que debe realizarse cuando dichas circunstancias se cumplen. La operación puede consistir en modificar el registro que originó el evento, crear o modificar otros registros, ejecutar una acción o realizar cualquier otra operación permitida por el framework.
+
+Las automatizaciones permiten asociar comportamiento a determinados eventos sin que el código que origina dicho evento tenga que invocar explícitamente la operación correspondiente.
+
+Las automatizaciones pueden ejecutarse tras un evento de creación, modificación o eliminación de registros, en un modelo especificado.
+
+----
+
+### Registro de automatizaciones
+
+Una automatización es básicamente una función en Python pero que cumple con una estructura especial para ser ejecutada por Lylac directamente cuando se desencadena ésta tras una operación CRUD en un modelo en específico.
+
+La convención de nomenclatura de las automatizaciones sigue la siguiente estructura:
+
+`_automation` + `__` + *nombre del modelo* + `__` + *tipo de transacción CRUD* + `__` + *nombre de la automatización*
+
+Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas automatizaciones parecidas en modelos parecidos.
+
+Por ejemplo, si quisiéramos construir una automatización para el modelo `base.users` para añadirle permisos prestablecidos a un usuario cuando éste se crea, nombraríamos nuestra función a algo como `add_preset_permissions` la nomenclatura dice que la función se llamaría:
+
+`_automation` + `__` + `base_users` + `__` + `create` + `__` + `add_preset_permissions`
+
+`_automation__base_users__create__add_preset_permissions`
+
+En este caso, los `.` en el nombre del modelo se reemplazan por `_` para ser caracteres válidos en el nombre de una función.
+
+Para tipar el argumento `ctx` se puede usar el tipado `.AutomationContext` integrado en Lylac que nos ahorra el tener que importar tipados desde algún submódulo especial.
+
+Ejemplo de la construcción de la automatización:
+```py
+def _automation__base_users__create__add_preset_permissions(ctx: Lylac.AutomationContext):
+    # Iteración por cada registro de usuario creado
+    for user_record in ctx.records
+        # Obtención de la ID del usuario
+        user_id = user_record['id']
+        # Actualización del registro
+        ctx.update('base.users', user_id, {'role_ids': {'add': [basic_role_1_id, basic_role_2_id, ...]}})
+```
+
+El commit en la base de datos se hará automáticamente al finalizar todas las operaciones de la transacción.
+
+Una vez creada nuestra función de automatización, falta decorarla con la API integrada accesible desde la instancia creada:
+```py
+@db.api.automations.register(
+    'create',
+    'base.users'
+)
+def _automation__base_users__create__add_preset_permissions(ctx: Lylac.AutomationContext):
+    # Iteración por cada registro de usuario creado
+    for user_record in ctx.records
+        # Obtención de la ID del usuario
+        user_id = user_record['id']
+        # Actualización del registro
+        ctx.update('base.users', user_id, {'role_ids': {'add': [basic_role_1_id, basic_role_2_id, ...]}})
+```
+
+**Parámetros del decorador**
+- `on`: *[DMLTransaction](#dmltransaction-transacción-dml)* — Transacción tras la que se ejecutará la automatización.
+- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
+- `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer antes de la ejecución de la acción, accesibles por el atributo `data`. Si el parámetro no se especifica, solo el valor `'id'` estará disponible.
+- `execute_only_when` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)[[_M](#_m-nombre-de-modelo-personalizado)]* — Criterio requerido para que la automatización se ejecute sobre el registro.
+
+**Parámetros de la función decorada**
+
+- `ctx`: *[AutomationContext](#automationcontext-contexto-de-automatización)[[_R](#_r-parámetro-de-estructura-de-registro-dinámico)]* — Contexto de automatización.
+
+> ℹ️ Las funciones de automatización no deben retornar ningún valor u objeto ya que éste no será retornado en la ejecución de éstas. Si se desea retornar un valor u objéto véase [Ejecutar transacción](#execute_transaction-ejecutar-transacción).
+
+----
+
+### Ejecucución de automatizaciones
+Las automatizaciones no pueden ejecutarse de forma manual. Éstas se ejecutan tras una operación de creación, modificación o eliminación de registros en un modelo especificado y, opcionalmente, si los registros involucrados cumplen con el criterio establecido para la automatización.
+
+----
+
+## Tareas de servidor
+Una tarea de servidor es una operación que permite ejecutar una serie de procesos con alcance a uno o muchos modelos de la base de datos, tal como lo haría una función común en Python pero sin retornar un valor en concreto.
+
+Las tareas de servidor son útiles para realizar actualizaciones, sincronizaciones periódicas o funciones complejas que involucran muchos registros en uno o varios modelos. Son implementadas mediante funciones que reciben un contexto de tarea de servidor y no deben retornar un valor.
+
+Una tarea de servidor puede estar compuesta por múltiples operaciones. Todas estas operaciones forman parte de la misma ejecución y, cuando corresponda, de la misma transacción, por lo que un error durante su ejecución puede provocar que los cambios realizados sean revertidos conjuntamente.
+
+Por ejemplo, una tarea de servidor podría actualizar un estado o una serie de registros conectándose a una API externa o realizar un reporte a partir una serie de registros al finalizar el día.
+
+### Registro de tareas de servidor
+Una tarea de servidor es básicamente una función en Python pero que cumple con una estructura especial para ser ejecutada por Lylac directamente cuando se invoca ésta por su nombre.
+
+La convención de nomenclatura de las tareas de servidor sigue la siguiente estructura:
+
+`_task` + `__` + *nombre de la tarea de servidor*
+
+Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas tareas de servidor parecidas en modelos parecidos.
+
+Por ejemplo, si quisiéramos construir una tarea de servidor que se conecta a la API de un tercero para actualizar un estado, una serie de registros o algo por el estilo, la nomenclatura dice que la función se llamaría:
+
+`_task` + `__` + `update_data_from_api`
+
+`_task__update_data_from_api`
+
+Para tipar el argumento `ctx` se puede usar el tipado `.ServerTaskContext` integrado en Lylac que nos ahorra el tener que importar tipados desde algún submódulo especial.
+
+Ejemplo de la construcción de la tarea de servidor:
+```py
+def _task__update_data_from_api(ctx: Lylac.ServerTaskContext):
+
+    # Obtención de datos externos
+    data = some_service.fetch_data(...)
+
+    # Procesamiento interno
+    formatted_data = process_data(data)
+
+    # Se guardan los datos en la API
+    ctx.create('service.registry', formatted_data)
+```
+
+El commit en la base de datos se hará automáticamente al finalizar todas las operaciones de la transacción.
+
+Una vez creada nuestra función de tarea de servidor, falta decorarla la API integrada accesible desde la instancia creada:
+```py
+@db.api.server_tasks.register('update_data_from_api')
+def _task__update_data_from_api(ctx: Lylac.ServerTaskContext):
+
+    # Obtención de datos externos
+    data = some_service.fetch_data(...)
+
+    # Procesamiento interno
+    formatted_data = process_data(data)
+
+    # Se guardan los datos en la API
+    ctx.create('service.registry', formatted_data)
+```
+
+**Parámetros del decorador**
+
+- `name`: *str* — Nombre de la tarea de servidor.
+
+> ℹ️ Las funciones de tarea de servidor no deben retornar ningún valor u objeto ya que éste no será retornado en la ejecución de éstas. Si se desea retornar un valor u objeto véase [Ejecutar transacción](#execute_transaction-ejecutar-transacción).
+
+### Ejecución de tareas de servidor
+Las tareas de servidor se ejecutan invocándolas con el nombre con el que fueron registradas. Para más información, véase [Registro de tareas de servidor](#registro-de-tareas-de-servidor).
+
+Ejemplo:
+```py
+db.task(session_uuid, 'update_data_from_api')
+# True
+```
+
+**Parámetros**
+- `session_uuid`: *str* — UUID de sesión.
+- `name`: *str* — Nombre de la tarea de servidor.
+
+**Retorno**
+- `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
+
+----
+
+## Validaciones
+Una validación es una regla que comprueba que los datos involucrados en una operación cumplen las condiciones establecidas por el modelo o por el framework. Una validación puede inspeccionar tanto los valores que se están creando o modificando como otros datos relacionados necesarios para determinar si la operación es válida.
+
+Cuando una validación encuentra una condición que no se cumple, puede capturar el registro y, opcionalmente, el valor del campo que provocó la infracción. Una vez finalizada la ejecución de las validaciones, las infracciones capturadas pueden utilizarse para generar los errores correspondientes e impedir que la operación continúe.
+
+Lylac incluye un conjunto de validaciones predefinidas que protegen las reglas fundamentales del framework. Entre ellas se encuentran la comprobación de campos requeridos, la validación de valores de selección, la protección de campos de solo lectura y la prohibición de asignar valores explícitos a campos computados.
+
+Las validaciones también pueden utilizarse para comprobar reglas más específicas de una entidad. Por ejemplo, una validación puede impedir que existan nombres de campo duplicados dentro de un mismo modelo o comprobar que el nombre de un modelo siga la nomenclatura establecida por el framework.
+
+### Flujo de las validaciones
+Antes de que las validaciones comiencen a realizarse, los datos de entrada son filtrados por tipo de dato, descartando los tipos de dato `one2many` y `many2many`. Esto ocurre porque los valores codificados como [comandos de relación](#comandos-de-relación) no se validarán hasta que éstos sean transformados a comandos CRUD.
+
+Una vez filtrados los datos éstos son parseados. Esto ocurre porque si, por ejemplo, se valida un valor de fecha comprobando si éste es mayor o menor a un valor específico, esto arrojará un error si el usuario introdujo una cadena de texto en formato ISO 8601 ya que los valores de tipo `str` no soportan operaciones `>`, `<`, `>=` y `<=`.
+
+Los parseos son los siguientes
+| TType         | Parseo                                              |
+|---------------|-----------------------------------------------------|
+| `'integer'`   | `int`                                               |
+| `'char'`      | `str`                                               |
+| `'float'`     | `float`                                             |
+| `'boolean'`   | `bool`                                              |
+| `'date'`      | `datetime.date`                                     |
+| `'datetime'`  | `datetime.datetime`                                 |
+| `'time'`      | `datetime.time`                                     |
+| `'duration'`  | `datetime.timedelta`                                |
+| `'file'`      | `IO.Bytes`                                          |
+| `'text'`      | `str`                                               |
+| `'selection'` | `str`                                               |
+| `'many2one'`  | `int`                                               |
+| `'json'`      | [JSONLike](#jsonlike-estructura-equivalente-a-json) |
+
+Dentro del flujo de una validación, normalmente se iteran los registros y se validan uno por uno o se [buscan combinaciones de valores duplicados](#find_duplicated_composite_keys-encontrar-llaves-compuestas-duplicadas-contexto-de-validación). Cuando un registro infrinje una validación, se captura éste para mostrarse al finalizar todas las validaciones. Se requiere que al menos un registro infrinja una validación para abortar la transacción completa.
+
+```py
+# Iteración por cada registro a validar
+for record in ctx.records:
+    # Validación
+    ...
+    # Si el registro infrinje la validación...
+    if ...:
+        # Captura del error
+        ctx.catch(record)
+```
+
+```py
+# Búsqueda de combinaciones de valores duplicados
+records_with_duplicates = ctx.find_duplicated_composite_keys(
+    ctx.records,
+    ['field_a', 'field_b'],
+)
+
+# Si se encontraron duplicados...
+if records_with_duplicates:
+    for record in records_with_duplicates:
+        # Captura del error
+        ctx.catch(record)
+```
+
+### Registro de validaciones
+Una validación es básicamente una función en Python pero que cumple con una estructura especial para ser ejecutada por Lylac directamente cuando se requieren validar los datos de registro en una operación de creación o modificación.
+
+La convención de nomenclatura de las validaciones sigue la siguiente estructura:
+
+`_validation` + `__` + *nombre del modelo (si aplica)* + `__` + *nombre de la validación*
+
+Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas validaciones parecidas en modelos parecidos.
+
+Por ejemplo, existe una validación para validar que los nombres de nuevos modelos en la base de datos cumplen con una estructura de caracteres de la `a` a la `z` en minúsculas, números y solo se delimitan con `.`.
+
+La validación entonces se llama `valid_model_name` y se construye con la siguiente nomenclatura:
+
+`_validation` + `__` + `base_model` + `__` + `valid_model_name`
+
+`_validation__base_model__valid_model_name`
+
+En este caso, los `.` en el nombre del modelo se reemplazan por `_` para ser caracteres válidos en el nombre de una función.
+
+Para tipar el argumento `ctx` se puede usar el tipado `.ValidationContext` integrado en Lylac que nos ahorra el tener que importar tipados desde algún submódulo especial.
+
+```py
+def _validation__base_model__valid_model_name(ctx: Lylac.ValidationContext) -> None:
+
+    # Patrón de estructura válido
+    valid_pattern = r'^[a-z\d\.]*$'
+
+    # Iteración por cada registro
+    for record in ctx.records:
+        # Obtención de nombre de modelo
+        model_name = record['model']
+        # Evaluación de estructura
+        result = re.match(valid_pattern, model_name)
+        # Si la estructura es inválida...
+        if result is None:
+            # Se captura el registro
+            ctx.catch(record)
+```
+
+Una vez creada nuestra función de validación, falta decorarla la API integrada accesible desde la instancia creada:
+```py
+@db.api.validations.register(
+    'create',
+    'base.model',
+    'El nombre de modelo solo puede contener minúsculas, dígitos y puntos.',
+)
+def _validation__base_model__valid_model_name(ctx: Lylac.ValidationContext) -> None:
+
+    # Patrón de estructura válido
+    valid_pattern = r'^[a-z\d\.]*$'
+
+    # Iteración por cada registro
+    for record in ctx.records:
+        # Obtención de nombre de modelo
+        model_name = record['model']
+        # Evaluación de estructura
+        result = re.match(valid_pattern, model_name)
+        # Si la estructura es inválida...
+        if result is None:
+            # Se captura el registro
+            ctx.catch(record)
+```
+
+Entonces la validación se llevará a cabo cuando se creen o modifiquen registros en el modelo `base.model` y, cuando la validación se infrinja, el mensaje *El nombre de modelo solo puede contener minúsculas, dígitos y puntos.* se mostrará tras finalizar todas las validaciones, junto con otros errores si es que más de una validación se infringió.
+
+```py
+db.create(
+    session_uuid,
+    'base.model',
+    {
+        'name': 'hr_employee',
+        'model': 'HR Employee',
+        'label': 'Empleados',
+    }
+)
+# "El nombre de modelo solo puede contener minúsculas, dígitos y puntos."
+# ...
+# -------------------------------------------------------------------
+# ValidationError: Las validaciones no pasaron.
+```
+
+```py
+db.create(
+    session_uuid,
+    'base.model',
+    {
+        # 'name': 'hr_employee',
+        'model': 'HR Employee',
+        'label': 'Empleados',
+    }
+)
+# "El campo [name] es requerido."
+# "El nombre de modelo solo puede contener minúsculas, dígitos y puntos."
+# ...
+# -------------------------------------------------------------------
+# ValidationError: Las validaciones no pasaron.
+```
+
+Para el valor de error de un valor se usa el argumento posicional `value` del método [catch](#catch-capturar-registro-con-error-contexto-de-validación) y en el valor del mensaje de error se usa la codificación `{value}`:
+```py
+@db.api.validations.register(
+    'create',
+    ...,
+    'El campo [{value}] es requerido',
+)
+def _validation__confirm_required_fields(ctx: 'ValidationContext') -> None:
+    for record in ctx.records:
+        ctx.catch(record, missing_required_field)
+```
+----
+
+## Políticas
+Una política es una regla que determina si una operación de creación, modificación o eliminación sobre un modelo específico puede realizarse, de acuerdo con los valores involucrados y las reglas establecidas. A diferencia de las [validaciones](#validaciones), que comprueban si los tipos de datos y las combinaciones de parámetros son válidos para crear o modificar un registro. Las políticas determinan si una operación cumple las restricciones y reglas de negocio aplicables al modelo, al registro o al flujo de trabajo involucrado.
+
+Cuando una política detecta una condición que no se cumple, puede registrar la infracción y capturar, opcionalmente, el registro afectado y el valor del campo que la provocó. Una vez finalizada la ejecución de las políticas, las infracciones registradas pueden utilizarse para generar los errores correspondientes e impedir que la operación continúe.
+
+Lylac incluye un conjunto de políticas predefinidas que protegen las reglas fundamentales del framework. Entre ellas se encuentran la protección de los campos base y la restricción de declarar directamente un valor de contraseña en el modelo de usuarios.
+
+### Flujo de validación de políticas
+Antes de que las validaciones de políticas comiencen a realizarse, los datos de entrada son filtrados por tipo de dato, descartando los tipos de dato `one2many` y `many2many`. Esto ocurre porque los valores codificados como [comandos de relación](#comandos-de-relación) no se validarán hasta que éstos sean transformados a comandos CRUD.
+
+Una vez filtrados los datos éstos son parseados. Esto ocurre porque si, por ejemplo, se valida un valor de fecha comprobando si éste es mayor o menor a un valor específico, esto arrojará un error si el usuario introdujo una cadena de texto en formato ISO 8601 ya que los valores de tipo `str` no soportan operaciones `>`, `<`, `>=` y `<=`.
+
+Los parseos son los siguientes
+| TType         | Parseo                                              |
+|---------------|-----------------------------------------------------|
+| `'integer'`   | `int`                                               |
+| `'char'`      | `str`                                               |
+| `'float'`     | `float`                                             |
+| `'boolean'`   | `bool`                                              |
+| `'date'`      | `datetime.date`                                     |
+| `'datetime'`  | `datetime.datetime`                                 |
+| `'time'`      | `datetime.time`                                     |
+| `'duration'`  | `datetime.timedelta`                                |
+| `'file'`      | `IO.Bytes`                                          |
+| `'text'`      | `str`                                               |
+| `'selection'` | `str`                                               |
+| `'many2one'`  | `int`                                               |
+| `'json'`      | [JSONLike](#jsonlike-estructura-equivalente-a-json) |
+
+Dentro del flujo de una validación de política, se iteran los registros y se validan uno por uno. Cuando un registro infrinje una validación, se captura éste para mostrarse al finalizar todas las validaciones de política. Se requiere que al menos un registro infringa una política para abortar la transacción completa.
+
+```py
+# Iteración por cada registro a validar
+for record in ctx.records:
+    # Validación
+    ...
+    # Si el registro infrinje la validación...
+    if ...:
+        # Captura del error
+        ctx.catch(record)
+```
+
+### Registro de políticas
+Una validación de política es básicamente una función en Python pero que cumple con una estructura especial para ser ejecutada por Lylac directamente cuando se requieren validar los datos de registro en una operación de creación, modificación o eliminación.
+
+La convención de nomenclatura de las políticas sigue la siguiente estructura:
+
+`_policy` + `__` + *nombre del modelo (si aplica)* + `__` + *nombre de la validación*
+
+Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas políticas en modelos parecidos.
+
+Por ejemplo, existe una política que restringe la entrada de valores de contraseña en creación o modificación directa de usuarios en el modelo `base.users` ya que estos valores requires ser hasheados antes de almacenarse en la base de datos (Para esto, el cambio de contraseña se hace por medio del modelo `base.users.update.password`).
+
+La política entonces se llama `forbid_direct_password_input` y se construye con la siguiente nomenclatura:
+
+`_policy` + `__` + `base_users` + `__` + `forbid_direct_password_input`
+
+`_policy__base_users__forbid_direct_password_input`
+
+En este caso, los `.` en el nombre del modelo se reemplazan por `_` para ser caracteres válidos en el nombre de una función.
+
+Para tipar el argumento `ctx` se puede usar el tipado `.PolicyContext` integrado en Lylac que nos ahorra el tener que importar tipado desde algún módulo especia.
+
+```py
+def _policy__base_users__forbid_direct_password_input(ctx: PoliciesContext):
+
+    # Iteración por cada registro
+    for record in ctx.records:
+        # Si el campo de contraseña se encuentra en los datos...
+        if 'password' in record:
+            # Se captura el registro
+            ctx.catch(record, show_error_data= False)
+```
+
+Una vez creada nuestra función de validación, falta decorarla la API integrada accesible desde la instancia creada:
+```py
+@db.api.policies.register(
+    ['create', 'update'],
+    'base.users',
+    'El campo de contraseña no puede ser directamente modificado.',
+)
+def _policy__base_users__forbid_direct_password_input(ctx: PoliciesContext):
+
+    # Iteración por cada registro
+    for record in ctx.records:
+        # Si el campo de contraseña se encuentra en los datos...
+        if 'password' in record:
+            # Se captura el registro
+            ctx.catch(record, show_error_data= False)
+```
+
+Entonces la validación de la política se llevará a cabo cuando se creen o modifiquen registros en el modelo `base.users` y, cuando la política se infringa, el mensaje *El campo de contraseña no puede ser directamente modificado.* se mostrará tras finalizar todas las validaciones de políticas, junto con otros errores si es que más de una política se infringió.
+
+```py
+db.create(
+    session_uuid,
+    'base.users',
+    {
+        'name': 'Onnymm Azzur',
+        'login': 'onnymm',
+        'password': 'zapatito123',
+    }
+)
+# "El campo de contraseña no puede ser directamente modificado."
+# ...
+# -------------------------------------------------------------------
+# PolicyVerificationsFailedError: Las verificaciones no pasaron.
+```
+
+Para mostrar el valor de error de un registro se usa el argumento posicional `value` del método [catch](#catch-capturar-registro-con-error-contexto-de-políticas) y en el valor del mensaje de error se usa la codificación `{value}`:
+```py
+@db.api.policies.register(
+    ['create', 'update'],
+    ...,
+    'El campo {value} no puede ser declarado ni modificado manualmente.',
+)
+def _policy__reject_static_fields(ctx: PoliciesContext):
+
+    # Iteración por cada registro
+    for record in ctx.records:
+        # Iteración por los campos estáticos
+        for static_field in STATIC_FIELDS:
+            # Si existe el campo en los datos...
+            if static_field in record:
+                # Se captura el registro con el campo estático
+                ctx.catch(record, static_field)
+```
+
+----
+
+## Comandos de relación
+Este tipo de dato representa un diccionario que contiene comandos de modificación de los registros referenciados en campos de tipo `one2many` y `many2many` ya sea crear, añadir, desvincular, reemplazar o limpiar la lista de registros relacionados o modificando registros específicos desde el registro que los referencía.
+
+Las llaves y valores del diccionario pueden ser:
+- `'create'`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[[RelationCommand.Create](#relationcommandcreate-comando-de-relación-de-creación)]* — Comando de relación de creación.
+- `'add'`: *[RelationCommand.Add](#relationcommandadd-comando-de-relación-de-adición)* — Comando de relación de adición.
+- `'update'`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[[RelationCommand.Update](#relationcommandupdate-comando-de-relación-de-actualización)]* — Comando de relación de actualización.
+- `'replace'`: *[RelationCommand.Replace](#relationcommandreplace-comando-de-relación-de-reemplazo)* — Comando de relación de reemplazo.
+- `'unlink'`: *[RelationCommand.Unlink](#relationcommandunlink-comando-de-relación-de-desvinculación)* — Comando de relación de desvinculación.
+- `'delete'`: *[RelationCommand.Delete](#relationcommanddelete-comando-de-relación-de-eliminación)* — Comando de relación de eliminación.
+- `'clear'`: *[RelationCommand.Clear](#relationcommandclear-comando-de-relación-de-limpieza)* — Comando de relación de limpieza.
+
+### `RelationCommand.Create` Comando de relación de creación
+El comando de relación de creación permite enviar instrucciones de creación de registros hijos que luego se van a vincular al campo de relación `one2many` o `many2many` (según sea el caso) del registro desde el que se ha codificado el comando.
+
+> El tipo de dato del comando es un diccionario de datos del tipo [InputRecordData](#inputrecorddata-datos-de-registro) que cumple con la forma de los registros del modelo relacionado al campo.
+
+Ejemplo:
+```py
+db.update(
+    'base.users',
+    record_id,
+    {
+        # Campo de tipo [many2many]
+        'role_ids': {
+            # Comando de relación de creación
+            'create': {
+                'name': 'command_admin',
+                'label': 'Administrador de comandos',
+                ...
+            }
+        }
+    }
+)
+```
+
+### `RelationCommand.Add` Comando de relación de adición
+El comando de relación de adición permite enviar instrucciones de adición de registros hijos que luego se van a vincular al campo de relación `many2many` del registro desde el que se ha codificado el comando.
+
+> El tipo de dato del comando es un escalar o iterable de IDs de registros del modelo relacionado al campo.
+
+Ejemplo:
+```py
+db.create(
+    'base.users',
+    {
+        'login': 'lumii',
+        'name': 'Lumii Mynx',
+        # Campo de tipo [many2many]
+        'role_ids': {
+            # Comando de relación de adición
+            'add': [1, 2, 3] # Registros que ya existen
+        }
+    }
+)
+```
+
+### `RelationCommand.Update` Comando de relación de actualización
+El comando de relación de actualización permite enviar instrucciones de modificación de los registros hijos vinculados al campo de relación `one2many` o `many2many` (según sea el caso) del registro desde el que se ha codificado el comando.
+
+> El tipo de dato del comando es una tupla que contiene:
+> 1. Escalar o iterable de IDs de registro a modificar.
+> 2. Diccionario de datos del tipo [InputRecordData](#inputrecorddata-datos-de-registro) que cumple con la forma de los registros del modelo relacionado al campo.
+
+Ejemplo:
+```py
+db.update(
+    'base.users',
+    record_id,
+    {
+        # Campo de tipo [many2many]
+        'role_ids': {
+            # Comando de relación de actualización
+            'update': (
+                # ID a modificar
+                2,
+                {
+                    'name': 'Administrador supremo de comandos',
+                    ...
+                }
+            )
+        }
+    }
+)
+```
+
+### `RelationCommand.Replace` Comando de relación de reemplazo
+El comando de relación de reemplazo permite enviar instrucciones de reemplazo de los registros hijos vinculados al campo de relación `many2many` del registro desde el que se ha codificado el comando por los registros provistos en el comando.
+
+> El tipo de dato del comando es un escalar o iterable de IDs de registros del modelo relacionado al campo.
+
+Ejemplo:
+```py
+db.update(
+    'base.users',
+    record_id,
+    {
+        # Campo de tipo [many2many]
+        'role_ids': {
+            # Comando de relación de reemplazo
+            'replace': [4, 5] # Cualquier otra ID vinculada es reemplazada por estas
+        }
+    }
+)
+```
+
+### `RelationCommand.Unlink` Comando de relación de desvinculación
+El comando de relación de desvinculación permite enviar instrucciones para desvincular registros hijos vinculados al campo de relación `one2many` o `many2many` (según sea el caso) del registro desde el que se ha codificado el comando.
+
+> El tipo de dato del comando es un escalar o iterable de IDs de registros del modelo relacionado al campo.
+
+Ejemplo:
+```py
+db.update(
+    'base.users',
+    {
+        # Campo de tipo [many2many]
+        'role_ids': {
+            # Comando de relación de desvinculación
+            'unlink': [2, 3]
+        }
+    }
+)
+```
+
+### `RelationCommand.Delete` Comando de relación de eliminación
+El comando de relación de eliminación permite enviar instrucciones para eliminar registros hijos vinculados al campo de relación `one2many` o `many2many` (según sea el caso) del registro desde el que se ha codificado el comando.
+
+> El tipo de dato del comando es un escalar o iterable de IDs de registros del modelo relacionado al campo.
+
+Ejemplo:
+```py
+db.update(
+    'base.users',
+    {
+        # Campo de tipo [many2many]
+        'role_ids': {
+            # Comando de relación de eliminación
+            'delete': [6]
+        }
+    }
+)
+```
+
+### `RelationCommand.Clear` Comando de relación de limpieza
+El comando de relación de limpieza permite enviar instrucciones para limpiar la relación con todos los registros hijos vinculados al campo de relación `one2many` o `many2many` (según sea el caso) del registro desde el que se ha codificado el comando. Este comando desvincula los registros sin eliminarlos, tal como lo haría el comando *[RelationCommand.Unlink](#relationcommandunlink-comando-de-relación-de-desvinculación)* pero sin especificar explícitamente las IDs y desvinculando todos los registros sin importar cuáles son.
+
+> El tipo de dato del comando es un Literal el `True`.
+
+Ejemplo:
+```py
+db.update(
+    'base.users',
+    {
+        # Campo de tipo [many2many]
+        'role_ids': {
+            # Comando de relación de eliminación
+            'clear': True # Se le remueven todos los roles al usuario
+        }
+    }
+)
+```
+
+----
+
 ## Contextos
 
 Los contextos son objetos que reúnen el estado y los recursos necesarios para ejecutar una operación dentro de un determinado ámbito de ejecución.
@@ -2543,715 +3260,6 @@ Datos de registro del que proviene la función a ejecutar.
 
 ----
 
-## Acciones
-Una acción es una operación ejecutable asociada a un modelo que permite realizar una serie de operaciones a partir de un registro de dicho modelo.
-
-Las acciones son implementadas mediante funciones que reciben un [contexto de acción](#actioncontext-contexto-de-acción) que contiene la ID del registro sobre el que deben operar así como campos declarados por en el [registro](#registro-de-acciones) de la acción para poder leerse y consumirse. A partir de este registro, una acción puede consultar o modificar sus valores, crear registros relacionados, modificar otros registros y ejecutar otras acciones.
-
-Una acción puede estar compuesta por múltiples operaciones. Todas estas operaciones forman parte de la misma ejecución y, cuando corresponda, de la misma transacción, por lo que un error durante su ejecución puede provocar que los cambios realizados sean revertidos conjuntamente.
-
-Por ejemplo, una acción de confirmación podría validar el estado de un registro, modificar sus valores, crear un registro relacionado y ejecutar posteriormente otra acción. Para el sistema, todas estas operaciones forman parte de una única acción.
-
-----
-
-### Registro de acciones
-Una acción es básicamente una función en Python pero que cumple con una estructura especial para ser ejecutada por Lylac directamente cuando se invoca ésta por su nombre.
-
-La convención de nomenclatura de las acciones sigue la siguiente estructura:
-
-`_action` + `__` + *nombre del modelo* + `__` + *nombre de la acción*
-
-Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas acciones parecidas en modelos parecidos.
-
-Por ejemplo, si quisiéramos construir una acción para el modelo `base.users` para archivar un usuario nombrando nuestra acción como `archive` la nomenclatura dice que la función se llamaría:
-
-`_action` + `__` + `base_users` + `__` + `archive`
-
-`_action__base_users__archive`
-
-En este caso, los `.` en el nombre del modelo se reemplazan por `_` para ser caracteres válidos en el nombre de una función.
-
-Para tipar el argumento `ctx` se puede usar el tipado `.ActionContext` integrado en Lylac que nos ahorra el tener que importar tipados desde algún submódulo especial.
-
-Ejemplo de la construcción de la acción:
-```py
-def _action__base_users__archive(ctx: Lylac.ActionContext):
-
-    # Obtención de la ID del registro
-    record_id = ctx.record_id
-
-    # Actualización del valor de usuario activo
-    ctx.update('base.users', record_id, {'active': True})
-```
-
-El commit en la base de datos se hará automáticamente al finalizar todas las operaciones de la transacción.
-
-Una vez creada nuestra función de acción, falta decorarla con la API integrada accesible desde la instancia creada:
-```py
-@db.api.actions.register(
-    'base.users',
-    'archive',
-)
-def _action__base_users__archive(ctx: Lylac.ActionContext):
-
-    # Obtención de la ID del registro
-    record_id = ctx.record_id
-
-    # Actualización del valor de usuario activo
-    ctx.update('base.users', record_id, {'active': True})
-```
-
-**Parámetros del decorador**
-
-- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
-- `name`: *str* — Nombre de la acción.
-- `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer antes de la ejecución de la acción, accesibles por el atributo `data`. Si el parámetro no se especifica, solo el valor `'id'` estará disponible.
-
-**Parámetros de la función decorada**
-
-- `ctx`: *[ActionContext](#actioncontext-contexto-de-acción)[[_R](#_r-parámetro-de-estructura-de-registro-dinámico)]* Contexto de acción.
-
-> ℹ️ Las funciones de acción no deben retornar ningún valor u objeto ya que éste no será retornado en la ejecución de éstas. Si se desea retornar un valor u objeto véase [Ejecutar transacción](#execute_transaction-ejecutar-transacción).
-
-----
-
-### Ejecución de acciones
-Las acciones se ejecutan sobre un registro especificado, en un modelo especificado.
-
-Ejemplo:
-```py
-db.action(session_uuid, 'base.users', 'archive', 3)
-# True
-```
-
-En el fragmento de código ejecutamos una acción que archiva al registro con ID `3` del modelo `base.users`.
-
-**Parámetros**
-- `session_uuid`: *str* — UUID de sesión.
-- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
-- `name`: *str* — Nombre de la acción.
-- `record_id`: *int* — ID del registro sobre el que se va a ejecutar la acción.
-
-**Retorno**
-- `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
-
-----
-
-## Automatizaciones
-Una automatización es una regla asociada a un modelo que permite ejecutar una operación automáticamente cuando ocurre un evento determinado.
-
-Una automatización define las circunstancias bajo las cuales debe ejecutarse y la operación que debe realizarse cuando dichas circunstancias se cumplen. La operación puede consistir en modificar el registro que originó el evento, crear o modificar otros registros, ejecutar una acción o realizar cualquier otra operación permitida por el framework.
-
-Las automatizaciones permiten asociar comportamiento a determinados eventos sin que el código que origina dicho evento tenga que invocar explícitamente la operación correspondiente.
-
-Las automatizaciones pueden ejecutarse tras un evento de creación, modificación o eliminación de registros, en un modelo especificado.
-
-----
-
-### Registro de automatizaciones
-
-Una automatización es básicamente una función en Python pero que cumple con una estructura especial para ser ejecutada por Lylac directamente cuando se desencadena ésta tras una operación CRUD en un modelo en específico.
-
-La convención de nomenclatura de las automatizaciones sigue la siguiente estructura:
-
-`_automation` + `__` + *nombre del modelo* + `__` + *tipo de transacción CRUD* + `__` + *nombre de la automatización*
-
-Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas automatizaciones parecidas en modelos parecidos.
-
-Por ejemplo, si quisiéramos construir una automatización para el modelo `base.users` para añadirle permisos prestablecidos a un usuario cuando éste se crea, nombraríamos nuestra función a algo como `add_preset_permissions` la nomenclatura dice que la función se llamaría:
-
-`_automation` + `__` + `base_users` + `__` + `create` + `__` + `add_preset_permissions`
-
-`_automation__base_users__create__add_preset_permissions`
-
-En este caso, los `.` en el nombre del modelo se reemplazan por `_` para ser caracteres válidos en el nombre de una función.
-
-Para tipar el argumento `ctx` se puede usar el tipado `.AutomationContext` integrado en Lylac que nos ahorra el tener que importar tipados desde algún submódulo especial.
-
-Ejemplo de la construcción de la automatización:
-```py
-def _automation__base_users__create__add_preset_permissions(ctx: Lylac.AutomationContext):
-    # Iteración por cada registro de usuario creado
-    for user_record in ctx.records
-        # Obtención de la ID del usuario
-        user_id = user_record['id']
-        # Actualización del registro
-        ctx.update('base.users', user_id, {'role_ids': {'add': [basic_role_1_id, basic_role_2_id, ...]}})
-```
-
-El commit en la base de datos se hará automáticamente al finalizar todas las operaciones de la transacción.
-
-Una vez creada nuestra función de automatización, falta decorarla con la API integrada accesible desde la instancia creada:
-```py
-@db.api.automations.register(
-    'create',
-    'base.users'
-)
-def _automation__base_users__create__add_preset_permissions(ctx: Lylac.AutomationContext):
-    # Iteración por cada registro de usuario creado
-    for user_record in ctx.records
-        # Obtención de la ID del usuario
-        user_id = user_record['id']
-        # Actualización del registro
-        ctx.update('base.users', user_id, {'role_ids': {'add': [basic_role_1_id, basic_role_2_id, ...]}})
-```
-
-**Parámetros del decorador**
-- `on`: *[DMLTransaction](#dmltransaction-transacción-dml)* — Transacción tras la que se ejecutará la automatización.
-- `model_name`: *[ModelName](#modelname-nombre-de-modelo)[[_M](#_m-nombre-de-modelo-personalizado)]* — Nombre de modelo en la base de datos.
-- `fields` **(Opcional)**: *list[[FieldReadDeclaration](#fieldreaddeclaration-declaración-de-campos-a-leer)]* — Declaración de campos a leer antes de la ejecución de la acción, accesibles por el atributo `data`. Si el parámetro no se especifica, solo el valor `'id'` estará disponible.
-- `execute_only_when` **(Opcional)**: *[CriteriaStructure](#criteriastructrure-estructura-de-criterio-de-búsqueda)[[_M](#_m-nombre-de-modelo-personalizado)]* — Criterio requerido para que la automatización se ejecute sobre el registro.
-
-**Parámetros de la función decorada**
-
-- `ctx`: *[AutomationContext](#automationcontext-contexto-de-automatización)[[_R](#_r-parámetro-de-estructura-de-registro-dinámico)]* — Contexto de automatización.
-
-> ℹ️ Las funciones de automatización no deben retornar ningún valor u objeto ya que éste no será retornado en la ejecución de éstas. Si se desea retornar un valor u objéto véase [Ejecutar transacción](#execute_transaction-ejecutar-transacción).
-
-----
-
-### Ejecucución de automatizaciones
-Las automatizaciones no pueden ejecutarse de forma manual. Éstas se ejecutan tras una operación de creación, modificación o eliminación de registros en un modelo especificado y, opcionalmente, si los registros involucrados cumplen con el criterio establecido para la automatización.
-
-----
-
-## Tareas de servidor
-Una tarea de servidor es una operación que permite ejecutar una serie de procesos con alcance a uno o muchos modelos de la base de datos, tal como lo haría una función común en Python pero sin retornar un valor en concreto.
-
-Las tareas de servidor son útiles para realizar actualizaciones, sincronizaciones periódicas o funciones complejas que involucran muchos registros en uno o varios modelos. Son implementadas mediante funciones que reciben un contexto de tarea de servidor y no deben retornar un valor.
-
-Una tarea de servidor puede estar compuesta por múltiples operaciones. Todas estas operaciones forman parte de la misma ejecución y, cuando corresponda, de la misma transacción, por lo que un error durante su ejecución puede provocar que los cambios realizados sean revertidos conjuntamente.
-
-Por ejemplo, una tarea de servidor podría actualizar un estado o una serie de registros conectándose a una API externa o realizar un reporte a partir una serie de registros al finalizar el día.
-
-### Registro de tareas de servidor
-Una tarea de servidor es básicamente una función en Python pero que cumple con una estructura especial para ser ejecutada por Lylac directamente cuando se invoca ésta por su nombre.
-
-La convención de nomenclatura de las tareas de servidor sigue la siguiente estructura:
-
-`_task` + `__` + *nombre de la tarea de servidor*
-
-Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas tareas de servidor parecidas en modelos parecidos.
-
-Por ejemplo, si quisiéramos construir una tarea de servidor que se conecta a la API de un tercero para actualizar un estado, una serie de registros o algo por el estilo, la nomenclatura dice que la función se llamaría:
-
-`_task` + `__` + `update_data_from_api`
-
-`_task__update_data_from_api`
-
-Para tipar el argumento `ctx` se puede usar el tipado `.ServerTaskContext` integrado en Lylac que nos ahorra el tener que importar tipados desde algún submódulo especial.
-
-Ejemplo de la construcción de la tarea de servidor:
-```py
-def _task__update_data_from_api(ctx: Lylac.ServerTaskContext):
-
-    # Obtención de datos externos
-    data = some_service.fetch_data(...)
-
-    # Procesamiento interno
-    formatted_data = process_data(data)
-
-    # Se guardan los datos en la API
-    ctx.create('service.registry', formatted_data)
-```
-
-El commit en la base de datos se hará automáticamente al finalizar todas las operaciones de la transacción.
-
-Una vez creada nuestra función de tarea de servidor, falta decorarla la API integrada accesible desde la instancia creada:
-```py
-@db.api.server_tasks.register('update_data_from_api')
-def _task__update_data_from_api(ctx: Lylac.ServerTaskContext):
-
-    # Obtención de datos externos
-    data = some_service.fetch_data(...)
-
-    # Procesamiento interno
-    formatted_data = process_data(data)
-
-    # Se guardan los datos en la API
-    ctx.create('service.registry', formatted_data)
-```
-
-**Parámetros del decorador**
-
-- `name`: *str* — Nombre de la tarea de servidor.
-
-> ℹ️ Las funciones de tarea de servidor no deben retornar ningún valor u objeto ya que éste no será retornado en la ejecución de éstas. Si se desea retornar un valor u objeto véase [Ejecutar transacción](#execute_transaction-ejecutar-transacción).
-
-### Ejecución de tareas de servidor
-Las tareas de servidor se ejecutan invocándolas con el nombre con el que fueron registradas. Para más información, véase [Registro de tareas de servidor](#registro-de-tareas-de-servidor).
-
-Ejemplo:
-```py
-db.task(session_uuid, 'update_data_from_api')
-# True
-```
-
-**Parámetros**
-- `session_uuid`: *str* — UUID de sesión.
-- `name`: *str* — Nombre de la tarea de servidor.
-
-**Retorno**
-- `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
-
-----
-
-## Validaciones
-Una validación es una regla que comprueba que los datos involucrados en una operación cumplen las condiciones establecidas por el modelo o por el framework. Una validación puede inspeccionar tanto los valores que se están creando o modificando como otros datos relacionados necesarios para determinar si la operación es válida.
-
-Cuando una validación encuentra una condición que no se cumple, puede capturar el registro y, opcionalmente, el valor del campo que provocó la infracción. Una vez finalizada la ejecución de las validaciones, las infracciones capturadas pueden utilizarse para generar los errores correspondientes e impedir que la operación continúe.
-
-Lylac incluye un conjunto de validaciones predefinidas que protegen las reglas fundamentales del framework. Entre ellas se encuentran la comprobación de campos requeridos, la validación de valores de selección, la protección de campos de solo lectura y la prohibición de asignar valores explícitos a campos computados.
-
-Las validaciones también pueden utilizarse para comprobar reglas más específicas de una entidad. Por ejemplo, una validación puede impedir que existan nombres de campo duplicados dentro de un mismo modelo o comprobar que el nombre de un modelo siga la nomenclatura establecida por el framework.
-
-### Flujo de las validaciones
-Antes de que las validaciones comiencen a realizarse, los datos de entrada son filtrados por tipo de dato, descartando los tipos de dato `one2many` y `many2many`. Esto ocurre porque los valores codificados como [comandos de relación](#comandos-de-relación) no se validarán hasta que éstos sean transformados a comandos CRUD.
-
-Una vez filtrados los datos éstos son parseados. Esto ocurre porque si, por ejemplo, se valida un valor de fecha comprobando si éste es mayor o menor a un valor específico, esto arrojará un error si el usuario introdujo una cadena de texto en formato ISO 8601 ya que los valores de tipo `str` no soportan operaciones `>`, `<`, `>=` y `<=`.
-
-Los parseos son los siguientes
-| TType         | Parseo                                              |
-|---------------|-----------------------------------------------------|
-| `'integer'`   | `int`                                               |
-| `'char'`      | `str`                                               |
-| `'float'`     | `float`                                             |
-| `'boolean'`   | `bool`                                              |
-| `'date'`      | `datetime.date`                                     |
-| `'datetime'`  | `datetime.datetime`                                 |
-| `'time'`      | `datetime.time`                                     |
-| `'duration'`  | `datetime.timedelta`                                |
-| `'file'`      | `IO.Bytes`                                          |
-| `'text'`      | `str`                                               |
-| `'selection'` | `str`                                               |
-| `'many2one'`  | `int`                                               |
-| `'json'`      | [JSONLike](#jsonlike-estructura-equivalente-a-json) |
-
-Dentro del flujo de una validación, normalmente se iteran los registros y se validan uno por uno o se [buscan combinaciones de valores duplicados](#find_duplicated_composite_keys-encontrar-llaves-compuestas-duplicadas-contexto-de-validación). Cuando un registro infrinje una validación, se captura éste para mostrarse al finalizar todas las validaciones. Se requiere que al menos un registro infrinja una validación para abortar la transacción completa.
-
-```py
-# Iteración por cada registro a validar
-for record in ctx.records:
-    # Validación
-    ...
-    # Si el registro infrinje la validación...
-    if ...:
-        # Captura del error
-        ctx.catch(record)
-```
-
-```py
-# Búsqueda de combinaciones de valores duplicados
-records_with_duplicates = ctx.find_duplicated_composite_keys(
-    ctx.records,
-    ['field_a', 'field_b'],
-)
-
-# Si se encontraron duplicados...
-if records_with_duplicates:
-    for record in records_with_duplicates:
-        # Captura del error
-        ctx.catch(record)
-```
-
-### Registro de validaciones
-Una validación es básicamente una función en Python pero que cumple con una estructura especial para ser ejecutada por Lylac directamente cuando se requieren validar los datos de registro en una operación de creación o modificación.
-
-La convención de nomenclatura de las validaciones sigue la siguiente estructura:
-
-`_validation` + `__` + *nombre del modelo (si aplica)* + `__` + *nombre de la validación*
-
-Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas validaciones parecidas en modelos parecidos.
-
-Por ejemplo, existe una validación para restringir la entrada de valores de contraseña en creación o modificación directa de usuarios en el modelo `base.users` ya que estos valores requieren ser hasheados antes de almacenarse en la base de datos (Para esto, el cambio de contraseña se hace por medio del modelo `base.users.update.password`).
-
-La validación entonces se llama `restrict_manual_password` y se construye con la siguiente nomenclatura:
-
-`_validation` + `__` + `base_users` + `__` + `restrict_manual_password`
-
-`_validation__base_users__restrict_manual_password`
-
-En este caso, los `.` en el nombre del modelo se reemplazan por `_` para ser caracteres válidos en el nombre de una función.
-
-Para tipar el argumento `ctx` se puede usar el tipado `.ValidationContext` integrado en Lylac que nos ahorra el tener que importar tipados desde algún submódulo especial.
-
-```py
-def _validation__base_users__restrict_manual_password(ctx: Lylac.ValidationContext) -> None:
-
-    # Iteración por cada registro
-    for record in ctx.records:
-        # Si el campo de contraseña se encuentra en los datos
-        if 'password' in record:
-            # Se captura el error
-            ctx.catch(record)
-```
-
-Una vez creada nuestra función de validación, falta decorarla la API integrada accesible desde la instancia creada:
-```py
-@db.api.validations.register(
-    ['create', 'update'],
-    'base.users',
-    'La contraseña no se puede establecer manualmente.'
-)
-def _validation__base_users__restrict_manual_password(ctx: Lylac.ValidationContext) -> None:
-
-    # Iteración por cada registro
-    for record in ctx.records:
-        # Si el campo de contraseña se encuentra en los datos
-        if 'password' in record:
-            # Se captura el error
-            ctx.catch(record)
-```
-
-Entonces la validación se llevará a cabo cuando se creen o modifiquen registros en el modelo `base.users` y, cuando la validación se infrinja, el mensaje *La contraseña no se puede establecer manualmente.* se mostrará tras finalizar todas las validaciones, junto con otros errores si es que más de una validación se infringió.
-
-```py
-db.create(
-    session_uuid,
-    'base.users',
-    {
-        'name': 'Onnymm Azzur',
-        'login': 'onnymm',
-        'password': 'zapatito123',
-    }
-)
-# "La contraseña no se puede establecer manualmente"
-# ...
-# -------------------------------------------------------------------
-# ValidationError: Las validaciones no pasaron.
-```
-
-```py
-db.create(
-    session_uuid,
-    'base.users',
-    {
-        'id': 'ID0001',
-        # 'name': 'Onnymm Azzur',
-        'login': 'onnymm',
-        'password': 'zapatito123',
-    }
-)
-# "Los valores de ID no se pueden asignar ni modificar manualmente."
-# "El campo [name] es requerido."
-# "La contraseña no se puede establecer manualmente"
-# ...
-# -------------------------------------------------------------------
-# ValidationError: Las validaciones no pasaron.
-```
-
-Para el valor de error de un valor se usa el argumento posicional `value` del método [catch](#catch-capturar-registro-con-error-contexto-de-validación) y en el valor del mensaje de error se usa la codificación `{value}`:
-```py
-@db.api.validations.register(
-    'create',
-    ...,
-    'El campo [{value}] es requerido',
-)
-def _validation__confirm_required_fields(ctx: 'ValidationContext') -> None:
-    for record in ctx.records:
-        ctx.catch(record, missing_required_field)
-```
-----
-
-
-
-
-
-## Políticas
-Una política es una regla que determina si una operación de creación, modificación o eliminación sobre un modelo específico puede realizarse, de acuerdo con los valores involucrados y las reglas establecidas. A diferencia de las [validaciones](#validaciones), que comprueban si los tipos de datos y las combinaciones de parámetros son válidos para crear o modificar un registro. Las políticas determinan si una operación cumple las restricciones y reglas de negocio aplicables al modelo, al registro o al flujo de trabajo involucrado.
-
-Cuando una política detecta una condición que no se cumple, puede registrar la infracción y capturar, opcionalmente, el registro afectado y el valor del campo que la provocó. Una vez finalizada la ejecución de las políticas, las infracciones registradas pueden utilizarse para generar los errores correspondientes e impedir que la operación continúe.
-
-Lylac incluye un conjunto de políticas predefinidas que protegen las reglas fundamentales del framework. Entre ellas se encuentran la protección de los campos base y la restricción de declarar directamente un valor de contraseña en el modelo de usuarios.
-
-### Flujo de validación de políticas
-Antes de que las validaciones de políticas comiencen a realizarse, los datos de entrada son filtrados por tipo de dato, descartando los tipos de dato `one2many` y `many2many`. Esto ocurre porque los valores codificados como [comandos de relación](#comandos-de-relación) no se validarán hasta que éstos sean transformados a comandos CRUD.
-
-Una vez filtrados los datos éstos son parseados. Esto ocurre porque si, por ejemplo, se valida un valor de fecha comprobando si éste es mayor o menor a un valor específico, esto arrojará un error si el usuario introdujo una cadena de texto en formato ISO 8601 ya que los valores de tipo `str` no soportan operaciones `>`, `<`, `>=` y `<=`.
-
-Los parseos son los siguientes
-| TType         | Parseo                                              |
-|---------------|-----------------------------------------------------|
-| `'integer'`   | `int`                                               |
-| `'char'`      | `str`                                               |
-| `'float'`     | `float`                                             |
-| `'boolean'`   | `bool`                                              |
-| `'date'`      | `datetime.date`                                     |
-| `'datetime'`  | `datetime.datetime`                                 |
-| `'time'`      | `datetime.time`                                     |
-| `'duration'`  | `datetime.timedelta`                                |
-| `'file'`      | `IO.Bytes`                                          |
-| `'text'`      | `str`                                               |
-| `'selection'` | `str`                                               |
-| `'many2one'`  | `int`                                               |
-| `'json'`      | [JSONLike](#jsonlike-estructura-equivalente-a-json) |
-
-Dentro del flujo de una validación de política, se iteran los registros y se validan uno por uno. Cuando un registro infrinje una validación, se captura éste para mostrarse al finalizar todas las validaciones de política. Se requiere que al menos un registro infringa una política para abortar la transacción completa.
-
-```py
-# Iteración por cada registro a validar
-for record in ctx.records:
-    # Validación
-    ...
-    # Si el registro infrinje la validación...
-    if ...:
-        # Captura del error
-        ctx.catch(record)
-```
-
-### Registro de políticas
-Una validación de política es básicamente una función en Python pero que cumple con una estructura especial para ser ejecutada por Lylac directamente cuando se requieren validar los datos de registro en una operación de creación, modificación o eliminación.
-
-La convención de nomenclatura de las políticas sigue la siguiente estructura:
-
-`_policy` + `__` + *nombre del modelo (si aplica)* + `__` + *nombre de la validación*
-
-Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas políticas en modelos parecidos.
-
-Por ejemplo, existe una política que restringe la entrada de valores de contraseña en creación o modificación directa de usuarios en el modelo `base.users` ya que estos valores requires ser hasheados antes de almacenarse en la base de datos (Para esto, el cambio de contraseña se hace por medio del modelo `base.users.update.password`).
-
-La política entonces se llama `forbid_direct_password_input` y se construye con la siguiente nomenclatura:
-
-`_policy` + `__` + `base_users` + `__` + `forbid_direct_password_input`
-
-`_policy__base_users__forbid_direct_password_input`
-
-En este caso, los `.` en el nombre del modelo se reemplazan por `_` para ser caracteres válidos en el nombre de una función.
-
-Para tipar el argumento `ctx` se puede usar el tipado `.PolicyContext` integrado en Lylac que nos ahorra el tener que importar tipado desde algún módulo especia.
-
-```py
-def _policy__base_users__forbid_direct_password_input(ctx: PoliciesContext):
-
-    # Iteración por cada registro
-    for record in ctx.records:
-        # Si el campo de contraseña se encuentra en los datos...
-        if 'password' in record:
-            # Se captura el registro
-            ctx.catch(record, show_error_data= False)
-```
-
-Una vez creada nuestra función de validación, falta decorarla la API integrada accesible desde la instancia creada:
-```py
-@db.api.policies.register(
-    ['create', 'update'],
-    'base.users',
-    'El campo de contraseña no puede ser directamente modificado.',
-)
-def _policy__base_users__forbid_direct_password_input(ctx: PoliciesContext):
-
-    # Iteración por cada registro
-    for record in ctx.records:
-        # Si el campo de contraseña se encuentra en los datos...
-        if 'password' in record:
-            # Se captura el registro
-            ctx.catch(record, show_error_data= False)
-```
-
-Entonces la validación de la política se llevará a cabo cuando se creen o modifiquen registros en el modelo `base.users` y, cuando la política se infringa, el mensaje *El campo de contraseña no puede ser directamente modificado.* se mostrará tras finalizar todas las validaciones de políticas, junto con otros errores si es que más de una política se infringió.
-
-```py
-db.create(
-    session_uuid,
-    'base.users',
-    {
-        'name': 'Onnymm Azzur',
-        'login': 'onnymm',
-        'password': 'zapatito123',
-    }
-)
-# "El campo de contraseña no puede ser directamente modificado."
-# ...
-# -------------------------------------------------------------------
-# PolicyVerificationsFailedError: Las verificaciones no pasaron.
-```
-
-Para mostrar el valor de error de un registro se usa el argumento posicional `value` del método [catch](#catch-capturar-registro-con-error-contexto-de-políticas) y en el valor del mensaje de error se usa la codificación `{value}`:
-```py
-@db.api.policies.register(
-    ['create', 'update'],
-    ...,
-    'El campo {value} no puede ser declarado ni modificado manualmente.',
-)
-def _policy__reject_static_fields(ctx: PoliciesContext):
-
-    # Iteración por cada registro
-    for record in ctx.records:
-        # Iteración por los campos estáticos
-        for static_field in STATIC_FIELDS:
-            # Si existe el campo en los datos...
-            if static_field in record:
-                # Se captura el registro con el campo estático
-                ctx.catch(record, static_field)
-```
-
-----
-
-## Comandos de relación
-Este tipo de dato representa un diccionario que contiene comandos de modificación de los registros referenciados en campos de tipo `one2many` y `many2many` ya sea crear, añadir, desvincular, reemplazar o limpiar la lista de registros relacionados o modificando registros específicos desde el registro que los referencía.
-
-Las llaves y valores del diccionario pueden ser:
-- `'create'`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[[RelationCommand.Create](#relationcommandcreate-comando-de-relación-de-creación)]* — Comando de relación de creación.
-- `'add'`: *[RelationCommand.Add](#relationcommandadd-comando-de-relación-de-adición)* — Comando de relación de adición.
-- `'update'`: *[ScalarOrIterable](#scalaroriterable-elemento-o-iterable-de-elementos)[[RelationCommand.Update](#relationcommandupdate-comando-de-relación-de-actualización)]* — Comando de relación de actualización.
-- `'replace'`: *[RelationCommand.Replace](#relationcommandreplace-comando-de-relación-de-reemplazo)* — Comando de relación de reemplazo.
-- `'unlink'`: *[RelationCommand.Unlink](#relationcommandunlink-comando-de-relación-de-desvinculación)* — Comando de relación de desvinculación.
-- `'delete'`: *[RelationCommand.Delete](#relationcommanddelete-comando-de-relación-de-eliminación)* — Comando de relación de eliminación.
-- `'clear'`: *[RelationCommand.Clear](#relationcommandclear-comando-de-relación-de-limpieza)* — Comando de relación de limpieza.
-
-### `RelationCommand.Create` Comando de relación de creación
-El comando de relación de creación permite enviar instrucciones de creación de registros hijos que luego se van a vincular al campo de relación `one2many` o `many2many` (según sea el caso) del registro desde el que se ha codificado el comando.
-
-> El tipo de dato del comando es un diccionario de datos del tipo [InputRecordData](#inputrecorddata-datos-de-registro) que cumple con la forma de los registros del modelo relacionado al campo.
-
-Ejemplo:
-```py
-db.update(
-    'base.users',
-    record_id,
-    {
-        # Campo de tipo [many2many]
-        'role_ids': {
-            # Comando de relación de creación
-            'create': {
-                'name': 'command_admin',
-                'label': 'Administrador de comandos',
-                ...
-            }
-        }
-    }
-)
-```
-
-### `RelationCommand.Add` Comando de relación de adición
-El comando de relación de adición permite enviar instrucciones de adición de registros hijos que luego se van a vincular al campo de relación `many2many` del registro desde el que se ha codificado el comando.
-
-> El tipo de dato del comando es un escalar o iterable de IDs de registros del modelo relacionado al campo.
-
-Ejemplo:
-```py
-db.create(
-    'base.users',
-    {
-        'login': 'lumii',
-        'name': 'Lumii Mynx',
-        # Campo de tipo [many2many]
-        'role_ids': {
-            # Comando de relación de adición
-            'add': [1, 2, 3] # Registros que ya existen
-        }
-    }
-)
-```
-
-### `RelationCommand.Update` Comando de relación de actualización
-El comando de relación de actualización permite enviar instrucciones de modificación de los registros hijos vinculados al campo de relación `one2many` o `many2many` (según sea el caso) del registro desde el que se ha codificado el comando.
-
-> El tipo de dato del comando es una tupla que contiene:
-> 1. Escalar o iterable de IDs de registro a modificar.
-> 2. Diccionario de datos del tipo [InputRecordData](#inputrecorddata-datos-de-registro) que cumple con la forma de los registros del modelo relacionado al campo.
-
-Ejemplo:
-```py
-db.update(
-    'base.users',
-    record_id,
-    {
-        # Campo de tipo [many2many]
-        'role_ids': {
-            # Comando de relación de actualización
-            'update': (
-                # ID a modificar
-                2,
-                {
-                    'name': 'Administrador supremo de comandos',
-                    ...
-                }
-            )
-        }
-    }
-)
-```
-
-### `RelationCommand.Replace` Comando de relación de reemplazo
-El comando de relación de reemplazo permite enviar instrucciones de reemplazo de los registros hijos vinculados al campo de relación `many2many` del registro desde el que se ha codificado el comando por los registros provistos en el comando.
-
-> El tipo de dato del comando es un escalar o iterable de IDs de registros del modelo relacionado al campo.
-
-Ejemplo:
-```py
-db.update(
-    'base.users',
-    record_id,
-    {
-        # Campo de tipo [many2many]
-        'role_ids': {
-            # Comando de relación de reemplazo
-            'replace': [4, 5] # Cualquier otra ID vinculada es reemplazada por estas
-        }
-    }
-)
-```
-
-### `RelationCommand.Unlink` Comando de relación de desvinculación
-El comando de relación de desvinculación permite enviar instrucciones para desvincular registros hijos vinculados al campo de relación `one2many` o `many2many` (según sea el caso) del registro desde el que se ha codificado el comando.
-
-> El tipo de dato del comando es un escalar o iterable de IDs de registros del modelo relacionado al campo.
-
-Ejemplo:
-```py
-db.update(
-    'base.users',
-    {
-        # Campo de tipo [many2many]
-        'role_ids': {
-            # Comando de relación de desvinculación
-            'unlink': [2, 3]
-        }
-    }
-)
-```
-
-### `RelationCommand.Delete` Comando de relación de eliminación
-El comando de relación de eliminación permite enviar instrucciones para eliminar registros hijos vinculados al campo de relación `one2many` o `many2many` (según sea el caso) del registro desde el que se ha codificado el comando.
-
-> El tipo de dato del comando es un escalar o iterable de IDs de registros del modelo relacionado al campo.
-
-Ejemplo:
-```py
-db.update(
-    'base.users',
-    {
-        # Campo de tipo [many2many]
-        'role_ids': {
-            # Comando de relación de eliminación
-            'delete': [6]
-        }
-    }
-)
-```
-
-### `RelationCommand.Clear` Comando de relación de limpieza
-El comando de relación de limpieza permite enviar instrucciones para limpiar la relación con todos los registros hijos vinculados al campo de relación `one2many` o `many2many` (según sea el caso) del registro desde el que se ha codificado el comando. Este comando desvincula los registros sin eliminarlos, tal como lo haría el comando *[RelationCommand.Unlink](#relationcommandunlink-comando-de-relación-de-desvinculación)* pero sin especificar explícitamente las IDs y desvinculando todos los registros sin importar cuáles son.
-
-> El tipo de dato del comando es un Literal el `True`.
-
-Ejemplo:
-```py
-db.update(
-    'base.users',
-    {
-        # Campo de tipo [many2many]
-        'role_ids': {
-            # Comando de relación de eliminación
-            'clear': True # Se le remueven todos los roles al usuario
-        }
-    }
-)
-```
-
-----
-
 ## Tipados
 
 ### `_M` Nombre de modelo personalizado
@@ -3900,7 +3908,7 @@ Los nombres disponibles son:
 
 ----
 
-## `ValueResolutionFn` Función de resolución de valor
+### `ValueResolutionFn` Función de resolución de valor
 Las funciones de resolución de valor se usan como valor en los datos de entrada para crear o modificar registros por medio de los métodos correspondientes de la instancia principal o los contextos usados en funciones de ejecución de transacciones, automatizaciones, acciones, tareas de servidor, validaciones y políticas. Estas funciones se usan para resolver y retornar un valor que se usará como valor del campo para almacenarse en la base de datos.
 
 Por ejemplo, si quisiéramos crear un campo vinculado a un modelo específico cuyo ID desconocemos podemos usar el método [Obtención de ID de recurso](#get_resource_id-obtención-de-id-de-recurso) usando la referencia única del modelo:

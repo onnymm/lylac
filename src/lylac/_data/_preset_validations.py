@@ -1,9 +1,7 @@
 import re
 from typing import TYPE_CHECKING
 from .._constants import CRUD_METHOD_NAME
-from .._constants import FACTORY_FIELDS
 from .._constants import MODEL_NAME
-from .._constants import FIELD_NAME
 from .._constants import TTYPE_NAME
 from .._resources import ValidationProperties
 from .._typing.definitions import _InternalModelSchema
@@ -384,7 +382,6 @@ def _validation__base_model_field_selection__unique_selection_value_per_model_fi
         if record['name'] in existing_selection_records:
             # Se captura el error
             ctx.catch(record, record['name'])
-
 
 PRESET_VALIDATIONS: list[ValidationProperties[_M]] = [
 
