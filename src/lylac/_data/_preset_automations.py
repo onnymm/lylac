@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 from sqlalchemy import update
+from .._constants import ERROR_LABEL
 from .._constants import FACTORY_FIELDS
 from .._constants import MODEL_NAME
 from .._constants import PRESET
@@ -422,6 +423,11 @@ def _base_users_update_password__consume(ctx: AutomationContext):
     if is_pwd_correct and is_new_pwd_correct:
         # Se almacena éste en la base de datos
         _change_password(ctx._execution_ctx, user_id, new_password)
+
+    # Si la nueva contraseña no coincide...
+    else:
+        # Notificación del error
+        ctx.notify(ERROR_LABEL.ACCOUNT.PASSWORDS_DONT_MATCH)
 
 DEFAULT_ON_CREATE_AUTOMATIONS: EngineHub[InitialModels, AutomationProperties[InitialModels]] = {
 

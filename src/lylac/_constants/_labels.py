@@ -20,6 +20,8 @@ class ERROR_LABEL:
         POLICY_VERIFICATIONS_FAILED = 'Las verificaciones no pasaron.'
     class MODULE:
         ALREADY_LOADED = 'El módulo ya ha sido cargado.'
+    class ACCOUNT:
+        PASSWORDS_DONT_MATCH = 'La contraseña y confirmación de contraseña no coinciden.'
 
 class MONITOR:
     INITIALIZATION_FINISHED = 'La base de datos de inicializó correctamente.'
