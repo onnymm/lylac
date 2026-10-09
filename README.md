@@ -54,6 +54,8 @@ pip install git+https://github.com/onnymm/lylac.git
 - **[`ValidationContext` — Contexto de validación](#validationcontext-contexto-de-validación)**
     - **[`catch` — Capturar registro con error](#catch-capturar-registro-con-error-contexto-de-validación)**
     - **[`find_duplicated_composite_keys` — Encontrar llaves compuestas duplicadas](#find_duplicated_composite_keys-encontrar-llaves-compuestas-duplicadas-contexto-de-validación)**
+- **[`PoliciesContext` — Contexto de políticas](#policiescontext-contexto-de-políticas)**
+    - **[`catch` — Capturar registro con error](#catch-capturar-registro-con-error-contexto-de-políticas)**
 - **[`ValueResolutionContext` — Contexto de resolución de valor](#valueresolutioncontext-contexto-de-resolución-de-valor)**
     - **[`record_data` — Datos de registro](#record_data-datos-de-registro-contexto-de-resolución-de-valor)**
 
@@ -75,6 +77,9 @@ pip install git+https://github.com/onnymm/lylac.git
 - **[Flujo de las validaciones](#flujo-de-las-validaciones)**
 - **[Registro de validaciones](#registro-de-validaciones)**
 
+**[POLÍTICAS](#políticas)**
+- **[Flujo de validación de políticas](#flujo-de-validación-de-políticas)**
+- **[Registro de políticas](#registro-de-políticas)**
 
 **[COMANDOS DE RELACIÓN](#comandos-de-relación)**
 - **[`RelationCommand.Create` — Comando de relación de creación](#relationcommandcreate-comando-de-relación-de-creación)**
@@ -2481,6 +2486,38 @@ Este método permite encontrar registros cuyos valores en una combinación de no
 
 ----
 
+### `PoliciesContext` Contexto de políticas
+La clase de contexto de validación es usada como argumento en las funciones de validación de políticas cuando se crean, actualizan o eliminan registros y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listadas a continuación:
+
+- **[`uid` — ID del usuario que ejecuta la transacción](#uid-id-del-usuario-que-ejecuta-la-transacción)**
+- **[`create` — Creación de registros](#create-creación-de-uno-o-muchos-registros-1)**
+- **[`search` — Búsqueda de registros](#search-búsqueda-de-registros-1)**
+- **[`read` — Lectura de registros](#read-lectura-de-registros-1)**
+- **[`search_read` — Búsqueda y lectura de registros](#search_read-búsqueda-y-lectura-de-registros-1)**
+- **[`search_count` — Conteo de búsqueda](#search_count-conteo-de-búsqueda-1)**
+- **[`update` — Actualización de registros](#update-actualización-de-registros-1)**
+- **[`delete` — Eliminación de registros](#delete-eliminación-de-registros-1)**
+- **[`get_resource_id` — Obtención de ID de recurso](#get_resource_id-obtención-de-id-de-recurso)**
+
+Además de ello, cuenta también con los métodos listados.
+
+----
+
+#### `catch` Capturar registro con error (Contexto de políticas)
+Este método permite capturar un registro para mostrarlo como error al finalizar las validaciones de políticas. Se necesita que al menos un registro entre a este método para que la ejecución de una transacción sea abortada.
+
+**Parámetro**
+
+- `record`: `Record` — Registro que infringe la política.
+- `value`: `Any` (Opcional) — Valor de error.
+- `show_error_data`: `bool` (Opcional) — Mostrar los datos.
+
+**Retorno**
+
+*Este método no retorna ningún valor.*
+
+----
+
 ### `ValueResolutionContext` Contexto de resolución de valor
 La clase de contexto de resolución de valor es usada como argumento en las funciones de resolución de valor y hereda todas las propiedades de la clase [BaseContext](#basecontext-contexto-base)[[_M](#_m-nombre-de-modelo-personalizado)] listadas a continuación:
 
@@ -2769,7 +2806,7 @@ Lylac incluye un conjunto de validaciones predefinidas que protegen las reglas f
 Las validaciones también pueden utilizarse para comprobar reglas más específicas de una entidad. Por ejemplo, una validación puede impedir que existan nombres de campo duplicados dentro de un mismo modelo o comprobar que el nombre de un modelo siga la nomenclatura establecida por el framework.
 
 ### Flujo de las validaciones
-Antes de que las validaciones comiencen a realizarse, los datos de entrada son filtrados por tipo de dato, descartando los tipos de dato `one2many` y `many2many`. Esto ocurre porque los valores codificados como comandos de relación no se validarán hasta que éstos sean transformados a comandos CRUD.
+Antes de que las validaciones comiencen a realizarse, los datos de entrada son filtrados por tipo de dato, descartando los tipos de dato `one2many` y `many2many`. Esto ocurre porque los valores codificados como [comandos de relación](#comandos-de-relación) no se validarán hasta que éstos sean transformados a comandos CRUD.
 
 Una vez filtrados los datos éstos son parseados. Esto ocurre porque si, por ejemplo, se valida un valor de fecha comprobando si éste es mayor o menor a un valor específico, esto arrojará un error si el usuario introdujo una cadena de texto en formato ISO 8601 ya que los valores de tipo `str` no soportan operaciones `>`, `<`, `>=` y `<=`.
 
@@ -2820,11 +2857,11 @@ if records_with_duplicates:
 ### Registro de validaciones
 Una validación es básicamente una función en Python pero que cumple con una estructura especial para ser ejecutada por Lylac directamente cuando se requieren validar los datos de registro en una operación de creación o modificación.
 
-La convención de nomenclatura de las validaciones sigue la siguiente estrucutra:
+La convención de nomenclatura de las validaciones sigue la siguiente estructura:
 
 `_validation` + `__` + *nombre del modelo (si aplica)* + `__` + *nombre de la validación*
 
-Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas tareas de servidor parecidas en modelos parecidos.
+Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas validaciones parecidas en modelos parecidos.
 
 Por ejemplo, existe una validación para restringir la entrada de valores de contraseña en creación o modificación directa de usuarios en el modelo `base.users` ya que estos valores requieren ser hasheados antes de almacenarse en la base de datos (Para esto, el cambio de contraseña se hace por medio del modelo `base.users.update.password`).
 
@@ -2920,6 +2957,135 @@ def _validation__confirm_required_fields(ctx: 'ValidationContext') -> None:
 
 
 
+## Políticas
+Una política es una regla que determina si una operación de creación, modificación o eliminación sobre un modelo específico puede realizarse, de acuerdo con los valores involucrados y las reglas establecidas. A diferencia de las [validaciones](#validaciones), que comprueban si los tipos de datos y las combinaciones de parámetros son válidos para crear o modificar un registro. Las políticas determinan si una operación cumple las restricciones y reglas de negocio aplicables al modelo, al registro o al flujo de trabajo involucrado.
+
+Cuando una política detecta una condición que no se cumple, puede registrar la infracción y capturar, opcionalmente, el registro afectado y el valor del campo que la provocó. Una vez finalizada la ejecución de las políticas, las infracciones registradas pueden utilizarse para generar los errores correspondientes e impedir que la operación continúe.
+
+Lylac incluye un conjunto de políticas predefinidas que protegen las reglas fundamentales del framework. Entre ellas se encuentran la protección de los campos base y la restricción de declarar directamente un valor de contraseña en el modelo de usuarios.
+
+### Flujo de validación de políticas
+Antes de que las validaciones de políticas comiencen a realizarse, los datos de entrada son filtrados por tipo de dato, descartando los tipos de dato `one2many` y `many2many`. Esto ocurre porque los valores codificados como [comandos de relación](#comandos-de-relación) no se validarán hasta que éstos sean transformados a comandos CRUD.
+
+Una vez filtrados los datos éstos son parseados. Esto ocurre porque si, por ejemplo, se valida un valor de fecha comprobando si éste es mayor o menor a un valor específico, esto arrojará un error si el usuario introdujo una cadena de texto en formato ISO 8601 ya que los valores de tipo `str` no soportan operaciones `>`, `<`, `>=` y `<=`.
+
+Los parseos son los siguientes
+| TType         | Parseo                                              |
+|---------------|-----------------------------------------------------|
+| `'integer'`   | `int`                                               |
+| `'char'`      | `str`                                               |
+| `'float'`     | `float`                                             |
+| `'boolean'`   | `bool`                                              |
+| `'date'`      | `datetime.date`                                     |
+| `'datetime'`  | `datetime.datetime`                                 |
+| `'time'`      | `datetime.time`                                     |
+| `'duration'`  | `datetime.timedelta`                                |
+| `'file'`      | `IO.Bytes`                                          |
+| `'text'`      | `str`                                               |
+| `'selection'` | `str`                                               |
+| `'many2one'`  | `int`                                               |
+| `'json'`      | [JSONLike](#jsonlike-estructura-equivalente-a-json) |
+
+Dentro del flujo de una validación de política, se iteran los registros y se validan uno por uno. Cuando un registro infrinje una validación, se captura éste para mostrarse al finalizar todas las validaciones de política. Se requiere que al menos un registro infringa una política para abortar la transacción completa.
+
+```py
+# Iteración por cada registro a validar
+for record in ctx.records:
+    # Validación
+    ...
+    # Si el registro infrinje la validación...
+    if ...:
+        # Captura del error
+        ctx.catch(record)
+```
+
+### Registro de políticas
+Una validación de política es básicamente una función en Python pero que cumple con una estructura especial para ser ejecutada por Lylac directamente cuando se requieren validar los datos de registro en una operación de creación, modificación o eliminación.
+
+La convención de nomenclatura de las políticas sigue la siguiente estructura:
+
+`_policy` + `__` + *nombre del modelo (si aplica)* + `__` + *nombre de la validación*
+
+Los dobles `__` sirven para delimitar cada parte del nombre de la función y asegurar que no existan colisiones en nombres cuando comienzan a haber muchas políticas en modelos parecidos.
+
+Por ejemplo, existe una política que restringe la entrada de valores de contraseña en creación o modificación directa de usuarios en el modelo `base.users` ya que estos valores requires ser hasheados antes de almacenarse en la base de datos (Para esto, el cambio de contraseña se hace por medio del modelo `base.users.update.password`).
+
+La política entonces se llama `forbid_direct_password_input` y se construye con la siguiente nomenclatura:
+
+`_policy` + `__` + `base_users` + `__` + `forbid_direct_password_input`
+
+`_policy__base_users__forbid_direct_password_input`
+
+En este caso, los `.` en el nombre del modelo se reemplazan por `_` para ser caracteres válidos en el nombre de una función.
+
+Para tipar el argumento `ctx` se puede usar el tipado `.PolicyContext` integrado en Lylac que nos ahorra el tener que importar tipado desde algún módulo especia.
+
+```py
+def _policy__base_users__forbid_direct_password_input(ctx: PoliciesContext):
+
+    # Iteración por cada registro
+    for record in ctx.records:
+        # Si el campo de contraseña se encuentra en los datos...
+        if 'password' in record:
+            # Se captura el registro
+            ctx.catch(record, show_error_data= False)
+```
+
+Una vez creada nuestra función de validación, falta decorarla la API integrada accesible desde la instancia creada:
+```py
+@db.api.policies.register(
+    ['create', 'update'],
+    'base.users',
+    'El campo de contraseña no puede ser directamente modificado.',
+)
+def _policy__base_users__forbid_direct_password_input(ctx: PoliciesContext):
+
+    # Iteración por cada registro
+    for record in ctx.records:
+        # Si el campo de contraseña se encuentra en los datos...
+        if 'password' in record:
+            # Se captura el registro
+            ctx.catch(record, show_error_data= False)
+```
+
+Entonces la validación de la política se llevará a cabo cuando se creen o modifiquen registros en el modelo `base.users` y, cuando la política se infringa, el mensaje *El campo de contraseña no puede ser directamente modificado.* se mostrará tras finalizar todas las validaciones de políticas, junto con otros errores si es que más de una política se infringió.
+
+```py
+db.create(
+    session_uuid,
+    'base.users',
+    {
+        'name': 'Onnymm Azzur',
+        'login': 'onnymm',
+        'password': 'zapatito123',
+    }
+)
+# "El campo de contraseña no puede ser directamente modificado."
+# ...
+# -------------------------------------------------------------------
+# PolicyVerificationsFailedError: Las verificaciones no pasaron.
+```
+
+Para mostrar el valor de error de un registro se usa el argumento posicional `value` del método [catch](#catch-capturar-registro-con-error-contexto-de-políticas) y en el valor del mensaje de error se usa la codificación `{value}`:
+```py
+@db.api.policies.register(
+    ['create', 'update'],
+    ...,
+    'El campo {value} no puede ser declarado ni modificado manualmente.',
+)
+def _policy__reject_static_fields(ctx: PoliciesContext):
+
+    # Iteración por cada registro
+    for record in ctx.records:
+        # Iteración por los campos estáticos
+        for static_field in STATIC_FIELDS:
+            # Si existe el campo en los datos...
+            if static_field in record:
+                # Se captura el registro con el campo estático
+                ctx.catch(record, static_field)
+```
+
+----
 
 ## Comandos de relación
 Este tipo de dato representa un diccionario que contiene comandos de modificación de los registros referenciados en campos de tipo `one2many` y `many2many` ya sea crear, añadir, desvincular, reemplazar o limpiar la lista de registros relacionados o modificando registros específicos desde el registro que los referencía.
