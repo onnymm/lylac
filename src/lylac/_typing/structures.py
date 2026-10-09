@@ -478,3 +478,5 @@ Los operadores lógicos disponibles son:
 RawFieldProperties = tuple[str, TTypeName, bool, ModelName[_M], str]
 
 NotificationTarget = Union[LiteralTarget, ScalarOrIterable[int]]
+
+SerializableCriteriaStructure = list[ Union[LogicOperator, tuple[str, ComparisonOperator, ScalarOrIterable[JSONLikeScalar]]] ]

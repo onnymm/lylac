@@ -13,14 +13,6 @@ DEFAULT_COMPUTATION_CALLBACKS: ComputeContextHub[_M] = {
 
     },
 
-    MODEL_NAME.BASE_USERS_ROLE: {
-
-        FIELD_NAME.DISPLAY_NAME: (
-            lambda ctx: ctx[FIELD_NAME.LABEL]
-        ),
-
-    },
-
     MODEL_NAME.BASE_USERS_SESSION: {
 
         'expires_at': (
