@@ -6,7 +6,7 @@ from .._resources import PolicyProperties
 from .._typing.type_parameters import _M
 from .._typing.type_parameters import _R
 
-def _reject_static_fields(ctx: PoliciesContext[_M, _R]):
+def _policy__reject_static_fields(ctx: PoliciesContext[_M, _R]):
 
     # Iteración por cada registro
     for record in ctx.records:
@@ -17,7 +17,7 @@ def _reject_static_fields(ctx: PoliciesContext[_M, _R]):
                 # Se captura el registro con el campo estático
                 ctx.catch(record, static_field)
 
-def _forbid_direct_password_input(ctx: PoliciesContext[_M, _R]):
+def _policy__base_users__forbid_direct_password_input(ctx: PoliciesContext[_M, _R]):
 
     # Iteración por cada registro
     for record in ctx.records:
@@ -30,13 +30,13 @@ PRESET_POLICIES: list[PolicyProperties] = [
 
     PolicyProperties(
         [CRUD_METHOD_NAME.CREATE, CRUD_METHOD_NAME.UPDATE],
-        _reject_static_fields,
+        _policy__reject_static_fields,
         'El campo {value} no puede ser declarado ni modificado manualmente.',
     ),
 
     PolicyProperties(
         [CRUD_METHOD_NAME.CREATE, CRUD_METHOD_NAME.UPDATE],
-        _forbid_direct_password_input,
+        _policy__base_users__forbid_direct_password_input,
         'El campo de contraseña no puede ser directamente modificado.',
         MODEL_NAME.BASE_USERS,
     ),

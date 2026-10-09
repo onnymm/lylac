@@ -4,7 +4,6 @@ from .._typing.type_parameters import _R
 
 @dataclass(slots= True)
 class ErrorDetail:
-    value: Any
     record: _R
     message_to_show: str
     show_error_data: bool = True
