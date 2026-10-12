@@ -93,7 +93,6 @@ def _base_model__create_model_and_table_in_database(ctx: AutomationContext) -> N
                 'label': 'Nombre',
                 'ttype': TTYPE_NAME.CHAR,
                 'model_id': model_id,
-                'readonly': True,
                 'state': field_state,
             },
             {
