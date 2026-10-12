@@ -41,7 +41,7 @@ from ._typing.callables import ExecutableTransactionCallback
 from ._typing.callables import ComputeFieldFn as _ComputeFieldFn
 from ._typing.callables import NotifierInitializator
 from ._typing.generics import ScalarOrIterable
-from ._typing.generics import ModelName
+from ._typing.generics import ModelName as _ModelName
 from ._typing.generics import _Record
 from ._typing.structures import CriteriaStructure
 from ._typing.structures import InputRecordData
@@ -318,10 +318,11 @@ class Lylac(Generic[_M]):
     type PoliciesContext[T] = _PoliciesContext[_M, T]
     type ValueResolutionContext[T] = _ValueResolutionContext[_M, Union[T, _R]]
     type ServerTaskContext = _ServerTaskContext[_M]
-    type TransactionContext = _TransactionContext[ModelName[_M]]
+    type TransactionContext = _TransactionContext[_ModelName[_M]]
     type ExecutionContext = _ExecutionContext[_M]
     type ComputeContext = _ComputeContext[_M]
     type ComputeFieldFn = _ComputeFieldFn[_M]
+    type ModelName = _ModelName[_M]
     # Atributos
     api: _MainAPI[_M]
     _crud: CRUD[_M]
@@ -488,7 +489,7 @@ class Lylac(Generic[_M]):
     def action(
         self,
         session_uuid: str,
-        model_name: ModelName[_M],
+        model_name: _ModelName[_M],
         name: str,
         record_id: int,
     ) -> Literal[True]:
@@ -571,7 +572,7 @@ class Lylac(Generic[_M]):
     def create(
         self,
         session_uuid: str,
-        model_name: ModelName[_M],
+        model_name: _ModelName[_M],
         data: ScalarOrIterable[InputRecordData[_M]],
     ) -> list[int]:
         """
@@ -724,7 +725,7 @@ class Lylac(Generic[_M]):
     def search(
         self,
         session_uuid: str,
-        model_name: ModelName[_M],
+        model_name: _ModelName[_M],
         search_criteria: CriteriaStructure[_M] = [],
         offset: Optional[int] = None,
         limit: Optional[int] = None,
@@ -934,7 +935,7 @@ class Lylac(Generic[_M]):
     def read(
         self,
         session_uuid: str,
-        model_name: ModelName[_M],
+        model_name: _ModelName[_M],
         record_ids: ScalarOrIterable[int],
         fields: list[FieldReadDeclaration] = [],
         sortby: Optional[ScalarOrIterable[FieldName]] = None,
@@ -1187,7 +1188,7 @@ class Lylac(Generic[_M]):
     def search_read(
         self,
         session_uuid: str,
-        model_name: ModelName[_M],
+        model_name: _ModelName[_M],
         search_criteria: CriteriaStructure[_M] = [],
         fields: list[FieldReadDeclaration] = [],
         offset: Optional[int] = None,
@@ -1629,7 +1630,7 @@ class Lylac(Generic[_M]):
     def search_count(
         self,
         session_uuid: str,
-        model_name: ModelName[_M],
+        model_name: _ModelName[_M],
         search_criteria: CriteriaStructure[_M] = [],
     ) -> int:
         """
@@ -1810,7 +1811,7 @@ class Lylac(Generic[_M]):
     def update(
         self,
         session_uuid: str,
-        model_name: ModelName[_M],
+        model_name: _ModelName[_M],
         record_ids: ScalarOrIterable[int],
         data: InputRecordData[_M],
     ) -> Literal[True]:
@@ -1878,7 +1879,7 @@ class Lylac(Generic[_M]):
     def delete(
         self,
         session_uuid: str,
-        model_name: ModelName[_M],
+        model_name: _ModelName[_M],
         record_ids: ScalarOrIterable[int],
     ) -> Literal[True]:
         """
