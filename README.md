@@ -1301,9 +1301,12 @@ LYLAC_ADMIN_USER_LOGIN = onnymm
 #### Parámetros opcionales
 También se pueden configurar algunos parámetros opcionales para personalizar más el flujo de trabajo del framework.
 
-| Variable                 | Descripción                                                                  |
-|--------------------------|------------------------------------------------------------------------------|
-| `LYLAC_DEFAULT_PASSWORD` | Contraseña predeterminada que se le asigna a un usuario cuando se crea éste. |
+| Variable                       | Descripción                                                                  | Valor por defecto |
+|--------------------------------|------------------------------------------------------------------------------|-------------------|
+| `LYLAC_DEFAULT_PASSWORD`       | Contraseña predeterminada que se le asigna a un usuario cuando se crea éste. | `"123456"`        |
+| `LYLAC_TOKEN_EXPIRATION_DAYS`  | Días de vigencia del token de autenticación                                  | `30`              |
+| `LYLAC_CHAR_FIELD_LENGHT`      | Longitud de caracteres de campos de tipo de dato `char`                      | `255`             |
+| `LYLAC_SELECTION_FIELD_LENGHT` | Longitud de caracteres de campos de tipo de dato `char`                      | `255`             |
 
 ### Creación de la base de datos
 Se puede comenzar con un archivo muy pequeño como el siguiente.

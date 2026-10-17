@@ -124,7 +124,7 @@ def build_login_callback(
             {
                 'name': hashed_session_uuid,
                 'user_id': user_id,
-                'validity_time': timedelta(days= DEFAULTS.EXPIRATION_TOKEN_DAYS),
+                'validity_time': timedelta(days= DEFAULTS.TOKEN_EXPIRATION_DAYS),
             },
         )
 
