@@ -37,7 +37,7 @@ from ..errors import RecordRulesPermissionError
 if TYPE_CHECKING:
     from .._contexts import ExecutionContext
 
-class _Properties:
+class CRUD(Generic[_M]):
     PERMISSIONS_BYPASS: bool = True
     _adapter: dict[CRUDPermission, CRUDPermissionColumnName] = {
         CRUD_METHOD_NAME.CREATE: PERMISSION.CREATE,
@@ -45,119 +45,6 @@ class _Properties:
         CRUD_METHOD_NAME.UPDATE: PERMISSION.UPDATE,
         CRUD_METHOD_NAME.DELETE: PERMISSION.DELETE,
     }
-
-class CRUD(Generic[_M], _Properties):
-
-    def _check_access(
-        self,
-        execution_ctx: ExecutionContext[_M],
-        model_name: ModelName[_M],
-        permission: CRUDPermission = None,
-    ) -> None:
-
-        # Si el bypass de revisión de permisos está activado...
-        if self.PERMISSIONS_BYPASS:
-            # Se termina la ejecución
-            return
-
-        # Obtención del modelo de usuarios
-        base_users = self._models_bearer.get_model(MODEL_NAME.BASE_USERS)
-        # Obtención del modelo de roles de usuario
-        base_users_role = self._models_bearer.get_model(MODEL_NAME.BASE_USERS_ROLE)
-        # Obtención del modelo de grupos de acceso
-        base_users_group = self._models_bearer.get_model(MODEL_NAME.BASE_USERS_GROUP)
-        # Obtención del modelo de permisos de acceso
-        base_users_access = self._models_bearer.get_model(MODEL_NAME.BASE_USERS_ACCESS)
-        # Obtención del modelo de modelos
-        base_model = self._models_bearer.get_model(MODEL_NAME.BASE_MODEL)
-
-        # Obtención de intermedio entre usuarios y roles
-        m2m_base_users__role_ids = self._models_bearer.get_m2m_model(MODEL_NAME.BASE_USERS, 'role_ids')
-        # Obtención de intermedio entre roles y grupos
-        m2m_base_users_role__group_ids = self._models_bearer.get_m2m_model(MODEL_NAME.BASE_USERS_ROLE, 'group_ids')
-
-        # Columna a buscar
-        permission_column = self._adapter[permission]
-
-        # Obtención de instancias de ID
-        base_users__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS, FIELD_NAME.ID)
-        base_users_role__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_ROLE, FIELD_NAME.ID)
-        base_users_group__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_GROUP, FIELD_NAME.ID)
-        base_model__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_MODEL, FIELD_NAME.ID)
-
-        # Obtención de instancia de ID de grupo
-        base_users_access__group_id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_ACCESS, 'group_id')
-        # Obtención de instancia de modelo vinculado
-        base_users_access__model_id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_ACCESS, 'model_id')
-        # Obtención de instancia de nombre de modelo
-        base_model__model = self._models_bearer.get_field_instance(MODEL_NAME.BASE_MODEL, 'model')
-
-        # Obtención de instancia de permiso
-        permission_instance = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_ACCESS, permission_column)
-
-        # Construcción de query
-        stmt = (
-            # Conteo de resultados
-            select( func.count('*') )
-            # Desde la tabla de usuarios
-            .select_from(base_users)
-
-            # Unión de tablas
-            .outerjoin(
-                m2m_base_users__role_ids,
-                base_users__id == m2m_base_users__role_ids.x,
-            )
-            .outerjoin(
-                base_users_role,
-                m2m_base_users__role_ids.y == base_users_role__id,
-            )
-            .outerjoin(
-                m2m_base_users_role__group_ids,
-                base_users_role__id == m2m_base_users_role__group_ids.x,
-            )
-            .outerjoin(
-                base_users_group,
-                m2m_base_users_role__group_ids.y == base_users_group__id,
-            )
-            .outerjoin(
-                base_users_access,
-                base_users_group__id == base_users_access__group_id,
-            )
-            .outerjoin(
-                base_model,
-                base_users_access__model_id == base_model__id
-            )
-
-            # Donde...
-            .where(
-                # La ID de usuario sea igual a la proporcionada
-                base_users__id == execution_ctx.uid,
-                # El tipo de permiso esté concedido
-                permission_instance == True,
-                # El nombre de modelo sea igual al proporcionado
-                base_model__model == model_name,
-            )
-        )
-
-        # Obtención de conteo de permisos concedidos para el usuario
-        count: int = (
-            execution_ctx.conn
-            .execute(stmt)
-            .scalar()
-        )
-
-        # Evaluación de si el usuario tiene permiso para realizar la acción
-        user_has_permission = (
-            # El conteo es mayor a cero
-            count > 0
-            # El bypass está activado
-            or self.PERMISSIONS_BYPASS
-        )
-
-        # Si el usuario no tiene permiso para la realizar la acción...
-        if not user_has_permission:
-            # Se arroja error de permiso denegado
-            raise PermissionDeniedError(f'El usuario con la ID {execution_ctx.uid} no tiene permisos para realizar la acción en el modelo [{model_name}].')
 
     def __init__(
         self,
@@ -169,22 +56,6 @@ class CRUD(Generic[_M], _Properties):
         self._dql = DQL()
         self._input_processing = InputProcessing()
         self._m2o_create = Many2OneCreate(self)
-
-    def register_on_creation_processing(
-        self,
-        processing_callbacks: list[ProcessingCallback[_A]],
-    ) -> None:
-
-        # Asignación de lista de funciones de preprocesamiento en creación
-        self._input_processing.register_on_creation_processing(processing_callbacks)
-
-    def register_on_update_processing(
-        self,
-        processing_callbacks: list[ProcessingCallback[_A]],
-    ) -> None:
-
-        # Asignación de lista de funciones de preprocesamiento en modificación
-        self._input_processing.register_on_update_processing(processing_callbacks)
 
     def create(
         self,
@@ -293,6 +164,58 @@ class CRUD(Generic[_M], _Properties):
 
         return record_ids
 
+    def read(
+        self,
+        execution_ctx: ExecutionContext[_M],
+        model_name: ModelName[_M],
+        record_ids: ScalarOrIterable[int],
+        fields: list[FieldReadDeclaration] = [],
+        sortby: Optional[ScalarOrIterable[str]] = None,
+        ascending: Optional[ScalarOrIterable[bool]] = None
+    ) -> list[_Record]:
+
+        # Revisión de permisos
+        self._check_access(
+            execution_ctx,
+            model_name,
+            CRUD_METHOD_NAME.READ,
+        )
+
+        # Inicialización de contexto de expansión
+        expansion_ctx = ExpansionContext(execution_ctx, self)
+
+        # Se asegura una lista de datos
+        record_ids = to_list(record_ids)
+
+        # Evaluación de IDs permitidas
+        self._evalute_allowed_ids(
+            execution_ctx,
+            CRUD_METHOD_NAME.READ,
+            model_name,
+            record_ids,
+        )
+
+        # Normalización de campos
+        normalized_fields = expansion_ctx.intercept(fields)
+
+        # Obtención de los datos
+        data = self._dql.read(
+            execution_ctx,
+            model_name,
+            record_ids,
+            normalized_fields,
+            sortby,
+            ascending,
+        )
+
+        # Expansión de datos en caso de haberse especificado
+        expanded_data = expansion_ctx.resolve(
+            model_name,
+            data,
+        )
+
+        return expanded_data
+
     def search_read(
         self,
         execution_ctx: ExecutionContext[_M],
@@ -375,58 +298,6 @@ class CRUD(Generic[_M], _Properties):
         )
 
         return count
-
-    def read(
-        self,
-        execution_ctx: ExecutionContext[_M],
-        model_name: ModelName[_M],
-        record_ids: ScalarOrIterable[int],
-        fields: list[FieldReadDeclaration] = [],
-        sortby: Optional[ScalarOrIterable[str]] = None,
-        ascending: Optional[ScalarOrIterable[bool]] = None
-    ) -> list[_Record]:
-
-        # Revisión de permisos
-        self._check_access(
-            execution_ctx,
-            model_name,
-            CRUD_METHOD_NAME.READ,
-        )
-
-        # Inicialización de contexto de expansión
-        expansion_ctx = ExpansionContext(execution_ctx, self)
-
-        # Se asegura una lista de datos
-        record_ids = to_list(record_ids)
-
-        # Evaluación de IDs permitidas
-        self._evalute_allowed_ids(
-            execution_ctx,
-            CRUD_METHOD_NAME.READ,
-            model_name,
-            record_ids,
-        )
-
-        # Normalización de campos
-        normalized_fields = expansion_ctx.intercept(fields)
-
-        # Obtención de los datos
-        data = self._dql.read(
-            execution_ctx,
-            model_name,
-            record_ids,
-            normalized_fields,
-            sortby,
-            ascending,
-        )
-
-        # Expansión de datos en caso de haberse especificado
-        expanded_data = expansion_ctx.resolve(
-            model_name,
-            data,
-        )
-
-        return expanded_data
 
     def update(
         self,
@@ -558,6 +429,133 @@ class CRUD(Generic[_M], _Properties):
         execute_automations_on_delete()
 
         return True
+
+    def register_on_creation_processing(
+        self,
+        processing_callbacks: list[ProcessingCallback[_A]],
+    ) -> None:
+
+        # Asignación de lista de funciones de preprocesamiento en creación
+        self._input_processing.register_on_creation_processing(processing_callbacks)
+
+    def register_on_update_processing(
+        self,
+        processing_callbacks: list[ProcessingCallback[_A]],
+    ) -> None:
+
+        # Asignación de lista de funciones de preprocesamiento en modificación
+        self._input_processing.register_on_update_processing(processing_callbacks)
+
+    def _check_access(
+        self,
+        execution_ctx: ExecutionContext[_M],
+        model_name: ModelName[_M],
+        permission: CRUDPermission = None,
+    ) -> None:
+
+        # Si el bypass de revisión de permisos está activado...
+        if self.PERMISSIONS_BYPASS:
+            # Se termina la ejecución
+            return
+
+        # Obtención del modelo de usuarios
+        base_users = self._models_bearer.get_model(MODEL_NAME.BASE_USERS)
+        # Obtención del modelo de roles de usuario
+        base_users_role = self._models_bearer.get_model(MODEL_NAME.BASE_USERS_ROLE)
+        # Obtención del modelo de grupos de acceso
+        base_users_group = self._models_bearer.get_model(MODEL_NAME.BASE_USERS_GROUP)
+        # Obtención del modelo de permisos de acceso
+        base_users_access = self._models_bearer.get_model(MODEL_NAME.BASE_USERS_ACCESS)
+        # Obtención del modelo de modelos
+        base_model = self._models_bearer.get_model(MODEL_NAME.BASE_MODEL)
+
+        # Obtención de intermedio entre usuarios y roles
+        m2m_base_users__role_ids = self._models_bearer.get_m2m_model(MODEL_NAME.BASE_USERS, 'role_ids')
+        # Obtención de intermedio entre roles y grupos
+        m2m_base_users_role__group_ids = self._models_bearer.get_m2m_model(MODEL_NAME.BASE_USERS_ROLE, 'group_ids')
+
+        # Columna a buscar
+        permission_column = self._adapter[permission]
+
+        # Obtención de instancias de ID
+        base_users__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS, FIELD_NAME.ID)
+        base_users_role__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_ROLE, FIELD_NAME.ID)
+        base_users_group__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_GROUP, FIELD_NAME.ID)
+        base_model__id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_MODEL, FIELD_NAME.ID)
+
+        # Obtención de instancia de ID de grupo
+        base_users_access__group_id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_ACCESS, 'group_id')
+        # Obtención de instancia de modelo vinculado
+        base_users_access__model_id = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_ACCESS, 'model_id')
+        # Obtención de instancia de nombre de modelo
+        base_model__model = self._models_bearer.get_field_instance(MODEL_NAME.BASE_MODEL, 'model')
+
+        # Obtención de instancia de permiso
+        permission_instance = self._models_bearer.get_field_instance(MODEL_NAME.BASE_USERS_ACCESS, permission_column)
+
+        # Construcción de query
+        stmt = (
+            # Conteo de resultados
+            select( func.count('*') )
+            # Desde la tabla de usuarios
+            .select_from(base_users)
+
+            # Unión de tablas
+            .outerjoin(
+                m2m_base_users__role_ids,
+                base_users__id == m2m_base_users__role_ids.x,
+            )
+            .outerjoin(
+                base_users_role,
+                m2m_base_users__role_ids.y == base_users_role__id,
+            )
+            .outerjoin(
+                m2m_base_users_role__group_ids,
+                base_users_role__id == m2m_base_users_role__group_ids.x,
+            )
+            .outerjoin(
+                base_users_group,
+                m2m_base_users_role__group_ids.y == base_users_group__id,
+            )
+            .outerjoin(
+                base_users_access,
+                base_users_group__id == base_users_access__group_id,
+            )
+            .outerjoin(
+                base_model,
+                base_users_access__model_id == base_model__id
+            )
+
+            # Donde...
+            .where(
+                # La ID de usuario sea igual a la proporcionada
+                base_users__id == execution_ctx.uid,
+                # El tipo de permiso esté concedido
+                permission_instance == True,
+                # El nombre de modelo sea igual al proporcionado
+                base_model__model == model_name,
+            )
+        )
+
+        # Obtención de conteo de permisos concedidos para el usuario
+        count: int = (
+            execution_ctx.conn
+            .execute(stmt)
+            .scalar()
+        )
+
+        # Evaluación de si el usuario tiene permiso para realizar la acción
+        user_has_permission = (
+            # El conteo es mayor a cero
+            count > 0
+            # El bypass está activado
+            or self.PERMISSIONS_BYPASS
+        )
+
+        # Si el usuario no tiene permiso para la realizar la acción...
+        if not user_has_permission:
+            # Se arroja error de permiso denegado
+            raise PermissionDeniedError(f'El usuario con la ID {execution_ctx.uid} no tiene permisos para realizar la acción en el modelo [{model_name}].')
 
     def _evalute_allowed_ids(
         self,

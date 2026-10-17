@@ -1,3 +1,3 @@
 from dotenvironment import DotEnvironment
 
-env_ = DotEnvironment('LYLAC_')
+env = DotEnvironment('LYLAC_')
