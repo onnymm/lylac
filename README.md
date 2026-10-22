@@ -266,6 +266,9 @@ Antes de que el registro sea ingresado para ser creado en la base de datos, la f
 **Retorno**
 - `record_ids`: *list[int]* — Lista de IDs del registro o de los registros creados.
 
+> **Errores comunes**
+> - `ModelNotFoundError`: El modelo en el que se intenta realiza la transacción no existe.
+
 ----
 
 ### `search` Búsqueda de registros
@@ -368,6 +371,9 @@ db.search(
 
 **Retorno**
 - `record_ids`: *list[int]* — Lista de IDs de los registros encontrados.
+
+> **Errores comunes**
+> - `ModelNotFoundError`: El modelo en el que se intenta realiza la transacción no existe.
 
 ----
 
@@ -601,6 +607,9 @@ db.read(
 
 **Retorno**
 - `records`: *list[RecordData]* — Lista de diccionarios con los datos de los registros solicitados.
+
+> **Errores comunes**
+> - `ModelNotFoundError`: El modelo en el que se intenta realiza la transacción no existe.
 
 ----
 
@@ -943,6 +952,9 @@ db.search_read(
 **Retorno**
 - `records`: *list[RecordData]* — Lista de diccionarios con los datos de los registros solicitados.
 
+> **Errores comunes**
+> - `ModelNotFoundError`: El modelo en el que se intenta realiza la transacción no existe.
+
 ----
 
 ### `search_count` Conteo de búsqueda
@@ -1014,6 +1026,9 @@ db.search(
 
 **Retorno**
 - `count`: *int* — Total de registros encontrados.
+
+> **Errores comunes**
+> - `ModelNotFoundError`: El modelo en el que se intenta realiza la transacción no existe.
 
 ----
 
@@ -1117,6 +1132,9 @@ db.search_read(session_uuid, 'base.users', 2, fields= ['login', 'name', 'role_id
 **Retorno**
 - `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
 
+> **Errores comunes**
+> - `ModelNotFoundError`: El modelo en el que se intenta realiza la transacción no existe.
+
 ----
 
 ### `delete` Eliminación de registros
@@ -1157,6 +1175,9 @@ db.search_read(session_uuid, 'base.users')
 **Retorno**
 - `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
 
+> **Errores comunes**
+> - `ModelNotFoundError`: El modelo en el que se intenta realiza la transacción no existe.
+
 ----
 
 ### `action` Ejecución de una acción
@@ -1178,6 +1199,9 @@ En el fragmento de código ejecutamos una acción que archiva al registro con ID
 
 **Retorno**
 - `response`: *Literal[True]* — Respuesta de que la operación se realizó correctamente.
+
+> **Errores comunes**
+> - `ModelNotFoundError`: El modelo en el que se intenta realiza la transacción no existe.
 
 ----
 
