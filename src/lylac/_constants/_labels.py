@@ -18,6 +18,8 @@ class ERROR_LABEL:
     class INTEGRITY:
         VALIDATIONS_FAILED = 'Las validaciones no pasaron.'
         POLICY_VERIFICATIONS_FAILED = 'Las verificaciones no pasaron.'
+    class MODELS:
+        DOES_NOT_EXISTS = 'El modelo "{model_name}" no existe en la base de datos.'
     class MODULE:
         ALREADY_LOADED = 'El módulo ya ha sido cargado.'
     class ACCOUNT:

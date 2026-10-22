@@ -4,6 +4,7 @@ from typing import Generic
 from typing import Literal
 from typing import overload
 from sqlalchemy.orm import InstrumentedAttribute
+from .._constants import ERROR_LABEL
 from .._constants import MODEL_NAME
 from .._core import Feature
 from .._core import Metadata
@@ -14,6 +15,7 @@ from .._typing.generics import ModelName
 from .._typing.generics import _ModelIndex
 from .._typing.interfaces import Many2ManyRelation
 from .._typing.type_parameters import _M
+from ..errors import ModelNotFoundError as ModelNotFoundError
 
 class ModelsBearer(Generic[_M]):
     _index: _ModelIndex[_M] = {
@@ -71,8 +73,12 @@ class ModelsBearer(Generic[_M]):
         model_name: ModelName[_M],
     ) -> ModelClass:
 
-        # Obtención de la clase del modelo
-        model_model = self._index[model_name]
+        try:
+            # Obtención de la clase del modelo
+            model_model = self._index[model_name]
+        except KeyError:
+            # Se lanza un error de modelo inexistente
+            raise ModelNotFoundError(ERROR_LABEL.MODELS.DOES_NOT_EXISTS.format(model_name= model_name))
 
         return model_model
 

@@ -7,6 +7,7 @@ from ._authentication import InvalidSessionUUIDError
 from ._authentication import UserNotActiveError
 from ._authentication import UserNotFoundError
 from ._automations import AutomationExecutionError
+from ._models import ModelNotFoundError
 from ._modules import ModuleAlreadyLoaded
 from ._policies import PolicyExecutionError
 from ._policies import PolicyVerificationsFailedError

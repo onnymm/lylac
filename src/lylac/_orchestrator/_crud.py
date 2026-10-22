@@ -562,6 +562,10 @@ class CRUD(Generic[_M]):
             or self._PERMISSIONS_BYPASS
         )
 
+        # Se revisa que el modelo realmente exista para saber si la ausencia de permisos
+        #   no significa que el modelo no existe
+        _ = self._models_bearer.get_model(model_name)
+
         # Si el usuario no tiene permiso para la realizar la acción...
         if not user_has_permission:
             # Se arroja error de permiso denegado
