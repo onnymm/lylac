@@ -38,7 +38,7 @@ if TYPE_CHECKING:
     from .._contexts import ExecutionContext
 
 class CRUD(Generic[_M]):
-    PERMISSIONS_BYPASS: bool = True
+    _PERMISSIONS_BYPASS: bool = True
     _adapter: dict[CRUDPermission, CRUDPermissionColumnName] = {
         CRUD_METHOD_NAME.CREATE: PERMISSION.CREATE,
         CRUD_METHOD_NAME.READ: PERMISSION.READ,
@@ -446,6 +446,13 @@ class CRUD(Generic[_M]):
         # Asignación de lista de funciones de preprocesamiento en modificación
         self._input_processing.register_on_update_processing(processing_callbacks)
 
+    def seal(
+        self,
+    ) -> None:
+
+        # Se desactiva el bypass de revisión de permisos
+        self._PERMISSIONS_BYPASS = False
+
     def _check_access(
         self,
         execution_ctx: ExecutionContext[_M],
@@ -454,7 +461,8 @@ class CRUD(Generic[_M]):
     ) -> None:
 
         # Si el bypass de revisión de permisos está activado...
-        if self.PERMISSIONS_BYPASS:
+        if self._PERMISSIONS_BYPASS:
+            print('passed')
             # Se termina la ejecución
             return
 
@@ -544,12 +552,14 @@ class CRUD(Generic[_M]):
             .scalar()
         )
 
+        print(count)
+
         # Evaluación de si el usuario tiene permiso para realizar la acción
         user_has_permission = (
             # El conteo es mayor a cero
             count > 0
             # El bypass está activado
-            or self.PERMISSIONS_BYPASS
+            or self._PERMISSIONS_BYPASS
         )
 
         # Si el usuario no tiene permiso para la realizar la acción...
@@ -622,7 +632,7 @@ class CRUD(Generic[_M]):
     ) -> CriteriaStructure[_M]:
 
         # Si el bypass de revisión de permisos está activado...
-        if self.PERMISSIONS_BYPASS:
+        if self._PERMISSIONS_BYPASS:
             # Se termina la ejecución
             return search_criteria
 
@@ -787,7 +797,7 @@ class CRUD(Generic[_M]):
     ) -> list[dict]:
 
         # Si el bypass de revisión de permisos está activado...
-        if self.PERMISSIONS_BYPASS:
+        if self._PERMISSIONS_BYPASS:
             # Se termina la ejecución
             return data
 

@@ -25,7 +25,7 @@ class Many2OneCreate(Generic[_M]):
         data: list[InputRecordData[_M]],
     ) -> list[InputRecordData[_M]]:
 
-        if self._crud.PERMISSIONS_BYPASS:
+        if self._crud._PERMISSIONS_BYPASS:
             return data
 
         # Obtención de los nombres de los campos

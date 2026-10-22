@@ -361,6 +361,8 @@ class Lylac(Generic[_M]):
         try:
             # Inicialización desde datos existentes de la base de datos
             self._load_from_built_database()
+            # Se establece el bypass en Falso
+            self._crud.seal()
 
         except ProgrammingError:
             # Se construye la estructura de la base de datos
@@ -376,7 +378,7 @@ class Lylac(Generic[_M]):
             self._execute_as_root(self._populate_models_fn)
 
         # Se establece el bypass en Falso
-        self._crud.PERMISSIONS_BYPASS = False
+        self._crud.seal()
 
     def login(
         self,
