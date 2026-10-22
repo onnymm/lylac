@@ -12,6 +12,7 @@ from .._typing.generics import FunctionDecorator
 from .._typing.generics import ModelName
 from .._typing.type_parameters import _M
 from ..errors import ActionExecutionError
+from ..errors import ActionNotFoundError
 from ..errors import ModelNotFoundError
 
 if TYPE_CHECKING:
@@ -90,8 +91,18 @@ class ActionEngine(Generic[_M]):
             # Se lanza un error de modelo inexistente
             raise ModelNotFoundError(ERROR_LABEL.MODELS.DOES_NOT_EXISTS.format(model_name= model_name))
 
-        # Obtención de las propiedades de la automatización
-        automation_properties = model_actions[name]
+        try:
+            # Obtención de las propiedades de la automatización
+            automation_properties = model_actions[name]
+        except KeyError:
+            # Se lanza un error de acción no existente
+            raise ActionNotFoundError(
+                ERROR_LABEL.ACTION.NOT_FOUND.format(
+                    action_name= name,
+                    model_name= model_name,
+                )
+            )
+
         # Obtención de la función
         callback = automation_properties.callback
         # Obtención de los campos a leer

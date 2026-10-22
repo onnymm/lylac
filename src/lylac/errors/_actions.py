@@ -1,2 +1,5 @@
-class ActionExecutionError:
+class ActionExecutionError(Exception):
+    ...
+
+class ActionNotFoundError(Exception):
     ...

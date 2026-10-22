@@ -1,6 +1,7 @@
 from ._access import PermissionDeniedError
 from ._access import RecordRulesPermissionError
 from ._actions import ActionExecutionError
+from ._actions import ActionNotFoundError
 from ._authentication import ExpiredSessionError
 from ._authentication import IncorrectPasswordError
 from ._authentication import InvalidSessionUUIDError

@@ -1,4 +1,6 @@
 class ERROR_LABEL:
+    class ACTION:
+        NOT_FOUND = 'La acción "{action_name}" no existe para el modelo "{model_name}"'
     class EXECUTION:
         ACTION = 'No puedes ejecutar manualmente funciones registradas como validaciones.'
         AUTOMATION = 'No puedes ejecutar manualmente funciones registradas como automatizaciones.'

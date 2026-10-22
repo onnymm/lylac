@@ -1202,6 +1202,7 @@ En el fragmento de código ejecutamos una acción que archiva al registro con ID
 
 > **Errores comunes**
 > - `ModelNotFoundError`: El modelo en el que se intenta realiza la transacción no existe.
+> - `ActionNotFoundError`: La acción que se intenta ejecutar no existe para el modelo proporcionado.
 
 ----
 
