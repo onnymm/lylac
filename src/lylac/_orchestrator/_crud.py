@@ -462,7 +462,6 @@ class CRUD(Generic[_M]):
 
         # Si el bypass de revisión de permisos está activado...
         if self._PERMISSIONS_BYPASS:
-            print('passed')
             # Se termina la ejecución
             return
 
@@ -551,8 +550,6 @@ class CRUD(Generic[_M]):
             .execute(stmt)
             .scalar()
         )
-
-        print(count)
 
         # Evaluación de si el usuario tiene permiso para realizar la acción
         user_has_permission = (
