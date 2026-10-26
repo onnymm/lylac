@@ -1419,8 +1419,9 @@ class BaseContext(Generic[_M]):
         self,
         event: str,
         target: NotificationTarget,
-        payload: dict[str, Any] = {}
+        payload: dict[str, Any] = {},
+        after_commit: bool = True,
     ) -> None:
 
         # Notificación usando el contexto de ejecución
-        self._execution_ctx._notify(event, target, payload)
+        self._execution_ctx._notify(event, target, payload, after_commit)

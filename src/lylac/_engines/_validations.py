@@ -145,6 +145,7 @@ class ValidationEngine(Generic[_M]):
                     'validation.failed',
                     'current_user',
                     {'detail': error.message_to_show},
+                    False,
                 )
             # Se lanza error para detener la ejecución
             raise ValidationsFailedError(ERROR_LABEL.INTEGRITY.VALIDATIONS_FAILED)
