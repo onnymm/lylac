@@ -92,6 +92,9 @@ class DQL(Generic[_M]):
             # Se añade éste al query
             stmt = stmt.limit(limit)
 
+        # Ordenamiento explícito ascendente por ID
+        stmt = stmt.order_by(asc(id_field_instance))
+
         # Ejecución de query
         records_data: list[tuple[int]] = (
             execution_ctx.conn
